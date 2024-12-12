@@ -1,0 +1,8 @@
+[plugins]
+application = { id = "alfie.application", version = "unspecified" }
+compose = { id = "alfie.compose.lib", version = "unspecified" }
+destinations = { id = "alfie.destinations", version = "unspecified" }
+firebase = { id = "alfie.firebase", version = "unspecified" }
+feature = { id = "alfie.feature", version = "unspecified" }
+hilt = { id = "alfie.hilt", version = "unspecified" }
+lib = { id = "alfie.lib", version = "unspecified" }

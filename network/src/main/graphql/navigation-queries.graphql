@@ -1,0 +1,10 @@
+query NavEntriesByHandle($handle: String!) {
+    navigation(handle: $handle) {
+        items {
+            ...NavMenuItemContainer
+        }
+        attributes {
+            ...AttributesInfo
+        }
+    }
+}

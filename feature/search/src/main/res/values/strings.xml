@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_empty_title">Find what you\'re looking for</string>
+    <string name="search_empty_description">Search for designers, categories and products</string>
+    <string name="your_recent_searches">Your Recent Searches</string>
+    <string name="clear">Clear</string>
+    <string name="search_suggestions_keyword_title">Search Suggestions</string>
+    <string name="search_suggestions_brand_title">Brand</string>
+    <string name="search_suggestions_product_title">Product Suggestions</string>
+    <string name="search_suggestions_more_products_cta">More Products</string>
+    <string name="no_results_text1">We were unable to find any results for your search \'%1$s\'</string>
+    <string name="no_results_text2">Please check that you have typed the word correctly or broaden your search term.</string>
+    <string name="no_results_cta">View all brands sold at Alfie</string>
+</resources>

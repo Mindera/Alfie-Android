@@ -1,0 +1,120 @@
+# ================ PLATFORM ================
+
+default_platform(:android)
+
+# ================ LANES ================
+
+platform :android do
+
+  desc "Pull Request validation"
+  lane :branch_validation do |options|
+    run_detekt()
+    run_unit_tests()
+  end
+
+  desc "Deploy Debug Build"
+  lane :deploy_debug do |options|
+    run_build_debug(versionName:options[:versionName])
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID_DEBUG"],
+      service_credentials_file: "fastlane/firebase_login_credentials.json",
+      groups: "QA"
+    )
+  end
+
+  desc "Deploy Beta Build"
+  lane :deploy_beta do |options|
+    run_build_beta()
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID_BETA"],
+      service_credentials_file: "fastlane/firebase_login_credentials.json",
+      groups: "Mindera"
+    )
+  end
+
+  desc "Deploy Release Build"
+  lane :deploy_release do |options|
+    # Using Firebase Beta with Alfie group. Should be replaced by Play Store later.
+    run_build_release()
+    firebase_app_distribution(
+      app: ENV["FIREBASE_APP_ID"],
+      service_credentials_file: "fastlane/firebase_login_credentials.json",
+      groups: "Mindera, Alfie"
+    )
+  end
+
+  desc "Nightly tasks"
+  lane :nightly do |options|
+    run_detekt()
+    run_unit_tests()
+    run_android_tests()
+    run_build_debug()
+    run_build_beta()
+    run_build_release()
+    run_coverage()
+  end
+end
+
+# ================ PRIVATE LANES ================
+
+desc "Run Detekt linting"
+private_lane :run_detekt do
+  gradle(task: "detekt")
+end
+
+desc "Run debug build"
+private_lane :run_build_debug do |options|
+  gradle(
+    task: "app:assemble",
+    build_type: "Debug",
+    flags: "--build-cache",
+    properties: {
+      'versionName' => options[:versionName]
+    }
+  )
+end
+
+desc "Run Beta build"
+private_lane :run_build_beta do
+  gradle(task: "clean")
+  gradle(
+    task: "app:assemble",
+    build_type: "Beta",
+    properties: {
+        'android.injected.signing.store.file' => ENV["HOME"] + "/app/alfie.keystore",
+        'android.injected.signing.store.password' => ENV["ANDROID_KEYSTORE_PASSWORD"],
+        'android.injected.signing.key.alias' => ENV["ANDROID_KEYSTORE_ALIAS"],
+        'android.injected.signing.key.password' => ENV["ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"]
+      }
+  )
+end
+
+desc "Run Release build"
+private_lane :run_build_release do
+  gradle(task: "clean")
+  gradle(
+    task: "app:assemble",
+    build_type: "Release",
+    properties: {
+        'android.injected.signing.store.file' => ENV["HOME"] + "/app/alfie.keystore",
+        'android.injected.signing.store.password' => ENV["ANDROID_KEYSTORE_PASSWORD"],
+        'android.injected.signing.key.alias' => ENV["ANDROID_KEYSTORE_ALIAS"],
+        'android.injected.signing.key.password' => ENV["ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"]
+      }
+  )
+end
+
+desc "Run Unit Tests"
+private_lane :run_unit_tests do
+  gradle(task: "testDebugUnitTest")
+end
+
+desc "Run Android Tests"
+private_lane :run_android_tests do
+  gradle(task: "connectedDebugAndroidTest")
+end
+
+desc "Run Code Coverage Report"
+private_lane :run_coverage do
+  gradle(task: ":app:koverHtmlReportRelease")
+end

@@ -1,0 +1,16 @@
+fragment HierarchyItemsTree on HierarchyItem {
+    ...HierarchyItemInfo
+    # ignored as is expected to receive the hierarquies already sorted from the parent-higher category to the lower-child category
+    #parent { 
+    #    ...HierarchyItemInfo
+    #    parent {
+    #        ...HierarchyItemInfo
+    #    }
+    #}
+}
+
+fragment HierarchyItemInfo on HierarchyItem {
+    categoryId
+    name
+    slug
+}

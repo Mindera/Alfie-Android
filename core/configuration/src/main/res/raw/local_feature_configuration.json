@@ -1,0 +1,32 @@
+{
+  "android_native_feature_1": false,
+  "android_native_feature_2": {
+    "versions": [
+      {
+        "minimum_app_version": "0",
+        "registered_users": {
+          "available": true,
+          "available_country_codes": [],
+          "available_environments": []
+        },
+        "guest_users": {
+          "available": false,
+          "available_country_codes": [],
+          "available_environments": []
+        }
+      },
+      {
+        "minimum_app_version": "1.2",
+        "registered_users": {
+          "available": true,
+          "available_country_codes": [],
+          "available_environments": []
+        },
+        "guest_users": {
+          "available": true,
+          "available_country_codes": ["US", "GB"]
+        }
+      }
+    ]
+  }
+}

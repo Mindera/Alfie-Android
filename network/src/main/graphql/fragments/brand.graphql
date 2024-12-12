@@ -1,0 +1,5 @@
+fragment BrandInfo on Brand {
+    id
+    name
+    slug
+}

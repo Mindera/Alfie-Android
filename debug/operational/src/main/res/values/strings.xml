@@ -1,0 +1,40 @@
+<resources>
+    <string name="debug_screen_build_info_header">Build Info</string>
+    <string name="debug_screen_version_label">Version</string>
+    <string name="debug_screen_application_id_label">Application ID</string>
+    <string name="debug_screen_branch_label">Branch</string>
+    <string name="debug_screen_commit_label">Commit</string>
+    <string name="debug_screen_device_info_header">Device Info</string>
+    <string name="debug_screen_device_label">Device</string>
+    <string name="debug_screen_model_label">Model</string>
+    <string name="debug_screen_manufacturer_label">Manufacturer</string>
+    <string name="debug_screen_android_sdk_label">Android SDK</string>
+    <string name="debug_screen_resolution_label">Resolution</string>
+    <string name="debug_screen_density_label">Density</string>
+    <string name="debug_screen_logs_header">Logs</string>
+    <string name="debug_screen_logcat_label">Logcat</string>
+    <string name="debug_screen_debug_features_label">Debug Features</string>
+    <string name="debug_screen_catalog">Catalogue</string>
+    <string name="debug_screen_analytics_logs_label">Analytics Logs</string>
+    <string name="debug_screen_feedback_label">Send feedback</string>
+    <string name="deeplink_screen_title">Deep linking</string>
+    <string name="log_bottom_sheet_label">Logs:</string>
+    <string name="debug_screen_feature_toggle">Feature Toggle</string>
+
+    <string name="analytics_log_screen_empty">No events logged yet</string>
+    <string name="analytics_log_screen_trackers_label">Trackers:</string>
+
+    <string name="feedback_message">Help us to improve our app</string>
+
+    <string name="environment_screen_title">Environment</string>
+    <string name="environment_choose_label">Choose an environment:</string>
+    <string name="environment_dev">Development</string>
+    <string name="environment_pre_prod">Pre-Production</string>
+    <string name="environment_prod">Production</string>
+    <string name="environment_custom">Custom</string>
+    <string name="environment_save_button">Save and Restart</string>
+    <string name="environment_success_message">Done. The app will now restart automatically.</string>
+    <string name="environment_error_message">Invalid URL</string>
+
+    <string name="feature_toggle_show_wishlist">Show Wishlist On Bottom Bar</string>
+</resources>

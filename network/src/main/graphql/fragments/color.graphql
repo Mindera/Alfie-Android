@@ -1,0 +1,7 @@
+fragment ColorInfo on Colour {
+    id
+    swatch {
+        ...ImageInfo
+    }
+    name
+}

@@ -1,0 +1,23 @@
+fragment PriceInfo on Price {
+    amount {
+        ...MoneyInfo
+    }
+    was {
+        ...MoneyInfo
+    }
+}
+
+fragment PriceRangeInfo on PriceRange {
+    high {
+        ...MoneyInfo
+    }
+    low {
+        ...MoneyInfo
+    }
+}
+
+fragment MoneyInfo on Money {
+    currencyCode
+    amount
+    amountFormatted
+}

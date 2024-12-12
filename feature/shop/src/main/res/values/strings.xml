@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="shop_screen_title">Shop</string>
+
+    <string name="shop_segment_categories">Categories</string>
+    <string name="shop_segment_brands">Brands</string>
+    <string name="shop_segment_services">Services</string>
+    <string name="shop_error_please_try_again_later">Please try again later</string>
+    <string name="shop_error_cannot_load_categories_list">Cannot load Categories list</string>
+    <string name="shop_error_cannot_load_brands_list">Cannot load Brands list</string>
+    <string name="shop_error_unknown_error_occurred">Unknown error occurred</string>
+    <string name="shop_search_brands">Search Brands</string>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ComposableFunctionName:DebugComposeRunner.kt$DebugComposeRunner$@Composable operator fun invoke(block: @Composable () -&gt; Unit)</ID>
+    <ID>ComposableFunctionName:UIEventHandlers.kt$@Composable fun UIEventEmitter.handleUIEvents( navigator: DestinationsNavigator, navController: NavController, directionProvider: DirectionProvider, snackbarHostState: SnackbarCustomHostState, onCustomEvent: (UIEvent.Custom) -&gt; Unit = { }, onBaseEventOverride: ((UIEvent.Base) -&gt; Unit)? = null )</ID>
+    <ID>ComposableFunctionName:UIEventHandlers.kt$@Composable fun UIEventEmitter.handleUIEvents(onEvent: (UIEvent) -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:Button.kt$@Composable fun Button( type: ButtonType, text: String, onClick: ClickEvent, modifier: Modifier = Modifier, buttonSize: ButtonSize = Small, iconButton: IconButton? = null, shape: RoundedCornerShape = Theme.shape.medium, isLoading: Boolean = false, isShimmering: Boolean = false, isEnabled: Boolean = true, overrideTextStyle: TextStyle? = null, overrideBorderThickness: Dp? = null, overrideColors: ButtonColors? = null, overrideTextColor: Color? = null, overrideTextDisabledColor: Color? = null )</ID>
+    <ID>LongMethod:AppConventionPlugin.kt$AppConventionPlugin$override fun apply(target: Project)</ID>
+    <ID>LongParameterList:ButtonType.kt$ButtonType$( val backgroundColor: Color, val contentColor: Color, val disabledBackgroundColor: Color, val disabledContentColor: Color, val hasBorder: Boolean, val loadingType: LoadingType, val disabledLoadingType: LoadingType, val shimmerColors: ShimmerColors = ShimmerColors.Light )</ID>
+    <ID>LongParameterList:SearchTextType.kt$SearchTextType$( val textStyle: TextStyle, val textColor: Color, @DrawableRes val searchIcon: Int, @DrawableRes val clearIcon: Int, val cursorColor: Color, val unselectedBorderColor: Color, val selectedBorderColor: Color, val placeholderTextColor: Color, val selectedColor: Color, val unselectedColor: Color, val verticalPadding: Dp, val horizontalPadding: Dp )</ID>
+    <ID>ModifierHeightWithText:Tag.kt$height(intrinsicSize = IntrinsicSize.Max)</ID>
+    <ID>ReturnCount:DeeplinkSpec.kt$DeeplinkSpec$fun resolve(url: String): DeeplinkInstance?</ID>
+    <ID>SpreadOperator:BrandUIStateFactory.kt$BrandUIStateFactory$( initial.takeIf { it.isNotEmpty() }?.let { BrandEntryUI.Divider(it.first()) }, *entries.toTypedArray() )</ID>
+  </CurrentIssues>
+</SmellBaseline>

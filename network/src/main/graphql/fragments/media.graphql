@@ -1,0 +1,35 @@
+fragment MediaInfo on Media {
+    ... on Image {
+        ...ImageInfo
+    }
+    ... on Video {
+        ...VideoInfo
+    }
+}
+
+fragment ImageInfo on Image {
+    alt
+    mediaContentType
+    width
+    height
+    url
+}
+
+fragment VideoInfo on Video {
+    alt
+    mediaContentType
+    sources {
+        ...VideoSourceInfo
+    }
+    previewImage {
+        ...ImageInfo
+    }
+}
+
+fragment VideoSourceInfo on VideoSource {
+    format
+    mimeType
+    url
+    width
+    height
+}

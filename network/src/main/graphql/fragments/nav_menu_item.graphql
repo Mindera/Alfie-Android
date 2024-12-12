@@ -1,0 +1,20 @@
+fragment NavMenuItemContainer on NavMenuItem {
+    ...NavMenuItemInfo
+    media {
+        ... on Image {
+            ...ImageInfo
+        }
+    }
+    items{
+        ...NavMenuItemInfo
+    }
+    attributes {
+        ...AttributesInfo
+    }
+}
+
+fragment NavMenuItemInfo on NavMenuItem {
+    title
+    type
+    url
+}

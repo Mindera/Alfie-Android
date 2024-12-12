@@ -1,0 +1,29 @@
+fragment SizeContainer on Size {
+    ...SizeInfo
+    sizeGuide {
+        ...SizeGuideInfoTree
+    }
+}
+
+fragment SizeInfo on Size {
+    id
+    value
+    scale
+    description
+}
+
+fragment SizeGuideInfoTree on SizeGuide {
+    ...SizeGuideInfo
+    sizes {
+        ...SizeInfo
+        sizeGuide {
+            ...SizeGuideInfo
+        }
+    }
+}
+
+fragment SizeGuideInfo on SizeGuide {
+    id
+    name
+    description
+}

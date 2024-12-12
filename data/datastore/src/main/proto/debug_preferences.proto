@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "au.com.alfie.ecomm.data.datastore";
+option java_multiple_files = true;
+
+message DebugPreferencesProto {
+
+    EnvironmentProto current_environment = 1;
+    string custom_url = 2;
+
+    enum EnvironmentProto {
+        DEV = 0;
+        PRE_PROD = 1;
+        PROD = 2;
+        CUSTOM = 3;
+    }
+}

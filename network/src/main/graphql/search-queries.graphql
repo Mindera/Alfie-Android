@@ -1,0 +1,27 @@
+query SearchSuggestionsQuery($query: String!) {
+    suggestion(query: $query) {
+        keywords {
+            value
+            results
+        }
+        products {
+            id
+            name
+            brandName
+            media {
+                ... on Image {
+                    ...ImageInfo
+                }
+            }
+            price {
+                ...PriceInfo
+            }
+            slug
+        }
+        brands {
+            value
+            slug
+            results
+        }
+    }
+}

@@ -1,0 +1,4 @@
+fragment AttributesInfo on KeyValuePair {
+    key
+    value
+}

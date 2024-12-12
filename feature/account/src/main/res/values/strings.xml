@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_title_header">Account</string>
+    <string name="account_my_details">My Details</string>
+    <string name="account_my_orders">My Orders</string>
+    <string name="account_wallet">Wallet</string>
+    <string name="account_my_address_book">My Address Book</string>
+    <string name="account_wishlist">Wishlist</string>
+    <string name="account_sign_out">Sign Out</string>
+</resources>

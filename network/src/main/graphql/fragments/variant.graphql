@@ -1,0 +1,19 @@
+fragment VariantInfo on Variant {
+    sku
+    size {
+        ...SizeContainer
+    }
+    colour {
+        ...ColorInfo
+    }
+    media {
+        ...MediaInfo
+    }            
+    attributes {
+        ...AttributesInfo
+    }
+    stock
+    price {
+        ...PriceInfo
+    }
+}

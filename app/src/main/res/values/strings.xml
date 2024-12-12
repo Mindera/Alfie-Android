@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Alfie</string>
+
+    <string name="bottom_bar_home">Home</string>
+    <string name="bottom_bar_shop">Shop</string>
+    <string name="bottom_bar_wishlist">Wishlist</string>
+    <string name="bottom_bar_bag">Bag</string>
+</resources>

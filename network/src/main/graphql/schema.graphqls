@@ -1,0 +1,1665 @@
+"""
+The Query root for the schema.
+"""
+type Query {
+  """
+  List all the available brands
+  """
+  brands: [Brand!]!
+
+  """
+  Retrieve page metadata
+  """
+  metadata(parameters: MetadataParametersInput!): Metadata
+
+  """
+  Retrieve a navigation menu by its handle.
+  """
+  navigation("The nav menu's handle." handle: String!): NavMenu
+
+  """
+  Retrieve a list of the navigation handles.
+  """
+  navigationHandles: [String!]!
+
+  """
+  Retrieve a product by its ID.
+  """
+  product("The product's ID" id: ID!): Product
+
+  """
+  Handler for products
+  """
+  productListing("Starting point" offset: Int!, "Number of records" limit: Int!, "Filter by single category\nAssumption: We are using a unique category ID" categoryId: String, "Filter by custom query" query: String): ProductListing
+
+  """
+  Retrieve search suggestion data by custom query
+  """
+  suggestion("Search by a custom query" query: String!): Suggestion!
+
+  """
+  Retrieve a wishlist by its ID. If null, the default wishlist is returned.
+  """
+  wishlist("The wishlist's ID" id: ID): Wishlist
+}
+
+"""
+A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.
+"""
+scalar URL
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A key-value pair, where both key and value are strings.
+"""
+type KeyValuePair {
+  """
+  The key of the pair.
+  """
+  key: String!
+
+  """
+  The value of the pair.
+  """
+  value: String!
+}
+
+"""
+Represents a media resource.
+"""
+union Media = Image|Video
+
+"""
+The types of media content.
+"""
+enum MediaContentType {
+  """
+  Am image.
+  """
+  IMAGE
+
+  """
+  A video.
+  """
+  VIDEO
+}
+
+"""
+Pagination info
+"""
+type Pagination {
+  """
+  Start point
+  """
+  offset: Int!
+
+  """
+  Records to return
+  """
+  limit: Int!
+
+  """
+  The total number of results
+  """
+  total: Int!
+
+  """
+  Based on offset, how many pages are there?
+  """
+  pages: Int!
+
+  """
+  Which page are we on?
+  """
+  page: Int!
+
+  """
+  Do we have a next page? (If null, no, else new offset)
+  """
+  nextPage: Int
+
+  """
+  Do we have a previous page? (If null, no, else new offset)
+  """
+  previousPage: Int
+}
+
+"""
+Represents an image resource.
+"""
+type Image {
+  """
+  A description of the contents of the image for accessibility purposes.
+  """
+  alt: String
+
+  """
+  The media content type.
+  """
+  mediaContentType: MediaContentType!
+
+  """
+  The original width of the image in pixels.
+  """
+  width: Int!
+
+  """
+  The original height of the image in pixels.
+  """
+  height: Int!
+
+  """
+  The location of the image as a URL.
+
+  If no transform options are specified, then the original image will be preserved.
+
+  All transformation options are considered "best-effort". Any transformation that the original image type doesn't support will be ignored.
+
+  If you need multiple variations of the same image, then you can use [GraphQL aliases](https://graphql.org/learn/queries/#aliases).
+  """
+  url("A set of options to transform the original image." transform: ImageTransformInput): URL!
+}
+
+"""
+The available options for transforming an image.
+"""
+input ImageTransformInput {
+  """
+  Image width in pixels.
+  """
+  width: Int
+
+  """
+  Image height in pixels.
+  """
+  height: Int
+
+  """
+  Control how an image is resized. Default is `contain`.
+  """
+  fit: ImageFit = CONTAIN
+
+  """
+  Image size multiplier for high-resolution retina displays. Must be within 1..3.
+  """
+  scale: Int = 1
+
+  """
+  Specify a preferred imaged format, instead of relying on content negotiation.
+  """
+  format: ImageFormat
+
+  """
+  Specify a preferred quality for lossy formats. Must be within 1..100.
+  """
+  quality: Int = 75
+}
+
+"""
+Represents an image format.
+"""
+enum ImageFormat {
+  """
+  An AVIF image.
+  """
+  AVIF
+
+  """
+  A JPG image.
+  """
+  JPG
+
+  """
+  A PNG image.
+  """
+  PNG
+
+  """
+  A WEBP image.
+  """
+  WEBP
+
+  """
+  A GIF image.
+  """
+  GIF
+}
+
+"""
+Options for resizing an image.
+"""
+enum ImageFit {
+  """
+  Fit within the specified dimensions and maintain the source aspect ratio
+  by resizing the image proportionally (default).
+  """
+  CONTAIN
+
+  """
+  Fill the specified dimensions without distortion by resizing the image
+  proportionally, then cropping out any excess pixels.
+  """
+  COVER
+
+  """
+  Fill the specified dimensions exactly. If the target aspect ratio is
+  different than the source aspect ratio, the image is stretched and squished
+  as needed to fill the target dimensions.
+  """
+  FILL
+}
+
+"""
+Represents a video resource.
+"""
+type Video {
+  """
+  A description of the contents of the video for accessibility purposes.
+  """
+  alt: String
+
+  """
+  The media content type.
+  """
+  mediaContentType: MediaContentType!
+
+  """
+  A preview image for the video.
+  """
+  previewImage: Image
+
+  """
+  The sources for the video.
+  """
+  sources: [VideoSource!]!
+}
+
+"""
+Represents a source for a video resource.
+"""
+type VideoSource {
+  """
+  The format of the video source.
+  """
+  format: VideoFormat!
+
+  """
+  The video MIME type.
+  """
+  mimeType: String!
+
+  """
+  The URL of the video.
+  """
+  url: URL!
+
+  """
+  The width of the video.
+  """
+  width: Int!
+
+  """
+  The height of the video.
+  """
+  height: Int!
+}
+
+"""
+Represents a video format.
+"""
+enum VideoFormat {
+  """
+  An MP4 video, in H.264 (AVC) or H.265 (HEVC).
+  """
+  MP4
+
+  """
+  A WebM video.
+  """
+  WEBM
+}
+
+"""
+A brand sold by with Alfie
+"""
+type Brand {
+  """
+  The Alfie ID for the brand
+  """
+  id: ID!
+
+  """
+  The display name of the brand
+  """
+  name: String!
+
+  """
+  A slugified name for URL usage
+  """
+  slug: String!
+}
+
+"""
+Parameters input to query page's metadata
+"""
+input MetadataParametersInput {
+  """
+  The url slug.
+  """
+  urlSlug: String!
+
+  """
+  base url for
+  """
+  baseUrl: String!
+}
+
+"""
+Represents the Metadata for a page
+"""
+type Metadata {
+  """
+  Represents the page Title
+  """
+  title: String!
+
+  """
+  Description of the website.
+  """
+  description: String!
+
+  """
+  The canonical URL of the website.
+  """
+  metadataBase: String!
+
+  """
+  Application Name
+  """
+  applicationName: String!
+
+  """
+  Keywords associated with the website.
+  """
+  keywords: [String]!
+
+  """
+  Metadata for robots
+  """
+  robots: Robots!
+
+  """
+  Alternates metadata
+  """
+  alternates: Alternates
+
+  """
+  Retrieve app links for various platforms.
+  """
+  appLinks: AppLinks
+
+  """
+  Retrieve verification methods.
+  """
+  verification: Verification
+
+  """
+  OpenGraph metadata for the page.
+  """
+  openGraph: OpenGraphMetadata!
+
+  """
+  Twitter metadata for the page.
+  """
+  twitter: TwitterMetadata!
+}
+
+"""
+OpenGraph metadata object representing page metadata for OpenGraph protocol.
+"""
+type OpenGraphMetadata {
+  """
+  The title for OpenGraph.
+  """
+  title: String
+
+  """
+  The description for OpenGraph.
+  """
+  description: String
+
+  """
+  The type of the content.
+  """
+  type: String
+
+  """
+  The URL of the page.
+  """
+  url: String
+
+  """
+  The URL of the image to be displayed in the OpenGraph.
+  """
+  images: [OpenGraphImage]
+
+  """
+  The name of the website.
+  """
+  siteName: String
+
+  """
+  The locale of the page
+  """
+  locale: String
+}
+
+"""
+OpenGraph Image Object
+"""
+type OpenGraphImage {
+  """
+  Image absolute url
+  """
+  url: String!
+
+  """
+  Image width
+  """
+  width: Int!
+
+  """
+  Image height
+  """
+  height: Int!
+}
+
+"""
+Twitter metadata object representing page metadata for Twitter cards.
+"""
+type TwitterMetadata {
+  """
+  The title for Twitter card.
+  """
+  title: String
+
+  """
+  The description for Twitter card.
+  """
+  description: String
+
+  """
+  The type of Twitter card.
+  """
+  card: TwitterCards
+
+  """
+  The Twitter handle of the site.
+  """
+  site: String
+
+  """
+  The Twitter id of the site.
+  """
+  siteId: String
+
+  """
+  The Twitter handle of the content creator.
+  """
+  creator: String
+
+  """
+  The Twitter id of the content creator.
+  """
+  creatorId: String
+
+  """
+  The URL of the image to be displayed in the Twitter card.
+  """
+  images: [TwitterImage]
+}
+
+"""
+Twitter Image Object
+"""
+type TwitterImage {
+  """
+  Absolute url for image
+  """
+  url: String
+
+  """
+  Image alt
+  """
+  alt: String
+}
+
+"""
+Represents the type of Twitter card to be used.
+"""
+enum TwitterCards {
+  """
+  A Twitter card with a summary.
+  """
+  SUMMARY
+
+  """
+  A Twitter card with a summary and a large image.
+  """
+  SUMMARY_LARGE_IMAGE
+
+  """
+  A Twitter card designed for embedding a video or audio player.
+  """
+  PLAYER
+
+  """
+  A Twitter card designed for representing a mobile application.
+  """
+  APP
+}
+
+"""
+ Represents the settings for robots meta tags.
+"""
+type Robots {
+  """
+   Indicates whether to allow indexing by search engines.
+  """
+  index: Boolean!
+
+  """
+   Indicates whether to allow following links.
+  """
+  follow: Boolean!
+
+  """
+   Indicates whether to prevent caching of the page.
+  """
+  nocache: Boolean!
+
+  """
+   Specific settings for Googlebot.
+  """
+  googleBot: GoogleBotSettings!
+}
+
+"""
+ Settings specific to Googlebot.
+"""
+type GoogleBotSettings {
+  """
+   Indicates whether Googlebot should index the page.
+  """
+  index: Boolean!
+
+  """
+   Indicates whether Googlebot should follow links.
+  """
+  follow: Boolean!
+
+  """
+   Indicates whether Googlebot should index images.
+  """
+  noimageindex: Boolean!
+
+  """
+   The maximum length of video preview shown in search results. Use -1 to disable.
+  """
+  maxVideoPreview: Int!
+
+  """
+   The size of the largest image preview shown in search results.
+  """
+  maxImagePreview: ImagePreviewType!
+
+  """
+   The maximum length of snippet shown in search results. Use -1 to disable.
+  """
+  maxSnippet: Int!
+}
+
+"""
+ Enum representing different sizes of image previews in search results.
+"""
+enum ImagePreviewType {
+  """
+   No image previews will be shown.
+  """
+  NONE
+
+  """
+   Small-sized image previews.
+  """
+  SMALL
+
+  """
+   Medium-sized image previews.
+  """
+  MEDIUM
+
+  """
+   Large-sized image previews.
+  """
+  LARGE
+}
+
+"""
+Represents alternate versions of the page.
+"""
+type Alternates {
+  """
+  The canonical URL of the page.
+  """
+  canonical: String!
+
+  """
+  URLs for different language versions of the page.
+  """
+  languages: LanguageAlternates!
+
+  """
+  URLs for different media types of the page.
+  """
+  media: MediaAlternates
+
+  """
+  URLs for different types of the page.
+  """
+  types: TypeAlternates
+}
+
+"""
+Represents alternate URLs for different language versions.
+"""
+type LanguageAlternates {
+  """
+  URL for the English (US) language version of the page.
+  """
+  enAU: String!
+
+  """
+  URL for the German (DE) language version of the page.
+  """
+  deDE: String!
+}
+
+"""
+Represents alternate URLs for different media types.
+"""
+type MediaAlternates {
+  """
+  URL for the page optimized for mobile devices.
+  """
+  mobile: String!
+}
+
+"""
+Represents alternate URLs for different types.
+"""
+type TypeAlternates {
+  """
+  URL for the RSS feed of the page.
+  """
+  rss: String!
+}
+
+"""
+Represents different app links for various platforms.
+"""
+type AppLinks {
+  """
+  App link for iOS platform.
+  """
+  ios: IosAppLink
+
+  """
+  App link for Android platform.
+  """
+  android: AndroidAppLink
+
+  """
+  App link for web platform.
+  """
+  web: WebAppLink
+}
+
+"""
+Represents an app link for iOS platform.
+"""
+type IosAppLink {
+  """
+  The URL of the iOS app.
+  """
+  url: String!
+
+  """
+  The App Store ID of the iOS app.
+  """
+  appStoreId: String!
+}
+
+"""
+Represents an app link for Android platform.
+"""
+type AndroidAppLink {
+  """
+  The package name of the Android app.
+  """
+  package: String!
+
+  """
+  The name of the Android app.
+  """
+  appName: String!
+}
+
+"""
+Represents an app link for web platform.
+"""
+type WebAppLink {
+  """
+  The URL of the web app.
+  """
+  url: String!
+
+  """
+  Indicates whether the app should fallback to web if not installed.
+  """
+  shouldFallback: Boolean!
+}
+
+"""
+Represents various verification methods.
+"""
+type Verification {
+  """
+  Verification method using Google.
+  """
+  google: String
+
+  """
+  Verification method using Yandex.
+  """
+  yandex: String
+
+  """
+  Verification method using Yahoo.
+  """
+  yahoo: String
+
+  """
+  Other verification methods.
+  """
+  other: OtherVerification
+}
+
+"""
+Represents other verification methods.
+"""
+type OtherVerification {
+  """
+  Verification methods specific to the 'other' category.
+  """
+  me: [String!]!
+}
+
+"""
+A Nav menu representing a hierarchy of hyperlinks (items).
+"""
+type NavMenu {
+  """
+  The menu's handle.
+  """
+  handle: String!
+
+  """
+  The menu's child items.
+  """
+  items: [NavMenuItem!]!
+
+  """
+  The menu's attributes, a dynamic list of key-value pairs.
+  """
+  attributes: [KeyValuePair]
+}
+
+"""
+A menu item within a parent menu.
+"""
+type NavMenuItem {
+  """
+  The menu item's title.
+  """
+  title: String!
+
+  """
+  The menu item's type.
+  """
+  type: NavMenuItemType!
+
+  """
+  The menu item's URL.
+  """
+  url: String
+
+  """
+  The menu item's related categoryId
+  """
+  categoryId: ID
+
+  """
+  The menu item's media.
+  """
+  media: Media
+
+  """
+  The menu item's child items.
+  """
+  items: [NavMenuItem!]
+
+  """
+  The menu item's attributes, a dynamic list of key-value pairs.
+  """
+  attributes: [KeyValuePair]
+}
+
+"""
+A menu item type.
+"""
+enum NavMenuItemType {
+  """
+  An account page/screen link.
+  """
+  ACCOUNT
+
+  """
+  A home page/screen link.
+  """
+  HOME
+
+  """
+  A product listing link.
+  """
+  LISTING
+
+  """
+  A product link.
+  """
+  PRODUCT
+
+  """
+  A search link.
+  """
+  SEARCH
+
+  """
+  A page link.
+  """
+  PAGE
+
+  """
+  An http external link.
+  """
+  EXTERNAL_HTTP
+
+  """
+  A wishlist page/screen link.
+  """
+  WISHLIST
+}
+
+"""
+A product for sale at Alfie.
+"""
+type Product {
+  """
+  Unique ID for the product and its variants.
+  """
+  id: ID!
+
+  """
+  Alfie refer to products (including variants) as style numbers, so this is Alfie's unique identifier.
+  """
+  styleNumber: String!
+
+  """
+  The formal name of the product.
+  """
+  name: String!
+
+  """
+  The brand of the product.
+  """
+  brand: Brand!
+
+  """
+  For displaying a high and low price range if it exists.
+  """
+  priceRange: PriceRange
+
+  """
+  One-line description of the product.
+  """
+  shortDescription: String!
+
+  """
+  Detailed description of the product.
+  """
+  longDescription: String
+
+  """
+  For building canonical URL to PDP.
+  """
+  slug: String!
+
+  """
+  Details of category/classification for breadcrumbs.
+  """
+  hierarchy: [HierarchyItem!]!
+
+  """
+  Product attributes common to all variants.
+  """
+  attributes: [KeyValuePair!]
+
+  """
+  Specific labels such as 'Bestseller' or 'New in'.
+  """
+  labels: [String!]
+
+  """
+  The 'default' variant.
+  """
+  defaultVariant: Variant!
+
+  """
+  All variants of the product, including the default one.
+  """
+  variants: [Variant!]!
+
+  """
+  Aggregation of all available sizes from all variants.
+  """
+  sizes: [Size!]
+
+  """
+  Aggregation of all available colours from all variants.
+  """
+  colours: [Colour!]
+}
+
+"""
+A collection of products with metadata
+"""
+type ProductListing {
+  """
+  Listing title
+  """
+  title: String!
+
+  """
+  Pagination data
+  """
+  pagination: Pagination!
+
+  """
+  hierarchy for breadcrums. Only present if a specific  (instead of search).
+  """
+  hierarchy: [HierarchyItem!]
+
+  """
+  Array of products
+  """
+  products: [Product!]!
+}
+
+"""
+Alfie often display a price range or a 'from'.
+If this data is present in the product and no variant is selected, display the range.
+If high is null, display as 'From ${low}', otherwise '${low} to ${high}'
+"""
+type PriceRange {
+  """
+  The lowest price.
+  """
+  low: Money!
+
+  """
+  The highest price if not a 'from' range.
+  """
+  high: Money
+}
+
+"""
+An element in the breadcrumb that leads to the product.
+Alfie have terms for each level (class, subclass etc) but
+these are omitted here for simplicity and flexibility.
+"""
+type HierarchyItem {
+  """
+  Alfie's ID for the level/category.
+  """
+  categoryId: ID!
+
+  """
+  The display name - e.g. Menswear.
+  """
+  name: String!
+
+  """
+  For building a canonical URL.
+  """
+  slug: String!
+
+  """
+  The parent hierarchy item, except for root items.
+  """
+  parent: HierarchyItem
+}
+
+"""
+Many products come in variants of colour, size and other attributes.
+We default to one (the 'hero') and have an additional array including all variants.
+A variant is a specific item, such as a brown extra-large kettle.
+"""
+type Variant {
+  """
+  Alfie's unique identifier for the variant.
+  """
+  sku: ID!
+
+  """
+  Size, if applicable.
+  """
+  size: Size
+
+  """
+  Colour, if applicable.
+  """
+  colour: Colour
+
+  """
+  Array of images and videos.
+  """
+  media: [Media!]!
+
+  """
+  Attributes that are specific for this variant.
+  """
+  attributes: [KeyValuePair!]
+
+  """
+  How many of this variant in stock?
+  """
+  stock: Int!
+
+  """
+  How much does it cost?
+  """
+  price: Price!
+}
+
+"""
+The price of a variant. Includes previous pricing if discounted.
+"""
+type Price {
+  """
+  The current price.
+  """
+  amount: Money!
+
+  """
+  If discounted, the previous price.
+  """
+  was: Money
+}
+
+"""
+We are starting with one currency, but expect to handle more in future.
+Each query will only return the currency requested, not all that are available.
+"""
+type Money {
+  """
+  The 3-letter currency code e.g. AUD.
+  """
+  currencyCode: String!
+
+  """
+  The amount in minor units (e.g. for $1.23 this will be 123).
+  """
+  amount: Int!
+
+  """
+  The amount formatted according to the client locale (e.g. $1.23).
+  """
+  amountFormatted: String!
+}
+
+"""
+The various colour options available for an item.
+"""
+type Colour {
+  """
+  Unique ID for the colour.
+  """
+  id: ID!
+
+  """
+  Image resolver for the colour swatch.
+  """
+  swatch: Image
+
+  """
+  The name of the colour.
+  """
+  name: String!
+}
+
+"""
+Sizing information for a product.
+"""
+type Size {
+  """
+  Unique size ID.
+  """
+  id: ID!
+
+  """
+  The size value (e.g. XS).
+  """
+  value: String!
+
+  """
+  The scale of the size (e.g. US).
+  """
+  scale: String
+
+  """
+  A description of the size (e.g. Extra Small).
+  """
+  description: String
+
+  """
+  The size guide that includes this size.
+  """
+  sizeGuide: SizeGuide
+}
+
+"""
+Information about a size guide.
+"""
+type SizeGuide {
+  """
+  Unique size guide ID.
+  """
+  id: ID!
+
+  """
+  The name of the size guide (e.g. Men's shoes size guide).
+  """
+  name: String!
+
+  """
+  A description for the size guide.
+  """
+  description: String
+
+  """
+  The ordered list of sizes that make up this size guide.
+  """
+  sizes: [Size!]!
+}
+
+"""
+A collection of information returned for suggestions
+"""
+type Suggestion {
+  """
+  An array of potential search terms.
+  """
+  keywords: [SuggestionKeyword!]!
+
+  """
+  An array of suggested products.
+  """
+  products: [SuggestionProduct!]!
+
+  """
+  An array of suggested brands.
+  """
+  brands: [SuggestionBrand!]!
+}
+
+"""
+Full potential search terms
+"""
+type SuggestionKeyword {
+  """
+  Value of the suggested search term.
+  """
+  value: String!
+
+  """
+  Number of results that match the suggested search term.
+  """
+  results: Int!
+}
+
+"""
+A product for navigation purposes using the search.
+"""
+type SuggestionProduct {
+  """
+  Unique ID for the product.
+  """
+  id: ID!
+
+  """
+  The formal name of the product.
+  """
+  name: String!
+
+  """
+  The name of the brand for the product.
+  """
+  brandName: String!
+
+  """
+  Array of images and videos.
+  """
+  media: [Media!]!
+
+  """
+  How much does it cost?
+  """
+  price: Price!
+
+  """
+  For building a navigation link to the product.
+  """
+  slug: String!
+}
+
+"""
+Suggested Brand for navigation purposes.
+"""
+type SuggestionBrand {
+  """
+  Name of the brand.
+  """
+  value: String!
+
+  """
+  Number of products matching the brand.
+  """
+  results: Int!
+
+  """
+  Slugified name of the brand.
+  """
+  slug: String!
+}
+
+"""
+A customer-managed collection of products
+"""
+type Wishlist {
+  """
+  Unique ID for the wishlist.
+  """
+  id: ID!
+
+  """
+  The ID of the wishlist's owner.
+  """
+  customerId: ID!
+
+  """
+  The name of the wishlist (unique to the owner).
+  """
+  name: String!
+
+  """
+  Date of wishlist creation (ISO-8601).
+  """
+  createdOn: Date!
+
+  """
+  Date of last modification (ISO-8601).
+  """
+  modifiedOn: Date!
+
+  """
+  Products in the wishlist
+  """
+  products: ProductListing
+
+  """
+  If true, this is the customer's default wishlist
+  """
+  default: Boolean!
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.
+"""
+type __Schema {
+  description: String
+
+  """
+  A list of all types supported by this server.
+  """
+  types: [__Type!]!
+
+  """
+  The type that query operations will be rooted at.
+  """
+  queryType: __Type!
+
+  """
+  If this server supports mutation, the type that mutation operations will be rooted at.
+  """
+  mutationType: __Type
+
+  """
+  If this server support subscription, the type that subscription operations will be rooted at.
+  """
+  subscriptionType: __Type
+
+  """
+  A list of all directives supported by this server.
+  """
+  directives: [__Directive!]!
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+
+Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByURL`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+"""
+type __Type {
+  kind: __TypeKind!
+
+  name: String
+
+  description: String
+
+  specifiedByURL: String
+
+  fields(includeDeprecated: Boolean = false): [__Field!]
+
+  interfaces: [__Type!]
+
+  possibleTypes: [__Type!]
+
+  enumValues(includeDeprecated: Boolean = false): [__EnumValue!]
+
+  inputFields(includeDeprecated: Boolean = false): [__InputValue!]
+
+  ofType: __Type
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+An enum describing what kind of type a given `__Type` is.
+"""
+enum __TypeKind {
+  """
+  Indicates this type is a scalar.
+  """
+  SCALAR
+
+  """
+  Indicates this type is an object. `fields` and `interfaces` are valid fields.
+  """
+  OBJECT
+
+  """
+  Indicates this type is an interface. `fields`, `interfaces`, and `possibleTypes` are valid fields.
+  """
+  INTERFACE
+
+  """
+  Indicates this type is a union. `possibleTypes` is a valid field.
+  """
+  UNION
+
+  """
+  Indicates this type is an enum. `enumValues` is a valid field.
+  """
+  ENUM
+
+  """
+  Indicates this type is an input object. `inputFields` is a valid field.
+  """
+  INPUT_OBJECT
+
+  """
+  Indicates this type is a list. `ofType` is a valid field.
+  """
+  LIST
+
+  """
+  Indicates this type is a non-null. `ofType` is a valid field.
+  """
+  NON_NULL
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.
+"""
+type __Field {
+  name: String!
+
+  description: String
+
+  args(includeDeprecated: Boolean = false): [__InputValue!]!
+
+  type: __Type!
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.
+"""
+type __InputValue {
+  name: String!
+
+  description: String
+
+  type: __Type!
+
+  """
+  A GraphQL-formatted string representing the default value for this input value.
+  """
+  defaultValue: String
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.
+"""
+type __EnumValue {
+  name: String!
+
+  description: String
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
+
+In some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.
+"""
+type __Directive {
+  name: String!
+
+  description: String
+
+  isRepeatable: Boolean!
+
+  locations: [__DirectiveLocation!]!
+
+  args(includeDeprecated: Boolean = false): [__InputValue!]!
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.
+"""
+enum __DirectiveLocation {
+  """
+  Location adjacent to a query operation.
+  """
+  QUERY
+
+  """
+  Location adjacent to a mutation operation.
+  """
+  MUTATION
+
+  """
+  Location adjacent to a subscription operation.
+  """
+  SUBSCRIPTION
+
+  """
+  Location adjacent to a field.
+  """
+  FIELD
+
+  """
+  Location adjacent to a fragment definition.
+  """
+  FRAGMENT_DEFINITION
+
+  """
+  Location adjacent to a fragment spread.
+  """
+  FRAGMENT_SPREAD
+
+  """
+  Location adjacent to an inline fragment.
+  """
+  INLINE_FRAGMENT
+
+  """
+  Location adjacent to a variable definition.
+  """
+  VARIABLE_DEFINITION
+
+  """
+  Location adjacent to a schema definition.
+  """
+  SCHEMA
+
+  """
+  Location adjacent to a scalar definition.
+  """
+  SCALAR
+
+  """
+  Location adjacent to an object type definition.
+  """
+  OBJECT
+
+  """
+  Location adjacent to a field definition.
+  """
+  FIELD_DEFINITION
+
+  """
+  Location adjacent to an argument definition.
+  """
+  ARGUMENT_DEFINITION
+
+  """
+  Location adjacent to an interface definition.
+  """
+  INTERFACE
+
+  """
+  Location adjacent to a union definition.
+  """
+  UNION
+
+  """
+  Location adjacent to an enum definition.
+  """
+  ENUM
+
+  """
+  Location adjacent to an enum value definition.
+  """
+  ENUM_VALUE
+
+  """
+  Location adjacent to an input object type definition.
+  """
+  INPUT_OBJECT
+
+  """
+  Location adjacent to an input object field definition.
+  """
+  INPUT_FIELD_DEFINITION
+}
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
+directive @include ("Included when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
+directive @skip ("Skipped when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+Marks an element of a GraphQL schema as no longer supported.
+"""
+directive @deprecated ("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https:\/\/commonmark.org\/)." reason: String = "No longer supported") on FIELD_DEFINITION|ARGUMENT_DEFINITION|INPUT_FIELD_DEFINITION|ENUM_VALUE
+
+# See https://github.com/JetBrains/js-graphql-intellij-plugin/issues/665
+# noinspection GraphQLTypeRedefinition
+"""
+Exposes a URL that specifies the behavior of this scalar.
+"""
+directive @specifiedBy ("The URL that specifies the behavior of this scalar." url: String!) on SCALAR
+
+schema {
+  query: Query
+}
