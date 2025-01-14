@@ -23,7 +23,7 @@ internal fun NavEntriesByHandleQuery.Data.toEntity(): List<NavigationEntryEntity
 private fun NavEntriesByHandleQuery.Navigation.toEntity(): NavigationEntryEntity = NavigationEntryEntity(
     title = title,
     path = url.orEmpty(),
-    navItemType = NavItemType.UNKNOWN.toString(),
+    navItemType = type.rawValue,
     items = items?.map { it.navMenuItemContainer.toEntity() } ?: emptyList()
 )
 
