@@ -1,5 +1,8 @@
 query NavEntriesByHandle($handle: String!) {
     navigation(handle: $handle) {
+        title
+        url
+        type
         items {
             ...NavMenuItemContainer
         }
