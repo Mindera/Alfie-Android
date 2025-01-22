@@ -6,6 +6,7 @@ import au.com.alfie.ecomm.core.commons.string.StringResource
 import au.com.alfie.ecomm.core.environment.EnvironmentManager
 import au.com.alfie.ecomm.core.environment.model.Environment
 import au.com.alfie.ecomm.core.ui.media.GalleryUI
+import au.com.alfie.ecomm.core.ui.media.MediaUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
 import au.com.alfie.ecomm.core.ui.media.video.VideoPreviewImageUI
@@ -94,7 +95,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
             isSelectionSoldOut = product.variants.isSoldOut(selectedColor?.id),
             sections = getSectionsList(environment = environment),
             shareInfo = product.buildProductDetailsShareInfo(price = product.defaultVariant.price.amount.amountFormatted),
-            gallery = product.defaultVariant.media.toGalleryUI(),
+            gallery = product.defaultVariant.color?.media?.toGalleryUI() ?: GalleryUI(emptyList<MediaUI>().toImmutableList()),
             sizeSectionUI = product.variants.toSizeSectionUI(selectedColor)
         )
     }
@@ -110,7 +111,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
             isSelectionSoldOut = details.variants.isSoldOut(colorId = selectedColor?.id),
             sizeSectionUI = details.variants.toSizeSectionUI(selectedColor),
             shareInfo = details.buildProductDetailsShareInfo(variant.price.amount.amountFormatted),
-            gallery = variant.media.toGalleryUI()
+            gallery = variant.color?.media?.toGalleryUI() ?: GalleryUI(emptyList<MediaUI>().toImmutableList())
         )
     }
 
@@ -185,7 +186,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
         )
     )
 
-    private fun List<Media>.toGalleryUI(): GalleryUI = GalleryUI(
+    private fun List<Media?>.toGalleryUI(): GalleryUI = GalleryUI(
         medias = map {
             if (it is Media.Image) {
                 it.toImageUI()
@@ -199,7 +200,6 @@ internal class ProductDetailsUIFactory @Inject constructor(
         images = persistentListOf(
             ImageSizeUI.Custom(
                 url = url,
-                width = width
             )
         ),
         alt = alt

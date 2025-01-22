@@ -4,11 +4,8 @@ fragment VariantInfo on Variant {
         ...SizeContainer
     }
     colour {
-        ...ColorInfo
+        id
     }
-    media {
-        ...MediaInfo
-    }            
     attributes {
         ...AttributesInfo
     }

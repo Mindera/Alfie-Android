@@ -10,8 +10,6 @@ fragment MediaInfo on Media {
 fragment ImageInfo on Image {
     alt
     mediaContentType
-    width
-    height
     url
 }
 

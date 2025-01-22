@@ -28,5 +28,8 @@ query ProductQuery($productId: ID!) {
         variants {
             ...VariantInfo
         }
+        colours {
+            ...ColorInfo
+        }
     }
 }

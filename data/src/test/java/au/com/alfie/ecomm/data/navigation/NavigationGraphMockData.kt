@@ -23,8 +23,6 @@ internal val navEntriesData = NavEntriesByHandleQuery.Data(
                             __typename = "",
                             imageInfo = ImageInfo(
                                 url = "https://media.image",
-                                width = 200,
-                                height = 100,
                                 mediaContentType = MediaContentType.IMAGE,
                                 alt = null
                             )
@@ -66,8 +64,6 @@ internal val navEntriesData = NavEntriesByHandleQuery.Data(
                             __typename = "",
                             imageInfo = ImageInfo(
                                 url = "https://media.image",
-                                width = 200,
-                                height = 100,
                                 mediaContentType = MediaContentType.IMAGE,
                                 alt = null
                             )

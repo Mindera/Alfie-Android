@@ -96,11 +96,9 @@ internal class ProductListEntryUIFactory @Inject constructor(
         }
     }
 
-    private fun mapImage(media: List<Media.Image>): ImageUI {
-        val image = media.firstOrNull()
+    private fun mapImage(image: Media.Image?): ImageUI {
         val imageSizeUI = ImageSizeUI.Custom(
             url = image?.url.orEmpty(),
-            width = image?.width.orZero()
         )
         return ImageUI(
             images = persistentListOf(imageSizeUI),

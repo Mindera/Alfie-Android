@@ -53,48 +53,7 @@ internal val productData = ProductQuery.Data(
                     )
                 ),
                 colour = VariantInfo.Colour(
-                    __typename = "",
-                    colorInfo = ColorInfo(
                         id = "3406543",
-                        swatch = null,
-                        name = "steel"
-                    )
-                ),
-                media = listOf(
-                    VariantInfo.Medium(
-                        __typename = "",
-                        mediaInfo = MediaInfo(
-                            __typename = "",
-                            onImage = MediaInfo.OnImage(
-                                __typename = "",
-                                imageInfo = ImageInfo(
-                                    alt = "patterson mini skirt",
-                                    width = 487,
-                                    height = 634,
-                                    mediaContentType = MediaContentType.IMAGE,
-                                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                                )
-                            ),
-                            onVideo = null
-                        )
-                    ),
-                    VariantInfo.Medium(
-                        __typename = "",
-                        mediaInfo = MediaInfo(
-                            __typename = "",
-                            onImage = MediaInfo.OnImage(
-                                __typename = "",
-                                imageInfo = ImageInfo(
-                                    alt = "patterson mini skirt",
-                                    width = 487,
-                                    height = 634,
-                                    mediaContentType = MediaContentType.IMAGE,
-                                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                                )
-                            ),
-                            onVideo = null
-                        )
-                    )
                 ),
                 attributes = null,
                 stock = 100,
@@ -229,49 +188,44 @@ internal val productData = ProductQuery.Data(
                         )
                     ),
                     colour = VariantInfo.Colour(
-                        __typename = "",
-                        colorInfo = ColorInfo(
-                            id = "3406543",
-                            swatch = null,
-                            name = "steel"
-                        )
+                        id = "3406543",
                     ),
-                    media = listOf(
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        ),
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        )
-                    ),
+//                    media = listOf(
+//                        VariantInfo.Medium(
+//                            __typename = "",
+//                            mediaInfo = MediaInfo(
+//                                __typename = "",
+//                                onImage = MediaInfo.OnImage(
+//                                    __typename = "",
+//                                    imageInfo = ImageInfo(
+//                                        alt = "patterson mini skirt",
+//                                        width = 487,
+//                                        height = 634,
+//                                        mediaContentType = MediaContentType.IMAGE,
+//                                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+//                                    )
+//                                ),
+//                                onVideo = null
+//                            )
+//                        ),
+//                        VariantInfo.Medium(
+//                            __typename = "",
+//                            mediaInfo = MediaInfo(
+//                                __typename = "",
+//                                onImage = MediaInfo.OnImage(
+//                                    __typename = "",
+//                                    imageInfo = ImageInfo(
+//                                        alt = "patterson mini skirt",
+//                                        width = 487,
+//                                        height = 634,
+//                                        mediaContentType = MediaContentType.IMAGE,
+//                                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+//                                    )
+//                                ),
+//                                onVideo = null
+//                            )
+//                        )
+//                    ),
                     attributes = null,
                     stock = 100,
                     price = VariantInfo.Price(
@@ -308,48 +262,7 @@ internal val productData = ProductQuery.Data(
                         )
                     ),
                     colour = VariantInfo.Colour(
-                        __typename = "",
-                        colorInfo = ColorInfo(
                             id = "3406543",
-                            swatch = null,
-                            name = "steel"
-                        )
-                    ),
-                    media = listOf(
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        ),
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        )
                     ),
                     attributes = null,
                     stock = 100,
@@ -387,48 +300,7 @@ internal val productData = ProductQuery.Data(
                         )
                     ),
                     colour = VariantInfo.Colour(
-                        __typename = "",
-                        colorInfo = ColorInfo(
                             id = "3406543",
-                            swatch = null,
-                            name = "steel"
-                        )
-                    ),
-                    media = listOf(
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        ),
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        )
                     ),
                     attributes = null,
                     stock = 100,
@@ -466,48 +338,7 @@ internal val productData = ProductQuery.Data(
                         )
                     ),
                     colour = VariantInfo.Colour(
-                        __typename = "",
-                        colorInfo = ColorInfo(
                             id = "3406557",
-                            swatch = null,
-                            name = "steel"
-                        )
-                    ),
-                    media = listOf(
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        ),
-                        VariantInfo.Medium(
-                            __typename = "",
-                            mediaInfo = MediaInfo(
-                                __typename = "",
-                                onImage = MediaInfo.OnImage(
-                                    __typename = "",
-                                    imageInfo = ImageInfo(
-                                        alt = "patterson mini skirt",
-                                        width = 487,
-                                        height = 634,
-                                        mediaContentType = MediaContentType.IMAGE,
-                                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                                    )
-                                ),
-                                onVideo = null
-                            )
-                        )
                     ),
                     attributes = null,
                     stock = 100,
@@ -525,6 +356,48 @@ internal val productData = ProductQuery.Data(
                             was = null
                         )
                     )
+                )
+            )
+        ),
+        colours = listOf(
+            ProductQuery.Colour(
+                __typename = "",
+                colorInfo = ColorInfo(
+                    id = "3406557",
+                    swatch = null,
+                    name = "steel",
+                    media = listOf(
+                        ColorInfo.Medium(
+                            __typename = "",
+                            mediaInfo = MediaInfo(
+                                __typename = "",
+                                onImage = MediaInfo.OnImage(
+                                    __typename = "",
+                                    imageInfo = ImageInfo(
+                                        alt = "patterson mini skirt",
+                                        mediaContentType = MediaContentType.IMAGE,
+                                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                                    )
+                                ),
+                                onVideo = null
+                            )
+                        ),
+                        ColorInfo.Medium(
+                            __typename = "",
+                            mediaInfo = MediaInfo(
+                                __typename = "",
+                                onImage = MediaInfo.OnImage(
+                                    __typename = "",
+                                    imageInfo = ImageInfo(
+                                        alt = "patterson mini skirt",
+                                        mediaContentType = MediaContentType.IMAGE,
+                                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                                    )
+                                ),
+                                onVideo = null
+                            )
+                        )
+                    ),
                 )
             )
         )
@@ -552,21 +425,21 @@ internal val product = Product(
         color = Color(
             id = "3406543",
             swatch = null,
-            name = "steel"
-        ),
-        media = listOf(
-            Media.Image(
-                alt = "patterson mini skirt",
-                width = 487,
-                height = 634,
-                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+            name = "steel",
+            media = listOf(
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                ),
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                )
             ),
-            Media.Image(
-                alt = "patterson mini skirt",
-                width = 487,
-                height = 634,
-                url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-            )
+        ),
+        media = Media.Image(
+            alt = "patterson mini skirt",
+            url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
         ),
         stock = 100,
         price = Price(
@@ -649,21 +522,21 @@ internal val product = Product(
             color = Color(
                 id = "3406543",
                 swatch = null,
-                name = "steel"
-            ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
                 ),
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -688,21 +561,21 @@ internal val product = Product(
             color = Color(
                 id = "3406543",
                 swatch = null,
-                name = "steel"
-            ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
                 ),
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -727,21 +600,21 @@ internal val product = Product(
             color = Color(
                 id = "3406543",
                 swatch = null,
-                name = "steel"
-            ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
                 ),
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -766,21 +639,21 @@ internal val product = Product(
             color = Color(
                 id = "3406557",
                 swatch = null,
-                name = "steel"
-            ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
                 ),
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -792,5 +665,22 @@ internal val product = Product(
                 was = null
             )
         )
+    ),
+    colors = listOf(
+        Color(
+            id = "3406543",
+            swatch = null,
+            name = "steel",
+            media = listOf(
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                ),
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                )
+            ),
+        ),
     )
 )

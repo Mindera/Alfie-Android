@@ -60,7 +60,6 @@ internal class SearchUIFactory @Inject constructor(
         val image = media.firstOrNull()
         val imageSizeUI = ImageSizeUI.Custom(
             url = image?.url.orEmpty(),
-            width = image?.width.orZero()
         )
         return ImageUI(
             images = persistentListOf(imageSizeUI),

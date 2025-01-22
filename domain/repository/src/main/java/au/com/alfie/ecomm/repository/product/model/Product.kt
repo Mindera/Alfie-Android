@@ -19,5 +19,6 @@ data class Product(
     val sizes: List<Size>,
     val slug: String,
     val styleNumber: String,
-    val variants: List<Variant>
+    val variants: List<Variant>,
+    val colors: List<Color>,
 )

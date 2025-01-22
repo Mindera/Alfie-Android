@@ -1,54 +1,11 @@
 query ProductListingQuery($offset: Int!, $limit: Int!, $categoryId: String, $query: String) {
     productListing(offset: $offset, limit: $limit, categoryId: $categoryId, query: $query) {
         title
-        hierarchy {
-            ...HierarchyItemsTree
-        }
         pagination {
-            limit
-            nextPage
-            offset
-            page
-            pages
-            previousPage
-            total
+            ...PaginationInfo
         }
         products {
-            brand {
-                ...BrandInfo
-            }
-            colours {
-                ...ColorInfo
-            }
-            id
-            labels
-            name
-            priceRange {
-                ...PriceRangeInfo
-            }
-            shortDescription
-            sizes {
-                ...SizeContainer
-            }
-            slug
-            styleNumber
-            defaultVariant {
-                colour {
-                    ...ColorInfo
-                }
-                media {
-                    ... on Image {
-                        ...ImageInfo
-                    }
-                }
-                price {
-                    ...PriceInfo
-                }
-                size {
-                    ...SizeContainer
-                }
-                stock
-            }
+            ...ProductInfo
         }
     }
 }

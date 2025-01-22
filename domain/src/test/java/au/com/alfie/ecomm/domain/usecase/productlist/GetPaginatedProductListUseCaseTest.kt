@@ -34,7 +34,6 @@ class GetPaginatedProductListUseCaseTest {
         val productList = ProductList(
             pagination = pagination,
             products = products,
-            hierarchy = emptyList(),
             title = "Women"
         )
         every { pagination.nextPage } returns null

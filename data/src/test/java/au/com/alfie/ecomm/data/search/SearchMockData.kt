@@ -77,8 +77,6 @@ internal val searchSuggestionsData = SearchSuggestionsQuery.Data(
                             __typename = "Medium",
                             imageInfo = ImageInfo(
                                 url = "",
-                                width = 250,
-                                height = 150,
                                 alt = "Media",
                                 mediaContentType = MediaContentType.IMAGE
                             )
@@ -121,8 +119,6 @@ internal val searchSuggestions = SearchSuggestions(
             media = listOf(
                 Media.Image(
                     url = "",
-                    width = 250,
-                    height = 150,
                     alt = "Media"
                 )
             )
