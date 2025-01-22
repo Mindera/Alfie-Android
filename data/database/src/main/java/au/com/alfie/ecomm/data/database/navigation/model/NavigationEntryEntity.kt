@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "navigation_entries")
 data class NavigationEntryEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo("parent_id") val parentId: Int = 0,
+    @ColumnInfo("parent_id") val parentId: Int? = null,
     val title: String,
     val path: String,
     @ColumnInfo("nav_item_type") val navItemType: String,

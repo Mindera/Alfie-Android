@@ -8,25 +8,24 @@ import au.com.alfie.ecomm.repository.navigation.model.NavEntry
 import au.com.alfie.ecomm.repository.navigation.model.NavItemType
 
 internal fun NavEntriesByHandleQuery.Data.toDomain(): List<NavEntry> =
-    navigation?.items?.map { it.navMenuItemContainer.toDomain() }.orEmpty()
+    navigation.map { it.toDomain() }
 
-private fun NavMenuItemContainer.toDomain() = NavEntry(
-    id = 0,
-    title = navMenuItemInfo.title,
-    type = NavItemType.from(navMenuItemInfo.type.rawValue),
-    url = navMenuItemInfo.url,
-    items = items?.map { it.navMenuItemInfo.toDomain() }.orEmpty()
-)
-
-private fun NavMenuItemInfo.toDomain() = NavEntry(
+private fun NavEntriesByHandleQuery.Navigation.toDomain() = NavEntry(
     id = 0,
     title = title,
-    type = NavItemType.from(this.type.rawValue),
+    type = NavItemType.from(type.rawValue),
     url = url
 )
 
 internal fun NavEntriesByHandleQuery.Data.toEntity(): List<NavigationEntryEntity> =
-    navigation?.items?.map { it.navMenuItemContainer.toEntity() }.orEmpty()
+    navigation.map { it.toEntity() }
+
+private fun NavEntriesByHandleQuery.Navigation.toEntity(): NavigationEntryEntity = NavigationEntryEntity(
+    title = title,
+    path = url.orEmpty(),
+    navItemType = type.rawValue,
+    items = items?.map { it.navMenuItemContainer.toEntity() } ?: emptyList()
+)
 
 private fun NavMenuItemContainer.toEntity(): NavigationEntryEntity = NavigationEntryEntity(
     title = navMenuItemInfo.title,
@@ -36,7 +35,6 @@ private fun NavMenuItemContainer.toEntity(): NavigationEntryEntity = NavigationE
 )
 
 private fun NavMenuItemInfo.toEntity() = NavigationEntryEntity(
-    id = 0,
     path = url.orEmpty(),
     title = title,
     navItemType = type.rawValue
