@@ -6,7 +6,7 @@ on:
       release_notes:
         type: string
         required: true
-        description: Release notes of changes in the build
+        deafult: 'Manual Debug Build'
 
 jobs:
   build:
