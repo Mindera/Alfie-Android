@@ -14,8 +14,9 @@ internal class ProductMapperTest {
     @Test
     fun testProductMapper() = runTest {
         val expected = product
-        val result = productData.product?.toDomain()
-
+        val result = productData.product?.productInfo?.toDomain()
+        println("expected : $expected")
+        println("result : $result")
         assertEquals(expected, result)
     }
 }

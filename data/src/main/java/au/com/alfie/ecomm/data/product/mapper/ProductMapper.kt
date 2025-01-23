@@ -30,7 +30,7 @@ internal fun ProductInfo.toDomain(): Product {
 
 private fun VariantInfo.toDomain(colors: List<Color>) = Variant(
     attributes = attributes?.map { it.attributesInfo.toDomain() }.orEmpty(),
-    color = colors.first { it.id == colour?.id },
+    color = colors.firstOrNull { it.id == colour?.id },
     media = colors.first { it.id == colour?.id }.media?.first{ it is Media.Image } as Media.Image,
     price = price.priceInfo.toDomain(),
     size = size?.sizeContainer?.toDomain(),

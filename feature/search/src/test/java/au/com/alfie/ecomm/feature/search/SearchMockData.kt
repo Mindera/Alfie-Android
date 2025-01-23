@@ -45,8 +45,6 @@ internal val searchSuggestions = SearchSuggestions(
             media = listOf(
                 Media.Image(
                     url = "",
-                    width = 250,
-                    height = 150,
                     alt = "Media"
                 )
             )
@@ -78,7 +76,7 @@ internal val searchUI = SearchUI(
                 brand = "Brand",
                 price = null,
                 image = ImageUI(
-                    images = persistentListOf(ImageSizeUI.Custom(url = "", width = 250)),
+                    images = persistentListOf(ImageSizeUI.Custom(url = "")),
                     alt = "Media"
                 )
             )

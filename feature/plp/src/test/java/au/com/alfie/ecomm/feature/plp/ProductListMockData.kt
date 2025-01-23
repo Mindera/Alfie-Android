@@ -50,19 +50,49 @@ internal val products = listOf(
                 name = "blue",
                 swatch = Media.Image(
                     url = "",
-                    width = 50,
-                    height = 50,
                     alt = "Blue"
-                )
+                ),
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             )
         ),
-        sizes = listOf(
-            Size(
-                id = "789",
-                value = "M",
-                description = "Medium",
-                scale = "Scale",
-                sizeGuide = null
+        longDescription = "",
+        attributes = listOf(),
+        variants = listOf(
+            ProductListEntryVariant(
+                price = Price(
+                    amount = Money(
+                        amount = 100,
+                        amountFormatted = "$100",
+                        currencyCode = "AUS"
+                    ),
+                    was = Money(
+                        amount = 200,
+                        amountFormatted = "$200",
+                        currencyCode = "AUS"
+                    )
+                ),
+                color = "111",
+                size = Size(
+                    id = "789",
+                    value = "M",
+                    description = "Medium",
+                    scale = "Scale",
+                    sizeGuide = null
+                ),
+                media = Media.Image(
+                    url = "",
+                    alt = "Media"
+                ),
+                stock = 100
             )
         ),
         defaultVariant = ProductListEntryVariant(
@@ -78,16 +108,7 @@ internal val products = listOf(
                     currencyCode = "AUS"
                 )
             ),
-            color = Color(
-                id = "111",
-                name = "blue",
-                swatch = Media.Image(
-                    url = "",
-                    width = 50,
-                    height = 50,
-                    alt = "Blue"
-                )
-            ),
+            color = "111",
             size = Size(
                 id = "789",
                 value = "M",
@@ -95,13 +116,9 @@ internal val products = listOf(
                 scale = "Scale",
                 sizeGuide = null
             ),
-            media = listOf(
-                Media.Image(
-                    url = "",
-                    width = 250,
-                    height = 150,
-                    alt = "Media"
-                )
+            media = Media.Image(
+                url = "",
+                alt = "Media"
             ),
             stock = 100
         )
@@ -127,7 +144,37 @@ internal val products = listOf(
             high = null
         ),
         colors = emptyList(),
-        sizes = emptyList(),
+        longDescription = "",
+        attributes = listOf(),
+        variants = listOf(
+            ProductListEntryVariant(
+                price = Price(
+                    amount = Money(
+                        amount = 100,
+                        amountFormatted = "$100",
+                        currencyCode = "AUS"
+                    ),
+                    was = Money(
+                        amount = 200,
+                        amountFormatted = "$200",
+                        currencyCode = "AUS"
+                    )
+                ),
+                color = "111",
+                size = Size(
+                    id = "789",
+                    value = "M",
+                    description = "Medium",
+                    scale = "Scale",
+                    sizeGuide = null
+                ),
+                media = Media.Image(
+                    url = "",
+                    alt = "Media"
+                ),
+                stock = 100
+            )
+        ),
         defaultVariant = ProductListEntryVariant(
             price = Price(
                 amount = Money(
@@ -139,13 +186,9 @@ internal val products = listOf(
             ),
             color = null,
             size = null,
-            media = listOf(
-                Media.Image(
-                    url = "",
-                    width = 250,
-                    height = 150,
-                    alt = null
-                )
+            media = Media.Image(
+                url = "",
+                alt = null
             ),
             stock = 1
         )
@@ -155,7 +198,6 @@ internal val products = listOf(
 internal val productListMetadata = ProductListMetadata(
     title = "Women",
     totalResults = 2,
-    hierarchy = emptyList()
 )
 
 internal val productsMediumUI = listOf(
@@ -172,7 +214,6 @@ internal val productsMediumUI = listOf(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
                         url = "",
-                        width = 250
                     )
                 ),
                 alt = "Media"
@@ -190,7 +231,6 @@ internal val productsMediumUI = listOf(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
                         url = "",
-                        width = 250
                     )
                 ),
                 alt = null
@@ -214,7 +254,6 @@ internal val productsLargeUI = listOf(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
                         url = "",
-                        width = 250
                     )
                 ),
                 alt = "Media"
@@ -232,7 +271,6 @@ internal val productsLargeUI = listOf(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
                         url = "",
-                        width = 250
                     )
                 ),
                 alt = null
