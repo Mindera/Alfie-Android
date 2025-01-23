@@ -1,6 +1,6 @@
 package au.com.alfie.ecomm.data.productlist.mapper
 
-import au.com.alfie.ecomm.data.product.mapper.toDomain
+import au.com.alfie.ecomm.data.toDomain
 import au.com.alfie.ecomm.data.shared.mapper.toDomain
 import au.com.alfie.ecomm.graphql.ProductListingQuery
 import au.com.alfie.ecomm.graphql.fragment.PaginationInfo
