@@ -28,5 +28,5 @@ internal class NavigationRepositoryImpl @Inject constructor(
 
     private suspend fun insertAndReturnRootEntries(entries: NavEntriesByHandleQuery.Data): List<NavigationEntryEntity> =
         navigationEntryDao.insert(entries = entries.toEntity())
-            .filter { it.parentId == 0 }
+            .filter { it.parentId == null }
 }
