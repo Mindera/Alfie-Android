@@ -111,7 +111,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
             isSelectionSoldOut = details.variants.isSoldOut(colorId = selectedColor?.id),
             sizeSectionUI = details.variants.toSizeSectionUI(selectedColor),
             shareInfo = details.buildProductDetailsShareInfo(variant.price.amount.amountFormatted),
-            gallery = variant.color?.media?.toGalleryUI() ?: GalleryUI(emptyList<MediaUI>().toImmutableList())
+            gallery = variant.color?.media.orEmpty().toGalleryUI()
         )
     }
 

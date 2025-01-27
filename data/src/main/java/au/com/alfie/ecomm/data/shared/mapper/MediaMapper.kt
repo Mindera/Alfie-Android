@@ -13,9 +13,8 @@ internal fun ImageInfo.toDomain() = Media.Image(
     url = url.toString(),
 )
 
-internal fun MediaInfo.toDomain(): Media? {
-    return this.onImage?.imageInfo?.toDomain() ?: this.onVideo?.videoInfo?.toDomain()
-}
+internal fun MediaInfo.toDomain() =
+    this.onImage?.imageInfo?.toDomain() ?: this.onVideo?.videoInfo?.toDomain()
 
 internal fun VideoInfo.toDomain() = Media.Video(
     alt = alt,

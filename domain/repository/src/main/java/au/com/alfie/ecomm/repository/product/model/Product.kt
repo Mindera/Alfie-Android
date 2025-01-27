@@ -16,5 +16,5 @@ data class Product(
     val slug: String,
     val styleNumber: String,
     val variants: List<Variant>,
-    val colors: List<Color>,
+    val colors: List<Color>
 )

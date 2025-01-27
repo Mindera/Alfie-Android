@@ -41,7 +41,6 @@ private fun ProductInfo.toDomain(): ProductListEntry {
         brand = brand.brandInfo.toDomain(),
         colors = colors,
         priceRange = priceRange?.priceRangeInfo?.toDomain(),
-        // sizes = sizes?.map { it.sizeContainer.toDomain() }.orEmpty(),
         longDescription = longDescription,
         attributes = attributes?.map { it.attributesInfo.toDomain() }.orEmpty(),
         defaultVariant = defaultVariant.variantInfo.toDomain(colors),
