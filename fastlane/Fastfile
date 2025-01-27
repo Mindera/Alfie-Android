@@ -126,7 +126,7 @@ desc "Run Unit Tests"
 private_lane :run_unit_tests do
     gradle(
         task: "testDebugUnitTest",
-        flags: "--info --stacktrace" # Add Gradle flags here
+        flags: "--stacktrace" # Add Gradle flags here
       )
   end
 
