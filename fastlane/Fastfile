@@ -12,13 +12,32 @@ platform :android do
     run_unit_tests()
   end
 
+  desc "Static Code Analysis"
+  lane :static_code_analysis do
+      run_detekt()
+  end
+
+  desc "Execute Unit Tests"
+  lane :execute_tests do
+      run_unit_tests()
+  end
+
+  desc "Validate and Deploy Debug"
+  lane :validate_and_deploy do
+      run_detekt()
+      run_unit_tests()
+      deploy_debug()
+  end
+
+
   desc "Deploy Debug Build"
   lane :deploy_debug do |options|
     run_build_debug(versionName:options[:versionName])
     firebase_app_distribution(
-      app: ENV["FIREBASE_APP_ID_DEBUG"],
+      app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "QA"
+      groups: "testers",
+      release_notes: "Test release notes."
     )
   end
 

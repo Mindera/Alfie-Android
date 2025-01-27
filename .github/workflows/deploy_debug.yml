@@ -1,0 +1,49 @@
+name: PR Validation and Firebase Deployment
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-and-deploy:
+    name: Validate and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Set up Ruby
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1  # Use Ruby 3.1.x, or your preferred version
+          bundler-cache: true
+
+      # Set up dependencies
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Set up Firebase credentials
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
+        run: echo "${FIREBASE_DISTRIBUTOR_KEY}" > fastlane/firebase_login_credentials.json
+
+      # Execute Fastlane tasks
+      - name: Run Fastlane Tasks
+        env:
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }} # Firebase token stored in GitHub Secrets
+        run: |
+          bundle exec fastlane validate_and_deploy
+
+      # Upload artifacts (optional, for debugging or logs)
+      - name: Upload Fastlane Logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: fastlane-logs
+          path: fastlane/logs
