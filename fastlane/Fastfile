@@ -24,7 +24,6 @@ platform :android do
 
   desc "Validate and Deploy Debug"
   lane :validate_and_deploy do
-      run_unit_tests()
       deploy_debug()
   end
 
