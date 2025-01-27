@@ -124,8 +124,11 @@ end
 
 desc "Run Unit Tests"
 private_lane :run_unit_tests do
-  gradle(task: "testDebugUnitTest")
-end
+    gradle(
+        task: "testDebugUnitTest",
+        flags: "--info --stacktrace" # Add Gradle flags here
+      )
+  end
 
 desc "Run Android Tests"
 private_lane :run_android_tests do
