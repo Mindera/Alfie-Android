@@ -24,6 +24,7 @@ platform :android do
 
   desc "Validate and Deploy Debug"
   lane :validate_and_deploy do
+      run_unit_tests()
       deploy_debug()
   end
 
@@ -125,7 +126,7 @@ desc "Run Unit Tests"
 private_lane :run_unit_tests do
     gradle(
         task: "testDebugUnitTest",
-        flags: "--stacktrace" # Add Gradle flags here
+        flags: "--info --stacktrace" # Add Gradle flags here
       )
   end
 
