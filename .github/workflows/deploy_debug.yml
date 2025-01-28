@@ -42,7 +42,7 @@ jobs:
       # Execute Fastlane tasks
       - name: Run Fastlane Tasks
         env:
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_DEBUG }}
+          FIREBASE_APP_ID_DEBUG: ${{ secrets.FIREBASE_APP_ID }}
         run: |
           bundle exec fastlane validate_and_deploy
 
