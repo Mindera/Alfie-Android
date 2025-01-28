@@ -6,8 +6,10 @@ import au.com.alfie.ecomm.repository.shared.model.Size
 
 data class ProductListEntryVariant(
     val color: String?,
-    val media: Media.Image?,
+    val media: List<Media>?,
     val price: Price,
     val size: Size?,
     val stock: Int
-)
+) {
+    val defaultMedia = media?.first{ it is Media.Image } as Media.Image
+}

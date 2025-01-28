@@ -53,5 +53,5 @@ private fun VariantInfo.toDomain(colors: List<Color>) = ProductListEntryVariant(
     size = size?.sizeContainer?.toDomain(),
     price = price.priceInfo.toDomain(),
     stock = stock,
-    media = colors.first { it.id == colour?.id }.media?.first{ it is Media.Image } as Media.Image
+    media = colors.first { it.id == colour?.id }.media
 )

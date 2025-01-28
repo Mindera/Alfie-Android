@@ -8,5 +8,5 @@ internal fun ColorInfo.toDomain() = Color(
     id = id,
     name = name,
     swatch = swatch?.imageInfo?.toDomain(),
-    media = media?.map { it?.mediaInfo?.toDomain() }
+    media = media?.mapNotNull { it?.mediaInfo?.toDomain() }
 )
