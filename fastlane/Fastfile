@@ -37,7 +37,8 @@ platform :android do
       app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
       groups: "testers",
-      release_notes: "Test release notes for Debug"
+      release_notes: "Test release notes for Debug",
+      debug: true
     )
   end
 
