@@ -6,5 +6,5 @@ data class Color(
     val id: String,
     val name: String?,
     val swatch: Media.Image?,
-    val media: List<Media?>?
+    val media: List<Media>?
 )
