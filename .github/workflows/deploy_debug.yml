@@ -49,8 +49,8 @@ jobs:
         id: set_build
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "build_type=debug" >> $GITHUB_ENV
-            echo "firebase_app_id=${{ secrets.FIREBASE_APP_ID_DEBUG }}" >> $GITHUB_ENV
+            echo "BUILD_TYPE=debug" >> $GITHUB_ENV
+            echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID_DEBUG }}" >> $GITHUB_ENV
           else
             echo "BUILD_TYPE=beta" >> $GITHUB_ENV
             echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID_BETA }}" >> $GITHUB_ENV
