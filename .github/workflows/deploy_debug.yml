@@ -28,6 +28,9 @@ jobs:
           gem install bundler
           bundle install
 
+      - name: Debug Firebase Credentials
+        run: echo "${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}" || echo "Missing credentials"
+
       - name: Set up Firebase credentials
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
