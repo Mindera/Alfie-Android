@@ -39,6 +39,12 @@ jobs:
       - name: Debug Credentials File
         run: cat fastlane/firebase_login_credentials.json | base64
 
+      - name: Create google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "${GOOGLE_SERVICES_JSON}" > app/src/google-services.json
+          
       # Execute Fastlane tasks
       - name: Run Fastlane Tasks
         env:
