@@ -37,7 +37,7 @@ jobs:
         run: echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
 
       - name: Debug Credentials File
-        run: cat fastlane/firebase_login_credentials.json
+        run: cat fastlane/firebase_login_credentials.json | base64
 
       # Execute Fastlane tasks
       - name: Run Fastlane Tasks
