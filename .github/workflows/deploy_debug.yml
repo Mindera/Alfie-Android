@@ -36,6 +36,9 @@ jobs:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
         run: echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
 
+      - name: Debug Credentials File
+        run: cat fastlane/firebase_login_credentials.json
+
       # Execute Fastlane tasks
       - name: Run Fastlane Tasks
         env:
