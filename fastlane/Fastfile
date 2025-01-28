@@ -37,8 +37,7 @@ platform :android do
       app: ENV["FIREBASE_APP_ID_DEBUG"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
       groups: "testers",
-      release_notes: "Test release notes.",
-      debug: true
+      release_notes: "Test release notes for Debug"
     )
   end
 
@@ -48,7 +47,8 @@ platform :android do
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID_BETA"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "Mindera"
+      groups: "testers",
+      release_notes: "Test release notes for Beta."
     )
   end
 

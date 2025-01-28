@@ -4,49 +4,61 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 jobs:
-  validate-and-deploy:
-    name: Validate and Deploy
+  setup:
+    name: Setup Environment
     runs-on: ubuntu-latest
-
+    outputs:
+      firebase_credentials: ${{ steps.set_firebase.outputs.firebase_credentials }}
+      google_services_json: ${{ steps.set_firebase.outputs.google_services_json }}
     steps:
-      # Checkout the code
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Set up Ruby
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.1  # Use Ruby 3.1.x, or your preferred version
+          ruby-version: 3.1
           bundler-cache: true
 
-      # Set up dependencies
       - name: Install Dependencies
         run: |
           gem install bundler
           bundle install
+          
+  deploy:
+    needs: setup  # This ensures setup runs first
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Set up Firebase credentials
+      - name: Set Firebase Credentials
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
-        run: echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
-
-      - name: Create google-services.json
-        env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
+          echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
           echo "${GOOGLE_SERVICES_JSON}" > app/src/google-services.json
 
-      # Execute Fastlane tasks
-      - name: Run Fastlane Tasks
-        env:
-          FIREBASE_APP_ID_DEBUG: ${{ secrets.FIREBASE_APP_ID }}
+      - name: Determine Build Type
+        id: set_build
         run: |
-          bundle exec fastlane validate_and_deploy
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "build_type=debug" >> $GITHUB_ENV
+            echo "firebase_app_id=${{ secrets.FIREBASE_APP_ID_DEBUG }}" >> $GITHUB_ENV
+          else
+            echo "BUILD_TYPE=beta" >> $GITHUB_ENV
+            echo "FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID_BETA }}" >> $GITHUB_ENV
+          fi
 
-      # Upload artifacts (optional, for debugging or logs)
+      - name: Run Fastlane
+        run: bundle exec fastlane deploy_${{ env.BUILD_TYPE }}
+
       - name: Upload Fastlane Logs
         if: failure()
         uses: actions/upload-artifact@v3
