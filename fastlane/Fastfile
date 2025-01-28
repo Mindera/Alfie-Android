@@ -59,7 +59,8 @@ platform :android do
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "Mindera, Alfie"
+      groups: "Mindera, Alfie",
+      debug: true
     )
   end
 
