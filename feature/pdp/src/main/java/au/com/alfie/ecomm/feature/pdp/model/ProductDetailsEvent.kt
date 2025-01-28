@@ -2,7 +2,7 @@ package au.com.alfie.ecomm.feature.pdp.model
 
 internal sealed interface ProductDetailsEvent {
 
-    data object OnAddToBagClick : ProductDetailsEvent
+    data class OnAddToBagClick(val item: ProductDetailsUI) : ProductDetailsEvent
 
     data object OnShareClick : ProductDetailsEvent
 
