@@ -34,7 +34,7 @@ platform :android do
   lane :deploy_debug do |options|
     run_build_debug(versionName:options[:versionName])
     firebase_app_distribution(
-      app: "1:135458332827:android:2e9e20248b60d940a5e63e",#ENV["FIREBASE_APP_ID"],
+      app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
       groups: "testers",
       release_notes: "Test release notes.",

@@ -28,16 +28,10 @@ jobs:
           gem install bundler
           bundle install
 
-      - name: Debug Firebase Credentials
-        run: echo "${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}" || echo "Missing credentials"
-
       - name: Set up Firebase credentials
         env:
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
         run: echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
-
-      - name: Debug Credentials File
-        run: cat fastlane/firebase_login_credentials.json | base64
 
       - name: Create google-services.json
         env:
@@ -48,7 +42,7 @@ jobs:
       # Execute Fastlane tasks
       - name: Run Fastlane Tasks
         env:
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }} # Firebase token stored in GitHub Secrets
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
         run: |
           bundle exec fastlane validate_and_deploy
 
