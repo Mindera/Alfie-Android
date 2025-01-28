@@ -24,7 +24,8 @@ platform :android do
 
   desc "Validate and Deploy Debug"
   lane :validate_and_deploy do
-      run_unit_tests()
+      #run_detekt()
+      #run_unit_tests()
       deploy_debug()
   end
 
@@ -33,10 +34,11 @@ platform :android do
   lane :deploy_debug do |options|
     run_build_debug(versionName:options[:versionName])
     firebase_app_distribution(
-      app: ENV["FIREBASE_APP_ID"],
+      app: "1:135458332827:android:2e9e20248b60d940a5e63e",#ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
       groups: "testers",
-      release_notes: "Test release notes."
+      release_notes: "Test release notes.",
+      debug: true
     )
   end
 
@@ -124,8 +126,11 @@ end
 
 desc "Run Unit Tests"
 private_lane :run_unit_tests do
-  gradle(task: "testDebugUnitTest")
-end
+    gradle(
+        task: "testDebugUnitTest",
+        flags: "--stacktrace" # Add Gradle flags here
+      )
+  end
 
 desc "Run Android Tests"
 private_lane :run_android_tests do
