@@ -28,10 +28,10 @@ jobs:
           gem install bundler
           bundle install
 
-     # - name: Set up Firebase credentials
-     #   env:
-     #     FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
-     #   run: echo "${FIREBASE_DISTRIBUTOR_KEY}" > fastlane/firebase_login_credentials.json
+      - name: Set up Firebase credentials
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
+        run: echo "${FIREBASE_DISTRIBUTOR_KEY}" > fastlane/firebase_login_credentials.json
 
       - name: Create google-services.json
         env:
