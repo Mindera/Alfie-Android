@@ -9,28 +9,7 @@ on:
       - main
 
 jobs:
-  setup:
-    name: Setup Environment
-    runs-on: ubuntu-latest
-    outputs:
-      firebase_credentials: ${{ steps.set_firebase.outputs.firebase_credentials }}
-      google_services_json: ${{ steps.set_firebase.outputs.google_services_json }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.1
-          bundler-cache: true
-
-      - name: Install Dependencies
-        run: |
-          gem install bundler
-          bundle install
-          
-  deploy:
+  setup_and_deploy:
     needs: setup  # This ensures setup runs first
     runs-on: ubuntu-latest
     steps:
@@ -69,10 +48,3 @@ jobs:
 
       - name: Run Fastlane
         run: bundle exec fastlane deploy_${{ env.BUILD_TYPE }}
-
-      - name: Upload Fastlane Logs
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: fastlane-logs
-          path: fastlane/logs
