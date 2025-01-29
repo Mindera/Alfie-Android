@@ -1,7 +1,7 @@
 name: PR Validation and Firebase Deployment
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -26,7 +26,7 @@ jobs:
 
       - name: Set Firebase Credentials
         env:
-          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_DEBUG }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_BETA }}
           FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
@@ -34,4 +34,4 @@ jobs:
           echo "${GOOGLE_SERVICES_JSON}" > app/src/google-services.json
 
       - name: Run Fastlane
-        run: bundle exec fastlane deploy_debug
+        run: bundle exec fastlane deploy_beta
