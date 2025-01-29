@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  setup_and_deploy:
+  deploy:
     needs: setup  # This ensures setup runs first
     runs-on: ubuntu-latest
     steps:
