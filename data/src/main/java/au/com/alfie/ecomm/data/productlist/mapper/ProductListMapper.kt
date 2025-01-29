@@ -10,7 +10,6 @@ import au.com.alfie.ecomm.repository.product.model.Color
 import au.com.alfie.ecomm.repository.productlist.model.ProductList
 import au.com.alfie.ecomm.repository.productlist.model.ProductListEntry
 import au.com.alfie.ecomm.repository.productlist.model.ProductListEntryVariant
-import au.com.alfie.ecomm.repository.shared.model.Media
 import au.com.alfie.ecomm.repository.shared.model.Pagination
 
 internal fun ProductListingQuery.ProductListing.toDomain() = ProductList(
