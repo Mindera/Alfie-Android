@@ -6,12 +6,6 @@ default_platform(:android)
 
 platform :android do
 
-  desc "Pull Request validation"
-  lane :branch_validation do |options|
-    run_detekt()
-    run_unit_tests()
-  end
-
   desc "Static Code Analysis"
   lane :static_code_analysis do
       run_detekt()
@@ -24,8 +18,8 @@ platform :android do
 
   desc "Validate and Deploy Debug"
   lane :validate_and_deploy do
-      #run_detekt()
-      #run_unit_tests()
+      run_detekt()
+      run_unit_tests()
       deploy_debug()
   end
 
