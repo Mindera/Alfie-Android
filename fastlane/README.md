@@ -15,14 +15,6 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android branch_validation
-
-```sh
-[bundle exec] fastlane android branch_validation
-```
-
-Pull Request validation
-
 ### android static_code_analysis
 
 ```sh
@@ -38,14 +30,6 @@ Static Code Analysis
 ```
 
 Execute Unit Tests
-
-### android validate_and_deploy
-
-```sh
-[bundle exec] fastlane android validate_and_deploy
-```
-
-Validate and Deploy Debug
 
 ### android deploy_debug
 

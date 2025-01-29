@@ -3,7 +3,7 @@
 echo "Running Detekt for Static Code Analysis..."
 
 # Run Detekt
-bundle exec fastlane static_code_analysis
+fastlane static_code_analysis
 
 # Check if Detekt passed
 if [ $? -ne 0 ]; then

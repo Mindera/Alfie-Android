@@ -3,7 +3,7 @@
 echo "Running tests before push..."
 
 # Run Fastlane tests
-bundle exec fastlane execute_tests
+fastlane execute_tests
 
 # Check if tests passed
 if [ $? -ne 0 ]; then
