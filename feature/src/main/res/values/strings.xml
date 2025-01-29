@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="retry">Retry</string>
-    <string name="error_failed_to_load_page">Failed to Load Page</string>
-</resources>
