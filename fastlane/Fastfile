@@ -20,24 +20,26 @@ platform :android do
   lane :deploy_debug do |options|
     run_detekt()
     run_unit_tests()
-    run_build_debug(versionName:options[:versionName])
+    # Extracting ticket id from branch name to set APK title in Firebase App Distribution
+    branch_name = `git rev-parse --abbrev-ref HEAD`.strip
+    ticket_id = branch_name.match(/([A-Z]+-\d+)/)[0] rescue "unknown"
+    run_build_debug(versionName:"Debug-#{ticket_id}")
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "testers",
-      release_notes: "Test release notes for Debug",
-      debug: true
+      groups: "testers"
     )
   end
 
   desc "Deploy Beta Build"
   lane :deploy_beta do |options|
+    run_detekt()
+    run_unit_tests()
     run_build_beta()
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "testers",
-      release_notes: "Test release notes for Beta."
+      groups: "testers"
     )
   end
 
@@ -93,9 +95,11 @@ private_lane :run_build_beta do
         'android.injected.signing.store.file' => ENV["HOME"] + "/app/alfie.keystore",
         'android.injected.signing.store.password' => ENV["ANDROID_KEYSTORE_PASSWORD"],
         'android.injected.signing.key.alias' => ENV["ANDROID_KEYSTORE_ALIAS"],
-        'android.injected.signing.key.password' => ENV["ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"]
+        'android.injected.signing.key.password' => ENV["ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"],
+        'versionName' => "Beta-Main"
       }
   )
+
 end
 
 desc "Run Release build"
@@ -117,7 +121,7 @@ desc "Run Unit Tests"
 private_lane :run_unit_tests do
     gradle(
         task: "testDebugUnitTest",
-        flags: "--stacktrace" # Add Gradle flags here
+        flags: "--stacktrace"
       )
   end
 

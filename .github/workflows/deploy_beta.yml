@@ -7,7 +7,6 @@ on:
 
 jobs:
   setup_and_deploy:
-    needs: setup  # This ensures setup runs first
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
