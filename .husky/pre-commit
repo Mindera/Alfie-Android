@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "Running Detekt for Static Code Analysis..."
+
+# Run Detekt
+bundle exec fastlane static_code_analysis
+
+# Check if Detekt passed
+if [ $? -ne 0 ]; then
+    echo "Detekt failed. Fix issues before committing!"
+    exit 1
+fi
+
+echo "Detekt passed. Proceeding with commit."
