@@ -62,7 +62,7 @@ private val mixedSwatchList = listOf(
     PlainColor(Color.Red),
     Image("https://people.mindera.com/mindera_favicon_package/favicon-32x32.png"),
     PlainColor(Color.Blue),
-    Image("https://www.gstatic.com/devrel-devsite/prod/vb47a36f3a983ed748bf281529457db47955fe57e2b5ea15e7e9641c5e7b5032e/android/images/favicon.png"),
+    Image("https://www.gstatic.com/devrel-devsite/prod/vb47a36f3a983ed748bf281529457db47955fe57e2b5ea15e7e9641c5e7b5032e/android/images/favicon.png")
 )
 
 @OptIn(ExperimentalGlideComposeApi::class)
