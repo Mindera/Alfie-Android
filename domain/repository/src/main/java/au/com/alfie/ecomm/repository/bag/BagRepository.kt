@@ -5,7 +5,7 @@ import au.com.alfie.ecomm.repository.result.RepositoryResult
 
 interface BagRepository {
 
-    fun addToBag(product: Product)
+    fun addToBag(product: Product): RepositoryResult<Unit>
 
     fun getBag(): RepositoryResult<List<Product>>
 }
