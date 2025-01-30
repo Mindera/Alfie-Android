@@ -88,9 +88,11 @@ internal val products = listOf(
                     scale = "Scale",
                     sizeGuide = null
                 ),
-                media = Media.Image(
-                    url = "",
-                    alt = "Media"
+                media = listOf(
+                    Media.Image(
+                        url = "",
+                        alt = "Media"
+                    )
                 ),
                 stock = 100
             )
@@ -116,9 +118,11 @@ internal val products = listOf(
                 scale = "Scale",
                 sizeGuide = null
             ),
-            media = Media.Image(
-                url = "",
-                alt = "Media"
+            media = listOf(
+                Media.Image(
+                    url = "",
+                    alt = "Media"
+                )
             ),
             stock = 100
         )
@@ -168,9 +172,11 @@ internal val products = listOf(
                     scale = "Scale",
                     sizeGuide = null
                 ),
-                media = Media.Image(
-                    url = "",
-                    alt = "Media"
+                media = listOf(
+                    Media.Image(
+                        url = "",
+                        alt = "Media"
+                    )
                 ),
                 stock = 100
             )
@@ -186,9 +192,11 @@ internal val products = listOf(
             ),
             color = null,
             size = null,
-            media = Media.Image(
-                url = "",
-                alt = null
+            media = listOf(
+                Media.Image(
+                    url = "",
+                    alt = null
+                )
             ),
             stock = 1
         )

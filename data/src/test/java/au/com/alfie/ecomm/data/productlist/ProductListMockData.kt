@@ -342,9 +342,11 @@ internal val productList = ProductList(
                     scale = "Scale",
                     sizeGuide = null
                 ),
-                media = Media.Image(
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
-                    alt = "patterson mini skirt"
+                media = listOf(
+                    Media.Image(
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
+                        alt = "patterson mini skirt"
+                    )
                 ),
                 stock = 100
             )
@@ -399,9 +401,11 @@ internal val productList = ProductList(
                 ),
                 color = "111",
                 size = null,
-                media = Media.Image(
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
-                    alt = "patterson mini skirt"
+                media = listOf(
+                    Media.Image(
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
+                        alt = "patterson mini skirt"
+                    )
                 ),
                 stock = 1
             )
