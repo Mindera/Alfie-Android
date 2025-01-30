@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 @HiltWorker
 internal class AuthTokenCallbackWorker @AssistedInject constructor(
     @Assisted private val context: Context,
-    @Assisted workerParams: WorkerParameters,
+    @Assisted workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams), Synchronizer {
 
     companion object {
