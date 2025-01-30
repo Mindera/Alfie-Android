@@ -5,9 +5,9 @@ import au.com.alfie.ecomm.data.featuretoggle.mapper.toDB
 import au.com.alfie.ecomm.data.featuretoggle.mapper.toDomain
 import au.com.alfie.ecomm.repository.featuretoggle.FeatureToggleRepository
 import au.com.alfie.ecomm.repository.featuretoggle.model.FeatureToggle
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 class FeatureToggleRepositoryImpl @Inject constructor(
     private val featureToggleDao: FeatureToggleDao
