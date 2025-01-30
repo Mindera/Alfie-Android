@@ -7,7 +7,7 @@ import au.com.alfie.ecomm.repository.shared.model.Size
 data class Variant(
     val attributes: List<Attribute>,
     val color: Color?,
-    val media: List<Media>,
+    val media: Media,
     val price: Price,
     val size: Size?,
     val sku: String,

@@ -14,6 +14,6 @@ internal class ProductRepositoryImpl @Inject constructor(
 
     override suspend fun getProduct(productId: String): RepositoryResult<Product> =
         productService.getProduct(productId = productId)
-            .mapCatching { data -> data.product?.toDomain() ?: throw NullPointerException("The product field in Data was null") }
+            .mapCatching { data -> data.product?.productInfo?.toDomain() ?: throw NullPointerException("The product field in Data was null") }
             .toRepositoryResult()
 }

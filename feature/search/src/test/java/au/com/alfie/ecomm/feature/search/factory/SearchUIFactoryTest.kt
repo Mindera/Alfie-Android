@@ -107,8 +107,6 @@ class SearchUIFactoryTest {
                 media = listOf(
                     Media.Image(
                         url = "",
-                        width = 250,
-                        height = 150,
                         alt = "Media"
                     )
                 )

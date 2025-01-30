@@ -1,0 +1,9 @@
+fragment PaginationInfo on Pagination {
+    offset
+    limit
+    total
+    pages
+    page
+    nextPage
+    previousPage
+}

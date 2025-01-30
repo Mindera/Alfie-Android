@@ -59,7 +59,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
             priceRange = entry.priceRange,
             price = entry.defaultVariant.price
         ),
-        image = mapImage(entry.defaultVariant.media),
+        image = mapImage(entry.defaultVariant.defaultMedia),
         onFavoriteClick = onFavoriteClick
     )
 
@@ -73,7 +73,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
             priceRange = entry.priceRange,
             price = entry.defaultVariant.price
         ),
-        image = mapImage(entry.defaultVariant.media),
+        image = mapImage(entry.defaultVariant.defaultMedia),
         onFavoriteClick = onFavoriteClick
     )
 
@@ -96,11 +96,9 @@ internal class ProductListEntryUIFactory @Inject constructor(
         }
     }
 
-    private fun mapImage(media: List<Media.Image>): ImageUI {
-        val image = media.firstOrNull()
+    private fun mapImage(image: Media.Image?): ImageUI {
         val imageSizeUI = ImageSizeUI.Custom(
             url = image?.url.orEmpty(),
-            width = image?.width.orZero()
         )
         return ImageUI(
             images = persistentListOf(imageSizeUI),

@@ -32,7 +32,6 @@ class ProductListPagingSource(
                 val metadata = ProductListMetadata(
                     title = data.title,
                     totalResults = data.pagination.total,
-                    hierarchy = data.hierarchy
                 )
                 metadataProvider(metadata)
 

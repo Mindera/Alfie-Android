@@ -1,0 +1,27 @@
+fragment ProductInfo on Product {
+    id
+    styleNumber
+    name
+    brand {
+        ...BrandInfo
+    }
+    priceRange {
+        ...PriceRangeInfo
+    }
+    shortDescription
+    longDescription
+    slug
+    labels
+    attributes {
+        ...AttributesInfo
+    }
+    defaultVariant {
+        ...VariantInfo
+    }
+    variants {
+        ...VariantInfo
+    }
+    colours {
+        ...ColorInfo
+    }
+}

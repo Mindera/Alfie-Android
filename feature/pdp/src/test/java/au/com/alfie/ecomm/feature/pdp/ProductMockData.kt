@@ -49,22 +49,23 @@ internal val product = Product(
         color = Color(
             id = "3406543",
             swatch = null,
-            name = "steel"
+            name = "steel",
+            media = listOf(
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                ),
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                )
+            ),
         ),
-        media = listOf(
+        media =
             Media.Image(
                 alt = "patterson mini skirt",
-                width = 487,
-                height = 634,
                 url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
-            Media.Image(
-                alt = "patterson mini skirt",
-                width = 487,
-                height = 634,
-                url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-            )
-        ),
         stock = 100,
         price = Price(
             amount = Money(
@@ -75,61 +76,11 @@ internal val product = Product(
             was = null
         )
     ),
-    hierarchy = listOf(
-        HierarchyItem(
-            categoryId = "1",
-            name = "women",
-            slug = "/women",
-            parent = null
-        ),
-        HierarchyItem(
-            categoryId = "1",
-            name = "clothing",
-            slug = "/women/clothing",
-            parent = null
-        ),
-        HierarchyItem(
-            categoryId = "1",
-            name = "patterson mini skirt",
-            slug = "camilla-and-marc-patterson-mini-skirt-26531650",
-            parent = null
-        )
-    ),
     labels = emptyList(),
     longDescription = "Long description",
     name = "Seamless sculpt mid thigh short",
     priceRange = null,
     shortDescription = "Short description",
-    sizes = listOf(
-        Size(
-            id = "25927",
-            description = "10 AU",
-            scale = null,
-            value = "10 AU",
-            sizeGuide = null
-        ),
-        Size(
-            id = "25937",
-            description = "12 AU",
-            scale = null,
-            value = "12 AU",
-            sizeGuide = null
-        ),
-        Size(
-            id = "25974",
-            description = "6 AU",
-            scale = null,
-            value = "6 AU",
-            sizeGuide = null
-        ),
-        Size(
-            id = "25988",
-            description = "8 AU",
-            scale = null,
-            value = "8 AU",
-            sizeGuide = null
-        )
-    ),
     slug = "camilla-and-marc-patterson-mini-skirt-26531650",
     styleNumber = "26531650",
     variants = listOf(
@@ -151,21 +102,21 @@ internal val product = Product(
             color = Color(
                 id = "3406543",
                 swatch = null,
-                name = "steel"
-            ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
                 ),
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -190,15 +141,21 @@ internal val product = Product(
             color = Color(
                 id = "3406547",
                 swatch = null,
-                name = "steel"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                )
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 0,
             price = Price(
@@ -223,15 +180,21 @@ internal val product = Product(
             color = Color(
                 id = "3406547",
                 swatch = null,
-                name = "steel"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                )
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -256,15 +219,21 @@ internal val product = Product(
             color = Color(
                 id = "3406543",
                 swatch = null,
-                name = "steel"
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    width = 487,
-                    height = 634,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                )
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             stock = 100,
             price = Price(
@@ -276,6 +245,23 @@ internal val product = Product(
                 was = null
             )
         )
+    ),
+    colors = listOf(
+        Color(
+            id = "3406543",
+            swatch = null,
+            name = "steel",
+            media = listOf(
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                ),
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                )
+            ),
+        ),
     )
 )
 
@@ -298,21 +284,21 @@ internal val productDetailsUI = ProductDetailsUI(
             color = Color(
                 id = "3406543",
                 name = "steel",
-                swatch = null
-            ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    height = 634,
-                    width = 487,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                swatch = null,
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
                 ),
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    height = 634,
-                    width = 487,
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             price = Price(
                 amount = Money(
@@ -337,15 +323,21 @@ internal val productDetailsUI = ProductDetailsUI(
             color = Color(
                 id = "3406547",
                 name = "steel",
-                swatch = null
+                swatch = null,
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    height = 634,
-                    width = 487,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                )
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             price = Price(
                 amount = Money(
@@ -370,15 +362,21 @@ internal val productDetailsUI = ProductDetailsUI(
             color = Color(
                 id = "3406547",
                 name = "steel",
-                swatch = null
+                swatch = null,
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             ),
-            media = listOf(
-                Media.Image(
-                    alt = "patterson mini skirt",
-                    height = 634,
-                    width = 487,
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                )
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             price = Price(
                 amount = Money(
@@ -403,15 +401,21 @@ internal val productDetailsUI = ProductDetailsUI(
             color = Color(
                 id = "3406543",
                 name = "steel",
-                swatch = null
+                swatch = null,
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                ),
             ),
-            media = listOf(
-                Media.Image(
+            media = Media.Image(
                     alt = "patterson mini skirt",
-                    height = 634,
-                    width = 487,
                     url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                )
             ),
             price = Price(
                 amount = Money(
@@ -486,7 +490,6 @@ internal val productDetailsUI = ProductDetailsUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
                         url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
-                        width = 487
                     )
                 ),
                 alt = "patterson mini skirt"
@@ -495,7 +498,6 @@ internal val productDetailsUI = ProductDetailsUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg",
-                        width = 487
                     )
                 ),
                 alt = "patterson mini skirt"
@@ -556,7 +558,14 @@ internal val selectedColorGalleryUI = GalleryUI(
             images = persistentListOf(
                 ImageSizeUI.Custom(
                     url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
-                    width = 487
+                )
+            ),
+            alt = "patterson mini skirt"
+        ),
+        ImageUI(
+            images = persistentListOf(
+                ImageSizeUI.Custom(
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg",
                 )
             ),
             alt = "patterson mini skirt"
