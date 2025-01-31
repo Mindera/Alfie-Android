@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.ForegroundInfo
 import androidx.work.NetworkType.CONNECTED
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
@@ -21,7 +20,7 @@ import kotlinx.coroutines.withContext
 @HiltWorker
 internal class SyncWorker @AssistedInject constructor(
     @Assisted private val context: Context,
-    @Assisted workerParams: WorkerParameters,
+    @Assisted workerParams: WorkerParameters
 ) : CoroutineWorker(context, workerParams), Synchronizer {
 
     companion object {
