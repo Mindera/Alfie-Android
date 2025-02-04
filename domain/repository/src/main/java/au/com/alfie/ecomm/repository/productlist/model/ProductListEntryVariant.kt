@@ -11,5 +11,5 @@ data class ProductListEntryVariant(
     val size: Size?,
     val stock: Int
 ) {
-    val defaultMedia = media?.first{ it is Media.Image } as Media.Image
+    val defaultMedia = media?.first { it is Media.Image } as Media.Image
 }

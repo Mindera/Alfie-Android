@@ -61,7 +61,7 @@ internal val products = listOf(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             )
         ),
         longDescription = "",
@@ -205,7 +205,7 @@ internal val products = listOf(
 
 internal val productListMetadata = ProductListMetadata(
     title = "Women",
-    totalResults = 2,
+    totalResults = 2
 )
 
 internal val productsMediumUI = listOf(
@@ -221,7 +221,7 @@ internal val productsMediumUI = listOf(
             image = ImageUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
-                        url = "",
+                        url = ""
                     )
                 ),
                 alt = "Media"
@@ -238,7 +238,7 @@ internal val productsMediumUI = listOf(
             image = ImageUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
-                        url = "",
+                        url = ""
                     )
                 ),
                 alt = null
@@ -261,7 +261,7 @@ internal val productsLargeUI = listOf(
             image = ImageUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
-                        url = "",
+                        url = ""
                     )
                 ),
                 alt = "Media"
@@ -278,7 +278,7 @@ internal val productsLargeUI = listOf(
             image = ImageUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
-                        url = "",
+                        url = ""
                     )
                 ),
                 alt = null

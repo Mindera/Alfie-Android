@@ -1,7 +1,6 @@
 package au.com.alfie.ecomm.feature.search.factory
 
 import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
-import au.com.alfie.ecomm.core.commons.extension.orZero
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
@@ -59,7 +58,7 @@ internal class SearchUIFactory @Inject constructor(
     private fun mapImage(media: List<Media.Image>): ImageUI {
         val image = media.firstOrNull()
         val imageSizeUI = ImageSizeUI.Custom(
-            url = image?.url.orEmpty(),
+            url = image?.url.orEmpty()
         )
         return ImageUI(
             images = persistentListOf(imageSizeUI),
