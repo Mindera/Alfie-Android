@@ -1,7 +1,10 @@
 fragment ColorInfo on Colour {
     id
+    name
     swatch {
         ...ImageInfo
     }
-    name
+    media {
+        ...MediaInfo
+    }
 }

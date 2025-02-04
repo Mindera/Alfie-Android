@@ -1,42 +1,39 @@
 package au.com.alfie.ecomm.data.product.mapper
 
 import au.com.alfie.ecomm.data.shared.mapper.toDomain
-import au.com.alfie.ecomm.graphql.ProductQuery
-import au.com.alfie.ecomm.graphql.fragment.ColorInfo
+import au.com.alfie.ecomm.data.toDomain
+import au.com.alfie.ecomm.graphql.fragment.ProductInfo
 import au.com.alfie.ecomm.graphql.fragment.VariantInfo
 import au.com.alfie.ecomm.repository.product.model.Color
 import au.com.alfie.ecomm.repository.product.model.Product
 import au.com.alfie.ecomm.repository.product.model.Variant
+import au.com.alfie.ecomm.repository.shared.model.Media
 
-internal fun ProductQuery.Product.toDomain() = Product(
-    id = id,
+internal fun ProductInfo.toDomain(): Product {
+    val colors = colours?.map { it.colorInfo.toDomain() }.orEmpty()
+    return Product(
+        id = id,
+        name = name,
+        shortDescription = shortDescription,
+        slug = slug,
+        styleNumber = styleNumber,
+        labels = labels.orEmpty(),
+        brand = brand.brandInfo.toDomain(),
+        colors = colors,
+        priceRange = priceRange?.priceRangeInfo?.toDomain(),
+        longDescription = longDescription,
+        attributes = attributes?.map { it.attributesInfo.toDomain() }.orEmpty(),
+        defaultVariant = defaultVariant.variantInfo.toDomain(colors),
+        variants = variants.map { it.variantInfo.toDomain(colors) }
+    )
+}
+
+private fun VariantInfo.toDomain(colors: List<Color>) = Variant(
     attributes = attributes?.map { it.attributesInfo.toDomain() }.orEmpty(),
-    brand = brand.brandInfo.toDomain(),
-    defaultVariant = defaultVariant.variantInfo.toDomain(),
-    hierarchy = hierarchy.map { it.hierarchyItemsTree.hierarchyItemInfo.toDomain() },
-    labels = labels.orEmpty(),
-    longDescription = longDescription,
-    name = name,
-    priceRange = priceRange?.priceRangeInfo?.toDomain(),
-    shortDescription = shortDescription,
-    sizes = sizes?.map { it.sizeContainer.toDomain() }.orEmpty(),
-    slug = slug,
-    styleNumber = styleNumber,
-    variants = variants.map { it.variantInfo.toDomain() }
-)
-
-internal fun ColorInfo.toDomain() = Color(
-    id = id,
-    name = name,
-    swatch = swatch?.imageInfo?.toDomain()
-)
-
-private fun VariantInfo.toDomain() = Variant(
-    attributes = attributes?.map { it.attributesInfo.toDomain() }.orEmpty(),
-    color = colour?.colorInfo?.toDomain(),
-    media = media.mapNotNull { it.mediaInfo.onImage?.imageInfo?.toDomain() ?: it.mediaInfo.onVideo?.videoInfo?.toDomain() },
+    color = colors.find { it.id == colour?.id },
+    media = colors.firstOrNull { it.id == colour?.id }?.media?.first{ it is Media.Image } as Media.Image,
     price = price.priceInfo.toDomain(),
     size = size?.sizeContainer?.toDomain(),
     sku = sku,
-    stock = stock
+    stock = stock,
 )

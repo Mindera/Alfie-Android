@@ -7,9 +7,7 @@ sealed class Media(
 
     data class Image(
         override val alt: String? = null,
-        val height: Int,
         val url: String,
-        val width: Int
     ) : Media(
         mediaContentType = MediaContentType.IMAGE,
         alt = alt

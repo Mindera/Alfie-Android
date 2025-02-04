@@ -59,7 +59,6 @@ class ProductListUIFactoryTest {
         val metadata = ProductListMetadata(
             title = "Women",
             totalResults = 15,
-            hierarchy = emptyList()
         )
 
         val result = uiFactory(

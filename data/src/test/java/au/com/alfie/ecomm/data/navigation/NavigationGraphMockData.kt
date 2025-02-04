@@ -11,88 +11,89 @@ import au.com.alfie.ecomm.repository.navigation.model.NavEntry
 import au.com.alfie.ecomm.repository.navigation.model.NavItemType
 
 internal val navEntriesData = NavEntriesByHandleQuery.Data(
-    navigation = NavEntriesByHandleQuery.Navigation(
-        items = listOf(
-            NavEntriesByHandleQuery.Item(
-                __typename = "",
-                navMenuItemContainer = NavMenuItemContainer(
+    navigation = listOf(
+        NavEntriesByHandleQuery.Navigation(
+            title = "Home Item",
+            url = "https://home.item",
+            type = NavMenuItemType.HOME,
+            items = listOf(
+                NavEntriesByHandleQuery.Item(
                     __typename = "",
-                    media = NavMenuItemContainer.Media(
+                    navMenuItemContainer = NavMenuItemContainer(
                         __typename = "",
-                        onImage = NavMenuItemContainer.OnImage(
+                        media = NavMenuItemContainer.Media(
                             __typename = "",
-                            imageInfo = ImageInfo(
-                                url = "https://media.image",
-                                width = 200,
-                                height = 100,
-                                mediaContentType = MediaContentType.IMAGE,
-                                alt = null
-                            )
-                        )
-                    ),
-                    items = listOf(
-                        NavMenuItemContainer.Item(
-                            __typename = "",
-                            navMenuItemInfo = NavMenuItemInfo(
-                                title = "Home Subitem 1",
-                                type = NavMenuItemType.HOME,
-                                url = "https://home.subitem1"
+                            onImage = NavMenuItemContainer.OnImage(
+                                __typename = "",
+                                imageInfo = ImageInfo(
+                                    url = "https://media.image",
+                                    mediaContentType = MediaContentType.IMAGE,
+                                    alt = null
+                                )
                             )
                         ),
-                        NavMenuItemContainer.Item(
-                            __typename = "",
-                            navMenuItemInfo = NavMenuItemInfo(
-                                title = "Home Subitem 2",
-                                type = NavMenuItemType.HOME,
-                                url = "https://home.subitem2"
+                        items = listOf(
+                            NavMenuItemContainer.Item(
+                                __typename = "",
+                                navMenuItemInfo = NavMenuItemInfo(
+                                    title = "Home Subitem 1",
+                                    type = NavMenuItemType.HOME,
+                                    url = "https://home.subitem1"
+                                )
+                            ),
+                            NavMenuItemContainer.Item(
+                                __typename = "",
+                                navMenuItemInfo = NavMenuItemInfo(
+                                    title = "Home Subitem 2",
+                                    type = NavMenuItemType.HOME,
+                                    url = "https://home.subitem2"
+                                )
                             )
+                        ),
+                        attributes = emptyList(),
+                        navMenuItemInfo = NavMenuItemInfo(
+                            title = "Home Item",
+                            type = NavMenuItemType.HOME,
+                            url = "https://home.item"
                         )
-                    ),
-                    attributes = emptyList(),
-                    navMenuItemInfo = NavMenuItemInfo(
-                        title = "Home Item",
-                        type = NavMenuItemType.HOME,
-                        url = "https://home.item"
+                    )
+                ),
+                NavEntriesByHandleQuery.Item(
+                    __typename = "",
+                    navMenuItemContainer = NavMenuItemContainer(
+                        __typename = "",
+                        media = NavMenuItemContainer.Media(
+                            __typename = "",
+                            onImage = NavMenuItemContainer.OnImage(
+                                __typename = "",
+                                imageInfo = ImageInfo(
+                                    url = "https://media.image",
+                                    mediaContentType = MediaContentType.IMAGE,
+                                    alt = null
+                                )
+                            )
+                        ),
+                        items = listOf(
+                            NavMenuItemContainer.Item(
+                                __typename = "",
+                                navMenuItemInfo = NavMenuItemInfo(
+                                    title = "Product Subitem",
+                                    type = NavMenuItemType.PRODUCT,
+                                    url = "https://product.subitem1"
+                                )
+                            )
+                        ),
+                        attributes = emptyList(),
+                        navMenuItemInfo = NavMenuItemInfo(
+                            title = "Product Item",
+                            type = NavMenuItemType.PRODUCT,
+                            url = "https://product.item"
+                        )
                     )
                 )
             ),
-            NavEntriesByHandleQuery.Item(
-                __typename = "",
-                navMenuItemContainer = NavMenuItemContainer(
-                    __typename = "",
-                    media = NavMenuItemContainer.Media(
-                        __typename = "",
-                        onImage = NavMenuItemContainer.OnImage(
-                            __typename = "",
-                            imageInfo = ImageInfo(
-                                url = "https://media.image",
-                                width = 200,
-                                height = 100,
-                                mediaContentType = MediaContentType.IMAGE,
-                                alt = null
-                            )
-                        )
-                    ),
-                    items = listOf(
-                        NavMenuItemContainer.Item(
-                            __typename = "",
-                            navMenuItemInfo = NavMenuItemInfo(
-                                title = "Product Subitem",
-                                type = NavMenuItemType.PRODUCT,
-                                url = "https://product.subitem1"
-                            )
-                        )
-                    ),
-                    attributes = emptyList(),
-                    navMenuItemInfo = NavMenuItemInfo(
-                        title = "Product Item",
-                        type = NavMenuItemType.PRODUCT,
-                        url = "https://product.item"
-                    )
-                )
-            )
-        ),
-        attributes = emptyList()
+            attributes = emptyList()
+        )
     )
 )
 
@@ -136,7 +137,6 @@ internal val navEntries = listOf(
 internal val navEntryEntitiesFromGraph = listOf(
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Home Item",
         navItemType = NavItemType.HOME.name,
         path = "https://home.item",
@@ -157,7 +157,6 @@ internal val navEntryEntitiesFromGraph = listOf(
     ),
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Product Item",
         navItemType = NavItemType.PRODUCT.name,
         path = "https://product.item",
@@ -175,14 +174,12 @@ internal val navEntryEntitiesFromGraph = listOf(
 val navEntryEntities = listOf(
     NavigationEntryEntity(
         id = 1,
-        parentId = 0,
         title = "Home Item",
         path = "https://home.item",
         navItemType = "HOME"
     ),
     NavigationEntryEntity(
         id = 2,
-        parentId = 0,
         title = "Product Item",
         path = "https://product.item",
         navItemType = "PRODUCT"
@@ -246,35 +243,30 @@ val mappedNavEntries = listOf(
 val mappedNavEntryEntities = listOf(
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Home Item",
         path = "https://home.item",
         navItemType = "HOME"
     ),
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Product Item",
         path = "https://product.item",
         navItemType = "PRODUCT"
     ),
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Home Subitem 1",
         path = "https://home.subitem1",
         navItemType = "HOME"
     ),
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Home Subitem 2",
         path = "https://home.subitem2",
         navItemType = "HOME"
     ),
     NavigationEntryEntity(
         id = 0,
-        parentId = 0,
         title = "Product Subitem",
         path = "https://product.subitem1",
         navItemType = "PRODUCT"

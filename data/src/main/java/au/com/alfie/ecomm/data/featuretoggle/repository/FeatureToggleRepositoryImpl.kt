@@ -1,8 +1,8 @@
 package au.com.alfie.ecomm.data.featuretoggle.repository
 
 import au.com.alfie.ecomm.data.database.search.FeatureToggleDao
-import au.com.alfie.ecomm.data.featuretoggle.mapper.toDomain
 import au.com.alfie.ecomm.data.featuretoggle.mapper.toDB
+import au.com.alfie.ecomm.data.featuretoggle.mapper.toDomain
 import au.com.alfie.ecomm.repository.featuretoggle.FeatureToggleRepository
 import au.com.alfie.ecomm.repository.featuretoggle.model.FeatureToggle
 import kotlinx.coroutines.flow.Flow

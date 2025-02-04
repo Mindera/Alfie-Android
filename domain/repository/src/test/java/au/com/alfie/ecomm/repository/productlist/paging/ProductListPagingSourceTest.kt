@@ -40,7 +40,6 @@ class ProductListPagingSourceTest {
         val productList = ProductList(
             products = products,
             pagination = pagination,
-            hierarchy = emptyList(),
             title = "Women"
         )
 
@@ -70,7 +69,6 @@ class ProductListPagingSourceTest {
         val productList = ProductList(
             products = products,
             pagination = pagination,
-            hierarchy = emptyList(),
             title = "Women"
         )
 
@@ -103,7 +101,6 @@ class ProductListPagingSourceTest {
         val firstProductList = ProductList(
             products = firstProducts,
             pagination = pagination,
-            hierarchy = emptyList(),
             title = "Women"
         )
 
@@ -131,7 +128,6 @@ class ProductListPagingSourceTest {
         val secondProductList = ProductList(
             products = secondProducts,
             pagination = pagination,
-            hierarchy = emptyList(),
             title = "Women"
         )
 
@@ -176,7 +172,6 @@ class ProductListPagingSourceTest {
         val productList = ProductList(
             products = products,
             pagination = pagination,
-            hierarchy = emptyList(),
             title = "Women"
         )
 
@@ -184,7 +179,6 @@ class ProductListPagingSourceTest {
         val expectedMetadata = ProductListMetadata(
             title = "Women",
             totalResults = 15,
-            hierarchy = emptyList()
         )
 
         every { pagination.nextPage } returns null

@@ -143,16 +143,6 @@ type Image {
   mediaContentType: MediaContentType!
 
   """
-  The original width of the image in pixels.
-  """
-  width: Int!
-
-  """
-  The original height of the image in pixels.
-  """
-  height: Int!
-
-  """
   The location of the image as a URL.
 
   If no transform options are specified, then the original image will be preserved.
@@ -1125,14 +1115,19 @@ type Colour {
   id: ID!
 
   """
+  The name of the colour.
+  """
+  name: String!
+
+  """
   Image resolver for the colour swatch.
   """
   swatch: Image
 
   """
-  The name of the colour.
+  Image resolver for the colour swatch.
   """
-  name: String!
+  media: [Media]
 }
 
 """

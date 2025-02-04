@@ -27,6 +27,6 @@ sealed class ImageSizeUI(
     @Stable
     data class Custom(
         override val url: String,
-        override val width: Int
+        override val width: Int = MEDIUM_WIDTH
     ) : ImageSizeUI(url, width)
 }

@@ -1,32 +1,5 @@
 query ProductQuery($productId: ID!) {
     product(id: $productId) {
-        id
-        attributes {
-            ...AttributesInfo
-        }
-        brand {
-            ...BrandInfo
-        }
-        defaultVariant {
-            ...VariantInfo
-        }
-        hierarchy {
-            ...HierarchyItemsTree
-        }
-        labels
-        longDescription
-        name
-        priceRange {
-            ...PriceRangeInfo
-        }
-        shortDescription
-        sizes {
-            ...SizeContainer
-        }
-        slug
-        styleNumber
-        variants {
-            ...VariantInfo
-        }
+        ...ProductInfo
     }
 }
