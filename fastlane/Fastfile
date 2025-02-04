@@ -6,29 +6,40 @@ default_platform(:android)
 
 platform :android do
 
-  desc "Pull Request validation"
-  lane :branch_validation do |options|
-    run_detekt()
-    run_unit_tests()
+  desc "Static Code Analysis"
+  lane :static_code_analysis do
+      run_detekt()
+  end
+
+  desc "Execute Unit Tests"
+  lane :execute_tests do
+      run_unit_tests()
   end
 
   desc "Deploy Debug Build"
   lane :deploy_debug do |options|
-    run_build_debug(versionName:options[:versionName])
+    run_detekt()
+    run_unit_tests()
+    # Extracting ticket id from branch name to set APK title in Firebase App Distribution
+    branch_name = `git rev-parse --abbrev-ref HEAD`.strip
+    ticket_id = branch_name.match(/([A-Z]+-\d+)/)[0] rescue "unknown"
+    run_build_debug(versionName:"Debug-#{ticket_id}")
     firebase_app_distribution(
-      app: ENV["FIREBASE_APP_ID_DEBUG"],
+      app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "QA"
+      groups: "testers"
     )
   end
 
   desc "Deploy Beta Build"
   lane :deploy_beta do |options|
+    run_detekt()
+    run_unit_tests()
     run_build_beta()
     firebase_app_distribution(
-      app: ENV["FIREBASE_APP_ID_BETA"],
+      app: ENV["FIREBASE_APP_ID"],
       service_credentials_file: "fastlane/firebase_login_credentials.json",
-      groups: "Mindera"
+      groups: "testers"
     )
   end
 
@@ -84,9 +95,11 @@ private_lane :run_build_beta do
         'android.injected.signing.store.file' => ENV["HOME"] + "/app/alfie.keystore",
         'android.injected.signing.store.password' => ENV["ANDROID_KEYSTORE_PASSWORD"],
         'android.injected.signing.key.alias' => ENV["ANDROID_KEYSTORE_ALIAS"],
-        'android.injected.signing.key.password' => ENV["ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"]
+        'android.injected.signing.key.password' => ENV["ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD"],
+        'versionName' => "Beta-Main"
       }
   )
+
 end
 
 desc "Run Release build"
@@ -106,8 +119,11 @@ end
 
 desc "Run Unit Tests"
 private_lane :run_unit_tests do
-  gradle(task: "testDebugUnitTest")
-end
+    gradle(
+        task: "testDebugUnitTest",
+        flags: "--stacktrace"
+      )
+  end
 
 desc "Run Android Tests"
 private_lane :run_android_tests do
