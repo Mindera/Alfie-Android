@@ -2,9 +2,16 @@ package au.com.alfie.ecomm.feature.webview
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import au.com.alfie.ecomm.core.deeplink.DeeplinkHandler
 import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
+import au.com.alfie.ecomm.designsystem.component.dialog.ErrorScreen
+import au.com.alfie.ecomm.feature.R
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.Close
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.NavigateTo
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.OnHistoryUpdate
@@ -30,15 +37,30 @@ fun WebViewContent(
     )
     val webViewState = rememberWebViewState(content)
     val navigator = rememberWebViewNavigator(deeplinkHandler)
+    var isLoadFailed by remember { mutableStateOf(false) }
 
     Surface(modifier = modifier) {
-        WebView(
-            state = webViewState,
-            onLoadingOverride = { onEvent(NavigateTo(it)) },
-            onHistoryUpdate = { onEvent(OnHistoryUpdate(it)) },
-            onClose = { onEvent(Close) },
-            navigator = navigator,
-            isBackHandlerEnabled = isBackHandlerEnabled
-        )
+        if (isLoadFailed) {
+            ErrorScreen(
+                message = stringResource(R.string.error_failed_to_load_page),
+                buttonLabel = stringResource(R.string.retry),
+                onClick = {
+                    isLoadFailed = false
+                    navigator.reload(content.url)
+                }
+            )
+        } else {
+            WebView(
+                state = webViewState,
+                onLoadingOverride = { onEvent(NavigateTo(it)) },
+                onHistoryUpdate = { onEvent(OnHistoryUpdate(it)) },
+                onClose = { onEvent(Close) },
+                navigator = navigator,
+                isBackHandlerEnabled = isBackHandlerEnabled,
+                onLoadFailure = {
+                    isLoadFailed = true
+                }
+            )
+        }
     }
 }
