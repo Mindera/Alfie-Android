@@ -31,7 +31,7 @@ class ProductListPagingSource(
             onSuccess = { data ->
                 val metadata = ProductListMetadata(
                     title = data.title,
-                    totalResults = data.pagination.total,
+                    totalResults = data.pagination.total
                 )
                 metadataProvider(metadata)
 

@@ -1,7 +1,6 @@
 package au.com.alfie.ecomm.feature.plp.factory
 
 import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
-import au.com.alfie.ecomm.core.commons.extension.orZero
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
@@ -98,7 +97,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
 
     private fun mapImage(image: Media.Image?): ImageUI {
         val imageSizeUI = ImageSizeUI.Custom(
-            url = image?.url.orEmpty(),
+            url = image?.url.orEmpty()
         )
         return ImageUI(
             images = persistentListOf(imageSizeUI),

@@ -36,7 +36,7 @@ val productInfoColor = ProductInfo.Colour(
                     ),
                     onVideo = null
                 )
-            ),
+            )
         )
     )
 )

@@ -110,7 +110,7 @@ internal val productListData = ProductListingQuery.Data(
                                             ),
                                             onVideo = null
                                         )
-                                    ),
+                                    )
                                 )
                             )
                         )
@@ -140,7 +140,7 @@ internal val productListData = ProductListingQuery.Data(
                                 )
                             ),
                             colour = VariantInfo.Colour(
-                                id = "111",
+                                id = "111"
                             ),
                             size = VariantInfo.Size(
                                 __typename = "Size",
@@ -157,12 +157,12 @@ internal val productListData = ProductListingQuery.Data(
                             ),
                             stock = 100,
                             sku = "",
-                            attributes = listOf(),
-                        ),
+                            attributes = listOf()
+                        )
                     ),
                     variants = listOf(),
                     longDescription = "",
-                    attributes = listOf(),
+                    attributes = listOf()
                 )
             ),
             ProductListingQuery.Product(
@@ -225,7 +225,7 @@ internal val productListData = ProductListingQuery.Data(
                                             ),
                                             onVideo = null
                                         )
-                                    ),
+                                    )
                                 )
                             )
                         )
@@ -248,17 +248,17 @@ internal val productListData = ProductListingQuery.Data(
                                 )
                             ),
                             colour = VariantInfo.Colour(
-                                id = "111",
+                                id = "111"
                             ),
                             size = null,
                             stock = 1,
                             sku = "",
-                            attributes = listOf(),
-                        ),
+                            attributes = listOf()
+                        )
                     ),
                     variants = listOf(),
                     longDescription = "",
-                    attributes = listOf(),
+                    attributes = listOf()
                 )
             )
         ),
@@ -410,5 +410,5 @@ internal val productList = ProductList(
                 stock = 1
             )
         )
-    ),
+    )
 )
