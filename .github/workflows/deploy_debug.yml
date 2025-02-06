@@ -32,5 +32,10 @@ jobs:
           echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
           echo "${GOOGLE_SERVICES_JSON}" > app/src/google-services.json
 
+      - name: Print Firebase App ID to file
+        run: |
+          echo "Firebase App ID: ${FIREBASE_APP_ID}" > firebase_debug.txt
+          cat firebase_debug.txt
+
       - name: Run Fastlane
         run: bundle exec fastlane deploy_debug
