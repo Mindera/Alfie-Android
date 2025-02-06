@@ -18,8 +18,8 @@ platform :android do
 
   desc "Deploy Debug Build"
   lane :deploy_debug do |options|
-    #run_detekt()
-    #run_unit_tests()
+    run_detekt()
+    run_unit_tests()
     # Extracting ticket id from branch name to set APK title in Firebase App Distribution
     branch_name = `git rev-parse --abbrev-ref HEAD`.strip
     ticket_id = branch_name.match(/([A-Z]+-\d+)/)[0] rescue "unknown"

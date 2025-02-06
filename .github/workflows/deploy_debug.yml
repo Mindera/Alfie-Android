@@ -33,21 +33,5 @@ jobs:
           echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
           echo "${GOOGLE_SERVICES_JSON}" > app/src/google-services.json
 
-      - name: Debug Firebase App ID Secret
-        run: |
-          if [[ -z "${{ secrets.FIREBASE_APP_ID_DEBUG }}" ]]; then
-            echo "FIREBASE_APP_ID Secret is EMPTY!"
-          else
-            echo "FIREBASE_APP_ID Secret is SET!"
-          fi
-
-      - name: Debug Firebase App ID
-        run: |
-          if [[ -z "${FIREBASE_APP_ID}" ]]; then
-            echo "FIREBASE_APP_ID is EMPTY!"
-          else
-            echo "FIREBASE_APP_ID is SET!"
-          fi
-
       - name: Run Fastlane
         run: bundle exec fastlane deploy_debug
