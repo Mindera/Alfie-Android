@@ -53,7 +53,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
             priceRange = entry.priceRange,
             price = entry.defaultVariant.price
         ),
-        image = mapImage(entry.defaultVariant.defaultMedia),
+        image = entry.defaultVariant.defaultMedia.mapImage(),
         onFavoriteClick = onFavoriteClick
     )
 
@@ -67,7 +67,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
             priceRange = entry.priceRange,
             price = entry.defaultVariant.price
         ),
-        image = mapImage(entry.defaultVariant.defaultMedia),
+        image = entry.defaultVariant.defaultMedia.mapImage(),
         onFavoriteClick = onFavoriteClick
     )
 }

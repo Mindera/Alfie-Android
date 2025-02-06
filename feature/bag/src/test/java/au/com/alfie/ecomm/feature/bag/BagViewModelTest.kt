@@ -8,6 +8,7 @@ import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
@@ -15,18 +16,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
-class BagViewModelTest {
+internal class BagViewModelTest {
 
     @RelaxedMockK
     private lateinit var getBagUseCase: GetBagUseCase
 
     @RelaxedMockK
     private lateinit var bagUiFactory: BagUiFactory
-
-    @BeforeEach
-    fun setUp() {
-
-    }
 
     @Test
     fun `WHEN getBagList returns a success THEN update the state with the correct product list`() = runTest {
@@ -37,7 +33,7 @@ class BagViewModelTest {
 
         viewModel.state.test {
             val result = awaitItem()
-            assertEquals(BagUiState.Data.Loaded(bagProductUi), result)
+            assertEquals(BagUiState.Data.Loaded(bagProductUi.toImmutableList()), result)
 
             cancelAndConsumeRemainingEvents()
         }

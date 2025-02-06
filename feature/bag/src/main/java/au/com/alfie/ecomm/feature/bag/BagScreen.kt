@@ -28,6 +28,7 @@ import au.com.alfie.ecomm.designsystem.component.productcard.ProductCard
 import au.com.alfie.ecomm.designsystem.component.topbar.TopBarState
 import au.com.alfie.ecomm.designsystem.component.topbar.action.TopBarAction
 import au.com.alfie.ecomm.designsystem.theme.Theme
+import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing10
 import au.com.alfie.ecomm.feature.bag.models.BagProductUi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -84,8 +85,8 @@ private fun BagListScreen(
     bag: List<BagProductUi>
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        contentPadding = PaddingValues(spacing10),
+        verticalArrangement = Arrangement.spacedBy(spacing10)
     ) {
         items(bag) { item ->
             ProductCard(

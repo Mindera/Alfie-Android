@@ -280,12 +280,10 @@ internal val bagProductUi = listOf(
                     )
                 )
             ),
-            image = mapImage(
-                Media.Image(
+            image = Media.Image(
                     url = "",
                     alt = "Media"
-                )
-            ),
+                ).mapImage(),
             color = "blue",
             size = "M"
         )
@@ -312,12 +310,10 @@ internal val bagProductUi = listOf(
                     was = null
                 )
             ),
-            image = mapImage(
-                Media.Image(
+            image = Media.Image(
                     url = "",
                     alt = null
-                )
-            ),
+            ).mapImage(),
             color = "",
             size = "",
         )

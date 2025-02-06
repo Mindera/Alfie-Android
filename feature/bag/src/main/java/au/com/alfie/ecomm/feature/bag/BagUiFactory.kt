@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.feature.bag
 
+import androidx.compose.runtime.Immutable
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.feature.bag.models.BagProductUi
 import javax.inject.Inject
@@ -13,21 +14,19 @@ class BagUiFactory @Inject constructor() {
         products: List<Product>,
     ): List<BagProductUi> = products.map {
         BagProductUi(
-            productCardData = mapProductCardData(product = it)
+            productCardData = it.mapProductCardData()
         )
     }
 
-    private fun mapProductCardData(
-        product: Product,
-    ) = ProductCardType.XSmall(
-        brand = product.brand.name,
-        name = product.name,
+    private fun Product.mapProductCardData() = ProductCardType.XSmall(
+        brand = brand.name,
+        name = name,
         price = mapPrice(
-            priceRange = product.priceRange,
-            price = product.defaultVariant.price
+            priceRange = priceRange,
+            price = defaultVariant.price
         ),
-        image = mapImage(product.defaultVariant.media),
-        color = product.defaultVariant.color?.name ?: "",
-        size = product.defaultVariant.size?.value ?: ""
+        image = defaultVariant.media.mapImage(),
+        color = defaultVariant.color?.name.orEmpty(),
+        size = defaultVariant.size?.value.orEmpty()
     )
 }
