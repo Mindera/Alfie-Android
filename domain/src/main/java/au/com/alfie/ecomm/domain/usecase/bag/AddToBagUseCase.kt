@@ -1,6 +1,7 @@
 package au.com.alfie.ecomm.domain.usecase.bag
 
 import au.com.alfie.ecomm.domain.UseCaseInteractor
+import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.repository.bag.BagRepository
 import au.com.alfie.ecomm.repository.product.ProductRepository
@@ -12,13 +13,13 @@ class AddToBagUseCase @Inject constructor(
 ) : UseCaseInteractor {
 
     suspend operator fun invoke(productId: String) =
-        run(productRepository.getProduct(productId = productId))
+        productRepository.getProduct(productId = productId)
             .doOnResult(
                 onSuccess = {
-                    bagRepository.addToBag(it)
+                   run(bagRepository.addToBag(it))
                 },
                 onError = {
-                    it
+                    UseCaseResult.Error(it)
                 }
             )
 }

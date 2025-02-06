@@ -12,9 +12,9 @@ class BagRepositoryImpl @Inject constructor() : BagRepository {
     private val bag = mutableListOf<Product>()
 
     // TODO change this implementation to a proper implementation using data base or api to save the product
-    override fun addToBag(product: Product): RepositoryResult<Unit> {
+    override fun addToBag(product: Product): RepositoryResult<Boolean> {
         bag.firstOrNull { product.id == it.id } ?: bag.add(product)
-        return RepositoryResult.Success(Unit)
+        return RepositoryResult.Success(true)
     }
 
     // TODO change this implementation to a proper implementation using data base or api to get the products in the bag
