@@ -1,4 +1,4 @@
-package au.com.alfie.ecomm.designsystem.component.productcard.size
+package au.com.alfie.ecomm.designsystem.component.productcard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,8 +28,6 @@ import au.com.alfie.ecomm.designsystem.component.image.ratio.Ratio
 import au.com.alfie.ecomm.designsystem.component.price.Price
 import au.com.alfie.ecomm.designsystem.component.price.PriceSize
 import au.com.alfie.ecomm.designsystem.component.price.PriceType
-import au.com.alfie.ecomm.designsystem.component.productcard.PRICE_PLACEHOLDER_WIDTH
-import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.designsystem.component.shimmer.shimmer
 import au.com.alfie.ecomm.designsystem.theme.Theme
 import kotlinx.collections.immutable.persistentListOf
@@ -37,8 +35,8 @@ import kotlinx.collections.immutable.persistentListOf
 private const val NAME_LINES = 2
 
 @Composable
-internal fun ProductCardMedium(
-    productCard: ProductCardType.Medium,
+internal fun ProductCardWishlist(
+    productCard: ProductCardType.WishList,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
@@ -62,7 +60,7 @@ internal fun ProductCardMedium(
 
 @Composable
 private fun ProductImage(
-    productCard: ProductCardType.Medium,
+    productCard: ProductCardType.WishList,
     isLoading: Boolean
 ) {
     Box(
@@ -79,10 +77,10 @@ private fun ProductImage(
         if (isLoading.not()) {
             IconButton(
                 modifier = Modifier.padding(8.dp).size(Theme.iconSize.large),
-                onClick = productCard.onFavoriteClick
+                onClick = productCard.onRemoveClick
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_action_heart_outline),
+                    painter = painterResource(id = R.drawable.ic_action_close_dark),
                     contentDescription = null,
                     modifier = Modifier.size(Theme.iconSize.small)
                 )
@@ -93,7 +91,7 @@ private fun ProductImage(
 
 @Composable
 private fun ProductDescription(
-    productCard: ProductCardType.Medium,
+    productCard: ProductCardType.WishList,
     isLoading: Boolean
 ) {
     Text(
@@ -144,7 +142,7 @@ private fun ProductDescription(
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun ProductCardMediumPreview() {
-    val productCard = ProductCardType.Medium(
+    val productCard = ProductCardType.WishList(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("url")),
             alt = ""
@@ -152,15 +150,17 @@ private fun ProductCardMediumPreview() {
         brand = "Sass & Bide",
         name = "One Line Pant",
         price = PriceType.Default(price = "$ 429.00"),
-        onFavoriteClick = {}
+        onRemoveClick = {},
+        color = "Worn Blue",
+        size = "29 in"
     )
-    ProductCardMedium(productCard = productCard, onClick = { })
+    ProductCardWishlist(productCard = productCard, onClick = { })
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun ProductCardMediumLoadingPreview() {
-    val productCard = ProductCardType.Medium(
+    val productCard = ProductCardType.WishList(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("url")),
             alt = ""
@@ -168,9 +168,11 @@ private fun ProductCardMediumLoadingPreview() {
         brand = "",
         name = "",
         price = PriceType.Default(price = ""),
-        onFavoriteClick = {}
+        onRemoveClick = {},
+        color = "Worn Blue",
+        size = "29 in"
     )
-    ProductCardMedium(
+    ProductCardWishlist(
         productCard = productCard,
         onClick = { },
         isLoading = true

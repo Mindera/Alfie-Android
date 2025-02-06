@@ -2,6 +2,7 @@ package au.com.alfie.ecomm.domain
 
 import au.com.alfie.ecomm.repository.result.RepositoryResult
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 
 interface UseCaseInteractor {

@@ -76,4 +76,21 @@ sealed interface ProductCardType {
         override val nameTestTag: String = PRODUCT_NAME,
         override val priceTestTag: String = PRODUCT_PRICE_COMPONENT
     ) : ProductCardType
+
+    data class WishList(
+        override val image: ImageUI,
+        override val brand: String,
+        override val name: String,
+        override val price: PriceType,
+        val color: String,
+        val size: String,
+        val onRemoveClick: ClickEvent,
+        override val cardTestTag: String = PRODUCT_CARD,
+        override val imageTestTag: String = PRODUCT_IMAGE,
+        override val brandTestTag: String = PRODUCT_DESIGNER,
+        override val nameTestTag: String = PRODUCT_NAME,
+        override val priceTestTag: String = PRODUCT_PRICE_COMPONENT,
+        val colorTestTag: String = PRODUCT_COLOR,
+        val sizeTestTag: String = PRODUCT_SIZE
+    ) : ProductCardType
 }

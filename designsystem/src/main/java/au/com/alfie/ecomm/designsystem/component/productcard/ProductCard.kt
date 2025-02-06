@@ -43,5 +43,11 @@ fun ProductCard(
             modifier = modifier,
             isLoading = isLoading
         )
+        is ProductCardType.WishList -> ProductCardWishlist(
+            productCard = productCardType,
+            onClick = onClick,
+            modifier = modifier,
+            isLoading = isLoading
+        )
     }
 }
