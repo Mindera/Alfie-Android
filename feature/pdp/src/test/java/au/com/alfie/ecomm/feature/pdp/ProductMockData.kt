@@ -21,7 +21,6 @@ import au.com.alfie.ecomm.repository.product.model.Product
 import au.com.alfie.ecomm.repository.product.model.Variant
 import au.com.alfie.ecomm.repository.shared.model.Attribute
 import au.com.alfie.ecomm.repository.shared.model.Brand
-import au.com.alfie.ecomm.repository.shared.model.HierarchyItem
 import au.com.alfie.ecomm.repository.shared.model.Media
 import au.com.alfie.ecomm.repository.shared.model.Money
 import au.com.alfie.ecomm.repository.shared.model.Size
@@ -59,13 +58,12 @@ internal val product = Product(
                     alt = "patterson mini skirt",
                     url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                 )
-            ),
+            )
         ),
-        media =
-            Media.Image(
-                alt = "patterson mini skirt",
-                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-            ),
+        media = Media.Image(
+            alt = "patterson mini skirt",
+            url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+        ),
         stock = 100,
         price = Price(
             amount = Money(
@@ -112,7 +110,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -151,7 +149,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -190,7 +188,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -229,7 +227,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -260,8 +258,8 @@ internal val product = Product(
                     alt = "patterson mini skirt",
                     url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                 )
-            ),
-        ),
+            )
+        )
     )
 )
 
@@ -294,7 +292,7 @@ internal val productDetailsUI = ProductDetailsUI(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -333,7 +331,7 @@ internal val productDetailsUI = ProductDetailsUI(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -372,7 +370,7 @@ internal val productDetailsUI = ProductDetailsUI(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -411,11 +409,11 @@ internal val productDetailsUI = ProductDetailsUI(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
-                    alt = "patterson mini skirt",
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
             ),
             price = Price(
                 amount = Money(
@@ -489,7 +487,7 @@ internal val productDetailsUI = ProductDetailsUI(
             ImageUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
-                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
                     )
                 ),
                 alt = "patterson mini skirt"
@@ -497,7 +495,7 @@ internal val productDetailsUI = ProductDetailsUI(
             ImageUI(
                 images = persistentListOf(
                     ImageSizeUI.Custom(
-                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
                 ),
                 alt = "patterson mini skirt"
@@ -557,7 +555,7 @@ internal val selectedColorGalleryUI = GalleryUI(
         ImageUI(
             images = persistentListOf(
                 ImageSizeUI.Custom(
-                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
                 )
             ),
             alt = "patterson mini skirt"
@@ -565,7 +563,7 @@ internal val selectedColorGalleryUI = GalleryUI(
         ImageUI(
             images = persistentListOf(
                 ImageSizeUI.Custom(
-                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                 )
             ),
             alt = "patterson mini skirt"

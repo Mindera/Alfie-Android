@@ -10,7 +10,7 @@ import au.com.alfie.ecomm.repository.shared.model.VideoSource
 
 internal fun ImageInfo.toDomain() = Media.Image(
     alt = alt,
-    url = url.toString(),
+    url = url.toString()
 )
 
 internal fun MediaInfo.toDomain() =

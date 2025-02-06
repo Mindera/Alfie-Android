@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "Running tests before push..."
+
+# Run Fastlane tests
+fastlane execute_tests
+
+# Check if tests passed
+if [ $? -ne 0 ]; then
+    echo "Tests failed. Aborting push!"
+    exit 1
+fi
+
+echo "All tests passed. Proceeding with push."

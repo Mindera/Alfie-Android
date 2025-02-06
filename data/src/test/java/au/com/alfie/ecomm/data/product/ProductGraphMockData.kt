@@ -3,8 +3,6 @@ package au.com.alfie.ecomm.data.product
 import au.com.alfie.ecomm.graphql.ProductQuery
 import au.com.alfie.ecomm.graphql.fragment.BrandInfo
 import au.com.alfie.ecomm.graphql.fragment.ColorInfo
-import au.com.alfie.ecomm.graphql.fragment.HierarchyItemInfo
-import au.com.alfie.ecomm.graphql.fragment.HierarchyItemsTree
 import au.com.alfie.ecomm.graphql.fragment.ImageInfo
 import au.com.alfie.ecomm.graphql.fragment.MediaInfo
 import au.com.alfie.ecomm.graphql.fragment.MoneyInfo
@@ -19,7 +17,6 @@ import au.com.alfie.ecomm.repository.product.model.Price
 import au.com.alfie.ecomm.repository.product.model.Product
 import au.com.alfie.ecomm.repository.product.model.Variant
 import au.com.alfie.ecomm.repository.shared.model.Brand
-import au.com.alfie.ecomm.repository.shared.model.HierarchyItem
 import au.com.alfie.ecomm.repository.shared.model.Media
 import au.com.alfie.ecomm.repository.shared.model.Money
 import au.com.alfie.ecomm.repository.shared.model.Size
@@ -56,7 +53,7 @@ internal val productData = ProductQuery.Data(
                         )
                     ),
                     colour = VariantInfo.Colour(
-                        id = "3406543",
+                        id = "3406543"
                     ),
                     attributes = null,
                     stock = 100,
@@ -102,7 +99,7 @@ internal val productData = ProductQuery.Data(
                             )
                         ),
                         colour = VariantInfo.Colour(
-                            id = "3406543",
+                            id = "3406543"
                         ),
                         attributes = null,
                         stock = 100,
@@ -140,7 +137,7 @@ internal val productData = ProductQuery.Data(
                             )
                         ),
                         colour = VariantInfo.Colour(
-                            id = "3406543",
+                            id = "3406543"
                         ),
                         attributes = null,
                         stock = 100,
@@ -178,7 +175,7 @@ internal val productData = ProductQuery.Data(
                             )
                         ),
                         colour = VariantInfo.Colour(
-                            id = "3406543",
+                            id = "3406543"
                         ),
                         attributes = null,
                         stock = 100,
@@ -216,7 +213,7 @@ internal val productData = ProductQuery.Data(
                             )
                         ),
                         colour = VariantInfo.Colour(
-                            id = "3406543",
+                            id = "3406543"
                         ),
                         attributes = null,
                         stock = 100,
@@ -275,7 +272,7 @@ internal val productData = ProductQuery.Data(
                                     onVideo = null
                                 )
                             )
-                        ),
+                        )
                     )
                 )
             )
@@ -314,7 +311,7 @@ internal val product = Product(
                     alt = "patterson mini skirt",
                     url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                 )
-            ),
+            )
         ),
         media = Media.Image(
             alt = "patterson mini skirt",
@@ -361,7 +358,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -400,7 +397,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -439,7 +436,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -478,7 +475,7 @@ internal val product = Product(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 alt = "patterson mini skirt",
@@ -509,7 +506,7 @@ internal val product = Product(
                     alt = "patterson mini skirt",
                     url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                 )
-            ),
-        ),
+            )
+        )
     )
 )

@@ -199,7 +199,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
     private fun Media.Image.toImageUI(): ImageUI = ImageUI(
         images = persistentListOf(
             ImageSizeUI.Custom(
-                url = url,
+                url = url
             )
         ),
         alt = alt
