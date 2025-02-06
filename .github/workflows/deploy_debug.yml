@@ -34,7 +34,7 @@ jobs:
 
       - name: Print Firebase App ID to file
         run: |
-          echo "Firebase App ID: ${FIREBASE_APP_ID}" > firebase_debug.txt
+          echo "Firebase App ID: ${FIREBASE_CREDENTIALS}" > firebase_debug.txt
           cat firebase_debug.txt
 
       - name: Run Fastlane
