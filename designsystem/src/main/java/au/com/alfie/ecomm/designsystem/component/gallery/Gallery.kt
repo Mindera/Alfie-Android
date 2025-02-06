@@ -1,13 +1,13 @@
 package au.com.alfie.ecomm.designsystem.component.gallery
 
 import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -95,7 +95,7 @@ fun Gallery(
             Box(
                 modifier = Modifier
                     .clickable(
-                        indication = rememberRipple(bounded = true),
+                        indication = LocalIndication.current,
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = {
                             selectedIndex = index
