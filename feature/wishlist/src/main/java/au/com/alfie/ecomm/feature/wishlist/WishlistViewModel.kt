@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import au.com.alfie.ecomm.core.navigation.arguments.wishlist.WishlistNavArgs
 import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistUseCase
-import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlist
+import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.wishlist.WishlistUiState.Data.Loading
 import au.com.alfie.ecomm.repository.product.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WishlistViewModel @Inject constructor(
     private val getWishlistUseCase: GetWishlistUseCase,
-    private val removeFromWishlist: RemoveFromWishlist,
+    private val removeFromWishlist: RemoveFromWishlistUseCase,
     private val wishlistUiFactory: WishlistUiFactory,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -38,7 +38,6 @@ class WishlistViewModel @Inject constructor(
 
     private suspend fun getWishlistList() {
         getWishlistUseCase().collectLatest { result ->
-            Log.d("mylog", "getWishlistList, collectLatest")
             result.doOnResult(
                 onSuccess = {
                     _state.value = WishlistUiState.Data.Loaded(

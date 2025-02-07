@@ -30,6 +30,8 @@ import au.com.alfie.ecomm.designsystem.component.productcard.ProductCard
 import au.com.alfie.ecomm.designsystem.component.topbar.TopBarState
 import au.com.alfie.ecomm.designsystem.component.topbar.action.TopBarAction
 import au.com.alfie.ecomm.designsystem.theme.Theme
+import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing10
+import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing16
 import au.com.alfie.ecomm.feature.wishlist.models.WishlistProductUi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -86,8 +88,8 @@ private fun WishlistScreen(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2), // TODO consider using some sort of calculation to define the number of columns based on the screen size
-        contentPadding = PaddingValues(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(spacing10),
+        horizontalArrangement = Arrangement.spacedBy(spacing16),
     ) {
         items(wishlist) { item ->
             ProductCard(

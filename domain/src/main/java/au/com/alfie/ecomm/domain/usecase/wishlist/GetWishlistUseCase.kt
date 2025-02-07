@@ -12,9 +12,8 @@ class GetWishlistUseCase @Inject constructor(
     private val wishlistRepository: WishlistRepository
 ) : UseCaseInteractor {
 
-    operator fun invoke(): Flow<UseCaseResult<List<Product>>> {
-        return wishlistRepository.getWishlist().map { repositoryResult ->
+    operator fun invoke(): Flow<UseCaseResult<List<Product>>> =
+        wishlistRepository.getWishlist().map { repositoryResult ->
             run(repositoryResult)
-        }
     }
 }

@@ -32,6 +32,7 @@ import au.com.alfie.ecomm.designsystem.component.productcard.PRICE_PLACEHOLDER_W
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.designsystem.component.shimmer.shimmer
 import au.com.alfie.ecomm.designsystem.theme.Theme
+import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing8
 import kotlinx.collections.immutable.persistentListOf
 
 private const val NAME_LINES = 2
@@ -78,7 +79,7 @@ private fun ProductImage(
         )
         if (isLoading.not()) {
             IconButton(
-                modifier = Modifier.padding(8.dp).size(Theme.iconSize.large),
+                modifier = Modifier.padding(spacing8).size(Theme.iconSize.large),
                 onClick = productCard.onFavoriteClick
             ) {
                 Icon(
