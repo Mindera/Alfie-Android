@@ -18,5 +18,5 @@ data class ProductListEntry(
     val attributes: List<Attribute>,
     val defaultVariant: ProductListEntryVariant,
     val variants: List<ProductListEntryVariant>,
-    val colors: List<Color>,
+    val colors: List<Color>
 )

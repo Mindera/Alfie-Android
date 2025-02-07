@@ -1,7 +1,7 @@
 package au.com.alfie.ecomm.data.productlist.mapper
 
-import au.com.alfie.ecomm.data.toDomain
 import au.com.alfie.ecomm.data.shared.mapper.toDomain
+import au.com.alfie.ecomm.data.toDomain
 import au.com.alfie.ecomm.graphql.ProductListingQuery
 import au.com.alfie.ecomm.graphql.fragment.PaginationInfo
 import au.com.alfie.ecomm.graphql.fragment.ProductInfo
@@ -15,7 +15,7 @@ import au.com.alfie.ecomm.repository.shared.model.Pagination
 internal fun ProductListingQuery.ProductListing.toDomain() = ProductList(
     title = title,
     products = products.map { it.productInfo.toDomain() },
-    pagination = pagination.paginationInfo.toDomain(),
+    pagination = pagination.paginationInfo.toDomain()
 )
 
 private fun PaginationInfo.toDomain() = Pagination(

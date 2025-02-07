@@ -58,7 +58,7 @@ class ProductListUIFactoryTest {
     fun `invoke - WHEN metadata is provided THEN correctly maps the information`() = runTest {
         val metadata = ProductListMetadata(
             title = "Women",
-            totalResults = 15,
+            totalResults = 15
         )
 
         val result = uiFactory(

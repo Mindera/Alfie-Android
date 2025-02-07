@@ -178,7 +178,7 @@ class ProductListPagingSourceTest {
         val metadataProvider: (ProductListMetadata) -> Unit = mockk(relaxed = true)
         val expectedMetadata = ProductListMetadata(
             title = "Women",
-            totalResults = 15,
+            totalResults = 15
         )
 
         every { pagination.nextPage } returns null

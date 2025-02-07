@@ -15,13 +15,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
-### android branch_validation
+### android static_code_analysis
 
 ```sh
-[bundle exec] fastlane android branch_validation
+[bundle exec] fastlane android static_code_analysis
 ```
 
-Pull Request validation
+Static Code Analysis
+
+### android execute_tests
+
+```sh
+[bundle exec] fastlane android execute_tests
+```
+
+Execute Unit Tests
 
 ### android deploy_debug
 
@@ -29,7 +37,7 @@ Pull Request validation
 [bundle exec] fastlane android deploy_debug
 ```
 
-Pull Request validation
+Deploy Debug Build
 
 ### android deploy_beta
 
@@ -37,7 +45,7 @@ Pull Request validation
 [bundle exec] fastlane android deploy_beta
 ```
 
-Pull Request validation
+Deploy Beta Build
 
 ### android deploy_release
 
@@ -45,7 +53,15 @@ Pull Request validation
 [bundle exec] fastlane android deploy_release
 ```
 
-Pull Request validation
+Deploy Release Build
+
+### android nightly
+
+```sh
+[bundle exec] fastlane android nightly
+```
+
+Nightly tasks
 
 ----
 

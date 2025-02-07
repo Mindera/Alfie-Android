@@ -1,0 +1,37 @@
+name: PR Validation and Firebase Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+          bundler-cache: true
+
+      - name: Install Dependencies
+        run: |
+          gem install bundler
+          bundle install
+
+      - name: Set Firebase Credentials
+        env:
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID_BETA }}
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_DISTRIBUTOR_KEY }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "FIREBASE_APP_ID=${FIREBASE_APP_ID}" >> $GITHUB_ENV
+          echo "${FIREBASE_CREDENTIALS}" > fastlane/firebase_login_credentials.json
+          echo "${GOOGLE_SERVICES_JSON}" > app/src/google-services.json
+
+      - name: Run Fastlane
+        run: bundle exec fastlane deploy_beta
