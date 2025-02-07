@@ -32,7 +32,7 @@ class WishlistUiFactory @Inject constructor() {
             priceRange = product.priceRange,
             price = product.defaultVariant.price
         ),
-        image = mapImage(product.defaultVariant.media),
+        image = product.defaultVariant.media.mapImage(),
         color = product.defaultVariant.color?.name ?: "",
         size = product.defaultVariant.size?.value ?: "",
         onRemoveClick = onRemoveClick
