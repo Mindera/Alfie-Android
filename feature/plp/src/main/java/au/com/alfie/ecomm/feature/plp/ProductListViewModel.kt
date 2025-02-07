@@ -16,7 +16,7 @@ import au.com.alfie.ecomm.domain.onSuccess
 import au.com.alfie.ecomm.domain.usecase.productlist.GetPaginatedProductListUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
-import au.com.alfie.ecomm.domain.usecase.wishlist.AddWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
@@ -47,7 +47,7 @@ internal class ProductListViewModel @Inject constructor(
     private val productListUIFactory: ProductListUIFactory,
     savedStateHandle: SavedStateHandle,
     private val uiEventEmitterDelegate: UIEventEmitterDelegate,
-    private val addWishlistUseCase: AddWishlistUseCase
+    private val addWishlistUseCase: AddToWishlistUseCase
 ) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
 
     companion object {

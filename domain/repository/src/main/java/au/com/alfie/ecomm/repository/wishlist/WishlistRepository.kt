@@ -9,7 +9,7 @@ interface WishlistRepository {
 
     fun addToWishlist(product: Product): RepositoryResult<Boolean>
 
-    fun removeFromWishlist(product: Product): RepositoryResult<Unit>
+    fun removeFromWishlist(product: Product): RepositoryResult<Boolean>
 
     fun getWishlist(): Flow<RepositoryResult<List<Product>>>
 }

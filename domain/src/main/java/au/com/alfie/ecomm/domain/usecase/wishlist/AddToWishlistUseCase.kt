@@ -7,7 +7,7 @@ import au.com.alfie.ecomm.repository.product.ProductRepository
 import au.com.alfie.ecomm.repository.wishlist.WishlistRepository
 import javax.inject.Inject
 
-class AddWishlistUseCase @Inject constructor(
+class AddToWishlistUseCase @Inject constructor(
     private val wishlistRepository: WishlistRepository,
     private val productRepository: ProductRepository
 ) : UseCaseInteractor {

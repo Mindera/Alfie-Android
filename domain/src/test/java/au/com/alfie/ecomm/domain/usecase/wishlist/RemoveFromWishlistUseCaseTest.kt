@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
-class AddWishlistUseCaseTest {
+class RemoveFromWishlistUseCaseTest {
     @RelaxedMockK
     private lateinit var wishlistRepository: WishlistRepository
 
@@ -25,13 +25,13 @@ class AddWishlistUseCaseTest {
     private lateinit var productRepository: ProductRepository
 
     @InjectMockKs
-    lateinit var subject: AddToWishlistUseCase
+    lateinit var subject: RemoveFromWishlistUseCase
 
     @Test
-    fun `add to wishlist, with success result`() = runTest {
+    fun `remove from wishlist, with success result`() = runTest {
         val mockProduct = mockk<Product>()
         coEvery { productRepository.getProduct(any()) } returns RepositoryResult.Success(mockProduct)
-        coEvery { wishlistRepository.addToWishlist(mockProduct) } returns RepositoryResult.Success(true)
+        coEvery { wishlistRepository.removeFromWishlist(mockProduct) } returns RepositoryResult.Success(true)
 
         val expected = UseCaseResult.Success(true)
 
@@ -41,11 +41,11 @@ class AddWishlistUseCaseTest {
     }
 
     @Test
-    fun `add to wishlist, with error result`() = runTest {
+    fun `remove from wishlist, with error result`() = runTest {
         val mockProduct = mockk<Product>()
         val errorResult = mockk<ErrorResult>()
         coEvery { productRepository.getProduct(any()) } returns RepositoryResult.Error(errorResult)
-        coEvery { wishlistRepository.addToWishlist(mockProduct) } returns RepositoryResult.Error(errorResult)
+        coEvery { wishlistRepository.removeFromWishlist(mockProduct) } returns RepositoryResult.Error(errorResult)
 
         val expected = UseCaseResult.Error(errorResult)
 

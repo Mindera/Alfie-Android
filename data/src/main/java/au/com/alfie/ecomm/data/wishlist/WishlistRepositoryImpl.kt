@@ -28,9 +28,9 @@ class WishlistRepositoryImpl @Inject constructor() : WishlistRepository {
     }
 
     // TODO change this implementation to a proper implementation using data base or api to save the products on wishlist
-    override fun removeFromWishlist(product: Product): RepositoryResult<Unit> {
+    override fun removeFromWishlist(product: Product): RepositoryResult<Boolean> {
         _wishlist.value = _wishlist.value.filter { it.id != product.id }.toMutableList()
-        return RepositoryResult.Success(Unit)
+        return RepositoryResult.Success(true)
     }
 
     // TODO change this implementation to a proper implementation using data base or api to get the wishlist
