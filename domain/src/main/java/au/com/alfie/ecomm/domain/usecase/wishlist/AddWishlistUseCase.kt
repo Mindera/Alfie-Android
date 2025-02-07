@@ -1,6 +1,7 @@
 package au.com.alfie.ecomm.domain.usecase.wishlist
 
 import au.com.alfie.ecomm.domain.UseCaseInteractor
+import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.repository.product.ProductRepository
 import au.com.alfie.ecomm.repository.wishlist.WishlistRepository
@@ -12,13 +13,13 @@ class AddWishlistUseCase @Inject constructor(
 ) : UseCaseInteractor {
 
     suspend operator fun invoke(productId: String) =
-        run(productRepository.getProduct(productId = productId))
+        productRepository.getProduct(productId = productId)
             .doOnResult(
                 onSuccess = {
-                    wishlistRepository.addToWishlist(it)
+                   run(wishlistRepository.addToWishlist(it))
                 },
                 onError = {
-                    it
+                    UseCaseResult.Error(it)
                 }
             )
 }

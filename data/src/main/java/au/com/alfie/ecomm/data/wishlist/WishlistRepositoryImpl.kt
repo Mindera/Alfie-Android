@@ -17,14 +17,14 @@ class WishlistRepositoryImpl @Inject constructor() : WishlistRepository {
     private val _wishlist = MutableStateFlow<List<Product>>(listOf())
 
     // TODO change this implementation to a proper implementation using data base or api to save the products on wishlist
-    override fun addToWishlist(product: Product): RepositoryResult<Unit> {
+    override fun addToWishlist(product: Product): RepositoryResult<Boolean> {
         if (_wishlist.value.none { it.id == product.id }) {
             _wishlist.value = buildList {
                 addAll(_wishlist.value)
                 add(product)
             }
         }
-        return RepositoryResult.Success(Unit)
+        return RepositoryResult.Success(true)
     }
 
     // TODO change this implementation to a proper implementation using data base or api to save the products on wishlist

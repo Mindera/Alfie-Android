@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface WishlistRepository {
 
-    fun addToWishlist(product: Product): RepositoryResult<Unit>
+    fun addToWishlist(product: Product): RepositoryResult<Boolean>
 
     fun removeFromWishlist(product: Product): RepositoryResult<Unit>
 
