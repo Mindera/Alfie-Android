@@ -7,11 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import au.com.alfie.ecomm.core.deeplink.DeeplinkHandler
 import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
+import au.com.alfie.ecomm.designsystem.component.dialog.ErrorData
 import au.com.alfie.ecomm.designsystem.component.dialog.ErrorScreen
-import au.com.alfie.ecomm.feature.R
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.Close
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.NavigateTo
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.OnHistoryUpdate
@@ -27,6 +26,7 @@ fun WebViewContent(
     headers: Map<String, String>,
     deeplinkHandler: DeeplinkHandler,
     onEvent: ClickEventOneArg<WebViewEvent>,
+    errorData: ErrorData,
     modifier: Modifier = Modifier,
     isBackHandlerEnabled: Boolean = true
 ) {
@@ -41,14 +41,10 @@ fun WebViewContent(
 
     Surface(modifier = modifier) {
         if (isLoadFailed) {
-            ErrorScreen(
-                message = stringResource(R.string.error_failed_to_load_page),
-                buttonLabel = stringResource(R.string.retry),
-                onClick = {
-                    isLoadFailed = false
-                    navigator.reload(content.url)
-                }
-            )
+            ErrorScreen(errorData.copy(onButtonClick = {
+                isLoadFailed = false
+                navigator.reload(content.url)
+            }))
         } else {
             WebView(
                 state = webViewState,

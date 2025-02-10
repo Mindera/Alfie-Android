@@ -24,6 +24,7 @@ import au.com.alfie.ecomm.core.navigation.arguments.wishlist.wishlistNavArgs
 import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
 import au.com.alfie.ecomm.core.ui.test.SERVICES_PAGE
 import au.com.alfie.ecomm.designsystem.component.bottombar.BottomBarState
+import au.com.alfie.ecomm.designsystem.component.dialog.ErrorData
 import au.com.alfie.ecomm.designsystem.component.segmented.SegmentedItem
 import au.com.alfie.ecomm.designsystem.component.segmented.SegmentedPage
 import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarCustomHostState
@@ -137,7 +138,11 @@ private fun ShopScreenContent(
                 deeplinkHandler = deeplinkHandler,
                 onEvent = onWebViewEvent,
                 isBackHandlerEnabled = false,
-                modifier = Modifier.testTag(SERVICES_PAGE)
+                modifier = Modifier.testTag(SERVICES_PAGE),
+                errorData = ErrorData(
+                    message = stringResource(R.string.error_failed_to_load_page),
+                    buttonLabel = stringResource(R.string.retry)
+                )
             )
         }
     )

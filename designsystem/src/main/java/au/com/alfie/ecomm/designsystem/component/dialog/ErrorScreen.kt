@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.designsystem.component.dialog
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import au.com.alfie.ecomm.designsystem.R
 import au.com.alfie.ecomm.designsystem.component.button.Button
 import au.com.alfie.ecomm.designsystem.component.button.ButtonType
@@ -21,10 +24,10 @@ import au.com.alfie.ecomm.designsystem.theme.Theme
 
 @Composable
 fun ErrorScreen(
-    message: String,
-    buttonLabel: String,
-    onClick: () -> Unit
+    data: ErrorData
 ) {
+    val context = LocalContext.current
+    val noButtonActionMessage = stringResource(R.string.error_screen_button_no_action_message)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -37,7 +40,7 @@ fun ErrorScreen(
             )
             Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
             Text(
-                text = message,
+                text = data.message,
                 style = Theme.typography.paragraphLarge
             )
             Spacer(modifier = Modifier.height(Theme.spacing.spacing20))
@@ -46,10 +49,22 @@ fun ErrorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Theme.spacing.spacing20),
-                onClick = onClick,
+                onClick = data.onButtonClick ?: {
+                    Toast.makeText(
+                        context,
+                        noButtonActionMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
                 isEnabled = true,
-                text = buttonLabel
+                text = data.buttonLabel
             )
         }
     }
 }
+
+data class ErrorData(
+    val message: String,
+    val buttonLabel: String,
+    var onButtonClick: (() -> Unit)? = null
+)
