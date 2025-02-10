@@ -107,7 +107,7 @@ fun BottomSheet(
             bottomEnd = CornerSize(0.dp),
             bottomStart = CornerSize(0.dp)
         ),
-        windowInsets = WindowInsets(0.dp),
+        contentWindowInsets = { WindowInsets(0.dp) },
         onDismissRequest = { onDismiss() },
         dragHandle = { }
     ) {
