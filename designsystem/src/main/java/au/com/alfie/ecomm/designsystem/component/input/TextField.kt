@@ -1,7 +1,6 @@
 package au.com.alfie.ecomm.designsystem.component.input
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.border
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -259,7 +259,7 @@ private fun TextField(
                     .padding(horizontal = Theme.spacing.spacing20)
                     .indication(
                         interactionSource = interactionSource,
-                        indication = LocalIndication.current
+                        indication = ripple(bounded = false)
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
