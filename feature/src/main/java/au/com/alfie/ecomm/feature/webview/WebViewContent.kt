@@ -9,8 +9,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import au.com.alfie.ecomm.core.deeplink.DeeplinkHandler
 import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
-import au.com.alfie.ecomm.designsystem.component.dialog.ErrorData
-import au.com.alfie.ecomm.designsystem.component.dialog.ErrorScreen
+import au.com.alfie.ecomm.designsystem.component.dialog.error.ErrorScreen
+import au.com.alfie.ecomm.designsystem.component.dialog.error.ErrorType
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.Close
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.NavigateTo
 import au.com.alfie.ecomm.feature.webview.WebViewEvent.OnHistoryUpdate
@@ -26,7 +26,7 @@ fun WebViewContent(
     headers: Map<String, String>,
     deeplinkHandler: DeeplinkHandler,
     onEvent: ClickEventOneArg<WebViewEvent>,
-    errorData: ErrorData,
+    errorType: ErrorType,
     modifier: Modifier = Modifier,
     isBackHandlerEnabled: Boolean = true
 ) {
@@ -41,7 +41,7 @@ fun WebViewContent(
 
     Surface(modifier = modifier) {
         if (isLoadFailed) {
-            ErrorScreen(errorData.copy(onButtonClick = {
+            ErrorScreen(errorType.copy(onButtonClick = {
                 isLoadFailed = false
                 navigator.reload(content.url)
             }))

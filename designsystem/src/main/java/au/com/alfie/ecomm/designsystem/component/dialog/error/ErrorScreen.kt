@@ -1,4 +1,4 @@
-package au.com.alfie.ecomm.designsystem.component.dialog
+package au.com.alfie.ecomm.designsystem.component.dialog.error
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
@@ -24,7 +24,7 @@ import au.com.alfie.ecomm.designsystem.theme.Theme
 
 @Composable
 fun ErrorScreen(
-    data: ErrorData
+    data: ErrorType
 ) {
     val context = LocalContext.current
     val noButtonActionMessage = stringResource(R.string.error_screen_button_no_action_message)
@@ -62,9 +62,3 @@ fun ErrorScreen(
         }
     }
 }
-
-data class ErrorData(
-    val message: String,
-    val buttonLabel: String,
-    var onButtonClick: (() -> Unit)? = null
-)

@@ -15,7 +15,7 @@ import au.com.alfie.ecomm.core.navigation.arguments.wishlist.wishlistNavArgs
 import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
 import au.com.alfie.ecomm.core.ui.util.stringResource
 import au.com.alfie.ecomm.designsystem.component.bottombar.BottomBarState
-import au.com.alfie.ecomm.designsystem.component.dialog.ErrorData
+import au.com.alfie.ecomm.designsystem.component.dialog.error.ErrorType
 import au.com.alfie.ecomm.designsystem.component.searchbar.rememberSearchState
 import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarCustomHostState
 import au.com.alfie.ecomm.designsystem.component.topbar.TopBarState
@@ -93,7 +93,7 @@ private fun WebViewScreenContent(
             headers = state.content.headers,
             deeplinkHandler = deeplinkHandler,
             onEvent = onEvent,
-            errorData = ErrorData(
+            errorType = ErrorType(
                 message = androidx.compose.ui.res.stringResource(R.string.error_failed_to_load_page),
                 buttonLabel = androidx.compose.ui.res.stringResource(R.string.retry)
             )
