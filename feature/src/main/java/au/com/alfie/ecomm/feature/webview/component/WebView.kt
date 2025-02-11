@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
@@ -34,6 +37,7 @@ internal fun WebView(
     onLoadingOverride: (DeeplinkResult) -> Unit,
     onHistoryUpdate: (HistoryUpdate) -> Unit,
     onClose: () -> Unit,
+    onLoadFailure: () -> Unit,
     modifier: Modifier = Modifier,
     client: WebViewClient = remember { WebViewClient() },
     chromeClient: WebChromeClient = remember { WebChromeClient() },
@@ -41,7 +45,6 @@ internal fun WebView(
 ) {
     BoxWithConstraints(modifier) {
         val isInitialLoading = remember { mutableStateOf(true) }
-
         val width = if (constraints.hasFixedWidth) MATCH_PARENT else WRAP_CONTENT
         val height = if (constraints.hasFixedHeight) MATCH_PARENT else WRAP_CONTENT
         val layoutParams = FrameLayout.LayoutParams(width, height)
@@ -111,7 +114,25 @@ internal fun WebView(
                     chromeClient.state = state
 
                     webChromeClient = chromeClient
-                    webViewClient = client
+                    webViewClient = object : android.webkit.WebViewClient() {
+                        override fun onReceivedError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            error: WebResourceError?
+                        ) {
+                            super.onReceivedError(view, request, error)
+                            onLoadFailure()
+                        }
+
+                        override fun onReceivedHttpError(
+                            view: WebView?,
+                            request: WebResourceRequest?,
+                            errorResponse: WebResourceResponse?
+                        ) {
+                            super.onReceivedHttpError(view, request, errorResponse)
+                            onLoadFailure()
+                        }
+                    }
 
                     settings.setSupportZoom(false)
                     settings.displayZoomControls = false
@@ -122,7 +143,6 @@ internal fun WebView(
             },
             modifier = modifier
         )
-
         // Show loading dots while WebView is loading initial content
         if (isInitialLoading.value) {
             Box(

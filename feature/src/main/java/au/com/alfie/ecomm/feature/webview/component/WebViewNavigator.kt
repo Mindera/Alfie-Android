@@ -81,4 +81,10 @@ internal class WebViewNavigator(
             navigationEvents.emit(event)
         }
     }
+
+    fun reload(url: String) {
+        coroutineScope.launch {
+            navigationEvents.emit(LoadUrl(url))
+        }
+    }
 }

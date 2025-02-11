@@ -17,4 +17,5 @@
     <string name="gallery_controls_left_content_description">Previous media</string>
     <string name="gallery_controls_right_content_description">Next media</string>
     <string name="wishlist_screen_title">Wishlist</string>
+    <string name="error_screen_button_no_action_message">Action not specified</string>
 </resources>
