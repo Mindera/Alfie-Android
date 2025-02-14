@@ -132,6 +132,21 @@ internal class ProductDetailsUIFactory @Inject constructor(
         )
     }
 
+    suspend fun getSelectedVariantSku(
+        details: ProductDetailsUI
+    ): String? = withContext(dispatcher.default()) {
+        val selectedColorId = details.selectedColorUI?.id ?: return@withContext null
+        val selectedSizeId = (details.sizeSectionUI as? SizeSectionUI.SizeSelector)?.selectedSize?.id
+            ?: (details.sizeSectionUI as? SizeSectionUI.SizeModalPicker)?.selectedSize?.id
+            ?: return@withContext null
+
+        val selectedVariant = details.variants.find {
+            it.color?.id == selectedColorId && it.size?.id == selectedSizeId
+        } ?: return@withContext null
+
+        return@withContext selectedVariant.sku
+    }
+
     private fun ColorUI.isSelected(defaultVariant: Variant): Boolean = defaultVariant.color?.id == this.id
 
     private fun List<Variant>.isSoldOut(colorId: String?) = filter { it.color?.id == colorId }.isSoldOut()

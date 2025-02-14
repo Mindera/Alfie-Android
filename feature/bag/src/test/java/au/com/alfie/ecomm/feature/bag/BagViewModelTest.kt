@@ -4,13 +4,13 @@ import app.cash.turbine.test
 import au.com.alfie.ecomm.core.test.CoroutineExtension
 import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
+import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,12 +22,21 @@ internal class BagViewModelTest {
     private lateinit var getBagUseCase: GetBagUseCase
 
     @RelaxedMockK
+    private lateinit var getProductUseCase: GetProductUseCase
+
+    @RelaxedMockK
     private lateinit var bagUiFactory: BagUiFactory
 
     @Test
     fun `WHEN getBagList returns a success THEN update the state with the correct product list`() = runTest {
-        coEvery { getBagUseCase() } returns UseCaseResult.Success(products)
-        coEvery { bagUiFactory(products) } returns bagProductUi
+        coEvery { getBagUseCase() } returns UseCaseResult.Success(bagProducts)
+        coEvery { getProductUseCase(any()) } answers {
+            val productId = firstArg<String>()
+            val product = products.find { it.id == productId }
+            if (product != null) UseCaseResult.Success(product) else UseCaseResult.Error(mockk())
+        }
+
+        coEvery { bagUiFactory(bagProducts = bagProducts, products = products) } returns bagProductUi
 
         val viewModel = buildViewModel()
 
@@ -53,9 +62,9 @@ internal class BagViewModelTest {
         }
     }
 
-
     private fun buildViewModel() = BagViewModel(
         getBagUseCase = getBagUseCase,
         bagUiFactory = bagUiFactory,
+        getProductUseCase = getProductUseCase
     )
 }

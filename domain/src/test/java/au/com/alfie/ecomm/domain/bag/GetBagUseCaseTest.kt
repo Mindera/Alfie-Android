@@ -2,8 +2,8 @@ package au.com.alfie.ecomm.domain.bag
 
 import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
+import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.bag.BagRepository
-import au.com.alfie.ecomm.repository.product.model.Product
 import au.com.alfie.ecomm.repository.result.ErrorResult
 import au.com.alfie.ecomm.repository.result.RepositoryResult
 import io.mockk.coEvery
@@ -26,7 +26,7 @@ class GetBagUseCaseTest {
 
     @Test
     fun `get list of products in the bag`() = runTest {
-        val mockBag = mockk<List<Product>>()
+        val mockBag = mockk<List<BagProduct>>()
         coEvery { bagRepository.getBag() } returns RepositoryResult.Success(mockBag)
 
         val expected = UseCaseResult.Success(mockBag)

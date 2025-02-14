@@ -4,6 +4,7 @@ import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.feature.bag.models.BagProductUi
 import au.com.alfie.ecomm.feature.mappers.mapImage
 import au.com.alfie.ecomm.feature.mappers.mapPrice
+import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.product.model.Color
 import au.com.alfie.ecomm.repository.product.model.Price
 import au.com.alfie.ecomm.repository.product.model.PriceRange
@@ -56,7 +57,7 @@ internal val products = listOf(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             )
         ),
         longDescription = "",
@@ -91,7 +92,7 @@ internal val products = listOf(
                             alt = "patterson mini skirt",
                             url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                         )
-                    ),
+                    )
                 ),
                 size = Size(
                     id = "789",
@@ -106,7 +107,7 @@ internal val products = listOf(
                 ),
                 stock = 100,
                 attributes = listOf(),
-                sku = "234rtghnm"
+                sku = "variant1"
             )
         ),
         defaultVariant = Variant(
@@ -145,7 +146,7 @@ internal val products = listOf(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 url = "",
@@ -153,7 +154,7 @@ internal val products = listOf(
             ),
             stock = 100,
             attributes = listOf(),
-            sku = "234rtghnm"
+            sku = "variant2"
         )
     ),
     Product(
@@ -187,11 +188,7 @@ internal val products = listOf(
                         amountFormatted = "$100",
                         currencyCode = "AUS"
                     ),
-                    was = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
+                    was = null
                 ),
                 color = Color(
                     id = "111",
@@ -209,7 +206,7 @@ internal val products = listOf(
                             alt = "patterson mini skirt",
                             url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                         )
-                    ),
+                    )
                 ),
                 size = Size(
                     id = "789",
@@ -224,7 +221,7 @@ internal val products = listOf(
                 ),
                 stock = 100,
                 attributes = listOf(),
-                sku = "234rtghnm"
+                sku = "variant11"
             )
         ),
         defaultVariant = Variant(
@@ -244,9 +241,14 @@ internal val products = listOf(
             ),
             stock = 1,
             attributes = listOf(),
-            sku = "234rtghnm"
+            sku = "variant12"
         )
     )
+)
+
+internal val bagProducts = listOf(
+    BagProduct(productId = "123456", variantSku = "variant1"),
+    BagProduct(productId = "654321", variantSku = "variant11")
 )
 
 internal val bagProductUi = listOf(
@@ -281,9 +283,9 @@ internal val bagProductUi = listOf(
                 )
             ),
             image = Media.Image(
-                    url = "",
-                    alt = "Media"
-                ).mapImage(),
+                url = "",
+                alt = "Media"
+            ).mapImage(),
             color = "blue",
             size = "M"
         )
@@ -311,11 +313,11 @@ internal val bagProductUi = listOf(
                 )
             ),
             image = Media.Image(
-                    url = "",
-                    alt = null
+                url = "",
+                alt = "Media"
             ).mapImage(),
-            color = "",
-            size = "",
+            color = "blue",
+            size = "M"
         )
     )
 )
