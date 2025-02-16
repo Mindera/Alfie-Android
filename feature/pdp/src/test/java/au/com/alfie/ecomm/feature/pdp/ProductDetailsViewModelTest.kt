@@ -122,7 +122,7 @@ internal class ProductDetailsViewModelTest {
     @Ignore("Placeholder - to be completed")
     @Test
     fun `handleEvent - GIVEN OnAddToBagClick THEN share action is created`() = runTest {
-        val event = ProductDetailsEvent.OnAddToBagClick(productDetailsUI)
+        val event = ProductDetailsEvent.OnAddToBagClick
         val viewModel = buildViewModel()
         viewModel.uiEvent.test {
             viewModel.handleEvent(event)
