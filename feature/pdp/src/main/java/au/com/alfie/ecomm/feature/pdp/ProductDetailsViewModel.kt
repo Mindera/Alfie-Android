@@ -11,7 +11,6 @@ import au.com.alfie.ecomm.domain.usecase.bag.AddToBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsEvent
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsSectionItem
-import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUI
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState.Data.Loaded
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState.Data.Loading
@@ -47,7 +46,7 @@ internal class ProductDetailsViewModel @Inject constructor(
 
     fun handleEvent(event: ProductDetailsEvent) {
         when (event) {
-            is ProductDetailsEvent.OnAddToBagClick -> onAddToBag(event.item)
+            is ProductDetailsEvent.OnAddToBagClick -> onAddToBag()
             ProductDetailsEvent.OnShareClick -> onShareClick()
             is ProductDetailsEvent.OnColorClick -> onColorSelected(event.index)
             is ProductDetailsEvent.OnSectionClick -> onSectionClick(event.item)
@@ -83,10 +82,13 @@ internal class ProductDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onAddToBag(item: ProductDetailsUI) {
+    private fun onAddToBag() {
         viewModelScope.launch {
-            val selectedVariantSku = uiFactory.getSelectedVariantSku(item)
-            selectedVariantSku?.let { addToBagUseCase(item.id, it) }
+            val value = _state.value
+            if (value is Loaded) {
+                val selectedVariantSku = uiFactory.getSelectedVariantSku(value.details)
+                selectedVariantSku?.let { addToBagUseCase(value.details.id, it) }
+            }
         }
     }
 
