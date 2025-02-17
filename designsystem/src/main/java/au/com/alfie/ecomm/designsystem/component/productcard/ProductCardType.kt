@@ -28,6 +28,7 @@ sealed interface ProductCardType {
         override val brand: String,
         override val name: String,
         override val price: PriceType,
+        val onRemoveClick: ClickEvent? = null,
         val color: String,
         val size: String,
         override val cardTestTag: String = PRODUCT_CARD,

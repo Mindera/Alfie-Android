@@ -12,17 +12,17 @@ class BagUiFactory @Inject constructor() {
 
     operator fun invoke(
         bagProducts: List<BagProduct>,
-        products: List<Product>
+        products: List<Product>,
+        onRemoveClick: (BagProduct) -> Unit
     ): List<BagProductUi> = bagProducts.mapNotNull { bagProduct ->
         val product = products.find { it.id == bagProduct.productId } ?: return@mapNotNull null
         val selectedVariant = product.variants.find { it.sku == bagProduct.variantSku } ?: return@mapNotNull null
-
         BagProductUi(
-            productCardData = product.copy(defaultVariant = selectedVariant).mapProductCardData()
+            productCardData = product.copy(defaultVariant = selectedVariant).mapProductCardData(onRemoveClick)
         )
     }
 
-    private fun Product.mapProductCardData() = ProductCardType.XSmall(
+    private fun Product.mapProductCardData(onRemoveClick: (BagProduct) -> Unit) = ProductCardType.XSmall(
         brand = brand.name,
         name = name,
         price = mapPrice(
@@ -31,6 +31,7 @@ class BagUiFactory @Inject constructor() {
         ),
         image = defaultVariant.media.mapImage(),
         color = defaultVariant.color?.name.orEmpty(),
-        size = defaultVariant.size?.value.orEmpty()
+        size = defaultVariant.size?.value.orEmpty(),
+        onRemoveClick = { onRemoveClick(BagProduct(productId = id, variantSku = defaultVariant.sku)) }
     )
 }

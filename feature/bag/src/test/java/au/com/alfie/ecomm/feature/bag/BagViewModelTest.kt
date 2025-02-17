@@ -10,6 +10,9 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
@@ -29,18 +32,27 @@ internal class BagViewModelTest {
 
     @Test
     fun `WHEN getBagList returns a success THEN update the state with the correct product list`() = runTest {
-        coEvery { getBagUseCase() } returns UseCaseResult.Success(bagProducts)
+        coEvery { getBagUseCase() } returns flow {
+            println("getBagUseCase emitted: $bagProducts")
+            emit(UseCaseResult.Success(bagProducts))
+        }
         coEvery { getProductUseCase(any()) } answers {
             val productId = firstArg<String>()
             val product = products.find { it.id == productId }
             if (product != null) UseCaseResult.Success(product) else UseCaseResult.Error(mockk())
         }
 
-        coEvery { bagUiFactory(bagProducts = bagProducts, products = products) } returns bagProductUi
+        coEvery {
+            bagUiFactory(
+                bagProducts = bagProducts,
+                products = products,
+                any())
+        } returns bagProductUi
 
         val viewModel = buildViewModel()
 
         viewModel.state.test {
+            delay(300)
             val result = awaitItem()
             assertEquals(BagUiState.Data.Loaded(bagProductUi.toImmutableList()), result)
 
@@ -50,7 +62,7 @@ internal class BagViewModelTest {
 
     @Test
     fun `WHEN getBagList returns an error THEN update the state with the error state`() = runTest {
-        coEvery { getBagUseCase() } returns UseCaseResult.Error(mockk())
+        coEvery { getBagUseCase() } returns flowOf(UseCaseResult.Error(mockk()))
 
         val viewModel = buildViewModel()
 
@@ -65,6 +77,7 @@ internal class BagViewModelTest {
     private fun buildViewModel() = BagViewModel(
         getBagUseCase = getBagUseCase,
         bagUiFactory = bagUiFactory,
-        getProductUseCase = getProductUseCase
+        getProductUseCase = getProductUseCase,
+        removeFromBagUseCase = mockk()
     )
 }

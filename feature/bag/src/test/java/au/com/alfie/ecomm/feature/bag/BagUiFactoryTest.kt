@@ -17,7 +17,8 @@ class BagUiFactoryTest {
     fun `map bag to ui xSmall`() = runTest {
         val result = uiFactory(
             bagProducts = bagProducts,
-            products = products
+            products = products,
+            onRemoveClick = { }
         )
 
         assertEquals(bagProductUi, result)
