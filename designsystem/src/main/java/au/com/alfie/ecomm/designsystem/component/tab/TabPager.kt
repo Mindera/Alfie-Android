@@ -296,7 +296,7 @@ private fun PagerContent(
     HorizontalPager(
         modifier = Modifier.fillMaxSize(),
         state = pagerState,
-        beyondBoundsPageCount = beyondBoundsPageCount,
+        beyondViewportPageCount = beyondBoundsPageCount,
         userScrollEnabled = isUserScrollEnabled
     ) { page ->
         content(page)
