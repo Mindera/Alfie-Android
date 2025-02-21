@@ -17,6 +17,7 @@ dependencies {
     implementation(project(ProjectModule.coreNavigation))
     implementation(project(ProjectModule.coreUi))
     implementation(project(ProjectModule.designSystem))
+    implementation(project(ProjectModule.domain))
 
     implementation(libs.destinations.core)
     implementation(libs.hilt.navigation)
