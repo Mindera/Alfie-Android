@@ -2,13 +2,13 @@ package au.com.alfie.ecomm.feature.wishlist
 
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
-import javax.inject.Inject
-import au.com.alfie.ecomm.repository.product.model.Product
-import au.com.alfie.ecomm.feature.mappers.mapPrice
 import au.com.alfie.ecomm.feature.mappers.mapImage
+import au.com.alfie.ecomm.feature.mappers.mapPrice
 import au.com.alfie.ecomm.feature.wishlist.models.WishlistProductUi
+import au.com.alfie.ecomm.repository.product.model.Product
+import javax.inject.Inject
 
-class WishlistUiFactory @Inject constructor() {
+class WishlistUIFactory @Inject constructor() {
 
     operator fun invoke(
         product: Product,
@@ -21,11 +21,10 @@ class WishlistUiFactory @Inject constructor() {
             )
         )
 
-
-    private fun mapProductCardData(
+    fun mapProductCardData(
         product: Product,
         onRemoveClick: ClickEvent
-    ) = ProductCardType.WishList(
+    ) = ProductCardType.Medium(
         brand = product.brand.name,
         name = product.name,
         price = mapPrice(
@@ -33,8 +32,8 @@ class WishlistUiFactory @Inject constructor() {
             price = product.defaultVariant.price
         ),
         image = product.defaultVariant.media.mapImage(),
+        onRemoveClick = onRemoveClick,
         color = product.defaultVariant.color?.name.orEmpty(),
-        size = product.defaultVariant.size?.value.orEmpty(),
-        onRemoveClick = onRemoveClick
+        size = product.defaultVariant.size?.value.orEmpty()
     )
 }

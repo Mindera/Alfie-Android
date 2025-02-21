@@ -3,12 +3,12 @@ package au.com.alfie.ecomm.feature.plp.factory
 import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
+import au.com.alfie.ecomm.feature.mappers.mapImage
+import au.com.alfie.ecomm.feature.mappers.mapPrice
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
 import au.com.alfie.ecomm.repository.productlist.model.ProductListEntry
 import au.com.alfie.ecomm.repository.productlist.model.ProductListLayoutMode
 import kotlinx.coroutines.withContext
-import au.com.alfie.ecomm.feature.mappers.mapPrice
-import au.com.alfie.ecomm.feature.mappers.mapImage
 import javax.inject.Inject
 
 internal class ProductListEntryUIFactory @Inject constructor(

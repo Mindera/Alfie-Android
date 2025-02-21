@@ -56,7 +56,7 @@ internal val products = listOf(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             )
         ),
         longDescription = "",
@@ -91,7 +91,7 @@ internal val products = listOf(
                             alt = "patterson mini skirt",
                             url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                         )
-                    ),
+                    )
                 ),
                 size = Size(
                     id = "789",
@@ -145,7 +145,7 @@ internal val products = listOf(
                         alt = "patterson mini skirt",
                         url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                     )
-                ),
+                )
             ),
             media = Media.Image(
                 url = "",
@@ -209,7 +209,7 @@ internal val products = listOf(
                             alt = "patterson mini skirt",
                             url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
                         )
-                    ),
+                    )
                 ),
                 size = Size(
                     id = "789",
@@ -281,9 +281,9 @@ internal val bagProductUi = listOf(
                 )
             ),
             image = Media.Image(
-                    url = "",
-                    alt = "Media"
-                ).mapImage(),
+                url = "",
+                alt = "Media"
+            ).mapImage(),
             color = "blue",
             size = "M"
         )
@@ -311,11 +311,11 @@ internal val bagProductUi = listOf(
                 )
             ),
             image = Media.Image(
-                    url = "",
-                    alt = null
+                url = "",
+                alt = null
             ).mapImage(),
             color = "",
-            size = "",
+            size = ""
         )
     )
 )

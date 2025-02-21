@@ -1,13 +1,11 @@
 package au.com.alfie.ecomm.data.wishlist
 
-import android.util.Log
 import au.com.alfie.ecomm.data.toRepositoryResult
 import au.com.alfie.ecomm.repository.product.model.Product
 import au.com.alfie.ecomm.repository.result.RepositoryResult
 import au.com.alfie.ecomm.repository.wishlist.WishlistRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 

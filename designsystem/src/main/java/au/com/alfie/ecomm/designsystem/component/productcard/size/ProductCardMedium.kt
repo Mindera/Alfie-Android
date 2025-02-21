@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -16,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,7 +32,6 @@ import au.com.alfie.ecomm.designsystem.component.productcard.PRICE_PLACEHOLDER_W
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.designsystem.component.shimmer.shimmer
 import au.com.alfie.ecomm.designsystem.theme.Theme
-import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing8
 import kotlinx.collections.immutable.persistentListOf
 
 private const val NAME_LINES = 2
@@ -78,14 +77,15 @@ private fun ProductImage(
             ratio = Ratio.RATIO3x4
         )
         if (isLoading.not()) {
-            IconButton(
-                modifier = Modifier.padding(spacing8).size(Theme.iconSize.large),
-                onClick = productCard.onFavoriteClick
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_action_heart_outline),
-                    contentDescription = null,
-                    modifier = Modifier.size(Theme.iconSize.small)
+            if (productCard.onFavoriteClick != null) {
+                ActionIconButton(
+                    productCard.onFavoriteClick,
+                    R.drawable.ic_action_heart_outline
+                )
+            } else if (productCard.onRemoveClick != null) {
+                ActionIconButton(
+                    productCard.onRemoveClick,
+                    R.drawable.ic_action_close_dark
                 )
             }
         }
@@ -129,7 +129,44 @@ private fun ProductDescription(
             )
             .testTag(productCard.nameTestTag)
     )
-    Spacer(modifier = Modifier.size(Theme.spacing.spacing12))
+
+    productCard.color?.let { colorName ->
+        Text(
+            text = stringResource(id = R.string.product_color, colorName),
+            style = Theme.typography.tiny,
+            color = Theme.color.primary.mono500,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmer(
+                    isShimmering = isLoading,
+                    lines = NAME_LINES,
+                    lineHeight = Theme.typography.small.lineHeight,
+                    lastLineFraction = Theme.scale.scale80
+                )
+                .testTag(productCard.colorTestTag)
+        )
+    }
+
+    productCard.size?.let { sizeName ->
+        Text(
+            text = stringResource(id = R.string.product_size, sizeName),
+            style = Theme.typography.tiny,
+            color = Theme.color.primary.mono500,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmer(
+                    isShimmering = isLoading,
+                    lines = NAME_LINES,
+                    lineHeight = Theme.typography.small.lineHeight,
+                    lastLineFraction = Theme.scale.scale80
+                )
+                .testTag(productCard.sizeTestTag)
+        )
+    }
+
+    Spacer(modifier = Modifier.size(Theme.spacing.spacing8))
     Price(
         item = productCard.price,
         size = PriceSize.Medium,
@@ -140,6 +177,25 @@ private fun ProductDescription(
             )
             .testTag(productCard.priceTestTag)
     )
+}
+
+@Composable
+private fun ActionIconButton(
+    onClick: (() -> Unit)?,
+    iconRes: Int
+) {
+    onClick?.let {
+        IconButton(
+            modifier = Modifier.padding(8.dp).size(Theme.iconSize.large),
+            onClick = it
+        ) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(Theme.iconSize.small)
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
@@ -153,7 +209,9 @@ private fun ProductCardMediumPreview() {
         brand = "Sass & Bide",
         name = "One Line Pant",
         price = PriceType.Default(price = "$ 429.00"),
-        onFavoriteClick = {}
+        onFavoriteClick = {},
+        color = "black",
+        size = "10AU"
     )
     ProductCardMedium(productCard = productCard, onClick = { })
 }
@@ -169,7 +227,9 @@ private fun ProductCardMediumLoadingPreview() {
         brand = "",
         name = "",
         price = PriceType.Default(price = ""),
-        onFavoriteClick = {}
+        onFavoriteClick = {},
+        color = "black",
+        size = "10AU"
     )
     ProductCardMedium(
         productCard = productCard,

@@ -1,6 +1,5 @@
 package au.com.alfie.ecomm.feature.wishlist
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class WishlistViewModel @Inject constructor(
     private val getWishlistUseCase: GetWishlistUseCase,
     private val removeFromWishlist: RemoveFromWishlistUseCase,
-    private val wishlistUiFactory: WishlistUiFactory,
+    private val wishlistUiFactory: WishlistUIFactory,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val args: WishlistNavArgs = savedStateHandle.navArgs()

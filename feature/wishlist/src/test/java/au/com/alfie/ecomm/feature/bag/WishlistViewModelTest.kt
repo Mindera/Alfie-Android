@@ -1,61 +1,82 @@
-//package au.com.alfie.ecomm.feature.bag
-//
-//import app.cash.turbine.test
-//import au.com.alfie.ecomm.core.test.CoroutineExtension
-//import au.com.alfie.ecomm.domain.UseCaseResult
-//import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
-//import au.com.alfie.ecomm.feature.wishlist.WishlistUiFactory
-//import io.mockk.coEvery
-//import io.mockk.impl.annotations.RelaxedMockK
-//import io.mockk.junit5.MockKExtension
-//import io.mockk.mockk
-//import kotlinx.collections.immutable.toImmutableList
-//import kotlinx.coroutines.test.runTest
-//import org.junit.jupiter.api.extension.ExtendWith
-//import kotlin.test.Test
-//import kotlin.test.assertEquals
-//
-//@ExtendWith(MockKExtension::class, CoroutineExtension::class)
-//internal class WishlistViewModelTest {
-//
-//    @RelaxedMockK
-//    private lateinit var getwishlistUseCase: GetwishlistUseCase
-//
-//    @RelaxedMockK
-//    private lateinit var wishlistUiFactory: WishlistUiFactory
-//
-//    @Test
-//    fun `WHEN getwishlistList returns a success THEN update the state with the correct product list`() = runTest {
-//        coEvery { getwishlistUseCase() } returns UseCaseResult.Success(products)
-//        coEvery { wishlistUiFactory(products) } returns wishlistProductUi
-//
-//        val viewModel = buildViewModel()
-//
-//        viewModel.state.test {
-//            val result = awaitItem()
-//            assertEquals(wishlistUiState.Data.Loaded(wishlistProductUi.toImmutableList()), result)
-//
-//            cancelAndConsumeRemainingEvents()
-//        }
-//    }
-//
-//    @Test
-//    fun `WHEN getwishlistList returns an error THEN update the state with the error state`() = runTest {
-//        coEvery { getWishlistUseCase() } returns UseCaseResult.Error(mockk())
-//
-//        val viewModel = buildViewModel()
-//
-//        viewModel.state.test {
-//            val result = awaitItem()
-//            assertEquals(wishlistUiState.Error, result)
-//
-//            cancelAndConsumeRemainingEvents()
-//        }
-//    }
-//
-//
-//    private fun buildViewModel() = WishlistViewModel(
-//        getwishlistUseCase = getwishlistUseCase,
-//        wishlistUiFactory = wishlistUiFactory,
-//    )
-//}
+package au.com.alfie.ecomm.feature.bag
+
+import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
+import au.com.alfie.ecomm.core.test.CoroutineExtension
+import au.com.alfie.ecomm.domain.UseCaseResult
+import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import au.com.alfie.ecomm.feature.wishlist.WishlistUIFactory
+import au.com.alfie.ecomm.feature.wishlist.WishlistUiState
+import au.com.alfie.ecomm.feature.wishlist.WishlistViewModel
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+@ExtendWith(MockKExtension::class, CoroutineExtension::class)
+internal class WishlistViewModelTest {
+    @RelaxedMockK
+    private lateinit var getWishlistUseCase: GetWishlistUseCase
+
+    @RelaxedMockK
+    private lateinit var removeFromWishlistUseCase: RemoveFromWishlistUseCase
+
+    @RelaxedMockK
+    private lateinit var wishlistUiFactory: WishlistUIFactory
+
+    @Test
+    fun `WHEN getWishlistList returns a success THEN update the state with the correct wishlist items`() = runTest {
+        val wishlistProducts = products
+        val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
+
+        coEvery { getWishlistUseCase() } returns flow {
+            emit(UseCaseResult.Success(wishlistProducts))
+        }
+
+        wishlistProducts.zip(wishListProductUi).forEach { (product, ui) ->
+            every { wishlistUiFactory(product, any()) } returns ui
+        }
+        every { savedStateHandle.get<Boolean>("launchFromTop") } returns false
+
+        val viewModel = buildViewModel(savedStateHandle)
+
+        viewModel.state.test {
+            val result = awaitItem()
+            assertEquals(WishlistUiState.Data.Loaded(wishListProductUi), result)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `WHEN getWishlistList returns an error THEN update the state with the error state`() = runTest {
+        val savedStateHandle = mockk<SavedStateHandle>(relaxed = true)
+
+        coEvery { getWishlistUseCase() } returns flow {
+            emit(UseCaseResult.Error(mockk()))
+        }
+
+        every { savedStateHandle.get<Boolean>("launchFromTop") } returns false
+
+        val viewModel = buildViewModel(savedStateHandle)
+
+        viewModel.state.test {
+            val result = awaitItem()
+            assertEquals(WishlistUiState.Error, result)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    private fun buildViewModel(savedStateHandle: SavedStateHandle) = WishlistViewModel(
+        getWishlistUseCase = getWishlistUseCase,
+        removeFromWishlist = removeFromWishlistUseCase,
+        wishlistUiFactory = wishlistUiFactory,
+        savedStateHandle = savedStateHandle
+    )
+}

@@ -10,7 +10,6 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -53,9 +52,8 @@ internal class BagViewModelTest {
         }
     }
 
-
     private fun buildViewModel() = BagViewModel(
         getBagUseCase = getBagUseCase,
-        bagUiFactory = bagUiFactory,
+        bagUiFactory = bagUiFactory
     )
 }

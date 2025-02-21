@@ -17,4 +17,6 @@
     <string name="gallery_controls_left_content_description">Previous media</string>
     <string name="gallery_controls_right_content_description">Next media</string>
     <string name="wishlist_screen_title">Wishlist</string>
+    <string name="product_color">Colour: %1$s</string>
+    <string name="product_size">Size: %1$s</string>
 </resources>

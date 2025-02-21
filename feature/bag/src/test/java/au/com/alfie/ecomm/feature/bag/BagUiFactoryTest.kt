@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 @ExtendWith(MockKExtension::class)
 class BagUiFactoryTest {
 

@@ -16,7 +16,7 @@ class AddToBagUseCase @Inject constructor(
         productRepository.getProduct(productId = productId)
             .doOnResult(
                 onSuccess = {
-                   run(bagRepository.addToBag(it))
+                    run(bagRepository.addToBag(it))
                 },
                 onError = {
                     UseCaseResult.Error(it)

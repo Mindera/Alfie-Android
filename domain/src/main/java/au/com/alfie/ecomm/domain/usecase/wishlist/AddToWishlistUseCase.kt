@@ -16,7 +16,7 @@ class AddToWishlistUseCase @Inject constructor(
         productRepository.getProduct(productId = productId)
             .doOnResult(
                 onSuccess = {
-                   run(wishlistRepository.addToWishlist(it))
+                    run(wishlistRepository.addToWishlist(it))
                 },
                 onError = {
                     UseCaseResult.Error(it)

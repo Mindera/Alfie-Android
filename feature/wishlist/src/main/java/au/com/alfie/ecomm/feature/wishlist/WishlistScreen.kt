@@ -8,17 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import au.com.alfie.ecomm.core.navigation.DirectionProvider
@@ -89,12 +88,12 @@ private fun WishlistScreen(
     LazyVerticalGrid(
         columns = GridCells.Fixed(2), // TODO consider using some sort of calculation to define the number of columns based on the screen size
         contentPadding = PaddingValues(spacing10),
-        horizontalArrangement = Arrangement.spacedBy(spacing16),
+        horizontalArrangement = Arrangement.spacedBy(spacing16)
     ) {
         items(wishlist) { item ->
             ProductCard(
                 productCardType = item.productCardData,
-                onClick = { },
+                onClick = { }
             )
         }
     }
