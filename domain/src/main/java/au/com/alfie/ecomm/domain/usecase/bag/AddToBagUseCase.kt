@@ -11,9 +11,18 @@ class AddToBagUseCase @Inject constructor(
     private val bagRepository: BagRepository
 ) : UseCaseInteractor {
 
-    suspend operator fun invoke(productId: String, variantSku: String) =
-        run(bagRepository.addToBag(BagProduct(productId = productId, variantSku = variantSku))).doOnResult(
-            onSuccess = { UseCaseResult.Success(it) },
-            onError = { UseCaseResult.Error(it) }
+    suspend operator fun invoke(
+        productId: String,
+        variantSku: String
+    ) = run(
+        bagRepository.addToBag(
+            BagProduct(
+                productId = productId,
+                variantSku = variantSku
+            )
         )
+    ).doOnResult(
+        onSuccess = { UseCaseResult.Success(it) },
+        onError = { UseCaseResult.Error(it) }
+    )
 }

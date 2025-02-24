@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BagViewModel @Inject constructor(
+internal class BagViewModel @Inject constructor(
     private val getBagUseCase: GetBagUseCase,
     private val removeFromBagUseCase: RemoveFromBagUseCase,
     private val getProductUseCase: GetProductUseCase,

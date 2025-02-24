@@ -120,7 +120,8 @@ internal class ProductDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             val value = _state.value
             if (value is Loaded) {
-                val updatedState = uiFactory.setSelectedSize(details = value.details, sizeUI = sizeUI)
+                val updatedState =
+                    uiFactory.setSelectedSize(details = value.details, sizeUI = sizeUI)
                 _state.value = Loaded(updatedState)
             }
         }

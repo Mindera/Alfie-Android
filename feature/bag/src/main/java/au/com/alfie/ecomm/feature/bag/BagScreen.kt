@@ -31,6 +31,7 @@ import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing10
 import au.com.alfie.ecomm.feature.bag.models.BagProductUi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import au.com.alfie.ecomm.designsystem.R as RD
 
@@ -81,7 +82,7 @@ private fun BagScreenContent(
 
 @Composable
 private fun BagListScreen(
-    bag: List<BagProductUi>
+    bag: ImmutableList<BagProductUi>
 ) {
     LazyColumn(
         contentPadding = PaddingValues(spacing10),

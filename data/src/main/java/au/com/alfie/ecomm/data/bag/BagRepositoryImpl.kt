@@ -3,6 +3,8 @@ package au.com.alfie.ecomm.data.bag
 import au.com.alfie.ecomm.data.toRepositoryResult
 import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.bag.BagRepository
+import au.com.alfie.ecomm.repository.result.ErrorResult
+import au.com.alfie.ecomm.repository.result.ErrorType
 import au.com.alfie.ecomm.repository.result.RepositoryResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,11 +18,13 @@ class BagRepositoryImpl @Inject constructor() : BagRepository {
 
     // TODO change this implementation to a proper implementation using data base or api to save the product
     override fun addToBag(bagProduct: BagProduct): RepositoryResult<Boolean> {
-        _bag.value.firstOrNull {
-            bagProduct.productId == it.productId && bagProduct.variantSku == it.variantSku
-        } ?: run {
-            _bag.value = _bag.value.toMutableList().apply { add(bagProduct) }
+        if (_bag.value.any {
+                bagProduct.productId == it.productId && bagProduct.variantSku == it.variantSku
+            }) {
+            return RepositoryResult.Error(ErrorResult(ErrorType.RESOURCE_NOT_FOUND))
         }
+
+        _bag.value = _bag.value.toMutableList().apply { add(bagProduct) }
         return RepositoryResult.Success(true)
     }
 

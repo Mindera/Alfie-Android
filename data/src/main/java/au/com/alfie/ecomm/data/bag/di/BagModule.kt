@@ -10,9 +10,9 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal abstract class BagModule {
+internal interface BagModule {
 
     @Binds
     @Singleton
-    abstract fun bindBagRepository(bagRepositoryImpl: BagRepositoryImpl): BagRepository
+    fun bindBagRepository(bagRepositoryImpl: BagRepositoryImpl): BagRepository
 }
