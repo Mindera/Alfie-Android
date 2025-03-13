@@ -84,11 +84,9 @@ internal class ProductDetailsViewModel @Inject constructor(
 
     private fun onAddToBag() {
         viewModelScope.launch {
-            val value = _state.value
-            if (value is Loaded) {
-                val selectedVariantSku = uiFactory.getSelectedVariantSku(value.details)
-                selectedVariantSku?.let { addToBagUseCase(value.details.id, it) }
-            }
+            val value = (_state.value as? Loaded) ?: return@launch
+            val selectedVariantSku = uiFactory.getSelectedVariantSku(value.details)
+            selectedVariantSku?.let { addToBagUseCase(value.details.id, it) }
         }
     }
 

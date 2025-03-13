@@ -44,7 +44,7 @@ internal class ProductListViewModel @Inject constructor(
     private val productListEntryUIFactory: ProductListEntryUIFactory,
     private val productListUIFactory: ProductListUIFactory,
     savedStateHandle: SavedStateHandle,
-    private val uiEventEmitterDelegate: UIEventEmitterDelegate
+    uiEventEmitterDelegate: UIEventEmitterDelegate
 ) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
 
     companion object {

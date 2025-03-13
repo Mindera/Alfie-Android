@@ -8,11 +8,13 @@ import kotlinx.collections.immutable.toImmutableList
 @Stable
 internal sealed interface BagUiState {
 
-    sealed class Data(open val bag: ImmutableList<BagProductUi>) : BagUiState {
+    sealed interface Data : BagUiState {
 
-        data object Loading : Data(listOf<BagProductUi>().toImmutableList())
+        data object Loading : Data
 
-        data class Loaded(override val bag: ImmutableList<BagProductUi>) : Data(bag)
+        data class Loaded(val bag: ImmutableList<BagProductUi>) : Data
+
+        data object Empty : Data
     }
 
     data object Error : BagUiState

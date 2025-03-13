@@ -2,11 +2,16 @@ package au.com.alfie.ecomm.feature.bag
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import au.com.alfie.ecomm.core.navigation.Screen
+import au.com.alfie.ecomm.core.navigation.arguments.productDetailsNavArgs
 import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
 import au.com.alfie.ecomm.domain.usecase.bag.RemoveFromBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import au.com.alfie.ecomm.feature.bag.BagUiState.Data.Loading
+import au.com.alfie.ecomm.feature.bag.models.BagEvent
+import au.com.alfie.ecomm.feature.uievent.UIEventEmitter
+import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.product.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,8 +30,10 @@ internal class BagViewModel @Inject constructor(
     private val getBagUseCase: GetBagUseCase,
     private val removeFromBagUseCase: RemoveFromBagUseCase,
     private val getProductUseCase: GetProductUseCase,
-    private val bagUiFactory: BagUiFactory
-) : ViewModel() {
+    private val bagUiFactory: BagUiFactory,
+    uiEventEmitterDelegate: UIEventEmitterDelegate
+) : ViewModel(),
+    UIEventEmitter by uiEventEmitterDelegate {
 
     private val _state = MutableStateFlow<BagUiState>(Loading)
     internal val state = _state.asStateFlow()
@@ -34,6 +41,12 @@ internal class BagViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getBagList()
+        }
+    }
+
+    fun handleEvent(event: BagEvent) {
+        when (event) {
+            is BagEvent.OnProductClick -> openProduct(event.productId)
         }
     }
 
@@ -72,6 +85,14 @@ internal class BagViewModel @Inject constructor(
                     product
                 }
         }
+    }
+
+    private fun openProduct(productId: String) {
+        navigateTo(
+            screen = Screen.ProductDetails(
+                args = productDetailsNavArgs(id = productId)
+            )
+        )
     }
 
     private fun onRemoveClicked(bagProduct: BagProduct) {
