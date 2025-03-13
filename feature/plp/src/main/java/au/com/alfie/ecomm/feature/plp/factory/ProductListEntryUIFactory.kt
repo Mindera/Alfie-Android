@@ -3,8 +3,8 @@ package au.com.alfie.ecomm.feature.plp.factory
 import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
-import au.com.alfie.ecomm.feature.mappers.mapImage
-import au.com.alfie.ecomm.feature.mappers.mapPrice
+import au.com.alfie.ecomm.feature.mappers.toImageUI
+import au.com.alfie.ecomm.feature.mappers.toPriceType
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
 import au.com.alfie.ecomm.repository.productlist.model.ProductListEntry
 import au.com.alfie.ecomm.repository.productlist.model.ProductListLayoutMode
@@ -49,11 +49,8 @@ internal class ProductListEntryUIFactory @Inject constructor(
     ) = ProductCardType.Medium(
         brand = entry.brand.name,
         name = entry.name,
-        price = mapPrice(
-            priceRange = entry.priceRange,
-            price = entry.defaultVariant.price
-        ),
-        image = entry.defaultVariant.defaultMedia.mapImage(),
+        price = entry.priceRange.toPriceType(default = entry.defaultVariant.price),
+        image = entry.defaultVariant.defaultMedia.toImageUI(),
         onFavoriteClick = onFavoriteClick
     )
 
@@ -63,11 +60,8 @@ internal class ProductListEntryUIFactory @Inject constructor(
     ) = ProductCardType.Large(
         brand = entry.brand.name,
         name = entry.name,
-        price = mapPrice(
-            priceRange = entry.priceRange,
-            price = entry.defaultVariant.price
-        ),
-        image = entry.defaultVariant.defaultMedia.mapImage(),
+        price = entry.priceRange.toPriceType(default = entry.defaultVariant.price),
+        image = entry.defaultVariant.defaultMedia.toImageUI(),
         onFavoriteClick = onFavoriteClick
     )
 }

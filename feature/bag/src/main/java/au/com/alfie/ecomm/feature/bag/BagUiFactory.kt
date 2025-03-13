@@ -3,8 +3,8 @@ package au.com.alfie.ecomm.feature.bag
 import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.feature.bag.models.BagProductUi
-import au.com.alfie.ecomm.feature.mappers.mapImage
-import au.com.alfie.ecomm.feature.mappers.mapPrice
+import au.com.alfie.ecomm.feature.mappers.toImageUI
+import au.com.alfie.ecomm.feature.mappers.toPriceType
 import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.product.model.Product
 import kotlinx.collections.immutable.ImmutableList
@@ -28,11 +28,8 @@ internal class BagUiFactory @Inject constructor() {
     private fun Product.mapProductCardData(onRemoveClick: (BagProduct) -> Unit) = ProductCardType.XSmall(
         brand = brand.name,
         name = name,
-        price = mapPrice(
-            priceRange = priceRange,
-            price = defaultVariant.price
-        ),
-        image = defaultVariant.media.mapImage(),
+        price = priceRange.toPriceType(defaultVariant.price) ?: defaultVariant.price.toPriceType(),
+        image = defaultVariant.media.toImageUI(),
         color = defaultVariant.color?.name.orEmpty(),
         size = defaultVariant.size?.value.orEmpty(),
         onRemoveClick = { onRemoveClick(BagProduct(productId = id, variantSku = defaultVariant.sku)) }

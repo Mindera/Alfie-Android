@@ -5,7 +5,7 @@ import au.com.alfie.ecomm.core.ui.media.image.ImageUI
 import au.com.alfie.ecomm.repository.shared.model.Media
 import kotlinx.collections.immutable.persistentListOf
 
-fun Media.Image?.mapImage(): ImageUI {
+fun Media.Image?.toImageUI(): ImageUI {
     val imageSizeUI = ImageSizeUI.Custom(
         url = this?.url.orEmpty()
     )

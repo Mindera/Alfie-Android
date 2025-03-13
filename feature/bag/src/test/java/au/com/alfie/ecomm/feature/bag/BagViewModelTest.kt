@@ -4,7 +4,9 @@ import app.cash.turbine.test
 import au.com.alfie.ecomm.core.test.CoroutineExtension
 import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
+import au.com.alfie.ecomm.domain.usecase.bag.RemoveFromBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
+import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -28,7 +30,13 @@ internal class BagViewModelTest {
     private lateinit var getProductUseCase: GetProductUseCase
 
     @RelaxedMockK
+    private lateinit var removeFromBagUseCase: RemoveFromBagUseCase
+
+    @RelaxedMockK
     private lateinit var bagUiFactory: BagUiFactory
+
+    @RelaxedMockK
+    private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
 
     @Test
     fun `WHEN getBagList returns a success THEN update the state with the correct product list`() = runTest {
@@ -78,6 +86,7 @@ internal class BagViewModelTest {
         getBagUseCase = getBagUseCase,
         bagUiFactory = bagUiFactory,
         getProductUseCase = getProductUseCase,
-        removeFromBagUseCase = mockk()
+        removeFromBagUseCase = removeFromBagUseCase,
+        uiEventEmitterDelegate = uiEventEmitterDelegate
     )
 }
