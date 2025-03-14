@@ -40,9 +40,7 @@ internal class WishlistViewModelTest {
             emit(UseCaseResult.Success(wishlistProducts))
         }
 
-        wishlistProducts.zip(wishListProductUi).forEach { (product, ui) ->
-            every { wishlistUiFactory(product, any()) } returns ui
-        }
+        every { wishlistUiFactory(products, any()) } returns wishListProductUi
         every { savedStateHandle.get<Boolean>("launchFromTop") } returns false
 
         val viewModel = buildViewModel(savedStateHandle)

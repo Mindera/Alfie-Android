@@ -18,9 +18,7 @@ class WishlistUIFactoryTest {
 
     @Test
     fun `map wishlist to ui xMedium`() = runTest {
-        val result = products.map { product ->
-            uiFactory(product, { })
-        }
+        val result = uiFactory(products) { }
 
         assertEquals(
             wishListProductUi.map {
@@ -29,7 +27,7 @@ class WishlistUIFactoryTest {
                         image = it.productCardData.image,
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
-                        price = it.productCardData.price!!,
+                        price = it.productCardData.price,
                         color = (it.productCardData as ProductCardType.Medium).color,
                         size = (it.productCardData as ProductCardType.Medium).size
                     )
@@ -41,7 +39,7 @@ class WishlistUIFactoryTest {
                         image = it.productCardData.image,
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
-                        price = it.productCardData.price!!,
+                        price = it.productCardData.price,
                         color = (it.productCardData as ProductCardType.Medium).color,
                         size = (it.productCardData as ProductCardType.Medium).size
                     )

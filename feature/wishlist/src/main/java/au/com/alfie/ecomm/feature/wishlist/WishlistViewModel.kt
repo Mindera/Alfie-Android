@@ -38,15 +38,12 @@ class WishlistViewModel @Inject constructor(
     private suspend fun getWishlistList() {
         getWishlistUseCase().collectLatest { result ->
             result.doOnResult(
-                onSuccess = {
-                    _state.value = WishlistUiState.Data.Loaded(
-                        it.map {
-                            wishlistUiFactory(
-                                product = it,
-                                onRemoveClick = { onRemoveClicked(it) }
-                            )
-                        }
+                onSuccess = { productList ->
+                    val wishlist = wishlistUiFactory(
+                        products = productList,
+                        onRemoveClick = ::onRemoveClicked
                     )
+                    _state.value = WishlistUiState.Data.Loaded(wishlist)
                 },
                 onError = {
                     _state.value = WishlistUiState.Error

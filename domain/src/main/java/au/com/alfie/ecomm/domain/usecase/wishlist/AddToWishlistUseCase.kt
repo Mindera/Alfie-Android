@@ -15,11 +15,7 @@ class AddToWishlistUseCase @Inject constructor(
     suspend operator fun invoke(productId: String) =
         productRepository.getProduct(productId = productId)
             .doOnResult(
-                onSuccess = {
-                    run(wishlistRepository.addToWishlist(it))
-                },
-                onError = {
-                    UseCaseResult.Error(it)
-                }
+                onSuccess = { run(wishlistRepository.addToWishlist(it)) },
+                onError = { UseCaseResult.Error(it) }
             )
 }

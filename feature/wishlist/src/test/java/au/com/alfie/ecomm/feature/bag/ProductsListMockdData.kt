@@ -13,6 +13,7 @@ import au.com.alfie.ecomm.repository.shared.model.Brand
 import au.com.alfie.ecomm.repository.shared.model.Media
 import au.com.alfie.ecomm.repository.shared.model.Money
 import au.com.alfie.ecomm.repository.shared.model.Size
+import kotlinx.collections.immutable.persistentListOf
 
 internal val products = listOf(
     Product(
@@ -249,7 +250,7 @@ internal val products = listOf(
     )
 )
 
-internal val wishListProductUi = listOf(
+internal val wishListProductUi = persistentListOf(
     WishlistProductUi(
         productCardData = ProductCardType.Medium(
             brand = "Brand",
