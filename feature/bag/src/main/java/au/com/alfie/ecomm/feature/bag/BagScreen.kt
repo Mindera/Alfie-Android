@@ -102,7 +102,7 @@ private fun BagListScreen(
             ProductCard(
                 productCardType = item.productCardData,
                 onClick = {
-                    // TODO: Go to Product Details page with Selected Variant
+                    onEvent(BagEvent.OnProductClick(item.id))
                 }
             )
         }

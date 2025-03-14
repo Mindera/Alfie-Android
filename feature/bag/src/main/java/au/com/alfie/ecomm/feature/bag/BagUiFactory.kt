@@ -17,21 +17,30 @@ internal class BagUiFactory @Inject constructor() {
         bagProducts: List<BagProduct>,
         products: List<Product>,
         onRemoveClick: ClickEventOneArg<BagProduct>
-    ): ImmutableList<BagProductUi> = bagProducts.mapNotNull { bagProduct ->
-        val product = products.find { it.id == bagProduct.productId } ?: return@mapNotNull null
-        val selectedVariant = product.variants.find { it.sku == bagProduct.variantSku } ?: return@mapNotNull null
+    ): ImmutableList<BagProductUi> = bagProducts.map { item ->
+        val product = products.first { it.id == item.productId }
+        val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.defaultVariant
+        val productCard = product.copy(defaultVariant = selectedVariant).toProductCard(onRemoveClick)
         BagProductUi(
-            productCardData = product.copy(defaultVariant = selectedVariant).mapProductCardData(onRemoveClick)
+            id = item.productId,
+            productCardData = productCard
         )
     }.toImmutableList()
 
-    private fun Product.mapProductCardData(onRemoveClick: (BagProduct) -> Unit) = ProductCardType.XSmall(
+    private fun Product.toProductCard(onRemoveClick: ClickEventOneArg<BagProduct>) = ProductCardType.XSmall(
         brand = brand.name,
         name = name,
-        price = priceRange.toPriceType(defaultVariant.price) ?: defaultVariant.price.toPriceType(),
+        price = priceRange.toPriceType(defaultVariant.price),
         image = defaultVariant.media.toImageUI(),
         color = defaultVariant.color?.name.orEmpty(),
         size = defaultVariant.size?.value.orEmpty(),
-        onRemoveClick = { onRemoveClick(BagProduct(productId = id, variantSku = defaultVariant.sku)) }
+        onRemoveClick = {
+            onRemoveClick(
+                BagProduct(
+                    productId = id,
+                    variantSku = defaultVariant.sku
+                )
+            )
+        }
     )
 }

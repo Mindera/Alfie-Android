@@ -15,7 +15,6 @@ import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.product.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -39,9 +38,7 @@ internal class BagViewModel @Inject constructor(
     internal val state = _state.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            getBagList()
-        }
+        getBagList()
     }
 
     fun handleEvent(event: BagEvent) {
@@ -50,24 +47,23 @@ internal class BagViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getBagList() {
-        getBagUseCase().collectLatest { result ->
-            result.doOnResult(
-                onSuccess = {
-                    _state.value = BagUiState.Data.Loaded(
-                        bagUiFactory(
+    private fun getBagList() {
+        viewModelScope.launch {
+            getBagUseCase().collectLatest { result ->
+                result.doOnResult(
+                    onSuccess = {
+                        val bag = bagUiFactory(
                             bagProducts = it,
                             products = getBagProductDetails(it),
-                            onRemoveClick = { bagProduct ->
-                                onRemoveClicked(bagProduct)
-                            }
-                        ).toImmutableList()
-                    )
-                },
-                onError = {
-                    _state.value = BagUiState.Error
-                }
-            )
+                            onRemoveClick = { onRemoveClicked(it) }
+                        )
+                        _state.value = BagUiState.Data.Loaded(bag)
+                    },
+                    onError = {
+                        _state.value = BagUiState.Error
+                    }
+                )
+            }
         }
     }
 

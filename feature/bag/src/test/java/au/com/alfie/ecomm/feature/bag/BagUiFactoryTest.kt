@@ -17,37 +17,38 @@ class BagUiFactoryTest {
 
     @Test
     fun `map bag to ui xSmall`() = runTest {
-        val result = uiFactory(
+        val items = uiFactory(
             bagProducts = bagProducts,
             products = products,
             onRemoveClick = { }
         )
+        val expected = bagProductUi.map {
+            BagProductUi(
+                id = it.id,
+                productCardData = ProductCardType.XSmall(
+                    image = it.productCardData.image,
+                    brand = it.productCardData.brand,
+                    name = it.productCardData.name,
+                    price = it.productCardData.price,
+                    color = (it.productCardData as ProductCardType.XSmall).color,
+                    size = (it.productCardData as ProductCardType.XSmall).size
+                )
+            )
+        }
+        val result = items.map {
+            BagProductUi(
+                id = it.id,
+                productCardData = ProductCardType.XSmall(
+                    image = it.productCardData.image,
+                    brand = it.productCardData.brand,
+                    name = it.productCardData.name,
+                    price = it.productCardData.price,
+                    color = (it.productCardData as ProductCardType.XSmall).color,
+                    size = (it.productCardData as ProductCardType.XSmall).size
+                )
+            )
+        }
 
-        assertEquals(
-            bagProductUi.map {
-                BagProductUi(
-                    productCardData = ProductCardType.XSmall(
-                        image = it.productCardData.image,
-                        brand = it.productCardData.brand,
-                        name = it.productCardData.name,
-                        price = it.productCardData.price!!,
-                        color = (it.productCardData as ProductCardType.XSmall).color,
-                        size = (it.productCardData as ProductCardType.XSmall).size
-                    )
-                )
-            },
-            result.map {
-                BagProductUi(
-                    productCardData = ProductCardType.XSmall(
-                        image = it.productCardData.image,
-                        brand = it.productCardData.brand,
-                        name = it.productCardData.name,
-                        price = it.productCardData.price!!,
-                        color = (it.productCardData as ProductCardType.XSmall).color,
-                        size = (it.productCardData as ProductCardType.XSmall).size
-                    )
-                )
-            }
-        )
+        assertEquals(expected, result)
     }
 }

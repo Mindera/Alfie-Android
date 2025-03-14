@@ -16,7 +16,7 @@ sealed interface ProductCardType {
     val image: ImageUI
     val brand: String
     val name: String
-    val price: PriceType?
+    val price: PriceType
     val cardTestTag: String
     val imageTestTag: String
     val brandTestTag: String
@@ -44,7 +44,7 @@ sealed interface ProductCardType {
         override val image: ImageUI,
         override val brand: String,
         override val name: String,
-        override val price: PriceType?,
+        override val price: PriceType,
         override val cardTestTag: String = PRODUCT_CARD,
         override val imageTestTag: String = PRODUCT_IMAGE,
         override val brandTestTag: String = PRODUCT_DESIGNER,
