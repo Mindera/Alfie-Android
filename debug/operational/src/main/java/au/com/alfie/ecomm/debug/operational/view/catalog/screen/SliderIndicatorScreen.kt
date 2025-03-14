@@ -155,7 +155,7 @@ private fun PagedSliderIndicator() {
         val pagerState = rememberPagerState { PAGER_SIZE }
         HorizontalPager(
             state = pagerState,
-            beyondBoundsPageCount = 2
+            beyondViewportPageCount = 2
         ) {
             Box(
                 modifier = Modifier

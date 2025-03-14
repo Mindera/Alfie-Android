@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -95,7 +95,7 @@ fun Gallery(
             Box(
                 modifier = Modifier
                     .clickable(
-                        indication = rememberRipple(bounded = true),
+                        indication = ripple(bounded = false),
                         interactionSource = remember { MutableInteractionSource() },
                         onClick = {
                             selectedIndex = index
