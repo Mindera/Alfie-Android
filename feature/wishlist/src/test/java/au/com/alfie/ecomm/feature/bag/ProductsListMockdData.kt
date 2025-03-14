@@ -1,8 +1,8 @@
 package au.com.alfie.ecomm.feature.bag
 
+import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
-import au.com.alfie.ecomm.feature.mappers.mapImage
-import au.com.alfie.ecomm.feature.mappers.mapPrice
+import au.com.alfie.ecomm.feature.mappers.toImageUI
 import au.com.alfie.ecomm.feature.wishlist.models.WishlistProductUi
 import au.com.alfie.ecomm.repository.product.model.Color
 import au.com.alfie.ecomm.repository.product.model.Price
@@ -254,36 +254,14 @@ internal val wishListProductUi = listOf(
         productCardData = ProductCardType.Medium(
             brand = "Brand",
             name = "Product name",
-            price = mapPrice(
-                priceRange = PriceRange(
-                    low = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    high = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
-                ),
-                price = Price(
-                    amount = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    was = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
-                )
+            price = PriceType.Range(
+                startPrice = "$100",
+                endPrice = "$200"
             ),
             image = Media.Image(
                 url = "",
                 alt = "Media"
-            ).mapImage(),
+            ).toImageUI(),
             color = "blue",
             size = "M"
         )
@@ -292,28 +270,11 @@ internal val wishListProductUi = listOf(
         productCardData = ProductCardType.Medium(
             brand = "Brand",
             name = "Product 2",
-            price = mapPrice(
-                priceRange = PriceRange(
-                    low = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    high = null
-                ),
-                price = Price(
-                    amount = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    was = null
-                )
-            ),
+            price = PriceType.Default("$100"),
             image = Media.Image(
                 url = "",
                 alt = null
-            ).mapImage(),
+            ).toImageUI(),
             color = "",
             size = ""
         )
