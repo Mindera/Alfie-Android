@@ -1,6 +1,7 @@
 package au.com.alfie.ecomm.designsystem.component.swipe
 
 import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -37,24 +38,29 @@ fun SwipeAnchored(
     startOffset: (size: IntSize) -> Float = { 0f },
     partialOffset: (size: IntSize) -> Float = { it.height * FIFTY_PERCENT },
     positionalThreshold: (Float) -> Float = { it * FIFTY_PERCENT },
-    animationSpec: () -> AnimationSpec<Float> = { standardAccelerate() },
+    snapAnimationSpec: () -> AnimationSpec<Float> = { standardAccelerate() },
     allowNestedScroll: Boolean = true,
     onAnchorChange: suspend SwipeAnchoredScope.(SwipeAnchor) -> Unit = {},
     onOffset: (isInBetween: Boolean) -> Unit = { },
     content: @Composable SwipeAnchoredScope.() -> Unit
 ) {
+    val density = LocalDensity.current
+    val decayAnimationSpec = remember(density) { splineBasedDecay<Float>(density) }
+
     val anchoredDraggableState = rememberSaveable(
         saver = AnchoredDraggableState.Saver(
-            animationSpec = animationSpec(),
+            snapAnimationSpec = snapAnimationSpec(),
+            decayAnimationSpec = decayAnimationSpec,
             positionalThreshold = positionalThreshold,
             velocityThreshold = velocityThreshold
         )
     ) {
         AnchoredDraggableState(
             initialValue = initialAnchor,
+            snapAnimationSpec = snapAnimationSpec(),
+            decayAnimationSpec = decayAnimationSpec,
             positionalThreshold = positionalThreshold,
-            velocityThreshold = velocityThreshold,
-            animationSpec = animationSpec()
+            velocityThreshold = velocityThreshold
         )
     }
     val scope = remember {

@@ -173,7 +173,7 @@ private fun NonZoomablePager(
     Box(contentAlignment = Alignment.TopEnd) {
         HorizontalPager(
             state = pagerState,
-            beyondBoundsPageCount = 1,
+            beyondViewportPageCount = 1,
             pageSpacing = Theme.spacing.spacing8,
             contentPadding = PaddingValues(horizontal = horizontalPadding)
         ) { index ->
