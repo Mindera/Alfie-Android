@@ -5,5 +5,6 @@ import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 
 @Stable
 data class BagProductUi(
+    val id: String,
     val productCardData: ProductCardType
 )

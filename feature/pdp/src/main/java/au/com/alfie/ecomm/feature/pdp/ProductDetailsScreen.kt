@@ -382,7 +382,7 @@ private fun ProductDetailsBagSection(
             text = text,
             isEnabled = state.details.isSelectionSoldOut.not(),
             onClick = {
-                val event = ProductDetailsEvent.OnAddToBagClick(state.details)
+                val event = ProductDetailsEvent.OnAddToBagClick
                 onEvent(event)
             }
         )

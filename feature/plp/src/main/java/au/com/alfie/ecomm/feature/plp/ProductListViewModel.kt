@@ -43,12 +43,13 @@ internal class ProductListViewModel @Inject constructor(
     private val getPaginatedProductList: GetPaginatedProductListUseCase,
     private val getProductListLayoutMode: GetProductListLayoutModeUseCase,
     private val updateProductListLayoutMode: UpdateProductListLayoutModeUseCase,
+    private val addWishlistUseCase: AddToWishlistUseCase,
     private val productListEntryUIFactory: ProductListEntryUIFactory,
     private val productListUIFactory: ProductListUIFactory,
     savedStateHandle: SavedStateHandle,
-    private val uiEventEmitterDelegate: UIEventEmitterDelegate,
-    private val addWishlistUseCase: AddToWishlistUseCase
-) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
+    uiEventEmitterDelegate: UIEventEmitterDelegate
+) : ViewModel(),
+    UIEventEmitter by uiEventEmitterDelegate {
 
     companion object {
         private const val PAGE_SIZE = 15

@@ -1,9 +1,10 @@
 package au.com.alfie.ecomm.feature.bag
 
+import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.feature.bag.models.BagProductUi
-import au.com.alfie.ecomm.feature.mappers.mapImage
-import au.com.alfie.ecomm.feature.mappers.mapPrice
+import au.com.alfie.ecomm.feature.mappers.toImageUI
+import au.com.alfie.ecomm.repository.bag.BagProduct
 import au.com.alfie.ecomm.repository.product.model.Color
 import au.com.alfie.ecomm.repository.product.model.Price
 import au.com.alfie.ecomm.repository.product.model.PriceRange
@@ -13,6 +14,7 @@ import au.com.alfie.ecomm.repository.shared.model.Brand
 import au.com.alfie.ecomm.repository.shared.model.Media
 import au.com.alfie.ecomm.repository.shared.model.Money
 import au.com.alfie.ecomm.repository.shared.model.Size
+import kotlinx.collections.immutable.persistentListOf
 
 internal val products = listOf(
     Product(
@@ -106,7 +108,7 @@ internal val products = listOf(
                 ),
                 stock = 100,
                 attributes = listOf(),
-                sku = "234rtghnm"
+                sku = "variant1"
             )
         ),
         defaultVariant = Variant(
@@ -153,7 +155,7 @@ internal val products = listOf(
             ),
             stock = 100,
             attributes = listOf(),
-            sku = "234rtghnm"
+            sku = "variant2"
         )
     ),
     Product(
@@ -187,11 +189,7 @@ internal val products = listOf(
                         amountFormatted = "$100",
                         currencyCode = "AUS"
                     ),
-                    was = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
+                    was = null
                 ),
                 color = Color(
                     id = "111",
@@ -224,7 +222,7 @@ internal val products = listOf(
                 ),
                 stock = 100,
                 attributes = listOf(),
-                sku = "234rtghnm"
+                sku = "variant11"
             )
         ),
         defaultVariant = Variant(
@@ -244,78 +242,48 @@ internal val products = listOf(
             ),
             stock = 1,
             attributes = listOf(),
-            sku = "234rtghnm"
+            sku = "variant12"
         )
     )
 )
 
-internal val bagProductUi = listOf(
+internal val bagProducts = listOf(
+    BagProduct(productId = "123456", variantSku = "variant1"),
+    BagProduct(productId = "654321", variantSku = "variant11")
+)
+
+internal val bagProductUi = persistentListOf(
     BagProductUi(
+        id = "123456",
         productCardData = ProductCardType.XSmall(
             brand = "Brand",
             name = "Product name",
-            price = mapPrice(
-                priceRange = PriceRange(
-                    low = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    high = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
-                ),
-                price = Price(
-                    amount = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    was = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
-                )
+            price = PriceType.Range(
+                startPrice = "$100",
+                endPrice = "$200"
             ),
             image = Media.Image(
                 url = "",
                 alt = "Media"
-            ).mapImage(),
+            ).toImageUI(),
             color = "blue",
             size = "M"
         )
     ),
     BagProductUi(
+        id = "654321",
         productCardData = ProductCardType.XSmall(
             brand = "Brand",
             name = "Product 2",
-            price = mapPrice(
-                priceRange = PriceRange(
-                    low = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    high = null
-                ),
-                price = Price(
-                    amount = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    was = null
-                )
+            price = PriceType.Default(
+                price = "$100"
             ),
             image = Media.Image(
                 url = "",
-                alt = null
-            ).mapImage(),
-            color = "",
-            size = ""
+                alt = "Media"
+            ).toImageUI(),
+            color = "blue",
+            size = "M"
         )
     )
 )

@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
@@ -119,10 +118,9 @@ internal class ProductDetailsViewModelTest {
         }
     }
 
-    @Ignore("Placeholder - to be completed")
     @Test
     fun `handleEvent - GIVEN OnAddToBagClick THEN share action is created`() = runTest {
-        val event = ProductDetailsEvent.OnAddToBagClick(productDetailsUI)
+        val event = ProductDetailsEvent.OnAddToBagClick
         val viewModel = buildViewModel()
         viewModel.uiEvent.test {
             viewModel.handleEvent(event)

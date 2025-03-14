@@ -4,23 +4,27 @@ import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.repository.product.model.Price
 import au.com.alfie.ecomm.repository.product.model.PriceRange
 
-fun mapPrice(
-    priceRange: PriceRange?,
-    price: Price
-): PriceType {
-    val rangeHigh = priceRange?.high
-    val salePrice = price.was
-    return when {
-        rangeHigh != null -> PriceType.Range(
-            startPrice = priceRange.low.amountFormatted,
+fun Price.toPriceType(): PriceType {
+    val previousPrice = this.was
+    return if (previousPrice != null) {
+        PriceType.Sale(
+            fullPrice = previousPrice.amountFormatted,
+            salePrice = amount.amountFormatted
+        )
+    } else {
+        PriceType.Default(price = amount.amountFormatted)
+    }
+}
+
+fun PriceRange?.toPriceType(default: Price): PriceType {
+    val rangeHigh = this?.high
+    val rangeLow = this?.low
+    return if (rangeHigh != null && rangeLow != null) {
+        PriceType.Range(
+            startPrice = rangeLow.amountFormatted,
             endPrice = rangeHigh.amountFormatted
         )
-
-        salePrice != null -> PriceType.Sale(
-            fullPrice = salePrice.amountFormatted,
-            salePrice = price.amount.amountFormatted
-        )
-
-        else -> PriceType.Default(price = price.amount.amountFormatted)
+    } else {
+        PriceType.Default(price = default.amount.amountFormatted)
     }
 }
