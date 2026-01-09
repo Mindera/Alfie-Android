@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
-class AddWishlistUseCaseTest {
+class AddToWishlistUseCaseTest {
     @RelaxedMockK
     private lateinit var wishlistRepository: WishlistRepository
 
