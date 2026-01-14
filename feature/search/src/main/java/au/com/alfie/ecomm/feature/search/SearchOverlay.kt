@@ -58,6 +58,7 @@ import au.com.alfie.ecomm.designsystem.component.button.ButtonType
 import au.com.alfie.ecomm.designsystem.component.loading.Loading
 import au.com.alfie.ecomm.designsystem.component.loading.LoadingType
 import au.com.alfie.ecomm.designsystem.component.overlay.OverlayLayout
+import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCard
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.designsystem.theme.Theme
@@ -544,7 +545,7 @@ private fun ContentOverlaySearchSuggestionsPreview() {
                     ),
                     brand = "POLO RALPH LAUREN",
                     name = "MENS CUSTOM FIT BUTTON DOWN OXFORD SHIRT",
-                    price = null
+                    price = PriceType.Default("$100")
                 )
             )
         }

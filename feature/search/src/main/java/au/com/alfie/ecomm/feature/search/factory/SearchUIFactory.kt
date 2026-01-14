@@ -4,6 +4,7 @@ import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
+import au.com.alfie.ecomm.feature.mappers.toPriceType
 import au.com.alfie.ecomm.feature.search.model.BrandSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.KeywordSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.ProductSuggestionUI
@@ -51,7 +52,7 @@ internal class SearchUIFactory @Inject constructor(
             image = mapImage(media),
             brand = brandName,
             name = name,
-            price = null
+            price = price.toPriceType()
         )
     )
 
