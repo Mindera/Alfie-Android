@@ -16,6 +16,7 @@ import au.com.alfie.ecomm.domain.onSuccess
 import au.com.alfie.ecomm.domain.usecase.productlist.GetPaginatedProductListUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
@@ -23,6 +24,7 @@ import au.com.alfie.ecomm.feature.plp.model.ProductListEvent
 import au.com.alfie.ecomm.feature.plp.model.ProductListUI
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitter
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
+import au.com.alfie.ecomm.repository.productlist.model.ProductListEntry
 import au.com.alfie.ecomm.repository.productlist.model.ProductListLayoutMode
 import au.com.alfie.ecomm.repository.productlist.model.ProductListMetadata
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,11 +43,13 @@ internal class ProductListViewModel @Inject constructor(
     private val getPaginatedProductList: GetPaginatedProductListUseCase,
     private val getProductListLayoutMode: GetProductListLayoutModeUseCase,
     private val updateProductListLayoutMode: UpdateProductListLayoutModeUseCase,
+    private val addWishlistUseCase: AddToWishlistUseCase,
     private val productListEntryUIFactory: ProductListEntryUIFactory,
     private val productListUIFactory: ProductListUIFactory,
     savedStateHandle: SavedStateHandle,
-    private val uiEventEmitterDelegate: UIEventEmitterDelegate
-) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
+    uiEventEmitterDelegate: UIEventEmitterDelegate
+) : ViewModel(),
+    UIEventEmitter by uiEventEmitterDelegate {
 
     companion object {
         private const val PAGE_SIZE = 15
@@ -106,7 +110,7 @@ internal class ProductListViewModel @Inject constructor(
                         productListEntryUIFactory(
                             entry = entry,
                             layoutMode = uiState.layoutMode,
-                            onFavoriteClick = { onFavoriteClick() }
+                            onFavoriteClick = { onFavoriteClick(entry) }
                         )
                     }
                 }
@@ -146,7 +150,9 @@ internal class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun onFavoriteClick() {
-        // TODO Implement favorite action
+    private fun onFavoriteClick(product: ProductListEntry) {
+        viewModelScope.launch {
+            addWishlistUseCase(product.id)
+        }
     }
 }

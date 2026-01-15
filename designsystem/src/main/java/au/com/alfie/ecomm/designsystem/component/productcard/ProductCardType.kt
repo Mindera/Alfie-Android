@@ -16,7 +16,7 @@ sealed interface ProductCardType {
     val image: ImageUI
     val brand: String
     val name: String
-    val price: PriceType?
+    val price: PriceType
     val cardTestTag: String
     val imageTestTag: String
     val brandTestTag: String
@@ -30,6 +30,7 @@ sealed interface ProductCardType {
         override val price: PriceType,
         val color: String,
         val size: String,
+        val onRemoveClick: ClickEvent? = null,
         override val cardTestTag: String = PRODUCT_CARD,
         override val imageTestTag: String = PRODUCT_IMAGE,
         override val brandTestTag: String = PRODUCT_DESIGNER,
@@ -43,7 +44,7 @@ sealed interface ProductCardType {
         override val image: ImageUI,
         override val brand: String,
         override val name: String,
-        override val price: PriceType?,
+        override val price: PriceType,
         override val cardTestTag: String = PRODUCT_CARD,
         override val imageTestTag: String = PRODUCT_IMAGE,
         override val brandTestTag: String = PRODUCT_DESIGNER,
@@ -56,12 +57,17 @@ sealed interface ProductCardType {
         override val brand: String,
         override val name: String,
         override val price: PriceType,
-        val onFavoriteClick: ClickEvent,
+        val color: String? = null,
+        val size: String? = null,
+        val onFavoriteClick: ClickEvent? = null,
+        val onRemoveClick: ClickEvent? = null,
         override val cardTestTag: String = PRODUCT_CARD,
         override val imageTestTag: String = PRODUCT_IMAGE,
         override val brandTestTag: String = PRODUCT_DESIGNER,
         override val nameTestTag: String = PRODUCT_NAME,
-        override val priceTestTag: String = PRODUCT_PRICE_COMPONENT
+        override val priceTestTag: String = PRODUCT_PRICE_COMPONENT,
+        val colorTestTag: String = PRODUCT_COLOR,
+        val sizeTestTag: String = PRODUCT_SIZE
     ) : ProductCardType
 
     data class Large(

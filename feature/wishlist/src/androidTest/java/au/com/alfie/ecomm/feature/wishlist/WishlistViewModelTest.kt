@@ -6,6 +6,7 @@ import au.com.alfie.ecomm.core.navigation.arguments.wishlist.wishlistNavArgs
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -38,5 +39,10 @@ class WishlistViewModelTest {
         }
     }
 
-    private fun createViewModel() = WishlistViewModel(savedStateHandle)
+    private fun createViewModel() = WishlistViewModel(
+        savedStateHandle = savedStateHandle,
+        getWishlistUseCase = mockk(),
+        wishlistUiFactory = mockk(),
+        removeFromWishlist = mockk()
+    )
 }

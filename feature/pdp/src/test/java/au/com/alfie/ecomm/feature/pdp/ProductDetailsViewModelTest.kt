@@ -9,6 +9,7 @@ import au.com.alfie.ecomm.core.navigation.arguments.productDetailsNavArgs
 import au.com.alfie.ecomm.core.navigation.arguments.webview.webViewNavArgs
 import au.com.alfie.ecomm.core.test.CoroutineExtension
 import au.com.alfie.ecomm.domain.UseCaseResult
+import au.com.alfie.ecomm.domain.usecase.bag.AddToBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsEvent
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsSectionItem
@@ -26,13 +27,15 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
 internal class ProductDetailsViewModelTest {
+
+    @RelaxedMockK
+    private lateinit var addToBagUseCase: AddToBagUseCase
 
     @RelaxedMockK
     private lateinit var getProductUseCase: GetProductUseCase
@@ -115,7 +118,6 @@ internal class ProductDetailsViewModelTest {
         }
     }
 
-    @Ignore("Placeholder - to be completed")
     @Test
     fun `handleEvent - GIVEN OnAddToBagClick THEN share action is created`() = runTest {
         val event = ProductDetailsEvent.OnAddToBagClick
@@ -140,6 +142,7 @@ internal class ProductDetailsViewModelTest {
     }
 
     private fun buildViewModel() = ProductDetailsViewModel(
+        addToBagUseCase = addToBagUseCase,
         getProductUseCase = getProductUseCase,
         uiFactory = productDetailsUIFactory,
         savedStateHandle = savedStateHandle,

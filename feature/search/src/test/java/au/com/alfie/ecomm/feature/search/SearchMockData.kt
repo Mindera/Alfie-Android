@@ -2,6 +2,7 @@ package au.com.alfie.ecomm.feature.search
 
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
+import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 import au.com.alfie.ecomm.feature.search.model.BrandSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.KeywordSuggestionUI
@@ -74,7 +75,7 @@ internal val searchUI = SearchUI(
             productCardData = ProductCardType.Small(
                 name = "Product",
                 brand = "Brand",
-                price = null,
+                price = PriceType.Default("$100"),
                 image = ImageUI(
                     images = persistentListOf(ImageSizeUI.Custom(url = "")),
                     alt = "Media"

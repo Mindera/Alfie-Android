@@ -7,5 +7,6 @@ import au.com.alfie.ecomm.designsystem.component.swatch.SwatchType
 internal data class ColorUI(
     val id: String,
     val type: SwatchType,
-    val index: Int
+    val index: Int,
+    val isSelected: Boolean = false
 )

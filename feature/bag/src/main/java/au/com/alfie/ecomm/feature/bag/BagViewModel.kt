@@ -1,0 +1,99 @@
+package au.com.alfie.ecomm.feature.bag
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import au.com.alfie.ecomm.core.navigation.Screen
+import au.com.alfie.ecomm.core.navigation.arguments.productDetailsNavArgs
+import au.com.alfie.ecomm.domain.doOnResult
+import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
+import au.com.alfie.ecomm.domain.usecase.bag.RemoveFromBagUseCase
+import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
+import au.com.alfie.ecomm.feature.bag.BagUiState.Data.Loading
+import au.com.alfie.ecomm.feature.bag.models.BagEvent
+import au.com.alfie.ecomm.feature.uievent.UIEventEmitter
+import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
+import au.com.alfie.ecomm.repository.bag.BagProduct
+import au.com.alfie.ecomm.repository.product.model.Product
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+internal class BagViewModel @Inject constructor(
+    private val getBagUseCase: GetBagUseCase,
+    private val removeFromBagUseCase: RemoveFromBagUseCase,
+    private val getProductUseCase: GetProductUseCase,
+    private val bagUiFactory: BagUiFactory,
+    uiEventEmitterDelegate: UIEventEmitterDelegate
+) : ViewModel(),
+    UIEventEmitter by uiEventEmitterDelegate {
+
+    private val _state = MutableStateFlow<BagUiState>(Loading)
+    internal val state = _state.asStateFlow()
+
+    init {
+        getBagList()
+    }
+
+    fun handleEvent(event: BagEvent) {
+        when (event) {
+            is BagEvent.OnProductClick -> openProduct(event.productId)
+        }
+    }
+
+    private fun getBagList() {
+        viewModelScope.launch {
+            getBagUseCase().collectLatest { result ->
+                result.doOnResult(
+                    onSuccess = {
+                        val bag = bagUiFactory(
+                            bagProducts = it,
+                            products = getBagProductDetails(it),
+                            onRemoveClick = { onRemoveClicked(it) }
+                        )
+                        _state.value = BagUiState.Data.Loaded(bag)
+                    },
+                    onError = {
+                        _state.value = BagUiState.Error
+                    }
+                )
+            }
+        }
+    }
+
+    private suspend fun getBagProductDetails(bagProducts: List<BagProduct>): List<Product> {
+        return coroutineScope {
+            bagProducts.map { bagProduct ->
+                async { getProductUseCase(bagProduct.productId) }
+            }.awaitAll()
+                .mapNotNull { result ->
+                    var product: Product? = null
+                    result.doOnResult(
+                        onSuccess = { product = it },
+                        onError = { }
+                    )
+                    product
+                }
+        }
+    }
+
+    private fun openProduct(productId: String) {
+        navigateTo(
+            screen = Screen.ProductDetails(
+                args = productDetailsNavArgs(id = productId)
+            )
+        )
+    }
+
+    private fun onRemoveClicked(bagProduct: BagProduct) {
+        viewModelScope.launch {
+            removeFromBagUseCase(bagProduct)
+        }
+    }
+}

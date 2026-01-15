@@ -2,17 +2,12 @@ package au.com.alfie.ecomm.feature.plp.factory
 
 import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
-import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
-import au.com.alfie.ecomm.core.ui.media.image.ImageUI
-import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
+import au.com.alfie.ecomm.feature.mappers.toImageUI
+import au.com.alfie.ecomm.feature.mappers.toPriceType
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
-import au.com.alfie.ecomm.repository.product.model.Price
-import au.com.alfie.ecomm.repository.product.model.PriceRange
 import au.com.alfie.ecomm.repository.productlist.model.ProductListEntry
 import au.com.alfie.ecomm.repository.productlist.model.ProductListLayoutMode
-import au.com.alfie.ecomm.repository.shared.model.Media
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -54,11 +49,8 @@ internal class ProductListEntryUIFactory @Inject constructor(
     ) = ProductCardType.Medium(
         brand = entry.brand.name,
         name = entry.name,
-        price = mapPrice(
-            priceRange = entry.priceRange,
-            price = entry.defaultVariant.price
-        ),
-        image = mapImage(entry.defaultVariant.defaultMedia),
+        price = entry.priceRange.toPriceType(default = entry.defaultVariant.price),
+        image = entry.defaultVariant.defaultMedia.toImageUI(),
         onFavoriteClick = onFavoriteClick
     )
 
@@ -68,40 +60,8 @@ internal class ProductListEntryUIFactory @Inject constructor(
     ) = ProductCardType.Large(
         brand = entry.brand.name,
         name = entry.name,
-        price = mapPrice(
-            priceRange = entry.priceRange,
-            price = entry.defaultVariant.price
-        ),
-        image = mapImage(entry.defaultVariant.defaultMedia),
+        price = entry.priceRange.toPriceType(default = entry.defaultVariant.price),
+        image = entry.defaultVariant.defaultMedia.toImageUI(),
         onFavoriteClick = onFavoriteClick
     )
-
-    private fun mapPrice(
-        priceRange: PriceRange?,
-        price: Price
-    ): PriceType {
-        val rangeHigh = priceRange?.high
-        val salePrice = price.was
-        return when {
-            rangeHigh != null -> PriceType.Range(
-                startPrice = priceRange.low.amountFormatted,
-                endPrice = rangeHigh.amountFormatted
-            )
-            salePrice != null -> PriceType.Sale(
-                fullPrice = salePrice.amountFormatted,
-                salePrice = price.amount.amountFormatted
-            )
-            else -> PriceType.Default(price = price.amount.amountFormatted)
-        }
-    }
-
-    private fun mapImage(image: Media.Image?): ImageUI {
-        val imageSizeUI = ImageSizeUI.Custom(
-            url = image?.url.orEmpty()
-        )
-        return ImageUI(
-            images = persistentListOf(imageSizeUI),
-            alt = image?.alt
-        )
-    }
 }
