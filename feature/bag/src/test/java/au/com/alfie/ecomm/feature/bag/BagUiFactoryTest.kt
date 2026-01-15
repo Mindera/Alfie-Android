@@ -5,8 +5,8 @@ import au.com.alfie.ecomm.feature.bag.models.BagProductUi
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
@@ -16,7 +16,7 @@ class BagUiFactoryTest {
     private lateinit var uiFactory: BagUiFactory
 
     @Test
-    fun `map bag to ui xSmall`() = runTest {
+    fun `invoke - map to expected Bag UI`() = runTest {
         val items = uiFactory(
             bagProducts = bagProducts,
             products = products,

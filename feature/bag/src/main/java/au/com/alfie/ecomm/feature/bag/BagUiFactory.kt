@@ -21,6 +21,7 @@ internal class BagUiFactory @Inject constructor() {
         val product = products.first { it.id == item.productId }
         val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.defaultVariant
         val productCard = product.copy(defaultVariant = selectedVariant).toProductCard(onRemoveClick)
+
         BagProductUi(
             id = item.productId,
             productCardData = productCard

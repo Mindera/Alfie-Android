@@ -16,6 +16,7 @@ import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.usecase.productlist.GetPaginatedProductListUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
 import au.com.alfie.ecomm.feature.plp.model.ProductListEvent
@@ -63,6 +64,9 @@ class ProductListViewModelTest {
 
     @RelaxedMockK
     private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
+
+    @RelaxedMockK
+    private lateinit var addToWishlistUseCase: AddToWishlistUseCase
 
     @BeforeEach
     fun setUp() {
@@ -247,6 +251,7 @@ class ProductListViewModelTest {
         productListEntryUIFactory = entryUiFactory,
         productListUIFactory = productListUIFactory,
         savedStateHandle = savedStateHandle,
-        uiEventEmitterDelegate = uiEventEmitterDelegate
+        uiEventEmitterDelegate = uiEventEmitterDelegate,
+        addWishlistUseCase = addToWishlistUseCase
     )
 }
