@@ -1,8 +1,21 @@
-# Alfie Native Android App
+[Stub_local_IP.patch](https://github.com/user-attachments/files/24615309/Stub_local_IP.patch)# Alfie Native Android App
 
 ----
 
 This is a repository for an e-commerce Android app template.
+
+## Setup
+
+If you wish to use Alfie-Mock server for BE purposes for real devices, please stub the local IP and allow the connection in network_security_config.xml
+Like so: 
+
+ApolloModule.kt:
+
+<img width="1232" height="332" alt="Screenshot 2026-01-14 at 14 28 12" src="https://github.com/user-attachments/assets/28361a1b-9287-4d37-8c50-6c96b1895ff2" />
+
+network_security_config.xml:
+
+<img width="599" height="131" alt="Screenshot 2026-01-14 at 14 29 11" src="https://github.com/user-attachments/assets/7569c01f-36aa-42e9-a513-404a05bbf8b7" />
 
 ## Features
 
