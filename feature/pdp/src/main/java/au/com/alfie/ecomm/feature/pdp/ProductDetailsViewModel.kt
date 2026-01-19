@@ -9,6 +9,9 @@ import au.com.alfie.ecomm.core.navigation.arguments.webview.webViewNavArgs
 import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.domain.usecase.bag.AddToBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsEvent
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsSectionItem
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState
@@ -22,13 +25,18 @@ import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ProductDetailsViewModel @Inject constructor(
     private val addToBagUseCase: AddToBagUseCase,
     private val getProductUseCase: GetProductUseCase,
+    private val getWishlistIds: GetWishlistIdsUseCase,
+    private val addToWishlistUseCase: AddToWishlistUseCase,
+    private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val uiFactory: ProductDetailsUIFactory,
     savedStateHandle: SavedStateHandle,
     uiEventEmitterDelegate: UIEventEmitterDelegate
@@ -42,6 +50,7 @@ internal class ProductDetailsViewModel @Inject constructor(
 
     init {
         loadDetails()
+        collectWishlistIds()
     }
 
     fun handleEvent(event: ProductDetailsEvent) {
@@ -50,7 +59,7 @@ internal class ProductDetailsViewModel @Inject constructor(
             ProductDetailsEvent.OnShareClick -> onShareClick()
             is ProductDetailsEvent.OnColorClick -> onColorSelected(event.index)
             is ProductDetailsEvent.OnSectionClick -> onSectionClick(event.item)
-            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick()
+            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick(event.productId)
             is ProductDetailsEvent.OnSizeSelect -> onSizeSelect(event.sizeUI)
         }
     }
@@ -110,8 +119,39 @@ internal class ProductDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onFavoriteClick() {
-        // TODO
+    private fun collectWishlistIds() {
+        viewModelScope.launch {
+            getWishlistIds().collect { wishlistIds ->
+                _state.update { state ->
+                    when (state) {
+                        is Loaded -> {
+                            Timber.tag("WishlistTesting")
+                                .d("isWishlisted: ${state.details.isWishlisted}")
+                            state.copy(
+                                details = state.details.copy(
+                                    isWishlisted = wishlistIds.contains(state.details.id)
+                                )
+                            )
+                        }
+
+                        else -> state
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onFavoriteClick(productId: String) {
+        viewModelScope.launch {
+            Timber.tag("WishlistTesting").d("FAv clicked: $productId")
+            (_state.value as? ProductDetailsUIState.Data)?.details?.let {
+                if (it.isWishlisted.not()) {
+                    addToWishlistUseCase(productId)
+                } else {
+                    removeWishlistUseCase(productId)
+                }
+            }
+        }
     }
 
     private fun onSizeSelect(sizeUI: SizeUI) {

@@ -44,6 +44,7 @@ import kotlin.math.roundToInt
 @Composable
 fun Gallery(
     gallery: GalleryUI,
+    isWishlisted: Boolean = false,
     ratio: Ratio,
     constraint: DimensionConstraint,
     modifier: Modifier = Modifier,
@@ -87,6 +88,7 @@ fun Gallery(
 
         EndlessGallery(
             gallery = gallery,
+            isWishlisted = isWishlisted,
             startPosition = selectedIndex,
             isZoomable = false,
             onPositionChange = onPositionChange,

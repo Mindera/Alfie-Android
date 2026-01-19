@@ -39,7 +39,7 @@ class ProductListEntryUIFactoryTest {
             val result = uiFactory(
                 entry = product,
                 layoutMode = ProductListLayoutMode.GRID,
-                onFavoriteClick = { }
+                onFavoriteClick = { },
             )
 
             assertEquals(expected.id, result.id)
@@ -56,7 +56,7 @@ class ProductListEntryUIFactoryTest {
             val result = uiFactory(
                 entry = product,
                 layoutMode = ProductListLayoutMode.GRID,
-                onFavoriteClick = { }
+                onFavoriteClick = { },
             )
 
             assertIs<ProductCardType.Medium>(result.productCardData)
@@ -69,7 +69,7 @@ class ProductListEntryUIFactoryTest {
             val result = uiFactory(
                 entry = product,
                 layoutMode = ProductListLayoutMode.COLUMN,
-                onFavoriteClick = { }
+                onFavoriteClick = { },
             )
 
             assertIs<ProductCardType.Large>(result.productCardData)

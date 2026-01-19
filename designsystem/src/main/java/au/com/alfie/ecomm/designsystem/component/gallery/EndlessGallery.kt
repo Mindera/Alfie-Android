@@ -37,6 +37,7 @@ private const val PAGES_COUNT_MINIMUM = 1
 @Composable
 internal fun EndlessGallery(
     gallery: GalleryUI,
+    isWishlisted: Boolean = false,
     startPosition: Int,
     isZoomable: Boolean,
     onPositionChange: (Int) -> Unit,
@@ -65,6 +66,7 @@ internal fun EndlessGallery(
             pagerState = pagerState,
             itemsCount = itemsCount,
             gallery = gallery,
+            isWishlisted = isWishlisted,
             content = content
         )
     } else {
@@ -72,6 +74,7 @@ internal fun EndlessGallery(
             pagerState = pagerState,
             itemsCount = itemsCount,
             gallery = gallery,
+            isWishlisted = isWishlisted,
             onFavoriteClick = onFavoriteClick,
             content = content
         )
@@ -84,6 +87,7 @@ private fun ZoomableEndlessGallery(
     pagerState: PagerState,
     itemsCount: Int,
     gallery: GalleryUI,
+    isWishlisted: Boolean = false,
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {
     Box(
@@ -94,6 +98,7 @@ private fun ZoomableEndlessGallery(
             pagerState = pagerState,
             itemsCount = itemsCount,
             gallery = gallery,
+            isWishlisted = isWishlisted,
             content = content
         )
         if (itemsCount > 1) {
@@ -112,6 +117,7 @@ private fun NonZoomableEndlessGallery(
     pagerState: PagerState,
     itemsCount: Int,
     gallery: GalleryUI,
+    isWishlisted: Boolean = false,
     onFavoriteClick: ClickEvent,
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {
@@ -120,6 +126,7 @@ private fun NonZoomableEndlessGallery(
             pagerState = pagerState,
             itemsCount = itemsCount,
             gallery = gallery,
+            isWishlisted = isWishlisted,
             onFavoriteClick = onFavoriteClick,
             content = content
         )
@@ -138,6 +145,7 @@ private fun ZoomablePager(
     pagerState: PagerState,
     itemsCount: Int,
     gallery: GalleryUI,
+    isWishlisted: Boolean = false,
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {
     HorizontalPager(state = pagerState) { index ->
@@ -165,6 +173,7 @@ private fun NonZoomablePager(
     pagerState: PagerState,
     itemsCount: Int,
     gallery: GalleryUI,
+    isWishlisted: Boolean = false,
     onFavoriteClick: ClickEvent,
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {
@@ -197,8 +206,11 @@ private fun NonZoomablePager(
                 .size(Theme.iconSize.xLarge),
             onClick = onFavoriteClick
         ) {
+            val iconRes = if(isWishlisted) R.drawable.ic_action_heart_fill else
+                R.drawable.ic_action_heart_outline
+
             Icon(
-                painter = painterResource(id = R.drawable.ic_action_heart_outline),
+                painter = painterResource(id = iconRes),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.medium)
             )

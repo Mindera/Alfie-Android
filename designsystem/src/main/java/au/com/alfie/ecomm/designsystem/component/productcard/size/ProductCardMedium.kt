@@ -41,7 +41,8 @@ internal fun ProductCardMedium(
     productCard: ProductCardType.Medium,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isWishlisted: Boolean = false
 ) {
     Column(
         modifier = modifier then Modifier
@@ -50,7 +51,8 @@ internal fun ProductCardMedium(
     ) {
         ProductImage(
             productCard = productCard,
-            isLoading = isLoading
+            isLoading = isLoading,
+            isWishlisted = isWishlisted
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing12))
         ProductDescription(
@@ -63,7 +65,8 @@ internal fun ProductCardMedium(
 @Composable
 private fun ProductImage(
     productCard: ProductCardType.Medium,
-    isLoading: Boolean
+    isLoading: Boolean,
+    isWishlisted: Boolean
 ) {
     Box(
         contentAlignment = Alignment.TopEnd
@@ -77,10 +80,13 @@ private fun ProductImage(
             ratio = Ratio.RATIO3x4
         )
         if (isLoading.not()) {
+            val iconRes =
+                if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
+
             if (productCard.onFavoriteClick != null) {
                 ActionIconButton(
                     productCard.onFavoriteClick,
-                    R.drawable.ic_action_heart_outline
+                    iconRes
                 )
             } else if (productCard.onRemoveClick != null) {
                 ActionIconButton(
@@ -186,7 +192,9 @@ private fun ActionIconButton(
 ) {
     onClick?.let {
         IconButton(
-            modifier = Modifier.padding(8.dp).size(Theme.iconSize.large),
+            modifier = Modifier
+                .padding(8.dp)
+                .size(Theme.iconSize.large),
             onClick = it
         ) {
             Icon(

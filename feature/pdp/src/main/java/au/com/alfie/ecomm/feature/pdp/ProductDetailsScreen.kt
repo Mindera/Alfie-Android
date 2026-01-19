@@ -256,13 +256,14 @@ private fun ProductDetailsGallery(
 
     Gallery(
         gallery = state.details.gallery,
+        isWishlisted = state.details.isWishlisted,
         ratio = RATIO3x4,
         constraint = ParentWidth,
         isLoading = isLoading,
         isFullscreen = isFullscreen,
         onClick = { isFullscreen = true },
         onDismissFullscreen = { isFullscreen = false },
-        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick) }
+        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.id)) }
     )
 }
 
