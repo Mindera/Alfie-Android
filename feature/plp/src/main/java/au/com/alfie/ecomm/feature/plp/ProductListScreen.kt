@@ -181,7 +181,8 @@ private fun ProductListGrid(
                             modifier = Modifier.productListEntryPadding(
                                 index = index,
                                 columnCount = columnCount
-                            )
+                            ),
+                            isWishlisted = state.wishlistIds.contains(entry.id),
                         )
                     }
                 }

@@ -16,7 +16,8 @@ fun ProductCard(
     productCardType: ProductCardType,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isWishlisted: Boolean = false
 ) {
     when (productCardType) {
         is ProductCardType.XSmall -> ProductCardXSmall(
@@ -35,13 +36,15 @@ fun ProductCard(
             productCard = productCardType,
             onClick = onClick,
             modifier = modifier,
-            isLoading = isLoading
+            isLoading = isLoading,
+            isWishlisted = isWishlisted
         )
         is ProductCardType.Large -> ProductCardLarge(
             productCard = productCardType,
             onClick = onClick,
             modifier = modifier,
-            isLoading = isLoading
+            isLoading = isLoading,
+            isWishlisted = isWishlisted
         )
     }
 }

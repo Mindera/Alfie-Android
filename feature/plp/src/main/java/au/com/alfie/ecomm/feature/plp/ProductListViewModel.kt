@@ -17,6 +17,9 @@ import au.com.alfie.ecomm.domain.usecase.productlist.GetPaginatedProductListUseC
 import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
@@ -43,7 +46,9 @@ internal class ProductListViewModel @Inject constructor(
     private val getPaginatedProductList: GetPaginatedProductListUseCase,
     private val getProductListLayoutMode: GetProductListLayoutModeUseCase,
     private val updateProductListLayoutMode: UpdateProductListLayoutModeUseCase,
-    private val addWishlistUseCase: AddToWishlistUseCase,
+    private val getWishlistIds: GetWishlistIdsUseCase,
+    private val addToWishlistUseCase: AddToWishlistUseCase,
+    private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val productListEntryUIFactory: ProductListEntryUIFactory,
     private val productListUIFactory: ProductListUIFactory,
     savedStateHandle: SavedStateHandle,
@@ -64,7 +69,8 @@ internal class ProductListViewModel @Inject constructor(
     private val args: ProductListNavArgs = savedStateHandle.navArgs()
     private val listType = args.type
 
-    private val _productPager = MutableStateFlow<PagingData<ProductListEntryUI>>(PagingData.empty(initialPagerLoadState))
+    private val _productPager =
+        MutableStateFlow<PagingData<ProductListEntryUI>>(PagingData.empty(initialPagerLoadState))
     val productPager: Flow<PagingData<ProductListEntryUI>> = _productPager
 
     private val _state = MutableStateFlow(ProductListUI.EMPTY)
@@ -72,13 +78,16 @@ internal class ProductListViewModel @Inject constructor(
 
     init {
         collectPaginatedProductList()
+        collectWishlistIds()
         checkLayoutModePreference()
     }
 
     fun handleEvent(event: ProductListEvent) {
         when (event) {
             is ProductListEvent.OpenProduct -> navigateToProduct(event.productId)
-            is ProductListEvent.OpenFilters -> { /* TODO */ }
+            is ProductListEvent.OpenFilters -> { /* TODO */
+            }
+
             is ProductListEvent.ChangeLayoutMode -> changeLayoutMode(event.layoutMode)
         }
     }
@@ -110,7 +119,7 @@ internal class ProductListViewModel @Inject constructor(
                         productListEntryUIFactory(
                             entry = entry,
                             layoutMode = uiState.layoutMode,
-                            onFavoriteClick = { onFavoriteClick(entry) }
+                            onFavoriteClick = { onFavoriteClick(entry.id) }
                         )
                     }
                 }
@@ -150,9 +159,18 @@ internal class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun onFavoriteClick(product: ProductListEntry) {
+    private fun collectWishlistIds() {
         viewModelScope.launch {
-            addWishlistUseCase(product.id)
+            getWishlistIds.invoke().collect {
+                _state.update { oldState -> oldState.copy(wishlistIds = it) }
+            }
+        }
+    }
+
+    private fun onFavoriteClick(productId: String) {
+        viewModelScope.launch {
+            if (_state.value.wishlistIds.contains(productId).not()) addToWishlistUseCase(productId)
+            else removeWishlistUseCase(productId)
         }
     }
 }

@@ -40,7 +40,8 @@ internal fun ProductCardLarge(
     productCard: ProductCardType.Large,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    isWishlisted: Boolean = false
 ) {
     Column(
         modifier = modifier then Modifier
@@ -49,7 +50,8 @@ internal fun ProductCardLarge(
     ) {
         ProductImage(
             productCard = productCard,
-            isLoading = isLoading
+            isLoading = isLoading,
+            isWishlisted = isWishlisted
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         ProductDescription(
@@ -62,7 +64,8 @@ internal fun ProductCardLarge(
 @Composable
 private fun ProductImage(
     productCard: ProductCardType.Large,
-    isLoading: Boolean
+    isLoading: Boolean,
+    isWishlisted: Boolean
 ) {
     Box(
         contentAlignment = Alignment.TopEnd
@@ -80,8 +83,10 @@ private fun ProductImage(
                 modifier = Modifier.size(Theme.iconSize.large),
                 onClick = productCard.onFavoriteClick
             ) {
+                val iconRes =
+                    if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_action_heart_outline),
+                    painter = painterResource(iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(Theme.iconSize.medium)
                 )

@@ -75,8 +75,8 @@ class ProductListViewModelTest {
             type = ProductListType.Search("query")
         )
         products.forEachIndexed { index, product ->
-            coEvery { entryUiFactory(product, ProductListLayoutMode.GRID, any()) } returns productsMediumUI[index]
-            coEvery { entryUiFactory(product, ProductListLayoutMode.COLUMN, any()) } returns productsLargeUI[index]
+            coEvery { entryUiFactory(product, ProductListLayoutMode.GRID, any(),) } returns productsMediumUI[index]
+            coEvery { entryUiFactory(product, ProductListLayoutMode.COLUMN, any(),) } returns productsLargeUI[index]
         }
         every { getPaginatedProductListUseCase(any(), any(), any(), any(), any()) } returns Pager(
             config = pagerConfig,

@@ -20,5 +20,6 @@ internal data class ProductDetailsUI(
     val shareInfo: ProductDetailsShareInfo,
     val gallery: GalleryUI,
     val sizeSectionUI: SizeSectionUI,
-    val selectedColorUI: ColorUI? = null
+    val selectedColorUI: ColorUI? = null,
+    val isWishlisted: Boolean = false
 )
