@@ -1,12 +1,12 @@
 package au.com.alfie.ecomm.domain.usecase.wishlist
 
+import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
 import au.com.alfie.ecomm.domain.UseCaseInteractor
+import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.repository.product.ProductRepository
 import au.com.alfie.ecomm.repository.product.model.Product
-import au.com.alfie.ecomm.repository.result.onSuccess
+import au.com.alfie.ecomm.repository.result.RepositoryResult
 import au.com.alfie.ecomm.repository.wishlist.WishlistRepository
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -17,25 +17,28 @@ import javax.inject.Inject
 
 class GetWishlistUseCase @Inject constructor(
     private val wishlistRepository: WishlistRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val dispatcherProvider: DispatcherProvider
 ) : UseCaseInteractor {
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(): Flow<List<Product>> =
+    operator fun invoke(): Flow<UseCaseResult<List<Product>>> =
         wishlistRepository
             .getWishlist()
             .mapLatest { ids ->
                 coroutineScope {
-                    val deferredProducts: List<Deferred<Product?>> = ids.map { id ->
-                        async(Dispatchers.IO) {
-                            var product: Product? = null
-                            productRepository.getProduct(id)
-                                .onSuccess { product = it }
-                            product
-                        }
+                    val results = ids
+                        .map { id -> async(dispatcherProvider.io()) { productRepository.getProduct(id) } }
+                        .awaitAll()
+
+                    val firstError = results.filterIsInstance<RepositoryResult.Error>().firstOrNull()
+                    if (firstError != null) {
+                        UseCaseResult.Error(firstError.errorResult)
+                    } else {
+                        UseCaseResult.Success(
+                            results.filterIsInstance<RepositoryResult.Success<Product>>().map { it.data }
+                        )
                     }
-                    deferredProducts.awaitAll().filterNotNull()
                 }
             }
-
 }

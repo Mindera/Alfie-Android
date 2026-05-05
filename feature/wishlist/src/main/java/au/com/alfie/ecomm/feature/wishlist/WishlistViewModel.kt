@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import au.com.alfie.ecomm.core.navigation.arguments.wishlist.WishlistNavArgs
+import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.wishlist.WishlistUiState.Data.Loading
@@ -36,11 +37,16 @@ class WishlistViewModel @Inject constructor(
 
     private suspend fun getWishlistList() {
         getWishlistUseCase().collectLatest { result ->
-            val wishlist = wishlistUiFactory(
-                products = result,
-                onRemoveClick = ::onRemoveClicked
-            )
-            _state.value = WishlistUiState.Data.Loaded(wishlist)
+            when (result) {
+                is UseCaseResult.Success -> {
+                    val wishlist = wishlistUiFactory(
+                        products = result.data,
+                        onRemoveClick = ::onRemoveClicked
+                    )
+                    _state.value = WishlistUiState.Data.Loaded(wishlist)
+                }
+                is UseCaseResult.Error -> _state.value = WishlistUiState.Error
+            }
         }
     }
 

@@ -5,7 +5,6 @@ import androidx.room.Room
 import au.com.alfie.ecomm.data.database.FeatureToggleDatabase
 import au.com.alfie.ecomm.data.database.InMemoryDatabase
 import au.com.alfie.ecomm.data.database.PersistentDatabase
-import au.com.alfie.ecomm.data.database.WishlistDatabase
 import au.com.alfie.ecomm.data.database.navigation.NavigationEntryDao
 import au.com.alfie.ecomm.data.database.search.FeatureToggleDao
 import au.com.alfie.ecomm.data.database.search.RecentSearchDao
@@ -50,15 +49,6 @@ internal object DatabaseModule {
         ).build()
 
     @Provides
-    @Singleton
-    fun provideWishlistDatabase(@ApplicationContext context: Context): WishlistDatabase =
-        Room.databaseBuilder(
-            context = context,
-            klass = WishlistDatabase::class.java,
-            name = "wishlist-database"
-        ).build()
-
-    @Provides
     fun provideRecentSearchDao(database: PersistentDatabase): RecentSearchDao = database.recentSearchDao()
 
     @Provides
@@ -68,5 +58,5 @@ internal object DatabaseModule {
     fun provideFeatureToggleDao(database: FeatureToggleDatabase): FeatureToggleDao = database.featureToggleDao()
 
     @Provides
-    fun provideWishlistDao(database: WishlistDatabase): WishlistDao = database.wishlistDao()
+    fun provideWishlistDao(database: PersistentDatabase): WishlistDao = database.wishlistDao()
 }
