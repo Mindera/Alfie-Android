@@ -44,10 +44,10 @@ import kotlin.math.roundToInt
 @Composable
 fun Gallery(
     gallery: GalleryUI,
-    isWishlisted: Boolean = false,
     ratio: Ratio,
     constraint: DimensionConstraint,
     modifier: Modifier = Modifier,
+    isWishlisted: Boolean = false,
     startPosition: Int = 0,
     isLoading: Boolean = false,
     isFullscreen: Boolean = false,

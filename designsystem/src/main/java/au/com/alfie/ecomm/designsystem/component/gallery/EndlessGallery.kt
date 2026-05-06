@@ -98,7 +98,6 @@ private fun ZoomableEndlessGallery(
             pagerState = pagerState,
             itemsCount = itemsCount,
             gallery = gallery,
-            isWishlisted = isWishlisted,
             content = content
         )
         if (itemsCount > 1) {
@@ -145,7 +144,6 @@ private fun ZoomablePager(
     pagerState: PagerState,
     itemsCount: Int,
     gallery: GalleryUI,
-    isWishlisted: Boolean = false,
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {
     HorizontalPager(state = pagerState) { index ->
@@ -206,8 +204,8 @@ private fun NonZoomablePager(
                 .size(Theme.iconSize.xLarge),
             onClick = onFavoriteClick
         ) {
-            val iconRes = if(isWishlisted) R.drawable.ic_action_heart_fill else
-                R.drawable.ic_action_heart_outline
+            val iconRes =
+                if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
 
             Icon(
                 painter = painterResource(id = iconRes),
