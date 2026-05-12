@@ -28,7 +28,7 @@ internal class BagUiFactory @Inject constructor() {
         )
     }.toImmutableList()
 
-    private fun Product.toProductCard(onRemoveClick: ClickEventOneArg<BagProduct>) = ProductCardType.XSmall(
+    private fun Product.toProductCard(onRemoveClick: ClickEventOneArg<BagProduct>) = ProductCardType.Horizontal(
         brand = brand.name,
         name = name,
         price = priceRange.toPriceType(defaultVariant.price),

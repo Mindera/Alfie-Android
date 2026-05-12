@@ -23,7 +23,7 @@ sealed interface ProductCardType {
     val nameTestTag: String
     val priceTestTag: String
 
-    data class XSmall(
+    data class Horizontal(
         override val image: ImageUI,
         override val brand: String,
         override val name: String,
@@ -40,19 +40,7 @@ sealed interface ProductCardType {
         val sizeTestTag: String = PRODUCT_SIZE
     ) : ProductCardType
 
-    data class Small(
-        override val image: ImageUI,
-        override val brand: String,
-        override val name: String,
-        override val price: PriceType,
-        override val cardTestTag: String = PRODUCT_CARD,
-        override val imageTestTag: String = PRODUCT_IMAGE,
-        override val brandTestTag: String = PRODUCT_DESIGNER,
-        override val nameTestTag: String = PRODUCT_NAME,
-        override val priceTestTag: String = PRODUCT_PRICE_COMPONENT
-    ) : ProductCardType
-
-    data class Medium(
+    data class Vertical(
         override val image: ImageUI,
         override val brand: String,
         override val name: String,
@@ -67,19 +55,7 @@ sealed interface ProductCardType {
         override val nameTestTag: String = PRODUCT_NAME,
         override val priceTestTag: String = PRODUCT_PRICE_COMPONENT,
         val colorTestTag: String = PRODUCT_COLOR,
-        val sizeTestTag: String = PRODUCT_SIZE
-    ) : ProductCardType
-
-    data class Large(
-        override val image: ImageUI,
-        override val brand: String,
-        override val name: String,
-        override val price: PriceType,
-        val onFavoriteClick: ClickEvent,
-        override val cardTestTag: String = PRODUCT_CARD,
-        override val imageTestTag: String = PRODUCT_IMAGE,
-        override val brandTestTag: String = PRODUCT_DESIGNER,
-        override val nameTestTag: String = PRODUCT_NAME,
-        override val priceTestTag: String = PRODUCT_PRICE_COMPONENT
+        val sizeTestTag: String = PRODUCT_SIZE,
+        val addToBagClick: ClickEvent? = null,
     ) : ProductCardType
 }

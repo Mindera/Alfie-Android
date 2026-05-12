@@ -48,7 +48,7 @@ import kotlinx.collections.immutable.persistentListOf
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductCarousel(
-    items: List<ProductCardType.Small>,
+    items: List<ProductCardType.Vertical>,
     onProductClick: ClickEventOneArg<Int>,
     modifier: Modifier = Modifier,
     title: StringResource? = null,
@@ -116,7 +116,7 @@ fun ProductCarousel(
         val flingBehavior = if (isSnapEnabled) rememberSnapFlingBehavior(lazyListState = state) else ScrollableDefaults.flingBehavior()
         LazyRow(
             modifier = Modifier
-                .wrapContentWidth()
+                .fillMaxWidth()
                 .overflowNestedScroll(state),
             state = state,
             flingBehavior = flingBehavior,
@@ -159,7 +159,7 @@ fun ProductCarousel(
 private fun ProductCarouselPreview() {
     Theme {
         val items = List(10) {
-            ProductCardType.Small(
+            ProductCardType.Vertical(
                 image = ImageUI(
                     images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/4621424/pexels-photo-4621424.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
                     alt = ""

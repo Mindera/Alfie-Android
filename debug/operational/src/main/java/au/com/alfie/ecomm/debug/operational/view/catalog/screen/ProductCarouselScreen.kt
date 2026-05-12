@@ -26,7 +26,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
 
 private val items = List(8) {
-    ProductCardType.Small(
+    ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046229/pexels-photo-6046229.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""

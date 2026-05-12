@@ -538,7 +538,7 @@ private fun ContentOverlaySearchSuggestionsPreview() {
             ProductSuggestionUI(
                 id = "$it",
                 slug = "polo",
-                productCardData = ProductCardType.Small(
+                productCardData = ProductCardType.Vertical(
                     image = ImageUI(
                         images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/2297720/pexels-photo-2297720.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
                         alt = null

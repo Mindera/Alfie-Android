@@ -154,7 +154,6 @@ private fun ProductListGrid(
             ProductListLoadingState(
                 state = state,
                 columnCount = columnCount,
-                layoutMode = state.layoutMode,
                 onEvent = onEvent
             )
         } else {
@@ -212,7 +211,6 @@ private fun ProductListGrid(
 private fun ProductListLoadingState(
     state: ProductListUI,
     columnCount: Int,
-    layoutMode: ProductListLayoutMode,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
     LazyVerticalGrid(
@@ -230,8 +228,7 @@ private fun ProductListLoadingState(
         items(count = NUM_LOADING_ITEMS) { index ->
             ProductListGridLoadingItem(
                 index = index,
-                columnCount = columnCount,
-                layoutMode = layoutMode
+                columnCount = columnCount
             )
         }
     }
@@ -390,28 +387,16 @@ private fun Modifier.productListEntryPadding(
 @Composable
 private fun ProductListGridLoadingItem(
     index: Int,
-    columnCount: Int,
-    layoutMode: ProductListLayoutMode
+    columnCount: Int
 ) {
-    val type = when (layoutMode) {
-        ProductListLayoutMode.GRID -> ProductCardType.Medium(
-            image = ImageUI(images = persistentListOf(), alt = null),
-            brand = "",
-            name = "",
-            price = PriceType.Default(""),
-            onFavoriteClick = { }
-        )
-        ProductListLayoutMode.COLUMN -> ProductCardType.Large(
-            image = ImageUI(images = persistentListOf(), alt = null),
-            brand = "",
-            name = "",
-            price = PriceType.Default(""),
-            onFavoriteClick = { }
-        )
-    }
-
     ProductCard(
-        productCardType = type,
+        productCardType = ProductCardType.Vertical(
+            image = ImageUI(images = persistentListOf(), alt = null),
+            brand = "",
+            name = "",
+            price = PriceType.Default(""),
+            onFavoriteClick = { }
+        ),
         modifier = Modifier.productListEntryPadding(
             index = index,
             columnCount = columnCount

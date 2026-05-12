@@ -23,25 +23,25 @@ class WishlistUIFactoryTest {
         assertEquals(
             wishListProductUi.map {
                 WishlistProductUi(
-                    productCardData = ProductCardType.Medium(
+                    productCardData = ProductCardType.Vertical(
                         image = it.productCardData.image,
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
                         price = it.productCardData.price,
-                        color = (it.productCardData as ProductCardType.Medium).color,
-                        size = (it.productCardData as ProductCardType.Medium).size
+                        color = (it.productCardData as ProductCardType.Vertical).color,
+                        size = it.productCardData.size
                     )
                 )
             },
             result.map {
                 WishlistProductUi(
-                    productCardData = ProductCardType.Medium(
+                    productCardData = ProductCardType.Vertical(
                         image = it.productCardData.image,
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
                         price = it.productCardData.price,
-                        color = (it.productCardData as ProductCardType.Medium).color,
-                        size = (it.productCardData as ProductCardType.Medium).size
+                        color = (it.productCardData as ProductCardType.Vertical).color,
+                        size = it.productCardData.size
                     )
                 )
             }

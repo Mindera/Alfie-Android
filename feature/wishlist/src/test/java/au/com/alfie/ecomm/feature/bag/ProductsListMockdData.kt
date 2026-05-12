@@ -252,7 +252,7 @@ internal val products = listOf(
 
 internal val wishListProductUi = persistentListOf(
     WishlistProductUi(
-        productCardData = ProductCardType.Medium(
+        productCardData = ProductCardType.Vertical(
             brand = "Brand",
             name = "Product name",
             price = PriceType.Range(
@@ -268,7 +268,7 @@ internal val wishListProductUi = persistentListOf(
         )
     ),
     WishlistProductUi(
-        productCardData = ProductCardType.Medium(
+        productCardData = ProductCardType.Vertical(
             brand = "Brand",
             name = "Product 2",
             price = PriceType.Default("$100"),

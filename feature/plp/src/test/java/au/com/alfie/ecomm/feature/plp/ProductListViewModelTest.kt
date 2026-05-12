@@ -17,6 +17,8 @@ import au.com.alfie.ecomm.domain.usecase.productlist.GetPaginatedProductListUseC
 import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
 import au.com.alfie.ecomm.feature.plp.model.ProductListEvent
@@ -68,6 +70,12 @@ class ProductListViewModelTest {
     @RelaxedMockK
     private lateinit var addToWishlistUseCase: AddToWishlistUseCase
 
+    @RelaxedMockK
+    private lateinit var removeFromWishlistUseCase: RemoveFromWishlistUseCase
+
+    @RelaxedMockK
+    private lateinit var getWishlistIdsUseCase: GetWishlistIdsUseCase
+
     @BeforeEach
     fun setUp() {
         mockkStatic("au.com.alfie.ecomm.feature.plp.NavArgsGettersKt")
@@ -75,8 +83,7 @@ class ProductListViewModelTest {
             type = ProductListType.Search("query")
         )
         products.forEachIndexed { index, product ->
-            coEvery { entryUiFactory(product, ProductListLayoutMode.GRID, any(),) } returns productsMediumUI[index]
-            coEvery { entryUiFactory(product, ProductListLayoutMode.COLUMN, any(),) } returns productsLargeUI[index]
+            coEvery { entryUiFactory(product, any(),) } returns productsVerticalUI[index]
         }
         every { getPaginatedProductListUseCase(any(), any(), any(), any(), any()) } returns Pager(
             config = pagerConfig,
@@ -94,7 +101,7 @@ class ProductListViewModelTest {
 
         val result = viewModel.productPager.asSnapshot()
 
-        assertEquals(productsMediumUI, result)
+        assertEquals(productsVerticalUI, result)
     }
 
     @Test
@@ -106,7 +113,7 @@ class ProductListViewModelTest {
 
         val result = viewModel.productPager.asSnapshot()
 
-        assertEquals(productsLargeUI, result)
+        assertEquals(productsVerticalUI, result)
     }
 
     @Test
@@ -252,6 +259,8 @@ class ProductListViewModelTest {
         productListUIFactory = productListUIFactory,
         savedStateHandle = savedStateHandle,
         uiEventEmitterDelegate = uiEventEmitterDelegate,
-        addWishlistUseCase = addToWishlistUseCase
+        addToWishlistUseCase = addToWishlistUseCase,
+        removeWishlistUseCase = removeFromWishlistUseCase,
+        getWishlistIds = getWishlistIdsUseCase
     )
 }

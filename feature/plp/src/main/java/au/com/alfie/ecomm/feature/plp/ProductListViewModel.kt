@@ -118,7 +118,6 @@ internal class ProductListViewModel @Inject constructor(
                     pagingData.map { entry ->
                         productListEntryUIFactory(
                             entry = entry,
-                            layoutMode = uiState.layoutMode,
                             onFavoriteClick = { onFavoriteClick(entry.id) }
                         )
                     }

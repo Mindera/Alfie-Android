@@ -29,7 +29,7 @@ class WishlistUIFactory @Inject constructor() {
     private fun mapProductCardData(
         product: Product,
         onRemoveClick: ClickEvent
-    ) = ProductCardType.Medium(
+    ) = ProductCardType.Vertical(
         brand = product.brand.name,
         name = product.name,
         price = product.priceRange.toPriceType(product.defaultVariant.price),

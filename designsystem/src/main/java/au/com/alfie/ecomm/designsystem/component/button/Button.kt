@@ -59,7 +59,7 @@ fun Button(
     modifier: Modifier = Modifier,
     buttonSize: ButtonSize = Small,
     iconButton: IconButton? = null,
-    shape: RoundedCornerShape = Theme.shape.medium,
+    shape: RoundedCornerShape = Theme.shape.none,
     isLoading: Boolean = false,
     isShimmering: Boolean = false,
     isEnabled: Boolean = true,
