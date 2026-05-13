@@ -264,7 +264,7 @@ internal val wishListProductUi = persistentListOf(
                 alt = "Media"
             ).toImageUI()
         ),
-        productId = "Product Id"
+        onClick = {}
     ),
     WishlistProductUi(
         productCardData = ProductCardType.Vertical(
@@ -276,6 +276,6 @@ internal val wishListProductUi = persistentListOf(
                 alt = null
             ).toImageUI()
         ),
-        productId = "Product Id"
+        onClick = {}
     )
 )
