@@ -66,7 +66,6 @@ internal fun EndlessGallery(
             pagerState = pagerState,
             itemsCount = itemsCount,
             gallery = gallery,
-            isWishlisted = isWishlisted,
             content = content
         )
     } else {
@@ -87,7 +86,6 @@ private fun ZoomableEndlessGallery(
     pagerState: PagerState,
     itemsCount: Int,
     gallery: GalleryUI,
-    isWishlisted: Boolean = false,
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {
     Box(
