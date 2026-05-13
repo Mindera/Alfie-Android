@@ -34,8 +34,10 @@ feature/<name>/src/main/java/.../
 ├── presentation/
 │   ├── <Name>Screen.kt             # @Destination Composable
 │   ├── <Name>ViewModel.kt          # @HiltViewModel + StateFlow
-│   ├── <Name>UIFactory.kt          # Maps UIState → Compose UI
-│   └── <Name>UIState.kt            # Sealed interface for states
+│   ├── <Name>UIFactory.kt          # Maps domain model → UI model
+│   └── model/
+│       ├── <Name>UI.kt             # UI data model
+│       └── <Name>UIState.kt        # Sealed interface for states
 ```
 
 ## ViewModel Pattern
@@ -51,9 +53,10 @@ class FeatureViewModel @Inject constructor(
     fun loadData() {
         viewModelScope.launch {
             _uiState.value = FeatureUIState.Loading
-            getFeatureUseCase()
-                .onSuccess { _uiState.value = FeatureUIState.Content(it) }
-                .onFailure { _uiState.value = FeatureUIState.Error(it.message) }
+            when (val result = getFeatureUseCase()) {
+                is UseCaseResult.Success -> _uiState.value = FeatureUIState.Content(result.data)
+                is UseCaseResult.Error -> _uiState.value = FeatureUIState.Error(result.message)
+            }
         }
     }
 }
