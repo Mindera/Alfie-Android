@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.domain.usecase.wishlist
 
+import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.repository.result.ErrorResult
 import au.com.alfie.ecomm.repository.result.ErrorType
 import au.com.alfie.ecomm.repository.result.RepositoryResult
@@ -29,7 +30,7 @@ class RemoveFromWishlistUseCaseTest {
 
         val result = subject("product-1")
 
-        assertEquals(RepositoryResult.Success(Unit), result)
+        assertEquals(UseCaseResult.Success(Unit), result)
     }
 
     @Test
@@ -39,6 +40,6 @@ class RemoveFromWishlistUseCaseTest {
 
         val result = subject("product-1")
 
-        assertIs<RepositoryResult.Error>(result)
+        assertIs<UseCaseResult.Error>(result)
     }
 }
