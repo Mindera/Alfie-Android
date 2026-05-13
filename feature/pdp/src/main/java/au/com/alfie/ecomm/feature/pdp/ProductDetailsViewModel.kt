@@ -15,7 +15,6 @@ import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
-import au.com.alfie.ecomm.designsystem.R as DesignR
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsEvent
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsSectionItem
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState
@@ -33,6 +32,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import au.com.alfie.ecomm.designsystem.R as DesignR
 
 @HiltViewModel
 internal class ProductDetailsViewModel @Inject constructor(
