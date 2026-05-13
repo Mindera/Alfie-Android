@@ -18,7 +18,11 @@ class WishlistUIFactoryTest {
 
     @Test
     fun `map wishlist to ui xMedium`() = runTest {
-        val result = uiFactory(products) { }
+        val result = uiFactory(
+            products,
+            onRemoveClick = { },
+            onAddToBagClick = { }
+        )
 
         assertEquals(
             wishListProductUi.map {
@@ -28,8 +32,6 @@ class WishlistUIFactoryTest {
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
                         price = it.productCardData.price,
-                        color = (it.productCardData as ProductCardType.Vertical).color,
-                        size = it.productCardData.size
                     )
                 )
             },
@@ -40,9 +42,8 @@ class WishlistUIFactoryTest {
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
                         price = it.productCardData.price,
-                        color = (it.productCardData as ProductCardType.Vertical).color,
-                        size = it.productCardData.size
-                    )
+                    ),
+                    productId = "Product Id",
                 )
             }
         )

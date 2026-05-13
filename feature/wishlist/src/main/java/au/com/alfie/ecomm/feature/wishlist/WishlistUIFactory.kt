@@ -15,27 +15,31 @@ class WishlistUIFactory @Inject constructor() {
 
     operator fun invoke(
         products: List<Product>,
-        onRemoveClick: ClickEventOneArg<Product>
+        onRemoveClick: ClickEventOneArg<Product>,
+        onAddToBagClick: ClickEventOneArg<Product>,
+        onProductClick: ClickEventOneArg<Product>
     ): ImmutableList<WishlistProductUi> =
         products.map {
             WishlistProductUi(
                 productCardData = mapProductCardData(
                     product = it,
-                    onRemoveClick = { onRemoveClick(it) }
-                )
+                    onRemoveClick = { onRemoveClick(it) },
+                    onAddToBagClick = { onAddToBagClick(it) }
+                ),
+                onClick = { onProductClick(it) }
             )
         }.toImmutableList()
 
     private fun mapProductCardData(
         product: Product,
-        onRemoveClick: ClickEvent
+        onRemoveClick: ClickEvent,
+        onAddToBagClick: ClickEvent
     ) = ProductCardType.Vertical(
         brand = product.brand.name,
         name = product.name,
         price = product.priceRange.toPriceType(product.defaultVariant.price),
         image = product.defaultVariant.media.toImageUI(),
         onRemoveClick = onRemoveClick,
-        color = product.defaultVariant.color?.name.orEmpty(),
-        size = product.defaultVariant.size?.value.orEmpty()
+        addToBagClick = onAddToBagClick,
     )
 }

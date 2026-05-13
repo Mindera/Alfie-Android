@@ -20,17 +20,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import au.com.alfie.ecomm.core.navigation.DirectionProvider
 import au.com.alfie.ecomm.core.navigation.Screen
 import au.com.alfie.ecomm.core.navigation.arguments.wishlist.WishlistNavArgs
 import au.com.alfie.ecomm.designsystem.R
 import au.com.alfie.ecomm.designsystem.component.bottombar.BottomBarState
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCard
+import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarCustomHostState
 import au.com.alfie.ecomm.designsystem.component.topbar.TopBarState
 import au.com.alfie.ecomm.designsystem.component.topbar.action.TopBarAction
 import au.com.alfie.ecomm.designsystem.theme.Theme
 import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing10
 import au.com.alfie.ecomm.designsystem.theme.dimen.Spacing.spacing16
+import au.com.alfie.ecomm.feature.uievent.handleUIEvents
 import au.com.alfie.ecomm.feature.wishlist.models.WishlistProductUi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -40,7 +43,9 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun WishlistScreen(
     navigator: DestinationsNavigator,
+    navController: NavController,
     directionProvider: DirectionProvider,
+    snackbarHostState: SnackbarCustomHostState,
     topBarState: TopBarState,
     bottomBarState: BottomBarState
 ) {
@@ -62,7 +67,15 @@ internal fun WishlistScreen(
         topBarState.textTopBar(title = stringResource(id = R.string.wishlist_screen_title))
         bottomBarState.hideBottomBar()
     }
-    WishlistScreenContent(state)
+
+    viewModel.handleUIEvents(
+        navigator = navigator,
+        navController = navController,
+        directionProvider = directionProvider,
+        snackbarHostState = snackbarHostState
+    )
+
+    WishlistScreenContent(state = state)
 }
 
 @Composable
@@ -73,7 +86,7 @@ private fun WishlistScreenContent(state: WishlistUiState) {
             if (state.wishlist.isEmpty()) {
                 EmptyBagScreen()
             } else {
-                WishlistScreen(state.wishlist)
+                WishlistGrid(wishlist = state.wishlist)
             }
         }
 
@@ -82,7 +95,7 @@ private fun WishlistScreenContent(state: WishlistUiState) {
 }
 
 @Composable
-private fun WishlistScreen(
+private fun WishlistGrid(
     wishlist: List<WishlistProductUi>
 ) {
     LazyVerticalGrid(
@@ -93,7 +106,7 @@ private fun WishlistScreen(
         items(wishlist) { item ->
             ProductCard(
                 productCardType = item.productCardData,
-                onClick = { }
+                onClick = item.onClick
             )
         }
     }
@@ -126,7 +139,7 @@ private fun EmptyBagScreen() {
 private fun WishlistScreenPreview() {
     Theme {
         WishlistScreenContent(
-            WishlistUiState.Data.Loading
+            state = WishlistUiState.Data.Loading
         )
     }
 }

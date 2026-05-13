@@ -263,9 +263,8 @@ internal val wishListProductUi = persistentListOf(
                 url = "",
                 alt = "Media"
             ).toImageUI(),
-            color = "blue",
-            size = "M"
-        )
+        ),
+        productId = "Product Id"
     ),
     WishlistProductUi(
         productCardData = ProductCardType.Vertical(
@@ -276,8 +275,7 @@ internal val wishListProductUi = persistentListOf(
                 url = "",
                 alt = null
             ).toImageUI(),
-            color = "",
-            size = ""
-        )
+        ),
+        productId = "Product Id",
     )
 )
