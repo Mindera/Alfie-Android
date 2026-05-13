@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -42,11 +43,16 @@ internal fun VerticalProductCard(
     productCard: ProductCardType.Vertical,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
+    size: VerticalProductCardSize = VerticalProductCardSize.Large,
     isLoading: Boolean = false,
     isWishlisted: Boolean = false,
 ) {
+    val sizeModifier = when (size) {
+        VerticalProductCardSize.Large -> Modifier.fillMaxWidth()
+        is VerticalProductCardSize.Medium -> Modifier.width(size.cardWidth)
+    }
     Column(
-        modifier = modifier then Modifier
+        modifier = modifier then sizeModifier then Modifier
             .clickable(enabled = isLoading.not()) { onClick() }
             .testTag(productCard.cardTestTag),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),

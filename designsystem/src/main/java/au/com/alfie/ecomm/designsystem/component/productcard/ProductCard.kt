@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.dp
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.designsystem.component.productcard.size.HorizontalProductCard
 import au.com.alfie.ecomm.designsystem.component.productcard.size.VerticalProductCard
+import au.com.alfie.ecomm.designsystem.component.productcard.size.VerticalProductCardSize
 
 internal val PRICE_PLACEHOLDER_WIDTH = 50.dp
 
@@ -14,6 +15,7 @@ fun ProductCard(
     productCardType: ProductCardType,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
+    size: VerticalProductCardSize = VerticalProductCardSize.Large,
     isLoading: Boolean = false,
     isWishlisted: Boolean = false
 ) {
@@ -28,6 +30,7 @@ fun ProductCard(
             productCard = productCardType,
             onClick = onClick,
             modifier = modifier,
+            size = size,
             isLoading = isLoading,
             isWishlisted = isWishlisted,
         )

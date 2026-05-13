@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -42,6 +42,7 @@ import au.com.alfie.ecomm.designsystem.component.modifier.overflowNestedScroll
 import au.com.alfie.ecomm.designsystem.component.price.PriceType
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCard
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
+import au.com.alfie.ecomm.designsystem.component.productcard.size.VerticalProductCardSize
 import au.com.alfie.ecomm.designsystem.theme.Theme
 import kotlinx.collections.immutable.persistentListOf
 
@@ -114,25 +115,31 @@ fun ProductCarousel(
 
         val state: LazyListState = rememberLazyListState()
         val flingBehavior = if (isSnapEnabled) rememberSnapFlingBehavior(lazyListState = state) else ScrollableDefaults.flingBehavior()
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .overflowNestedScroll(state),
-            state = state,
-            flingBehavior = flingBehavior,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing12),
-            contentPadding = PaddingValues(horizontal = Theme.spacing.spacing16)
-        ) {
-            itemsIndexed(
-                items = items,
-                key = { index, item -> item.name + index }
-            ) { index, item ->
-                ProductCard(
-                    productCardType = item,
-                    onClick = {
-                        onProductClick(index)
-                    }
-                )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val itemGap = Theme.spacing.spacing12
+            val contentPadding = Theme.spacing.spacing16
+            val mediumCardWidth = (this.maxWidth - contentPadding * 2 - itemGap) / 2
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .overflowNestedScroll(state),
+                state = state,
+                flingBehavior = flingBehavior,
+                horizontalArrangement = Arrangement.spacedBy(itemGap),
+                contentPadding = PaddingValues(horizontal = contentPadding)
+            ) {
+                itemsIndexed(
+                    items = items,
+                    key = { index, item -> item.name + index }
+                ) { index, item ->
+                    ProductCard(
+                        productCardType = item,
+                        size = VerticalProductCardSize.Medium(mediumCardWidth),
+                        onClick = {
+                            onProductClick(index)
+                        }
+                    )
+                }
             }
         }
 
