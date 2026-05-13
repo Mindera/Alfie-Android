@@ -26,7 +26,7 @@ For new features, follow the orchestrated workflow: **Spec â†’ Security Review â
 ### Phase Dependencies
 
 ```
-Phases 1-4 (parallel) --> Phase 5 --> Phase 6 --> Phase 7 --> Phase 8
+Phase 1 --> Phases 2,3,4 (parallel) --> Phase 5 --> Phase 6 --> Phase 7 --> Phase 8
 ```
 
 ---

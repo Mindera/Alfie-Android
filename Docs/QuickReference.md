@@ -66,7 +66,7 @@ Alfie-Android/
 - **Firebase**: Analytics, Crashlytics, Remote Config (BOM 32.7.3)
 - **DataStore**: Preferences storage (v1.1.2)
 - **Room**: Local database (if needed)
-- **Timber**: Logging (latest)
+- **Timber**: Logging (v5.0.1)
 - **MockK**: Testing mocks (v1.13.8)
 - **JUnit 5**: Test framework (v5.10.0)
 - **Detekt**: Static analysis (v1.23.7)

@@ -34,10 +34,10 @@ class FeatureViewModelTest {
 
     @Test
     fun `given success when loadData then emits Content`() = runTest {
-        coEvery { getFeatureUseCase() } returns Result.success(mockData)
+        coEvery { getFeatureUseCase() } returns UseCaseResult.Success(mockData)
         viewModel.loadData()
         viewModel.uiState.test {
-            assertThat(awaitItem()).isInstanceOf(FeatureUIState.Content::class.java)
+            assertIs<FeatureUIState.Content>(awaitItem())
         }
     }
 }
@@ -72,7 +72,7 @@ class GetBrandsUseCaseTest {
 
         val result = useCase()
 
-        assertThat(result).isInstanceOf(UseCaseResult.Success::class.java)
+        assertIs<UseCaseResult.Success<*>>(result)
     }
 }
 ```

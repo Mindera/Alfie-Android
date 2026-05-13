@@ -27,7 +27,7 @@ AI tools should read the agent definition from `.ai/agents/<agent-name>.agent.md
 **Example:**
 ```
 Acting as the feature-developer agent (see .ai/agents/feature-developer.agent.md),
-implement the Product Details feature following the spec in Docs/Specs/Features/ProductDetails.md
+implement the Product Details feature following the spec in [your Jira ticket or spec document]
 ```
 
 ---

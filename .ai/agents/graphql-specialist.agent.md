@@ -19,14 +19,14 @@ You are the GraphQL specialist for the Alfie Android application. You manage Gra
 
 ## Example Pattern
 
-**Query** (`network/src/main/graphql/GetProduct.graphql`):
+**Query** (`network/src/main/graphql/product-queries.graphql`):
 ```graphql
 query GetProduct($id: String!) {
   product(id: $id) { ...ProductFields }
 }
 ```
 
-**Fragment** (`network/src/main/graphql/fragment/ProductFields.graphql`):
+**Fragment** (`network/src/main/graphql/fragments/ProductFields.graphql`):
 ```graphql
 fragment ProductFields on Product {
   id name brand

@@ -31,7 +31,7 @@ class FeatureViewModelTest {
         coEvery { getFeatureUseCase() } returns UseCaseResult.Success(mockData)
         viewModel.loadData()
         viewModel.uiState.test {
-            assertThat(awaitItem()).isInstanceOf(FeatureUIState.Content::class.java)
+            assertIs<FeatureUIState.Content>(awaitItem())
         }
     }
 }

@@ -86,7 +86,7 @@ internal class HomeViewModel @Inject constructor(
                 is UseCaseResult.Success -> _state.value = HomeUIState.Loaded(
                     uiFactory(result.data)
                 )
-                is UseCaseResult.Error -> _state.value = HomeUIState.Error
+                is UseCaseResult.Error -> _state.value = HomeUIState.Error(result.message)
             }
         }
     }

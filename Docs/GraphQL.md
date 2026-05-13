@@ -58,12 +58,10 @@ fragment ProductFields on Product {
 
 ```kotlin
 internal class ProductService @Inject constructor(
-    private val apolloClient: ApolloClient
-) {
-    suspend fun getProduct(productId: String): Result<GetProductQuery.Product> =
-        apolloClient.query(GetProductQuery(productId))
-            .execute()
-            .mapData { it.product }
+    apolloClient: ApolloClient
+) : GraphService(apolloClient) {
+    suspend fun getProduct(productId: String): Result<GetProductQuery.Data> =
+        query(GetProductQuery(productId)).unwrap()
 }
 ```
 

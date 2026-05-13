@@ -6,7 +6,7 @@ tools: ['bash', 'glob', 'grep']
 
 You are the security specialist for the Alfie Android application. You perform pre-implementation reviews and post-implementation audits.
 
-📚 **Reference**: See [Quick Reference](../../Docs/QuickReference.md) for security rules. Core rules: [AGENTS.md](../../AGENTS.md).
+📚 **Reference**: Core rules: [AGENTS.md](../../AGENTS.md).
 
 ## Workflow
 
