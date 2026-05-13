@@ -45,7 +45,7 @@ internal fun VerticalProductCard(
     modifier: Modifier = Modifier,
     size: VerticalProductCardSize = VerticalProductCardSize.Large,
     isLoading: Boolean = false,
-    isWishlisted: Boolean = false,
+    isWishlisted: Boolean = false
 ) {
     val sizeModifier = when (size) {
         VerticalProductCardSize.Large -> Modifier.fillMaxWidth()
@@ -55,7 +55,7 @@ internal fun VerticalProductCard(
         modifier = modifier then sizeModifier then Modifier
             .clickable(enabled = isLoading.not()) { onClick() }
             .testTag(productCard.cardTestTag),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)
     ) {
         ProductImage(
             productCard = productCard,
@@ -147,7 +147,6 @@ private fun ProductDescription(
             )
         }
         Spacer(modifier = Modifier.size(Theme.spacing.spacing24))
-
     }
 }
 
@@ -163,7 +162,7 @@ private fun VerticalProductCardPreview() {
         name = "One Line Pant",
         price = PriceType.Default(price = "$ 429.00"),
         onFavoriteClick = {},
-        addToBagClick = {},
+        addToBagClick = {}
     )
     VerticalProductCard(productCard = productCard, onClick = { })
 }
@@ -184,6 +183,6 @@ private fun VerticalProductCardLoadingPreview() {
     VerticalProductCard(
         productCard = productCard,
         onClick = { },
-        isLoading = true,
+        isLoading = true
     )
 }

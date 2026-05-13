@@ -18,7 +18,6 @@ import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUse
 import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
-import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
@@ -27,7 +26,6 @@ import au.com.alfie.ecomm.feature.plp.model.ProductListEvent
 import au.com.alfie.ecomm.feature.plp.model.ProductListUI
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitter
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
-import au.com.alfie.ecomm.repository.productlist.model.ProductListEntry
 import au.com.alfie.ecomm.repository.productlist.model.ProductListLayoutMode
 import au.com.alfie.ecomm.repository.productlist.model.ProductListMetadata
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -168,8 +166,11 @@ internal class ProductListViewModel @Inject constructor(
 
     private fun onFavoriteClick(productId: String) {
         viewModelScope.launch {
-            if (_state.value.wishlistIds.contains(productId).not()) addToWishlistUseCase(productId)
-            else removeWishlistUseCase(productId)
+            if (_state.value.wishlistIds.contains(productId).not()) {
+                addToWishlistUseCase(productId)
+            } else {
+                removeWishlistUseCase(productId)
+            }
         }
     }
 }

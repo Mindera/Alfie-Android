@@ -32,7 +32,7 @@ fun ProductCard(
             modifier = modifier,
             size = size,
             isLoading = isLoading,
-            isWishlisted = isWishlisted,
+            isWishlisted = isWishlisted
         )
     }
 }

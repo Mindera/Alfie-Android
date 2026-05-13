@@ -52,6 +52,6 @@ sealed interface ProductCardType {
         override val brandTestTag: String = PRODUCT_DESIGNER,
         override val nameTestTag: String = PRODUCT_NAME,
         override val priceTestTag: String = PRODUCT_PRICE_COMPONENT,
-        val addToBagClick: ClickEvent? = null,
+        val addToBagClick: ClickEvent? = null
     ) : ProductCardType
 }

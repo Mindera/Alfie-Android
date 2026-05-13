@@ -40,6 +40,6 @@ class WishlistUIFactory @Inject constructor() {
         price = product.priceRange.toPriceType(product.defaultVariant.price),
         image = product.defaultVariant.media.toImageUI(),
         onRemoveClick = onRemoveClick,
-        addToBagClick = onAddToBagClick,
+        addToBagClick = onAddToBagClick
     )
 }

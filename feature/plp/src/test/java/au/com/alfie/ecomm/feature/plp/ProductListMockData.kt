@@ -255,7 +255,7 @@ internal val gridProductListUI = ProductListUI(
     layoutMode = ProductListLayoutMode.GRID,
     compactColumnCount = 2,
     nonCompactColumnCount = 3,
-    wishlistIds = emptyList(),
+    wishlistIds = emptyList()
 )
 
 internal val columnProductListUI = ProductListUI(
@@ -265,5 +265,5 @@ internal val columnProductListUI = ProductListUI(
     layoutMode = ProductListLayoutMode.COLUMN,
     compactColumnCount = 1,
     nonCompactColumnCount = 2,
-    wishlistIds = emptyList(),
+    wishlistIds = emptyList()
 )

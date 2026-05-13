@@ -31,7 +31,7 @@ class WishlistUIFactoryTest {
                         image = it.productCardData.image,
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
-                        price = it.productCardData.price,
+                        price = it.productCardData.price
                     )
                 )
             },
@@ -41,9 +41,9 @@ class WishlistUIFactoryTest {
                         image = it.productCardData.image,
                         brand = it.productCardData.brand,
                         name = it.productCardData.name,
-                        price = it.productCardData.price,
+                        price = it.productCardData.price
                     ),
-                    productId = "Product Id",
+                    productId = "Product Id"
                 )
             }
         )

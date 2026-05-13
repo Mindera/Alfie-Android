@@ -262,7 +262,7 @@ internal val wishListProductUi = persistentListOf(
             image = Media.Image(
                 url = "",
                 alt = "Media"
-            ).toImageUI(),
+            ).toImageUI()
         ),
         productId = "Product Id"
     ),
@@ -274,8 +274,8 @@ internal val wishListProductUi = persistentListOf(
             image = Media.Image(
                 url = "",
                 alt = null
-            ).toImageUI(),
+            ).toImageUI()
         ),
-        productId = "Product Id",
+        productId = "Product Id"
     )
 )

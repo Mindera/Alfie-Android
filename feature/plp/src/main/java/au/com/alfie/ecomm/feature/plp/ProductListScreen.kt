@@ -181,7 +181,7 @@ private fun ProductListGrid(
                                 index = index,
                                 columnCount = columnCount
                             ),
-                            isWishlisted = state.wishlistIds.contains(entry.id),
+                            isWishlisted = state.wishlistIds.contains(entry.id)
                         )
                     }
                 }

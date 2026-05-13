@@ -29,5 +29,4 @@ internal class ProductListEntryUIFactory @Inject constructor(
             )
         )
     }
-
 }
