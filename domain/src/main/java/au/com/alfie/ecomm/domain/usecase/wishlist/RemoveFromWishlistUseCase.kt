@@ -7,6 +7,7 @@ import javax.inject.Inject
 class RemoveFromWishlistUseCase @Inject constructor(
     private val wishlistRepository: WishlistRepository
 ) : UseCaseInteractor {
+
     suspend operator fun invoke(productId: String) =
-        wishlistRepository.removeFromWishlist(productId)
+        run(wishlistRepository.removeFromWishlist(productId))
 }

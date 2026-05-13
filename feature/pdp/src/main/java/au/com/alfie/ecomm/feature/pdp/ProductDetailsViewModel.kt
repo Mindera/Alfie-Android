@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -125,8 +124,6 @@ internal class ProductDetailsViewModel @Inject constructor(
                 _state.update { state ->
                     when (state) {
                         is Loaded -> {
-                            Timber.tag("WishlistTesting")
-                                .d("isWishlisted: ${state.details.isWishlisted}")
                             state.copy(
                                 details = state.details.copy(
                                     isWishlisted = wishlistIds.contains(state.details.id)
@@ -143,7 +140,6 @@ internal class ProductDetailsViewModel @Inject constructor(
 
     private fun onFavoriteClick(productId: String) {
         viewModelScope.launch {
-            Timber.tag("WishlistTesting").d("FAv clicked: $productId")
             (_state.value as? ProductDetailsUIState.Data)?.details?.let {
                 if (it.isWishlisted.not()) {
                     addToWishlistUseCase(productId)

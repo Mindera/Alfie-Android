@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class WishlistUIFactoryTest {
@@ -60,7 +61,7 @@ class WishlistUIFactoryTest {
 
         result.first().onClick()
 
-        assert(invoked) { "Expected onProductClick to be invoked via WishlistProductUi.onClick" }
+        assertTrue(invoked, "Expected onProductClick to be invoked via WishlistProductUi.onClick")
     }
 
     @Test
@@ -78,7 +79,7 @@ class WishlistUIFactoryTest {
         assertNotNull(vertical.addToBagClick)
         vertical.addToBagClick!!()
 
-        assert(invoked) { "Expected onAddToBagClick to be invoked via ProductCardType.Vertical.addToBagClick" }
+        assertTrue(invoked, "Expected onAddToBagClick to be invoked via ProductCardType.Vertical.addToBagClick")
     }
 
     @Test
@@ -96,7 +97,7 @@ class WishlistUIFactoryTest {
         assertNotNull(vertical.onRemoveClick)
         vertical.onRemoveClick!!()
 
-        assert(invoked) { "Expected onRemoveClick to be invoked via ProductCardType.Vertical.onRemoveClick" }
+        assertTrue(invoked, "Expected onRemoveClick to be invoked via ProductCardType.Vertical.onRemoveClick")
     }
 
     @Test

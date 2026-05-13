@@ -8,5 +8,6 @@ class AddToWishlistUseCase @Inject constructor(
     private val wishlistRepository: WishlistRepository
 ) : UseCaseInteractor {
 
-    suspend operator fun invoke(productId: String) = wishlistRepository.addToWishlist(productId)
+    suspend operator fun invoke(productId: String) =
+        run(wishlistRepository.addToWishlist(productId))
 }

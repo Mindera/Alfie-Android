@@ -6,7 +6,6 @@ import au.com.alfie.ecomm.data.toRepositoryResult
 import au.com.alfie.ecomm.repository.wishlist.WishlistRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 import javax.inject.Inject
 
 class WishlistRepositoryImpl @Inject constructor(
@@ -15,21 +14,14 @@ class WishlistRepositoryImpl @Inject constructor(
 
     override fun getWishlist(): Flow<List<String>> =
         wishlistDao.getWishlistIds().map { wishlist ->
-            Timber.tag("WishlistTesting").d("Fetching wishlist: $wishlist")
             wishlist.map { it.id }
         }
 
     override suspend fun addToWishlist(productId: String) =
-        runCatching {
-            Timber.tag("WishlistTesting").d("Adding to wishlist: $productId")
-            wishlistDao.addToWishlist(WishlistEntity(productId))
-        }
+        runCatching { wishlistDao.addToWishlist(WishlistEntity(productId)) }
             .toRepositoryResult()
 
     override suspend fun removeFromWishlist(productId: String) =
-        runCatching {
-            Timber.tag("WishlistTesting").d("Removing from wishlist: $productId")
-            wishlistDao.removeFromWishlist(productId)
-        }
+        runCatching { wishlistDao.removeFromWishlist(productId) }
             .toRepositoryResult()
 }
