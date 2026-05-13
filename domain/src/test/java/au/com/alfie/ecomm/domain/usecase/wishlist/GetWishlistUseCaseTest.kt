@@ -1,6 +1,7 @@
 package au.com.alfie.ecomm.domain.usecase.wishlist
 
 import app.cash.turbine.test
+import au.com.alfie.ecomm.core.test.CoroutineExtension
 import au.com.alfie.ecomm.core.test.TestDispatcherProvider
 import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.repository.product.ProductRepository
@@ -21,7 +22,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-@ExtendWith(MockKExtension::class)
+@ExtendWith(MockKExtension::class, CoroutineExtension::class)
 class GetWishlistUseCaseTest {
 
     @RelaxedMockK
