@@ -1,17 +1,21 @@
 package au.com.alfie.ecomm.feature.pdp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import au.com.alfie.ecomm.core.navigation.Screen
 import au.com.alfie.ecomm.core.navigation.arguments.ProductDetailsNavArgs
 import au.com.alfie.ecomm.core.navigation.arguments.webview.webViewNavArgs
+import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarCustomVisuals
+import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarType
 import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.domain.usecase.bag.AddToBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import au.com.alfie.ecomm.designsystem.R as DesignR
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsEvent
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsSectionItem
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState
@@ -23,6 +27,7 @@ import au.com.alfie.ecomm.feature.pdp.model.SizeUI
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitter
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -38,7 +43,8 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val uiFactory: ProductDetailsUIFactory,
     savedStateHandle: SavedStateHandle,
-    uiEventEmitterDelegate: UIEventEmitterDelegate
+    uiEventEmitterDelegate: UIEventEmitterDelegate,
+    @ApplicationContext private val context: Context
 ) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
 
     private val _state = MutableStateFlow<ProductDetailsUIState>(Loading)
@@ -140,13 +146,31 @@ internal class ProductDetailsViewModel @Inject constructor(
 
     private fun onFavoriteClick(productId: String) {
         viewModelScope.launch {
-            (_state.value as? ProductDetailsUIState.Data)?.details?.let {
-                if (it.isWishlisted.not()) {
-                    addToWishlistUseCase(productId)
-                } else {
-                    removeWishlistUseCase(productId)
-                }
+            val loaded = (_state.value as? Loaded) ?: return@launch
+            val wasWishlisted = loaded.details.isWishlisted
+
+            _state.update { state ->
+                (state as? Loaded)?.copy(details = state.details.copy(isWishlisted = !wasWishlisted)) ?: state
             }
+
+            val result = if (wasWishlisted) removeWishlistUseCase(productId) else addToWishlistUseCase(productId)
+
+            result.doOnResult(
+                onSuccess = {},
+                onError = {
+                    _state.update { state ->
+                        (state as? Loaded)?.copy(details = state.details.copy(isWishlisted = wasWishlisted)) ?: state
+                    }
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Error,
+                            message = context.getString(
+                                if (wasWishlisted) DesignR.string.wishlist_error_remove_product else DesignR.string.wishlist_error_add_product
+                            )
+                        )
+                    )
+                }
+            )
         }
     }
 

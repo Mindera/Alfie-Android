@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.feature.plp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,9 @@ import au.com.alfie.ecomm.core.navigation.Screen
 import au.com.alfie.ecomm.core.navigation.arguments.productDetailsNavArgs
 import au.com.alfie.ecomm.core.navigation.arguments.productlist.ProductListNavArgs
 import au.com.alfie.ecomm.core.navigation.arguments.productlist.ProductListType
+import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarCustomVisuals
+import au.com.alfie.ecomm.designsystem.component.snackbar.SnackbarType
+import au.com.alfie.ecomm.domain.doOnResult
 import au.com.alfie.ecomm.domain.onSuccess
 import au.com.alfie.ecomm.domain.usecase.productlist.GetPaginatedProductListUseCase
 import au.com.alfie.ecomm.domain.usecase.productlist.GetProductListLayoutModeUseCase
@@ -19,6 +23,7 @@ import au.com.alfie.ecomm.domain.usecase.productlist.UpdateProductListLayoutMode
 import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
 import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import au.com.alfie.ecomm.designsystem.R as DesignR
 import au.com.alfie.ecomm.feature.plp.factory.ProductListEntryUIFactory
 import au.com.alfie.ecomm.feature.plp.factory.ProductListUIFactory
 import au.com.alfie.ecomm.feature.plp.model.ProductListEntryUI
@@ -29,6 +34,7 @@ import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import au.com.alfie.ecomm.repository.productlist.model.ProductListLayoutMode
 import au.com.alfie.ecomm.repository.productlist.model.ProductListMetadata
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,7 +56,8 @@ internal class ProductListViewModel @Inject constructor(
     private val productListEntryUIFactory: ProductListEntryUIFactory,
     private val productListUIFactory: ProductListUIFactory,
     savedStateHandle: SavedStateHandle,
-    uiEventEmitterDelegate: UIEventEmitterDelegate
+    uiEventEmitterDelegate: UIEventEmitterDelegate,
+    @ApplicationContext private val context: Context
 ) : ViewModel(),
     UIEventEmitter by uiEventEmitterDelegate {
 
@@ -112,7 +119,7 @@ internal class ProductListViewModel @Inject constructor(
                 metadataProvider = ::handleProductMetadata
             )
                 .cachedIn(viewModelScope)
-                .combine(state) { pagingData, uiState ->
+                .combine(state) { pagingData, _ ->
                     pagingData.map { entry ->
                         productListEntryUIFactory(
                             entry = entry,
@@ -166,11 +173,32 @@ internal class ProductListViewModel @Inject constructor(
 
     private fun onFavoriteClick(productId: String) {
         viewModelScope.launch {
-            if (_state.value.wishlistIds.contains(productId).not()) {
-                addToWishlistUseCase(productId)
-            } else {
-                removeWishlistUseCase(productId)
+            val wasWishlisted = _state.value.wishlistIds.contains(productId)
+
+            _state.update { oldState ->
+                val updatedIds = if (wasWishlisted) oldState.wishlistIds - productId else oldState.wishlistIds + productId
+                oldState.copy(wishlistIds = updatedIds)
             }
+
+            val result = if (wasWishlisted) removeWishlistUseCase(productId) else addToWishlistUseCase(productId)
+
+            result.doOnResult(
+                onSuccess = {},
+                onError = {
+                    _state.update { oldState ->
+                        val revertedIds = if (wasWishlisted) oldState.wishlistIds + productId else oldState.wishlistIds - productId
+                        oldState.copy(wishlistIds = revertedIds)
+                    }
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Error,
+                            message = context.getString(
+                                if (wasWishlisted) DesignR.string.wishlist_error_remove_product else DesignR.string.wishlist_error_add_product
+                            )
+                        )
+                    )
+                }
+            )
         }
     }
 }

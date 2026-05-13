@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.feature.plp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -76,6 +77,9 @@ class ProductListViewModelTest {
     @RelaxedMockK
     private lateinit var getWishlistIdsUseCase: GetWishlistIdsUseCase
 
+    @RelaxedMockK
+    private lateinit var context: Context
+
     @BeforeEach
     fun setUp() {
         mockkStatic("au.com.alfie.ecomm.feature.plp.NavArgsGettersKt")
@@ -149,6 +153,7 @@ class ProductListViewModelTest {
 
         buildViewModel()
 
+        @Suppress("UnusedFlow")
         verify { getPaginatedProductListUseCase("123456", null, any(), any(), any()) }
     }
 
@@ -160,6 +165,7 @@ class ProductListViewModelTest {
 
         buildViewModel()
 
+        @Suppress("UnusedFlow")
         verify { getPaginatedProductListUseCase(null, "query", any(), any(), any()) }
     }
 
@@ -261,6 +267,7 @@ class ProductListViewModelTest {
         uiEventEmitterDelegate = uiEventEmitterDelegate,
         addToWishlistUseCase = addToWishlistUseCase,
         removeWishlistUseCase = removeFromWishlistUseCase,
-        getWishlistIds = getWishlistIdsUseCase
+        getWishlistIds = getWishlistIdsUseCase,
+        context = context
     )
 }

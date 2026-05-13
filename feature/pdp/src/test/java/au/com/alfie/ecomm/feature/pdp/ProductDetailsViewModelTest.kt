@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.feature.pdp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import au.com.alfie.ecomm.core.commons.string.StringResource
@@ -57,6 +58,9 @@ internal class ProductDetailsViewModelTest {
 
     @RelaxedMockK
     private lateinit var savedStateHandle: SavedStateHandle
+
+    @RelaxedMockK
+    private lateinit var context: Context
 
     @BeforeEach
     fun setUp() {
@@ -161,6 +165,7 @@ internal class ProductDetailsViewModelTest {
         removeWishlistUseCase = removeWishlistUseCase,
         uiFactory = productDetailsUIFactory,
         savedStateHandle = savedStateHandle,
-        uiEventEmitterDelegate = UIEventEmitterDelegate()
+        uiEventEmitterDelegate = UIEventEmitterDelegate(),
+        context = context
     )
 }
