@@ -256,7 +256,7 @@ The project uses Gradle with modularization for scalability:
 - **Queries**: `*-queries.graphql` (e.g., `product-queries.graphql`)
 - **Fragments**: `fragments/` subdirectory
 - **Schema**: `schema.graphqls`
-- **Generated code**: Apollo Kotlin generates DTOs in `au.com.alfie.ecomm.graphql` package
+- **Generated code**: Apollo Kotlin generates DTOs in `com.mindera.alfie.graphql` package
 
 ### Adding a New Query
 

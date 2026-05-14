@@ -1,7 +1,7 @@
-import au.com.alfie.ecomm.buildconvention.AppConfig
-import au.com.alfie.ecomm.buildconvention.extension.implementation
-import au.com.alfie.ecomm.buildconvention.extension.kapt
-import au.com.alfie.ecomm.buildconvention.module.ProjectModule
+import com.mindera.alfie.buildconvention.AppConfig
+import com.mindera.alfie.buildconvention.extension.implementation
+import com.mindera.alfie.buildconvention.extension.kapt
+import com.mindera.alfie.buildconvention.module.ProjectModule
 
 plugins {
     alias(buildConvention.plugins.lib)
@@ -12,7 +12,7 @@ android {
     namespace = AppConfig.applicationId + ".data.database"
 
     defaultConfig {
-        testInstrumentationRunner = "au.com.alfie.ecomm.data.database.AppTestRunner"
+        testInstrumentationRunner = "com.mindera.alfie.data.database.AppTestRunner"
     }
 }
 

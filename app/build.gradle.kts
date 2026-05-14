@@ -1,10 +1,10 @@
-import au.com.alfie.ecomm.buildconvention.BuildType.BETA
-import au.com.alfie.ecomm.buildconvention.BuildType.DEBUG
-import au.com.alfie.ecomm.buildconvention.BuildType.RELEASE
-import au.com.alfie.ecomm.buildconvention.Environment
-import au.com.alfie.ecomm.buildconvention.extension.betaImplementation
-import au.com.alfie.ecomm.buildconvention.module.ProjectModule
-import au.com.alfie.ecomm.buildconvention.setEnvironmentsFields
+import com.mindera.alfie.buildconvention.BuildType.BETA
+import com.mindera.alfie.buildconvention.BuildType.DEBUG
+import com.mindera.alfie.buildconvention.BuildType.RELEASE
+import com.mindera.alfie.buildconvention.Environment
+import com.mindera.alfie.buildconvention.extension.betaImplementation
+import com.mindera.alfie.buildconvention.module.ProjectModule
+import com.mindera.alfie.buildconvention.setEnvironmentsFields
 
 plugins {
     alias(buildConvention.plugins.application)
@@ -55,6 +55,7 @@ android {
 
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName(RELEASE.buildName)
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }

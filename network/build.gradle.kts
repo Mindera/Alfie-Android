@@ -1,7 +1,7 @@
-import au.com.alfie.ecomm.buildconvention.AppConfig
-import au.com.alfie.ecomm.buildconvention.BuildType
-import au.com.alfie.ecomm.buildconvention.Environment
-import au.com.alfie.ecomm.buildconvention.module.ProjectModule
+import com.mindera.alfie.buildconvention.AppConfig
+import com.mindera.alfie.buildconvention.BuildType
+import com.mindera.alfie.buildconvention.Environment
+import com.mindera.alfie.buildconvention.module.ProjectModule
 
 plugins {
     alias(buildConvention.plugins.lib)
