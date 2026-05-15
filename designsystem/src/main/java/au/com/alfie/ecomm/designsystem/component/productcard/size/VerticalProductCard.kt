@@ -19,9 +19,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import au.com.alfie.ecomm.core.commons.string.StringResource
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
+import au.com.alfie.ecomm.core.ui.util.stringResource
 import au.com.alfie.ecomm.designsystem.R
 import au.com.alfie.ecomm.designsystem.component.button.Button
 import au.com.alfie.ecomm.designsystem.component.button.ButtonSize
@@ -71,7 +73,7 @@ internal fun VerticalProductCard(
                 modifier = Modifier.fillMaxWidth(),
                 type = ButtonType.Secondary,
                 buttonSize = ButtonSize.Medium,
-                text = "Add to Bag",
+                text = stringResource(StringResource.fromId(R.string.add_to_bag)),
                 onClick = it
             )
         }
