@@ -2,7 +2,6 @@ package au.com.alfie.ecomm.feature.search
 
 import app.cash.turbine.test
 import au.com.alfie.ecomm.core.navigation.Screen
-import au.com.alfie.ecomm.core.navigation.arguments.productDetailsNavArgs
 import au.com.alfie.ecomm.core.navigation.arguments.productlist.ProductListType
 import au.com.alfie.ecomm.core.navigation.arguments.productlist.productListNavArgs
 import au.com.alfie.ecomm.core.navigation.arguments.shop.ShopTab
@@ -19,7 +18,6 @@ import au.com.alfie.ecomm.feature.search.model.BrandSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.KeywordSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.SearchEvent
 import au.com.alfie.ecomm.feature.search.model.SearchUIState
-import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import au.com.alfie.ecomm.repository.search.model.RecentSearch
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -58,9 +56,6 @@ internal class SearchViewModelTest {
     @RelaxedMockK
     private lateinit var searchUIFactory: SearchUIFactory
 
-    @RelaxedMockK
-    private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
-
     @InjectMockKs
     private lateinit var viewModel: SearchViewModel
 
@@ -94,7 +89,7 @@ internal class SearchViewModelTest {
     @Test
     fun `WHEN handleEvent GIVEN OnUpdateSearchTerm WHEN term is not empty and result is success THEN return Loading and next Loaded`() = runTest {
         coEvery { getSearchSuggestions(any()) } returns UseCaseResult.Success(searchSuggestions)
-        coEvery { searchUIFactory(any(), any()) } returns searchUI
+        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI
         val expected = SearchUIState.Loaded(searchUI)
         val event = SearchEvent.OnUpdateSearchTerm(searchTerm = "Boot")
 
@@ -264,22 +259,9 @@ internal class SearchViewModelTest {
     }
 
     @Test
-    fun `WHEN handleEvent GIVEN OnProductSuggestionClick THEN navigates`() = runTest {
-        val productSuggestion = searchUI.products[0]
-        val screen = Screen.ProductDetails(productDetailsNavArgs(id = productSuggestion.id))
-        val event = SearchEvent.OnProductSuggestionClick(productSuggestion)
-
-        viewModel.handleEvent(event)
-
-        viewModel.run {
-            verify { navigateTo(screen = screen) }
-        }
-    }
-
-    @Test
     fun `WHEN handleEvent GIVEN OnMoreProductsClick WHEN state is loaded THEN saves recent search and navigates`() = runTest {
         coEvery { getSearchSuggestions(any()) } returns UseCaseResult.Success(searchSuggestions)
-        coEvery { searchUIFactory(any(), any()) } returns searchUI
+        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI
         val loaded = SearchUIState.Loaded(searchUI)
         val screen = Screen.ProductList(productListNavArgs(ProductListType.Search(loaded.searchUI.searchTerm)))
         val updateSearchTermEvent = SearchEvent.OnUpdateSearchTerm(searchTerm = loaded.searchUI.searchTerm)

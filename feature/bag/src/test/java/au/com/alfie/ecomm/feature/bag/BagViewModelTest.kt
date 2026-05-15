@@ -54,6 +54,7 @@ internal class BagViewModelTest {
             bagUiFactory(
                 bagProducts = bagProducts,
                 products = products,
+                any(),
                 any())
         } returns bagProductUi
 

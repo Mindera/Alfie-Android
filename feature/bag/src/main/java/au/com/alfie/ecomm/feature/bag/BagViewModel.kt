@@ -9,7 +9,6 @@ import au.com.alfie.ecomm.domain.usecase.bag.GetBagUseCase
 import au.com.alfie.ecomm.domain.usecase.bag.RemoveFromBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
 import au.com.alfie.ecomm.feature.bag.BagUiState.Data.Loading
-import au.com.alfie.ecomm.feature.bag.models.BagEvent
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitter
 import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import au.com.alfie.ecomm.repository.bag.BagProduct
@@ -41,12 +40,6 @@ internal class BagViewModel @Inject constructor(
         getBagList()
     }
 
-    fun handleEvent(event: BagEvent) {
-        when (event) {
-            is BagEvent.OnProductClick -> openProduct(event.productId)
-        }
-    }
-
     private fun getBagList() {
         viewModelScope.launch {
             getBagUseCase().collectLatest { result ->
@@ -55,7 +48,8 @@ internal class BagViewModel @Inject constructor(
                         val bag = bagUiFactory(
                             bagProducts = it,
                             products = getBagProductDetails(it),
-                            onRemoveClick = { onRemoveClicked(it) }
+                            onRemoveClick = { onRemoveClicked(it) },
+                            onProductClick = { openProduct(it) }
                         )
                         _state.value = BagUiState.Data.Loaded(bag)
                     },

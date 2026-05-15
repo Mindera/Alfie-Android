@@ -37,7 +37,8 @@ class ProductListEntryUIFactoryTest {
 
             val result = uiFactory(
                 entry = product,
-                onFavoriteClick = { }
+                onFavoriteClick = { },
+                onProductClick = { }
             )
 
             assertEquals(expected.id, result.id)
@@ -53,7 +54,8 @@ class ProductListEntryUIFactoryTest {
         products.forEach { product ->
             val result = uiFactory(
                 entry = product,
-                onFavoriteClick = { }
+                onFavoriteClick = { },
+                onProductClick = { }
             )
 
             assertIs<ProductCardType.Vertical>(result.productCardData)

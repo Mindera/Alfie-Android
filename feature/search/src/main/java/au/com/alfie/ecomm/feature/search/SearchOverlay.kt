@@ -226,7 +226,6 @@ private fun SearchContent(
             items(searchUI.products) { suggestion ->
                 ProductCard(
                     productCardType = suggestion.productCardData,
-                    onClick = { onSearchEvent(SearchEvent.OnProductSuggestionClick(suggestion)) },
                     modifier = Modifier.padding(vertical = Theme.spacing.spacing6)
                 )
             }
@@ -358,7 +357,7 @@ private fun RecentSearchesPanel(
                 RecentSearchItem(
                     recentSearch = it,
                     onSearchEvent = onSearchEvent,
-                    modifier = Modifier.animateItemPlacement()
+                    modifier = Modifier.animateItem()
                 )
             }
         }

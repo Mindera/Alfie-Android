@@ -24,21 +24,23 @@ class WishlistUIFactory @Inject constructor() {
                 productCardData = mapProductCardData(
                     product = it,
                     onRemoveClick = { onRemoveClick(it) },
-                    onAddToBagClick = { onAddToBagClick(it) }
-                ),
-                onClick = { onProductClick(it) }
+                    onAddToBagClick = { onAddToBagClick(it) },
+                    onClick = { onProductClick(it) }
+                )
             )
         }.toImmutableList()
 
     private fun mapProductCardData(
         product: Product,
         onRemoveClick: ClickEvent,
-        onAddToBagClick: ClickEvent
+        onAddToBagClick: ClickEvent,
+        onClick: ClickEvent
     ) = ProductCardType.Vertical(
         brand = product.brand.name,
         name = product.name,
         price = product.priceRange.toPriceType(product.defaultVariant.price),
         image = product.defaultVariant.media.toImageUI(),
+        onClick = onClick,
         onRemoveClick = onRemoveClick,
         addToBagClick = onAddToBagClick
     )

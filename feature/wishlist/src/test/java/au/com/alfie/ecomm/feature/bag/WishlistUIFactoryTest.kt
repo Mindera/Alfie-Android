@@ -49,7 +49,7 @@ class WishlistUIFactoryTest {
     }
 
     @Test
-    fun `WHEN onProductClick is provided THEN onClick on WishlistProductUi is pre-wired`() = runTest {
+    fun `WHEN onProductClick is provided THEN onClick on ProductCardType is pre-wired`() = runTest {
         var invoked = false
 
         val result = uiFactory(
@@ -59,9 +59,11 @@ class WishlistUIFactoryTest {
             onProductClick = { invoked = true }
         )
 
-        result.first().onClick()
+        val vertical = result.first().productCardData as ProductCardType.Vertical
+        assertNotNull(vertical.onClick)
+        vertical.onClick!!()
 
-        assertTrue(invoked, "Expected onProductClick to be invoked via WishlistProductUi.onClick")
+        assertTrue(invoked, "Expected onProductClick to be invoked via ProductCardType.Vertical.onClick")
     }
 
     @Test

@@ -20,9 +20,11 @@ class BagUiFactoryTest {
         val items = uiFactory(
             bagProducts = bagProducts,
             products = products,
-            onRemoveClick = { }
+            onRemoveClick = { },
+            onProductClick = { }
         )
         val expected = bagProductUi.map {
+            val productCard = it.productCardData as ProductCardType.Horizontal
             BagProductUi(
                 id = it.id,
                 productCardData = ProductCardType.Horizontal(
@@ -30,12 +32,13 @@ class BagUiFactoryTest {
                     brand = it.productCardData.brand,
                     name = it.productCardData.name,
                     price = it.productCardData.price,
-                    color = (it.productCardData as ProductCardType.Horizontal).color,
-                    size = (it.productCardData as ProductCardType.Horizontal).size
+                    color = productCard.color,
+                    size = productCard.size
                 )
             )
         }
         val result = items.map {
+            val productCard = it.productCardData as ProductCardType.Horizontal
             BagProductUi(
                 id = it.id,
                 productCardData = ProductCardType.Horizontal(
@@ -43,8 +46,8 @@ class BagUiFactoryTest {
                     brand = it.productCardData.brand,
                     name = it.productCardData.name,
                     price = it.productCardData.price,
-                    color = (it.productCardData as ProductCardType.Horizontal).color,
-                    size = (it.productCardData as ProductCardType.Horizontal).size
+                    color = productCard.color,
+                    size = productCard.size
                 )
             )
         }

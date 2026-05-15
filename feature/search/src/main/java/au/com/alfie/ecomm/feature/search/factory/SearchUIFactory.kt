@@ -1,6 +1,7 @@
 package au.com.alfie.ecomm.feature.search.factory
 
 import au.com.alfie.ecomm.core.commons.dispatcher.DispatcherProvider
+import au.com.alfie.ecomm.core.ui.event.ClickEventOneArg
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
 import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
@@ -28,13 +29,14 @@ internal class SearchUIFactory @Inject constructor(
 
     suspend operator fun invoke(
         searchTerm: String,
-        searchSuggestions: SearchSuggestions
+        searchSuggestions: SearchSuggestions,
+        onProductClick: ClickEventOneArg<String>
     ): SearchUI = withContext(dispatcher.default()) {
         SearchUI(
             searchTerm = searchTerm,
             keywords = searchSuggestions.keywords.take(MAX_KEYWORDS).map { it.toUI() },
             brands = searchSuggestions.brands.take(MAX_BRANDS).map { it.toUI() },
-            products = searchSuggestions.products.take(MAX_PRODUCTS).map { it.toUI() }
+            products = searchSuggestions.products.take(MAX_PRODUCTS).map { it.toUI(onProductClick) }
         )
     }
 
@@ -45,14 +47,15 @@ internal class SearchUIFactory @Inject constructor(
         slug = slug
     )
 
-    private fun SearchSuggestion.Product.toUI() = ProductSuggestionUI(
+    private fun SearchSuggestion.Product.toUI(onProductClick: ClickEventOneArg<String>) = ProductSuggestionUI(
         id = id,
         slug = slug,
         productCardData = ProductCardType.Vertical(
             image = mapImage(media),
             brand = brandName,
             name = name,
-            price = price.toPriceType()
+            price = price.toPriceType(),
+            onClick = { onProductClick(id) }
         )
     )
 
