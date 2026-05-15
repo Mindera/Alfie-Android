@@ -20,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
 class GetWishlistUseCaseTest {
@@ -59,14 +58,16 @@ class GetWishlistUseCaseTest {
     }
 
     @Test
-    fun `invoke - returns error when any product fetch fails`() = runTest {
-        val errorResult = ErrorResult(type = ErrorType.GENERIC_ERROR)
+    fun `invoke - returns partial success when some product fetches fail`() = runTest {
+        val mockProduct1 = mockk<Product>()
         coEvery { wishlistRepository.getWishlist() } returns flowOf(listOf("id1", "id2"))
-        coEvery { productRepository.getProduct("id1") } returns RepositoryResult.Success(mockk())
-        coEvery { productRepository.getProduct("id2") } returns RepositoryResult.Error(errorResult)
+        coEvery { productRepository.getProduct("id1") } returns RepositoryResult.Success(mockProduct1)
+        coEvery { productRepository.getProduct("id2") } returns RepositoryResult.Error(ErrorResult(type = ErrorType.GENERIC_ERROR))
+
+        val expected = UseCaseResult.Success(listOf(mockProduct1))
 
         subject().test {
-            assertIs<UseCaseResult.Error>(awaitItem())
+            assertEquals(expected, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

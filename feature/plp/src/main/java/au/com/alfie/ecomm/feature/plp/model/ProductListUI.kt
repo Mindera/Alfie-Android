@@ -9,7 +9,7 @@ internal data class ProductListUI(
     val layoutMode: ProductListLayoutMode,
     val compactColumnCount: Int,
     val nonCompactColumnCount: Int,
-    val wishlistIds: List<String>
+    val wishlistIds: Set<String>
 ) {
 
     companion object {
@@ -20,7 +20,7 @@ internal data class ProductListUI(
             layoutMode = ProductListLayoutMode.GRID,
             compactColumnCount = 1,
             nonCompactColumnCount = 1,
-            wishlistIds = emptyList()
+            wishlistIds = emptySet()
         )
     }
 }

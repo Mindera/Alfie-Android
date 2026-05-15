@@ -166,7 +166,7 @@ internal class ProductListViewModel @Inject constructor(
     private fun collectWishlistIds() {
         viewModelScope.launch {
             getWishlistIds.invoke().collect {
-                _state.update { oldState -> oldState.copy(wishlistIds = it) }
+                _state.update { oldState -> oldState.copy(wishlistIds = it.toSet()) }
             }
         }
     }

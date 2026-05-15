@@ -31,14 +31,9 @@ class GetWishlistUseCase @Inject constructor(
                         .map { id -> async(dispatcherProvider.io()) { productRepository.getProduct(id) } }
                         .awaitAll()
 
-                    val firstError = results.filterIsInstance<RepositoryResult.Error>().firstOrNull()
-                    if (firstError != null) {
-                        UseCaseResult.Error(firstError.errorResult)
-                    } else {
-                        UseCaseResult.Success(
-                            results.filterIsInstance<RepositoryResult.Success<Product>>().map { it.data }
-                        )
-                    }
+                    UseCaseResult.Success(
+                        results.filterIsInstance<RepositoryResult.Success<Product>>().map { it.data }
+                    )
                 }
             }
 }

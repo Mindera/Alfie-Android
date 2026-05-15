@@ -50,12 +50,14 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val _state = MutableStateFlow<ProductDetailsUIState>(Loading)
     val state = _state.asStateFlow()
 
+    private val _wishlistIds = MutableStateFlow<List<String>>(emptyList())
+
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
     private val productId = args.id
 
     init {
-        loadDetails()
         collectWishlistIds()
+        loadDetails()
     }
 
     fun handleEvent(event: ProductDetailsEvent) {
@@ -76,7 +78,11 @@ internal class ProductDetailsViewModel @Inject constructor(
             getProductUseCase(productId).doOnResult(
                 onSuccess = {
                     val shopUI = uiFactory(it)
-                    _state.value = Loaded(details = shopUI)
+                    _state.value = Loaded(
+                        details = shopUI.copy(
+                            isWishlisted = _wishlistIds.value.contains(shopUI.id)
+                        )
+                    )
                 },
                 onError = {
                     _state.value = Error
@@ -127,6 +133,7 @@ internal class ProductDetailsViewModel @Inject constructor(
     private fun collectWishlistIds() {
         viewModelScope.launch {
             getWishlistIds().collect { wishlistIds ->
+                _wishlistIds.value = wishlistIds
                 _state.update { state ->
                     when (state) {
                         is Loaded -> {
