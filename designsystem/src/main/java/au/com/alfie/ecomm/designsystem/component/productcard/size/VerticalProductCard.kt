@@ -1,12 +1,14 @@
 package au.com.alfie.ecomm.designsystem.component.productcard.size
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,10 +19,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import au.com.alfie.ecomm.core.commons.string.StringResource
 import au.com.alfie.ecomm.core.ui.event.ClickEvent
 import au.com.alfie.ecomm.core.ui.media.image.ImageSizeUI
 import au.com.alfie.ecomm.core.ui.media.image.ImageUI
+import au.com.alfie.ecomm.core.ui.util.stringResource
 import au.com.alfie.ecomm.designsystem.R
+import au.com.alfie.ecomm.designsystem.component.button.Button
+import au.com.alfie.ecomm.designsystem.component.button.ButtonSize
+import au.com.alfie.ecomm.designsystem.component.button.ButtonType
 import au.com.alfie.ecomm.designsystem.component.image.Image
 import au.com.alfie.ecomm.designsystem.component.image.ratio.Ratio
 import au.com.alfie.ecomm.designsystem.component.price.Price
@@ -33,36 +40,51 @@ import au.com.alfie.ecomm.designsystem.component.shimmer.shimmer
 import au.com.alfie.ecomm.designsystem.theme.Theme
 import kotlinx.collections.immutable.persistentListOf
 
-private const val NAME_MAX_LINES = 2
-
 @Composable
-internal fun ProductCardLarge(
-    productCard: ProductCardType.Large,
+internal fun VerticalProductCard(
+    productCard: ProductCardType.Vertical,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    size: VerticalProductCardSize = VerticalProductCardSize.Large,
+    isLoading: Boolean = false,
+    isWishlisted: Boolean = false
 ) {
+    val sizeModifier = when (size) {
+        VerticalProductCardSize.Large -> Modifier.fillMaxWidth()
+        is VerticalProductCardSize.Medium -> Modifier.width(size.cardWidth)
+    }
     Column(
-        modifier = modifier then Modifier
+        modifier = modifier then sizeModifier then Modifier
             .clickable(enabled = isLoading.not()) { onClick() }
-            .testTag(productCard.cardTestTag)
+            .testTag(productCard.cardTestTag),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)
     ) {
         ProductImage(
             productCard = productCard,
-            isLoading = isLoading
+            isLoading = isLoading,
+            isWishlisted = isWishlisted
         )
-        Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         ProductDescription(
             productCard = productCard,
             isLoading = isLoading
         )
+        productCard.addToBagClick?.let {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                type = ButtonType.Secondary,
+                buttonSize = ButtonSize.Medium,
+                text = stringResource(StringResource.fromId(R.string.add_to_bag)),
+                onClick = it
+            )
+        }
     }
 }
 
 @Composable
 private fun ProductImage(
-    productCard: ProductCardType.Large,
-    isLoading: Boolean
+    productCard: ProductCardType.Vertical,
+    isLoading: Boolean,
+    isWishlisted: Boolean
 ) {
     Box(
         contentAlignment = Alignment.TopEnd
@@ -75,13 +97,15 @@ private fun ProductImage(
                 .testTag(productCard.imageTestTag),
             ratio = Ratio.RATIO3x4
         )
-        if (isLoading.not()) {
+        if (isLoading.not() && productCard.onFavoriteClick != null) {
             IconButton(
                 modifier = Modifier.size(Theme.iconSize.large),
                 onClick = productCard.onFavoriteClick
             ) {
+                val iconRes =
+                    if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_action_heart_outline),
+                    painter = painterResource(iconRes),
                     contentDescription = null,
                     modifier = Modifier.size(Theme.iconSize.medium)
                 )
@@ -92,13 +116,13 @@ private fun ProductImage(
 
 @Composable
 private fun ProductDescription(
-    productCard: ProductCardType.Large,
+    productCard: ProductCardType.Vertical,
     isLoading: Boolean
 ) {
     Row(verticalAlignment = Alignment.Bottom) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = productCard.brand,
+                text = productCard.name,
                 style = Theme.typography.paragraph,
                 color = Theme.color.primary.mono900,
                 maxLines = 1,
@@ -112,42 +136,26 @@ private fun ProductDescription(
                     .testTag(productCard.brandTestTag)
             )
             Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
-            Text(
-                text = productCard.name,
-                style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono500,
-                maxLines = NAME_MAX_LINES,
-                overflow = TextOverflow.Ellipsis,
+            Price(
+                item = productCard.price,
+                size = PriceSize.Medium,
+                orientation = PriceOrientation.Vertical,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .shimmer(
                         isShimmering = isLoading,
-                        lines = NAME_MAX_LINES,
-                        lineHeight = Theme.typography.paragraph.lineHeight,
-                        lastLineFraction = Theme.scale.scale80
+                        minWidth = PRICE_PLACEHOLDER_WIDTH
                     )
-                    .testTag(productCard.nameTestTag)
+                    .testTag(productCard.priceTestTag)
             )
         }
         Spacer(modifier = Modifier.size(Theme.spacing.spacing24))
-        Price(
-            item = productCard.price,
-            size = PriceSize.Medium,
-            orientation = PriceOrientation.Vertical,
-            modifier = Modifier
-                .shimmer(
-                    isShimmering = isLoading,
-                    minWidth = PRICE_PLACEHOLDER_WIDTH
-                )
-                .testTag(productCard.priceTestTag)
-        )
     }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
-private fun ProductCardLargePreview() {
-    val productCard = ProductCardType.Large(
+private fun VerticalProductCardPreview() {
+    val productCard = ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("url")),
             alt = ""
@@ -155,15 +163,16 @@ private fun ProductCardLargePreview() {
         brand = "Sass & Bide",
         name = "One Line Pant",
         price = PriceType.Default(price = "$ 429.00"),
-        onFavoriteClick = {}
+        onFavoriteClick = {},
+        addToBagClick = {}
     )
-    ProductCardLarge(productCard = productCard, onClick = { })
+    VerticalProductCard(productCard = productCard, onClick = { })
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
-private fun ProductCardLargeLoadingPreview() {
-    val productCard = ProductCardType.Large(
+private fun VerticalProductCardLoadingPreview() {
+    val productCard = ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("url")),
             alt = ""
@@ -173,7 +182,7 @@ private fun ProductCardLargeLoadingPreview() {
         price = PriceType.Default(price = ""),
         onFavoriteClick = {}
     )
-    ProductCardLarge(
+    VerticalProductCard(
         productCard = productCard,
         onClick = { },
         isLoading = true

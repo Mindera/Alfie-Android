@@ -5,5 +5,5 @@ import au.com.alfie.ecomm.designsystem.component.productcard.ProductCardType
 internal data class ProductSuggestionUI(
     val id: String,
     val slug: String,
-    val productCardData: ProductCardType.Small
+    val productCardData: ProductCardType.Vertical
 )

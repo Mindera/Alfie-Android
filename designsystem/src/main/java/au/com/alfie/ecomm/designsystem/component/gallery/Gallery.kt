@@ -47,6 +47,7 @@ fun Gallery(
     ratio: Ratio,
     constraint: DimensionConstraint,
     modifier: Modifier = Modifier,
+    isWishlisted: Boolean = false,
     startPosition: Int = 0,
     isLoading: Boolean = false,
     isFullscreen: Boolean = false,
@@ -87,6 +88,7 @@ fun Gallery(
 
         EndlessGallery(
             gallery = gallery,
+            isWishlisted = isWishlisted,
             startPosition = selectedIndex,
             isZoomable = false,
             onPositionChange = onPositionChange,

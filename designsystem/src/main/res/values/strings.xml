@@ -1,4 +1,5 @@
 <resources>
+    <string name="add_to_bag">Add to Bag</string>
     <string name="badge_count_limit">99+</string>
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
@@ -17,6 +18,8 @@
     <string name="gallery_controls_left_content_description">Previous media</string>
     <string name="gallery_controls_right_content_description">Next media</string>
     <string name="wishlist_screen_title">Wishlist</string>
+    <string name="wishlist_error_add_product">Couldn\'t add to wishlist</string>
+    <string name="wishlist_error_remove_product">Couldn\'t remove from wishlist</string>
     <string name="product_color">Colour: %1$s</string>
     <string name="product_size">Size: %1$s</string>
     <string name="error_screen_button_no_action_message">Action not specified</string>

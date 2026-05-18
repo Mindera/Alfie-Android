@@ -252,7 +252,7 @@ internal val products = listOf(
 
 internal val wishListProductUi = persistentListOf(
     WishlistProductUi(
-        productCardData = ProductCardType.Medium(
+        productCardData = ProductCardType.Vertical(
             brand = "Brand",
             name = "Product name",
             price = PriceType.Range(
@@ -262,22 +262,20 @@ internal val wishListProductUi = persistentListOf(
             image = Media.Image(
                 url = "",
                 alt = "Media"
-            ).toImageUI(),
-            color = "blue",
-            size = "M"
-        )
+            ).toImageUI()
+        ),
+        onClick = {}
     ),
     WishlistProductUi(
-        productCardData = ProductCardType.Medium(
+        productCardData = ProductCardType.Vertical(
             brand = "Brand",
             name = "Product 2",
             price = PriceType.Default("$100"),
             image = Media.Image(
                 url = "",
                 alt = null
-            ).toImageUI(),
-            color = "",
-            size = ""
-        )
+            ).toImageUI()
+        ),
+        onClick = {}
     )
 )

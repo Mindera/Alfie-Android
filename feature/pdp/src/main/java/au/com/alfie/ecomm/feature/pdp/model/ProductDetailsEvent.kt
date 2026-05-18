@@ -10,7 +10,7 @@ internal sealed interface ProductDetailsEvent {
 
     data class OnSectionClick(val item: ProductDetailsSectionItem) : ProductDetailsEvent
 
-    data object OnFavoriteClick : ProductDetailsEvent
+    data class OnFavoriteClick(val productId: String) : ProductDetailsEvent
 
     data class OnSizeSelect(val sizeUI: SizeUI) : ProductDetailsEvent
 }

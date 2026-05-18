@@ -1,5 +1,6 @@
 package au.com.alfie.ecomm.feature.pdp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import au.com.alfie.ecomm.core.commons.string.StringResource
@@ -11,6 +12,9 @@ import au.com.alfie.ecomm.core.test.CoroutineExtension
 import au.com.alfie.ecomm.domain.UseCaseResult
 import au.com.alfie.ecomm.domain.usecase.bag.AddToBagUseCase
 import au.com.alfie.ecomm.domain.usecase.product.GetProductUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.AddToWishlistUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.GetWishlistIdsUseCase
+import au.com.alfie.ecomm.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsEvent
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsSectionItem
 import au.com.alfie.ecomm.feature.pdp.model.ProductDetailsUIState
@@ -38,6 +42,15 @@ internal class ProductDetailsViewModelTest {
     private lateinit var addToBagUseCase: AddToBagUseCase
 
     @RelaxedMockK
+    private lateinit var getWishlistIds: GetWishlistIdsUseCase
+
+    @RelaxedMockK
+    private lateinit var addToWishlistUseCase: AddToWishlistUseCase
+
+    @RelaxedMockK
+    private lateinit var removeWishlistUseCase: RemoveFromWishlistUseCase
+
+    @RelaxedMockK
     private lateinit var getProductUseCase: GetProductUseCase
 
     @RelaxedMockK
@@ -45,6 +58,9 @@ internal class ProductDetailsViewModelTest {
 
     @RelaxedMockK
     private lateinit var savedStateHandle: SavedStateHandle
+
+    @RelaxedMockK
+    private lateinit var context: Context
 
     @BeforeEach
     fun setUp() {
@@ -99,7 +115,7 @@ internal class ProductDetailsViewModelTest {
 
             val result = expectMostRecentItem()
             assertTrue(result is UIEvent.Base.NavigateToScreen)
-            assertEquals(uiEvent.screen, (result as? UIEvent.Base.NavigateToScreen)?.screen)
+            assertEquals(uiEvent.screen, result.screen)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -144,8 +160,12 @@ internal class ProductDetailsViewModelTest {
     private fun buildViewModel() = ProductDetailsViewModel(
         addToBagUseCase = addToBagUseCase,
         getProductUseCase = getProductUseCase,
+        getWishlistIds = getWishlistIds,
+        addToWishlistUseCase = addToWishlistUseCase,
+        removeWishlistUseCase = removeWishlistUseCase,
         uiFactory = productDetailsUIFactory,
         savedStateHandle = savedStateHandle,
-        uiEventEmitterDelegate = UIEventEmitterDelegate()
+        uiEventEmitterDelegate = UIEventEmitterDelegate(),
+        context = context
     )
 }

@@ -8,6 +8,7 @@ import au.com.alfie.ecomm.data.database.PersistentDatabase
 import au.com.alfie.ecomm.data.database.navigation.NavigationEntryDao
 import au.com.alfie.ecomm.data.database.search.FeatureToggleDao
 import au.com.alfie.ecomm.data.database.search.RecentSearchDao
+import au.com.alfie.ecomm.data.database.wishlist.WishlistDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,4 +56,7 @@ internal object DatabaseModule {
 
     @Provides
     fun provideFeatureToggleDao(database: FeatureToggleDatabase): FeatureToggleDao = database.featureToggleDao()
+
+    @Provides
+    fun provideWishlistDao(database: PersistentDatabase): WishlistDao = database.wishlistDao()
 }
