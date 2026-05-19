@@ -1,11 +1,11 @@
 package com.mindera.alfie.data.search.service
 
-import com.mindera.alfie.core.test.setPrivatePropertyField
-import com.mindera.alfie.graphql.SearchSuggestionsQuery
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.exception.DefaultApolloException
+import com.mindera.alfie.core.test.setPrivatePropertyField
+import com.mindera.alfie.graphql.SearchSuggestionsQuery
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

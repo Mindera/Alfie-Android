@@ -12,6 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.core.ui.media.image.pickImageUrlBySize
 import com.mindera.alfie.designsystem.R
@@ -20,9 +23,6 @@ import com.mindera.alfie.designsystem.component.image.ratio.DimensionConstraint.
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio
 import com.mindera.alfie.designsystem.component.image.ratio.aspectRatio
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun Image(

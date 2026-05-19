@@ -1,12 +1,12 @@
 package com.mindera.alfie.network.di
 
-import com.mindera.alfie.core.environment.EnvironmentManager
-import com.mindera.alfie.debug.interceptor.DebugInterceptors
-import com.mindera.alfie.network.interceptor.NetworkStatusInterceptor
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.network.http.LoggingInterceptor
 import com.apollographql.apollo3.network.http.LoggingInterceptor.Level.BODY
 import com.apollographql.apollo3.network.okHttpClient
+import com.mindera.alfie.core.environment.EnvironmentManager
+import com.mindera.alfie.debug.interceptor.DebugInterceptors
+import com.mindera.alfie.network.interceptor.NetworkStatusInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

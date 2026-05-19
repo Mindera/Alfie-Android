@@ -1,5 +1,9 @@
 package com.mindera.alfie.network.extension
 
+import com.apollographql.apollo3.ApolloCall
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.exception.ApolloHttpException
 import com.mindera.alfie.core.test.setPrivatePropertyField
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_BAD_REQUEST
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_CONFLICT
@@ -14,10 +18,6 @@ import com.mindera.alfie.network.exception.GraphNetworkException.NetworkExceptio
 import com.mindera.alfie.network.exception.GraphNetworkException.NotFoundException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnProcessableEntityException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnauthorizedException
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Operation
-import com.apollographql.apollo3.exception.ApolloHttpException
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK

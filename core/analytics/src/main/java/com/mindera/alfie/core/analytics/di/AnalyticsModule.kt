@@ -1,9 +1,9 @@
 package com.mindera.alfie.core.analytics.di
 
-import com.mindera.alfie.core.analytics.AnalyticsManager
-import com.mindera.alfie.core.analytics.AnalyticsManagerImpl
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
+import com.mindera.alfie.core.analytics.AnalyticsManager
+import com.mindera.alfie.core.analytics.AnalyticsManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -1,11 +1,11 @@
 package com.mindera.alfie.core.configuration.provider
 
-import com.mindera.alfie.core.commons.extension.fromJson
-import com.mindera.alfie.core.configuration.dto.ConfigurationData
-import com.mindera.alfie.core.configuration.dto.FeatureData
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig.VALUE_SOURCE_REMOTE
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.mindera.alfie.core.commons.extension.fromJson
+import com.mindera.alfie.core.configuration.dto.ConfigurationData
+import com.mindera.alfie.core.configuration.dto.FeatureData
 import javax.inject.Inject
 import javax.inject.Singleton
 

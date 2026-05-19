@@ -1,6 +1,7 @@
 package com.mindera.alfie.core.analytics.providers
 
 import android.os.Bundle
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mindera.alfie.core.analytics.events.EventErrorValue
 import com.mindera.alfie.core.analytics.events.EventKey.ERROR_MESSAGE
 import com.mindera.alfie.core.analytics.events.EventKey.SCREEN_NAME
@@ -11,7 +12,6 @@ import com.mindera.alfie.core.analytics.params.FakeAnalyticsParams
 import com.mindera.alfie.core.analytics.params.plus
 import com.mindera.alfie.core.analytics.params.toBundle
 import com.mindera.alfie.debug.analytics.AnalyticsLogger
-import com.google.firebase.analytics.FirebaseAnalytics
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK

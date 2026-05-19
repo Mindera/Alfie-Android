@@ -1,5 +1,6 @@
 package com.mindera.alfie.core.analytics.providers
 
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.mindera.alfie.core.analytics.events.EventErrorValue
 import com.mindera.alfie.core.analytics.events.EventKey.ERROR_MESSAGE
 import com.mindera.alfie.core.analytics.events.EventKey.SCREEN_NAME
@@ -9,7 +10,6 @@ import com.mindera.alfie.core.analytics.params.AnalyticsParams
 import com.mindera.alfie.core.analytics.params.AnalyticsValues.StringValues
 import com.mindera.alfie.core.analytics.params.toBundle
 import com.mindera.alfie.debug.analytics.AnalyticsLogger
-import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 
 internal class FirebaseAnalyticsProvider @Inject constructor(

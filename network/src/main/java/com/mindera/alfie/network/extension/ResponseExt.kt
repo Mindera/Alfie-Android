@@ -1,5 +1,8 @@
 package com.mindera.alfie.network.extension
 
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.exception.ApolloHttpException
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_BAD_REQUEST
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_CONFLICT
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_METHOD_NOT_ALLOWED
@@ -18,9 +21,6 @@ import com.mindera.alfie.network.exception.GraphNetworkException.ServerException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnProcessableEntityException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnauthorizedException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnexpectedException
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Operation
-import com.apollographql.apollo3.exception.ApolloHttpException
 
 private const val HTTP_ERROR_NUMBER_CUTOFF = 3
 private const val HTTP_CLIENT_ERROR_MIN_CODE = 400

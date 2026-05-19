@@ -1,12 +1,12 @@
 package com.mindera.alfie.core.configuration.provider
 
-import com.mindera.alfie.core.configuration.FEATURE_DATA_RESPONSE
-import com.mindera.alfie.core.configuration.dto.ConfigurationData
-import com.mindera.alfie.core.configuration.featureData
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig.VALUE_SOURCE_REMOTE
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig.VALUE_SOURCE_STATIC
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigValue
+import com.mindera.alfie.core.configuration.FEATURE_DATA_RESPONSE
+import com.mindera.alfie.core.configuration.dto.ConfigurationData
+import com.mindera.alfie.core.configuration.featureData
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension

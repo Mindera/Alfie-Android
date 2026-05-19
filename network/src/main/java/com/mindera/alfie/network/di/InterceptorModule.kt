@@ -1,7 +1,7 @@
 package com.mindera.alfie.network.di
 
-import com.mindera.alfie.network.interceptor.NetworkStatusInterceptor
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
+import com.mindera.alfie.network.interceptor.NetworkStatusInterceptor
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

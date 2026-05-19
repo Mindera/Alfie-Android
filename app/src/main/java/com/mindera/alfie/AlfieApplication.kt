@@ -1,8 +1,8 @@
 package com.mindera.alfie
 
 import android.app.Application
-import com.mindera.alfie.core.commons.log.TimberConfigurator
 import com.google.firebase.FirebaseApp
+import com.mindera.alfie.core.commons.log.TimberConfigurator
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 

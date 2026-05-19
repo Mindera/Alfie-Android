@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.mindera.alfie.core.commons.extension.orZero
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
@@ -12,7 +13,6 @@ import com.mindera.alfie.designsystem.component.swatch.SwatchSize
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

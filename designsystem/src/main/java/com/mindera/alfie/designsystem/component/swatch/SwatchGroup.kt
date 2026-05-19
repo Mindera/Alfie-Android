@@ -24,13 +24,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.image.Image
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.theme.shape.Shape.full
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 private val SWATCH_SHAPE = full
 private const val NORMAL_ALPHA = 1F

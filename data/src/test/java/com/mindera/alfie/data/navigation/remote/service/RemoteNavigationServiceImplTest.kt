@@ -1,10 +1,10 @@
 package com.mindera.alfie.data.navigation.remote.service
 
-import com.mindera.alfie.core.test.setPrivatePropertyField
-import com.mindera.alfie.graphql.NavEntriesByHandleQuery
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.mindera.alfie.core.test.setPrivatePropertyField
+import com.mindera.alfie.graphql.NavEntriesByHandleQuery
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

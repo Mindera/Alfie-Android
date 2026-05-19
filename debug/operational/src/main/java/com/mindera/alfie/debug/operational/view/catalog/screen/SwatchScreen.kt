@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.mindera.alfie.designsystem.component.swatch.SwatchGroup
 import com.mindera.alfie.designsystem.component.swatch.SwatchSize
 import com.mindera.alfie.designsystem.component.swatch.SwatchType.Image
@@ -24,7 +25,6 @@ import com.mindera.alfie.designsystem.component.swatch.SwatchType.PlainColor
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.ramcosta.composedestinations.annotation.Destination
 
 private val smallColorSwatchList = listOf(

@@ -1,9 +1,9 @@
 package com.mindera.alfie.feature.startup.loader
 
-import com.mindera.alfie.feature.startup.R
 import com.google.firebase.Firebase
 import com.google.firebase.appdistribution.InterruptionLevel
 import com.google.firebase.appdistribution.appDistribution
+import com.mindera.alfie.feature.startup.R
 import javax.inject.Inject
 
 internal class FeedbackLoader @Inject constructor() : StartUpLoader {

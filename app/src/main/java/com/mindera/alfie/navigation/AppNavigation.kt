@@ -21,6 +21,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.mindera.alfie.core.deeplink.DeeplinkHandler
 import com.mindera.alfie.core.deeplink.DeeplinkResult
 import com.mindera.alfie.core.navigation.DirectionProvider
@@ -40,9 +43,6 @@ import com.mindera.alfie.designsystem.component.topbar.rememberTopBarState
 import com.mindera.alfie.feature.home.destinations.HomeScreenDestination
 import com.mindera.alfie.feature.search.SearchOverlay
 import com.mindera.alfie.feature.webview.destinations.WebViewScreenDestination
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine

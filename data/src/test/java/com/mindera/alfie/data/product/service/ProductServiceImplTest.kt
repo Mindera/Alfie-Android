@@ -1,11 +1,11 @@
 package com.mindera.alfie.data.product.service
 
-import com.mindera.alfie.core.test.setPrivatePropertyField
-import com.mindera.alfie.data.product.productData
-import com.mindera.alfie.graphql.ProductQuery
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.mindera.alfie.core.test.setPrivatePropertyField
+import com.mindera.alfie.data.product.productData
+import com.mindera.alfie.graphql.ProductQuery
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

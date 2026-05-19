@@ -2,11 +2,11 @@ package com.mindera.alfie.debug.operational.view.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.appdistribution.appDistribution
 import com.mindera.alfie.debug.operational.R
 import com.mindera.alfie.debug.operational.view.screen.model.DebugScreenEvent
 import com.mindera.alfie.debug.operational.view.screen.model.DebugScreenOpUI
-import com.google.firebase.Firebase
-import com.google.firebase.appdistribution.appDistribution
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
