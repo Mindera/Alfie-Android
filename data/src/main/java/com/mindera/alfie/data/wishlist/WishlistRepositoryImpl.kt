@@ -1,40 +1,27 @@
 package com.mindera.alfie.data.wishlist
 
+import com.mindera.alfie.data.database.wishlist.WishlistDao
+import com.mindera.alfie.data.database.wishlist.model.WishlistEntity
 import com.mindera.alfie.data.toRepositoryResult
-import com.mindera.alfie.repository.product.model.Product
-import com.mindera.alfie.repository.result.RepositoryResult
 import com.mindera.alfie.repository.wishlist.WishlistRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class WishlistRepositoryImpl @Inject constructor() : WishlistRepository {
+class WishlistRepositoryImpl @Inject constructor(
+    private val wishlistDao: WishlistDao
+) : WishlistRepository {
 
-    // TODO consider removing this property when the wishlist of product is saved on database or api
-    private val _wishlist = MutableStateFlow<List<Product>>(listOf())
-
-    // TODO change this implementation to a proper implementation using data base or api to save the products on wishlist
-    override fun addToWishlist(product: Product): RepositoryResult<Boolean> {
-        if (_wishlist.value.none { it.id == product.id }) {
-            _wishlist.value = buildList {
-                addAll(_wishlist.value)
-                add(product)
-            }
+    override fun getWishlist(): Flow<List<String>> =
+        wishlistDao.getWishlistIds().map { wishlist ->
+            wishlist.map { it.id }
         }
-        return RepositoryResult.Success(true)
-    }
 
-    // TODO change this implementation to a proper implementation using data base or api to save the products on wishlist
-    override fun removeFromWishlist(product: Product): RepositoryResult<Boolean> {
-        _wishlist.value = _wishlist.value.filter { it.id != product.id }.toMutableList()
-        return RepositoryResult.Success(true)
-    }
+    override suspend fun addToWishlist(productId: String) =
+        runCatching { wishlistDao.addToWishlist(WishlistEntity(productId)) }
+            .toRepositoryResult()
 
-    // TODO change this implementation to a proper implementation using data base or api to get the wishlist
-    override fun getWishlist(): Flow<RepositoryResult<List<Product>>> {
-        return _wishlist.map { list ->
-            Result.success(list).toRepositoryResult()
-        }
-    }
+    override suspend fun removeFromWishlist(productId: String) =
+        runCatching { wishlistDao.removeFromWishlist(productId) }
+            .toRepositoryResult()
 }

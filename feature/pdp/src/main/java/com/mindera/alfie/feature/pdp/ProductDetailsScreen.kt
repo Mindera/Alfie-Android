@@ -256,13 +256,14 @@ private fun ProductDetailsGallery(
 
     Gallery(
         gallery = state.details.gallery,
+        isWishlisted = state.details.isWishlisted,
         ratio = RATIO3x4,
         constraint = ParentWidth,
         isLoading = isLoading,
         isFullscreen = isFullscreen,
         onClick = { isFullscreen = true },
         onDismissFullscreen = { isFullscreen = false },
-        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick) }
+        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.id)) }
     )
 }
 
@@ -362,7 +363,15 @@ private fun ProductDetailsBagSection(
     onEvent: ClickEventOneArg<ProductDetailsEvent>
 ) {
     val isLoading = state is ProductDetailsUIState.Data.Loading
-    val text = if (state.details.isSelectionSoldOut) {
+    val hasSelectedSize = when (val sizeSection = state.details.sizeSectionUI) {
+        is SizeSectionUI.SizeSelector -> sizeSection.selectedSize != null
+        is SizeSectionUI.SizeModalPicker -> sizeSection.selectedSize != null
+        is SizeSectionUI.SingleSize,
+        is SizeSectionUI.SizeOnly,
+        is SizeSectionUI.NoSize -> true
+    }
+    val isSelectionSoldOut = state.details.isSelectionSoldOut
+    val text = if (isSelectionSoldOut) {
         stringResource(id = R.string.product_details_size_out_of_stock)
     } else {
         stringResource(id = R.string.product_details_add_to_bag)
@@ -380,7 +389,7 @@ private fun ProductDetailsBagSection(
             isShimmering = isLoading,
             buttonSize = ButtonSize.Medium,
             text = text,
-            isEnabled = state.details.isSelectionSoldOut.not(),
+            isEnabled = hasSelectedSize && isSelectionSoldOut.not(),
             onClick = {
                 val event = ProductDetailsEvent.OnAddToBagClick
                 onEvent(event)

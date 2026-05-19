@@ -208,10 +208,10 @@ internal val productListMetadata = ProductListMetadata(
     totalResults = 2
 )
 
-internal val productsMediumUI = listOf(
+internal val productsVerticalUI = listOf(
     ProductListEntryUI(
         id = "123456",
-        productCardData = ProductCardType.Medium(
+        productCardData = ProductCardType.Vertical(
             name = "Product name",
             brand = "Brand",
             price = PriceType.Range(
@@ -231,47 +231,7 @@ internal val productsMediumUI = listOf(
     ),
     ProductListEntryUI(
         id = "654321",
-        productCardData = ProductCardType.Medium(
-            name = "Product 2",
-            brand = "Brand",
-            price = PriceType.Default(price = "$100"),
-            image = ImageUI(
-                images = persistentListOf(
-                    ImageSizeUI.Custom(
-                        url = ""
-                    )
-                ),
-                alt = null
-            ),
-            onFavoriteClick = { }
-        )
-    )
-)
-
-internal val productsLargeUI = listOf(
-    ProductListEntryUI(
-        id = "123456",
-        productCardData = ProductCardType.Large(
-            name = "Product name",
-            brand = "Brand",
-            price = PriceType.Range(
-                startPrice = "$100",
-                endPrice = "$200"
-            ),
-            image = ImageUI(
-                images = persistentListOf(
-                    ImageSizeUI.Custom(
-                        url = ""
-                    )
-                ),
-                alt = "Media"
-            ),
-            onFavoriteClick = { }
-        )
-    ),
-    ProductListEntryUI(
-        id = "654321",
-        productCardData = ProductCardType.Large(
+        productCardData = ProductCardType.Vertical(
             name = "Product 2",
             brand = "Brand",
             price = PriceType.Default(price = "$100"),
@@ -294,7 +254,8 @@ internal val gridProductListUI = ProductListUI(
     isLoadingMetadata = false,
     layoutMode = ProductListLayoutMode.GRID,
     compactColumnCount = 2,
-    nonCompactColumnCount = 3
+    nonCompactColumnCount = 3,
+    wishlistIds = emptySet()
 )
 
 internal val columnProductListUI = ProductListUI(
@@ -303,5 +264,6 @@ internal val columnProductListUI = ProductListUI(
     isLoadingMetadata = false,
     layoutMode = ProductListLayoutMode.COLUMN,
     compactColumnCount = 1,
-    nonCompactColumnCount = 2
+    nonCompactColumnCount = 2,
+    wishlistIds = emptySet()
 )

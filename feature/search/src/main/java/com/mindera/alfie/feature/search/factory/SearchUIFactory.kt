@@ -48,7 +48,7 @@ internal class SearchUIFactory @Inject constructor(
     private fun SearchSuggestion.Product.toUI() = ProductSuggestionUI(
         id = id,
         slug = slug,
-        productCardData = ProductCardType.Small(
+        productCardData = ProductCardType.Vertical(
             image = mapImage(media),
             brand = brandName,
             name = name,

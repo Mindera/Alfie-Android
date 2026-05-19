@@ -3,10 +3,14 @@ package com.mindera.alfie.feature.wishlist
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.wishlist.WishlistNavArgs
-import com.mindera.alfie.domain.doOnResult
+import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import com.mindera.alfie.feature.uievent.UIEventEmitter
+import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.feature.wishlist.WishlistUiState.Data.Loading
 import com.mindera.alfie.repository.product.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +25,10 @@ class WishlistViewModel @Inject constructor(
     private val getWishlistUseCase: GetWishlistUseCase,
     private val removeFromWishlist: RemoveFromWishlistUseCase,
     private val wishlistUiFactory: WishlistUIFactory,
-    savedStateHandle: SavedStateHandle
-) : ViewModel() {
+    savedStateHandle: SavedStateHandle,
+    uiEventEmitterDelegate: UIEventEmitterDelegate
+) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
+
     private val args: WishlistNavArgs = savedStateHandle.navArgs()
     val launchFromTop: Boolean = args.launchFromTop
 
@@ -35,20 +41,24 @@ class WishlistViewModel @Inject constructor(
         }
     }
 
+    fun onNavigateToProductDetails(productId: String) {
+        navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(id = productId)))
+    }
+
     private suspend fun getWishlistList() {
         getWishlistUseCase().collectLatest { result ->
-            result.doOnResult(
-                onSuccess = { productList ->
+            when (result) {
+                is UseCaseResult.Success -> {
                     val wishlist = wishlistUiFactory(
-                        products = productList,
-                        onRemoveClick = ::onRemoveClicked
+                        products = result.data,
+                        onRemoveClick = ::onRemoveClicked,
+                        onAddToBagClick = { onNavigateToProductDetails(it.id) },
+                        onProductClick = { onNavigateToProductDetails(it.id) }
                     )
                     _state.value = WishlistUiState.Data.Loaded(wishlist)
-                },
-                onError = {
-                    _state.value = WishlistUiState.Error
                 }
-            )
+                is UseCaseResult.Error -> _state.value = WishlistUiState.Error
+            }
         }
     }
 

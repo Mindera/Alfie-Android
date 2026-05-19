@@ -3,8 +3,7 @@ package com.mindera.alfie.feature.plp.factory
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.plp.products
-import com.mindera.alfie.feature.plp.productsMediumUI
-import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
+import com.mindera.alfie.feature.plp.productsVerticalUI
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -34,11 +33,10 @@ class ProductListEntryUIFactoryTest {
     @Test
     fun `invoke - correctly maps a product entry`() = runTest {
         products.forEachIndexed { index, product ->
-            val expected = productsMediumUI[index]
+            val expected = productsVerticalUI[index]
 
             val result = uiFactory(
                 entry = product,
-                layoutMode = ProductListLayoutMode.GRID,
                 onFavoriteClick = { }
             )
 
@@ -51,28 +49,14 @@ class ProductListEntryUIFactoryTest {
     }
 
     @Test
-    fun `invoke - WHEN layout mode is GRID THEN map to medium product cards`() = runTest {
+    fun `invoke - WHEN product THEN map to vertical product cards`() = runTest {
         products.forEach { product ->
             val result = uiFactory(
                 entry = product,
-                layoutMode = ProductListLayoutMode.GRID,
                 onFavoriteClick = { }
             )
 
-            assertIs<ProductCardType.Medium>(result.productCardData)
-        }
-    }
-
-    @Test
-    fun `invoke - WHEN layout mode is COLUMN THEN map to large product cards`() = runTest {
-        products.forEach { product ->
-            val result = uiFactory(
-                entry = product,
-                layoutMode = ProductListLayoutMode.COLUMN,
-                onFavoriteClick = { }
-            )
-
-            assertIs<ProductCardType.Large>(result.productCardData)
+            assertIs<ProductCardType.Vertical>(result.productCardData)
         }
     }
 }

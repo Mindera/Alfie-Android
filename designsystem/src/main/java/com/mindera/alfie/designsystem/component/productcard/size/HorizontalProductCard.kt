@@ -34,8 +34,8 @@ import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-internal fun ProductCardXSmall(
-    productCard: ProductCardType.XSmall,
+internal fun HorizontalProductCard(
+    productCard: ProductCardType.Horizontal,
     onClick: ClickEvent,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
@@ -157,8 +157,8 @@ internal fun ProductCardXSmall(
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-private fun ProductCardXSmallPreview() {
-    val productCard = ProductCardType.XSmall(
+private fun HorizontalProductCardPreview() {
+    val productCard = ProductCardType.Horizontal(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("url")),
             alt = ""
@@ -170,13 +170,13 @@ private fun ProductCardXSmallPreview() {
         size = "29 in"
     )
 
-    ProductCardXSmall(productCard = productCard, onClick = {})
+    HorizontalProductCard(productCard = productCard, onClick = {})
 }
 
 @Composable
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
-private fun ProductCardXSmallLoadingPreview() {
-    val productCard = ProductCardType.XSmall(
+private fun HorizontalProductCardLoadingPreview() {
+    val productCard = ProductCardType.Horizontal(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("url")),
             alt = ""
@@ -188,7 +188,7 @@ private fun ProductCardXSmallLoadingPreview() {
         size = ""
     )
 
-    ProductCardXSmall(
+    HorizontalProductCard(
         productCard = productCard,
         onClick = {},
         isLoading = true

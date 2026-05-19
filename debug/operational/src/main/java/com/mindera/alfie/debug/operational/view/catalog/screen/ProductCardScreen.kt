@@ -1,19 +1,14 @@
 package com.mindera.alfie.debug.operational.view.catalog.screen
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.component.price.PriceType
@@ -49,7 +43,7 @@ internal fun ProductCardScreen() {
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
     ) {
         item(span = { GridItemSpan(2) }) {
-            Header("Product Card - XS")
+            Header("Product Card - Horizontal")
         }
         items(
             items = mockProductsXSmall(),
@@ -66,41 +60,10 @@ internal fun ProductCardScreen() {
             )
         }
         item(span = { GridItemSpan(2) }) {
-            Header("Product Card - Small")
-        }
-        item(span = { GridItemSpan(2) }) {
-            Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-                Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
-                mockProductsSmall().forEach {
-                    ProductCard(
-                        productCardType = it,
-                        onClick = { },
-                        isLoading = isLoading
-                    )
-                    Spacer(modifier = Modifier.size(Theme.spacing.spacing12))
-                }
-            }
-        }
-        item(span = { GridItemSpan(2) }) {
-            Header("Product Card - Medium")
-        }
-        itemsIndexed(items = mockProductsMedium()) { index, item ->
-            ProductCard(
-                productCardType = item,
-                onClick = {},
-                modifier = Modifier.padding(
-                    start = if (index % 2 == 0) Theme.spacing.spacing16 else 0.dp,
-                    end = if (index % 2 == 1) Theme.spacing.spacing16 else 0.dp,
-                    bottom = Theme.spacing.spacing32
-                ),
-                isLoading = isLoading
-            )
-        }
-        item(span = { GridItemSpan(2) }) {
-            Header("Product Card - Large")
+            Header("Product Card - Vertical")
         }
         items(
-            items = mockProductsLarge(),
+            items = mockProductsVertical(),
             span = { GridItemSpan(2) }
         ) {
             ProductCard(
@@ -130,7 +93,7 @@ private fun Header(title: String) {
 }
 
 private fun mockProductsXSmall() = listOf(
-    ProductCardType.XSmall(
+    ProductCardType.Horizontal(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046183/pexels-photo-6046183.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""
@@ -143,7 +106,7 @@ private fun mockProductsXSmall() = listOf(
         color = "Worn Blue",
         size = "29 in"
     ),
-    ProductCardType.XSmall(
+    ProductCardType.Horizontal(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046184/pexels-photo-6046184.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""
@@ -157,7 +120,7 @@ private fun mockProductsXSmall() = listOf(
         color = "Worn Blue",
         size = "29 in"
     ),
-    ProductCardType.XSmall(
+    ProductCardType.Horizontal(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046231/pexels-photo-6046231.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""
@@ -173,93 +136,8 @@ private fun mockProductsXSmall() = listOf(
     )
 )
 
-private fun mockProductsSmall() = listOf(
-    ProductCardType.Small(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046228/pexels-photo-6046228.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Skims",
-        name = "Soft Lounge Long Sleeve Dress",
-        price = PriceType.Default(price = "$ 219.00")
-    ),
-    ProductCardType.Small(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046213/pexels-photo-6046213.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Unison",
-        name = "Racer Slip Dress",
-        price = PriceType.Range(
-            startPrice = "$ 229.00",
-            endPrice = "$ 319.00"
-        )
-    ),
-    ProductCardType.Small(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046221/pexels-photo-6046221.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Alemais Blank Konage Gucci",
-        name = "Paradiso Star Man Pleated Mini Shirtdress",
-        price = PriceType.Sale(
-            fullPrice = "$ 340.00",
-            salePrice = "$ 280.00"
-        )
-    )
-)
-
-private fun mockProductsMedium() = listOf(
-    ProductCardType.Medium(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6046219/pexels-photo-6046219.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Anine Bing",
-        name = "Miles Sweartshirt Anine Bing Logo Washed Dark Sage",
-        price = PriceType.Default(price = "$ 219.00"),
-        onFavoriteClick = {}
-    ),
-    ProductCardType.Medium(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/6045708/pexels-photo-6045708.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Seed Heritage",
-        name = "Half Sleeve Polo Top",
-        price = PriceType.Range(
-            startPrice = "$ 229.00",
-            endPrice = "$ 319.00"
-        ),
-        onFavoriteClick = {}
-    ),
-    ProductCardType.Medium(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/7671168/pexels-photo-7671168.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Sportscraft",
-        name = "Olivia Tape Yarn Cardi",
-        price = PriceType.Sale(
-            fullPrice = "$ 340.00",
-            salePrice = "$ 280.00"
-        ),
-        onFavoriteClick = {}
-    ),
-    ProductCardType.Medium(
-        image = ImageUI(
-            images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/2850487/pexels-photo-2850487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-            alt = ""
-        ),
-        brand = "Pangaia Sportscraft Casual Fashion",
-        name = "Recycled Nylon NW FLWRDWN Quilted Collarless Jacket",
-        price = PriceType.Default(price = "$ 222.00"),
-        onFavoriteClick = {}
-    )
-)
-
-private fun mockProductsLarge() = listOf(
-    ProductCardType.Large(
+private fun mockProductsVertical() = listOf(
+    ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/45982/pexels-photo-45982.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""
@@ -269,7 +147,7 @@ private fun mockProductsLarge() = listOf(
         price = PriceType.Default(price = "$ 219.00"),
         onFavoriteClick = {}
     ),
-    ProductCardType.Large(
+    ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/14641437/pexels-photo-14641437.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""
@@ -282,7 +160,7 @@ private fun mockProductsLarge() = listOf(
         ),
         onFavoriteClick = {}
     ),
-    ProductCardType.Large(
+    ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/14641430/pexels-photo-14641430.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""
@@ -295,7 +173,7 @@ private fun mockProductsLarge() = listOf(
         ),
         onFavoriteClick = {}
     ),
-    ProductCardType.Large(
+    ProductCardType.Vertical(
         image = ImageUI(
             images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/9603628/pexels-photo-9603628.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
             alt = ""

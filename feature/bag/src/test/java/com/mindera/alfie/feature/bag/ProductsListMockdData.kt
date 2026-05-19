@@ -255,7 +255,7 @@ internal val bagProducts = listOf(
 internal val bagProductUi = persistentListOf(
     BagProductUi(
         id = "123456",
-        productCardData = ProductCardType.XSmall(
+        productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product name",
             price = PriceType.Range(
@@ -272,7 +272,7 @@ internal val bagProductUi = persistentListOf(
     ),
     BagProductUi(
         id = "654321",
-        productCardData = ProductCardType.XSmall(
+        productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product 2",
             price = PriceType.Default(

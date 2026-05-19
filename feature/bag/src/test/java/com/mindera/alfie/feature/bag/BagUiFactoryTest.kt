@@ -25,26 +25,26 @@ class BagUiFactoryTest {
         val expected = bagProductUi.map {
             BagProductUi(
                 id = it.id,
-                productCardData = ProductCardType.XSmall(
+                productCardData = ProductCardType.Horizontal(
                     image = it.productCardData.image,
                     brand = it.productCardData.brand,
                     name = it.productCardData.name,
                     price = it.productCardData.price,
-                    color = (it.productCardData as ProductCardType.XSmall).color,
-                    size = (it.productCardData as ProductCardType.XSmall).size
+                    color = (it.productCardData as ProductCardType.Horizontal).color,
+                    size = (it.productCardData as ProductCardType.Horizontal).size
                 )
             )
         }
         val result = items.map {
             BagProductUi(
                 id = it.id,
-                productCardData = ProductCardType.XSmall(
+                productCardData = ProductCardType.Horizontal(
                     image = it.productCardData.image,
                     brand = it.productCardData.brand,
                     name = it.productCardData.name,
                     price = it.productCardData.price,
-                    color = (it.productCardData as ProductCardType.XSmall).color,
-                    size = (it.productCardData as ProductCardType.XSmall).size
+                    color = (it.productCardData as ProductCardType.Horizontal).color,
+                    size = (it.productCardData as ProductCardType.Horizontal).size
                 )
             )
         }

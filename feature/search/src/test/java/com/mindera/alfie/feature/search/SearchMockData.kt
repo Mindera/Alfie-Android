@@ -72,7 +72,7 @@ internal val searchUI = SearchUI(
         ProductSuggestionUI(
             id = "12345",
             slug = "product",
-            productCardData = ProductCardType.Small(
+            productCardData = ProductCardType.Vertical(
                 name = "Product",
                 brand = "Brand",
                 price = PriceType.Default("$100"),

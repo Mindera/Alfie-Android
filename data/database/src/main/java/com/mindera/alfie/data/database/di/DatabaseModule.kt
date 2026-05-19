@@ -8,6 +8,7 @@ import com.mindera.alfie.data.database.PersistentDatabase
 import com.mindera.alfie.data.database.navigation.NavigationEntryDao
 import com.mindera.alfie.data.database.search.FeatureToggleDao
 import com.mindera.alfie.data.database.search.RecentSearchDao
+import com.mindera.alfie.data.database.wishlist.WishlistDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -55,4 +56,7 @@ internal object DatabaseModule {
 
     @Provides
     fun provideFeatureToggleDao(database: FeatureToggleDatabase): FeatureToggleDao = database.featureToggleDao()
+
+    @Provides
+    fun provideWishlistDao(database: PersistentDatabase): WishlistDao = database.wishlistDao()
 }

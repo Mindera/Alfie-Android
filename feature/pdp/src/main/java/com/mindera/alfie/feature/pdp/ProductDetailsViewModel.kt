@@ -1,14 +1,20 @@
 package com.mindera.alfie.feature.pdp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.webview.webViewNavArgs
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
+import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
+import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
+import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
@@ -20,27 +26,37 @@ import com.mindera.alfie.feature.pdp.model.SizeUI
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.mindera.alfie.designsystem.R as DesignR
 
 @HiltViewModel
 internal class ProductDetailsViewModel @Inject constructor(
     private val addToBagUseCase: AddToBagUseCase,
     private val getProductUseCase: GetProductUseCase,
+    private val getWishlistIds: GetWishlistIdsUseCase,
+    private val addToWishlistUseCase: AddToWishlistUseCase,
+    private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val uiFactory: ProductDetailsUIFactory,
     savedStateHandle: SavedStateHandle,
-    uiEventEmitterDelegate: UIEventEmitterDelegate
+    uiEventEmitterDelegate: UIEventEmitterDelegate,
+    @ApplicationContext private val context: Context
 ) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
 
     private val _state = MutableStateFlow<ProductDetailsUIState>(Loading)
     val state = _state.asStateFlow()
 
+    private val _wishlistIds = MutableStateFlow<List<String>>(emptyList())
+
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
     private val productId = args.id
 
     init {
+        collectWishlistIds()
         loadDetails()
     }
 
@@ -50,7 +66,7 @@ internal class ProductDetailsViewModel @Inject constructor(
             ProductDetailsEvent.OnShareClick -> onShareClick()
             is ProductDetailsEvent.OnColorClick -> onColorSelected(event.index)
             is ProductDetailsEvent.OnSectionClick -> onSectionClick(event.item)
-            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick()
+            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick(event.productId)
             is ProductDetailsEvent.OnSizeSelect -> onSizeSelect(event.sizeUI)
         }
     }
@@ -62,7 +78,11 @@ internal class ProductDetailsViewModel @Inject constructor(
             getProductUseCase(productId).doOnResult(
                 onSuccess = {
                     val shopUI = uiFactory(it)
-                    _state.value = Loaded(details = shopUI)
+                    _state.value = Loaded(
+                        details = shopUI.copy(
+                            isWishlisted = _wishlistIds.value.contains(shopUI.id)
+                        )
+                    )
                 },
                 onError = {
                     _state.value = Error
@@ -110,8 +130,55 @@ internal class ProductDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onFavoriteClick() {
-        // TODO
+    private fun collectWishlistIds() {
+        viewModelScope.launch {
+            getWishlistIds().collect { wishlistIds ->
+                _wishlistIds.value = wishlistIds
+                _state.update { state ->
+                    when (state) {
+                        is Loaded -> {
+                            state.copy(
+                                details = state.details.copy(
+                                    isWishlisted = wishlistIds.contains(state.details.id)
+                                )
+                            )
+                        }
+
+                        else -> state
+                    }
+                }
+            }
+        }
+    }
+
+    private fun onFavoriteClick(productId: String) {
+        viewModelScope.launch {
+            val loaded = (_state.value as? Loaded) ?: return@launch
+            val wasWishlisted = loaded.details.isWishlisted
+
+            _state.update { state ->
+                (state as? Loaded)?.copy(details = state.details.copy(isWishlisted = !wasWishlisted)) ?: state
+            }
+
+            val result = if (wasWishlisted) removeWishlistUseCase(productId) else addToWishlistUseCase(productId)
+
+            result.doOnResult(
+                onSuccess = {},
+                onError = {
+                    _state.update { state ->
+                        (state as? Loaded)?.copy(details = state.details.copy(isWishlisted = wasWishlisted)) ?: state
+                    }
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Error,
+                            message = context.getString(
+                                if (wasWishlisted) DesignR.string.wishlist_error_remove_product else DesignR.string.wishlist_error_add_product
+                            )
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun onSizeSelect(sizeUI: SizeUI) {

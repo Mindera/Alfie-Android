@@ -1,5 +1,6 @@
 package com.mindera.alfie.feature.plp
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -17,6 +18,8 @@ import com.mindera.alfie.domain.usecase.productlist.GetPaginatedProductListUseCa
 import com.mindera.alfie.domain.usecase.productlist.GetProductListLayoutModeUseCase
 import com.mindera.alfie.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
+import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
+import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import com.mindera.alfie.feature.plp.factory.ProductListEntryUIFactory
 import com.mindera.alfie.feature.plp.factory.ProductListUIFactory
 import com.mindera.alfie.feature.plp.model.ProductListEvent
@@ -68,6 +71,15 @@ class ProductListViewModelTest {
     @RelaxedMockK
     private lateinit var addToWishlistUseCase: AddToWishlistUseCase
 
+    @RelaxedMockK
+    private lateinit var removeFromWishlistUseCase: RemoveFromWishlistUseCase
+
+    @RelaxedMockK
+    private lateinit var getWishlistIdsUseCase: GetWishlistIdsUseCase
+
+    @RelaxedMockK
+    private lateinit var context: Context
+
     @BeforeEach
     fun setUp() {
         mockkStatic("com.mindera.alfie.feature.plp.NavArgsGettersKt")
@@ -75,8 +87,7 @@ class ProductListViewModelTest {
             type = ProductListType.Search("query")
         )
         products.forEachIndexed { index, product ->
-            coEvery { entryUiFactory(product, ProductListLayoutMode.GRID, any()) } returns productsMediumUI[index]
-            coEvery { entryUiFactory(product, ProductListLayoutMode.COLUMN, any()) } returns productsLargeUI[index]
+            coEvery { entryUiFactory(product, any()) } returns productsVerticalUI[index]
         }
         every { getPaginatedProductListUseCase(any(), any(), any(), any(), any()) } returns Pager(
             config = pagerConfig,
@@ -94,7 +105,7 @@ class ProductListViewModelTest {
 
         val result = viewModel.productPager.asSnapshot()
 
-        assertEquals(productsMediumUI, result)
+        assertEquals(productsVerticalUI, result)
     }
 
     @Test
@@ -106,7 +117,7 @@ class ProductListViewModelTest {
 
         val result = viewModel.productPager.asSnapshot()
 
-        assertEquals(productsLargeUI, result)
+        assertEquals(productsVerticalUI, result)
     }
 
     @Test
@@ -142,6 +153,7 @@ class ProductListViewModelTest {
 
         buildViewModel()
 
+        @Suppress("UnusedFlow")
         verify { getPaginatedProductListUseCase("123456", null, any(), any(), any()) }
     }
 
@@ -153,6 +165,7 @@ class ProductListViewModelTest {
 
         buildViewModel()
 
+        @Suppress("UnusedFlow")
         verify { getPaginatedProductListUseCase(null, "query", any(), any(), any()) }
     }
 
@@ -252,6 +265,9 @@ class ProductListViewModelTest {
         productListUIFactory = productListUIFactory,
         savedStateHandle = savedStateHandle,
         uiEventEmitterDelegate = uiEventEmitterDelegate,
-        addWishlistUseCase = addToWishlistUseCase
+        addToWishlistUseCase = addToWishlistUseCase,
+        removeWishlistUseCase = removeFromWishlistUseCase,
+        getWishlistIds = getWishlistIdsUseCase,
+        context = context
     )
 }
