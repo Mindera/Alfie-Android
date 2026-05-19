@@ -22,6 +22,8 @@ sealed interface ProductCardType {
     val brandTestTag: String
     val nameTestTag: String
     val priceTestTag: String
+    val onClick: ClickEvent?
+    val onRemoveClick: ClickEvent?
 
     data class Horizontal(
         override val image: ImageUI,
@@ -30,8 +32,8 @@ sealed interface ProductCardType {
         override val price: PriceType,
         val color: String,
         val size: String,
-        val onClick: ClickEvent? = null,
-        val onRemoveClick: ClickEvent? = null,
+        override val onClick: ClickEvent? = null,
+        override val onRemoveClick: ClickEvent? = null,
         override val cardTestTag: String = PRODUCT_CARD,
         override val imageTestTag: String = PRODUCT_IMAGE,
         override val brandTestTag: String = PRODUCT_DESIGNER,
@@ -46,9 +48,9 @@ sealed interface ProductCardType {
         override val brand: String,
         override val name: String,
         override val price: PriceType,
-        val onClick: ClickEvent? = null,
+        override val onClick: ClickEvent? = null,
         val onFavoriteClick: ClickEvent? = null,
-        val onRemoveClick: ClickEvent? = null,
+        override val onRemoveClick: ClickEvent? = null,
         override val cardTestTag: String = PRODUCT_CARD,
         override val imageTestTag: String = PRODUCT_IMAGE,
         override val brandTestTag: String = PRODUCT_DESIGNER,
