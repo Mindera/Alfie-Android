@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class ProductListEntryUIFactoryTest {
@@ -59,6 +61,25 @@ class ProductListEntryUIFactoryTest {
             )
 
             assertIs<ProductCardType.Vertical>(result.productCardData)
+        }
+    }
+
+    @Test
+    fun `invoke - WHEN onProductClick provided THEN product card onClick is wired to call it`() = runTest {
+        products.forEachIndexed { index, product ->
+            var invoked = false
+
+            val result = uiFactory(
+                entry = product,
+                onFavoriteClick = { },
+                onProductClick = { invoked = true }
+            )
+
+            val onClick = result.productCardData.onClick
+            assertNotNull(onClick, "Expected onClick to be set for product at index $index")
+            onClick()
+
+            assertTrue(invoked, "Expected onProductClick to be invoked via ProductCardType.Vertical.onClick for product at index $index")
         }
     }
 }

@@ -8,6 +8,8 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class BagUiFactoryTest {
@@ -53,5 +55,26 @@ class BagUiFactoryTest {
         }
 
         assertEquals(expected, result)
+    }
+
+    @Test
+    fun `invoke - WHEN onProductClick provided THEN each product card onClick is wired to call it with product id`() = runTest {
+        val clickedIds = mutableListOf<String>()
+
+        val items = uiFactory(
+            bagProducts = bagProducts,
+            products = products,
+            onRemoveClick = { },
+            onProductClick = { id -> clickedIds.add(id) }
+        )
+
+        items.forEachIndexed { index, bagProductUi ->
+            val onClick = (bagProductUi.productCardData as ProductCardType.Horizontal).onClick
+            assertNotNull(onClick, "Expected onClick to be set for item at index $index")
+            onClick()
+        }
+
+        val expectedIds = bagProducts.map { it.productId }
+        assertEquals(expectedIds, clickedIds)
     }
 }

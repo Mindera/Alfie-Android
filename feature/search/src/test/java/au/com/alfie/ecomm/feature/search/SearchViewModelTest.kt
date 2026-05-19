@@ -18,6 +18,7 @@ import au.com.alfie.ecomm.feature.search.model.BrandSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.KeywordSuggestionUI
 import au.com.alfie.ecomm.feature.search.model.SearchEvent
 import au.com.alfie.ecomm.feature.search.model.SearchUIState
+import au.com.alfie.ecomm.feature.uievent.UIEventEmitterDelegate
 import au.com.alfie.ecomm.repository.search.model.RecentSearch
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -55,6 +56,9 @@ internal class SearchViewModelTest {
 
     @RelaxedMockK
     private lateinit var searchUIFactory: SearchUIFactory
+
+    @RelaxedMockK
+    private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
 
     @InjectMockKs
     private lateinit var viewModel: SearchViewModel

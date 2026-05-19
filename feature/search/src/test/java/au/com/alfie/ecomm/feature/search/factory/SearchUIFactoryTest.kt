@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
 class SearchUIFactoryTest {
@@ -54,6 +56,26 @@ class SearchUIFactoryTest {
             assertEquals(expected.productCardData.price, actual.productCardData.price)
             assertEquals(expected.productCardData.image, actual.productCardData.image)
         }
+    }
+
+    @Test
+    fun `invoke - WHEN onProductClick provided THEN each product card onClick is wired to call it with product id`() = runTest {
+        val clickedIds = mutableListOf<String>()
+
+        val result = uiFactory(
+            searchTerm = "query",
+            searchSuggestions = searchSuggestions,
+            onProductClick = { id -> clickedIds.add(id) }
+        )
+
+        result.products.forEachIndexed { index, productSuggestionUI ->
+            val onClick = productSuggestionUI.productCardData.onClick
+            assertNotNull(onClick, "Expected onClick to be set for product at index $index")
+            onClick()
+        }
+
+        val expectedIds = searchSuggestions.products.map { it.id }
+        assertEquals(expectedIds, clickedIds)
     }
 
     @Test
