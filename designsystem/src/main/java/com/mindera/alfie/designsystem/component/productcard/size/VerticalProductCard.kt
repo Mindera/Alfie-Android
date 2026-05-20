@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.StringResource
-import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.core.ui.util.stringResource

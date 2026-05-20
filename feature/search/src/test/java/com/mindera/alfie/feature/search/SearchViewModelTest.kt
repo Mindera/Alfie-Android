@@ -2,7 +2,6 @@ package com.mindera.alfie.feature.search
 
 import app.cash.turbine.test
 import com.mindera.alfie.core.navigation.Screen
-import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.core.navigation.arguments.productlist.productListNavArgs
 import com.mindera.alfie.core.navigation.arguments.shop.ShopTab
