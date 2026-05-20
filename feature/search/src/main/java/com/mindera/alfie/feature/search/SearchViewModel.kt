@@ -17,7 +17,6 @@ import com.mindera.alfie.domain.usecase.search.SaveRecentSearchUseCase
 import com.mindera.alfie.feature.search.factory.SearchUIFactory
 import com.mindera.alfie.feature.search.model.BrandSuggestionUI
 import com.mindera.alfie.feature.search.model.KeywordSuggestionUI
-import com.mindera.alfie.feature.search.model.ProductSuggestionUI
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnBrandSuggestionClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
@@ -25,7 +24,6 @@ import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch
 import com.mindera.alfie.feature.search.model.SearchEvent.OnKeywordSuggestionClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnMoreProductsClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnOpenSearchScreen
-import com.mindera.alfie.feature.search.model.SearchEvent.OnProductSuggestionClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnRecentSearchClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnSearchAction
 import com.mindera.alfie.feature.search.model.SearchEvent.OnUpdateSearchTerm

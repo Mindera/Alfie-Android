@@ -1,6 +1,7 @@
 package com.mindera.alfie.feature.search.factory
 
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
+import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
