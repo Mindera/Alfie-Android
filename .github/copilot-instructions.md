@@ -17,7 +17,7 @@ Alfie is a native Android e-commerce application built with Jetpack Compose (min
 The codebase follows Clean Architecture principles with MVVM for presentation, organized into distinct layers:
 
 #### Data Layer
-- **Location**: `data/src/main/java/au/com/alfie/ecomm/data/`
+- **Location**: `data/src/main/java/com/mindera/alfie/data/`
 - **Purpose**: Data sources, repositories implementation, DTOs, and data mapping
 - **Pattern**: Repository pattern with protocol-based interfaces
 - **Key Components**:
@@ -40,7 +40,7 @@ internal class BrandRepositoryImpl @Inject constructor(
 ```
 
 #### Domain Layer
-- **Location**: `domain/src/main/java/au/com/alfie/ecomm/domain/`
+- **Location**: `domain/src/main/java/com/mindera/alfie/domain/`
 - **Purpose**: Business logic, use cases, and repository interfaces
 - **Pattern**: Use cases as single-responsibility operations
 - **Dependencies**: No Android dependencies, pure Kotlin
@@ -64,7 +64,7 @@ class GetBrandsUseCase @Inject constructor(
 ```
 
 #### Presentation Layer (Feature Modules)
-- **Location**: `feature/<feature-name>/src/main/java/au/com/alfie/ecomm/feature/`
+- **Location**: `feature/<feature-name>/src/main/java/com/mindera/alfie/feature/`
 - **Pattern**: MVVM with Jetpack Compose
 - **State Management**: Use `StateFlow` for observable state
 - **Dependencies**: Inject use cases via Hilt
@@ -256,7 +256,7 @@ The project uses Gradle with modularization for scalability:
 - **Queries**: `*-queries.graphql` (e.g., `product-queries.graphql`)
 - **Fragments**: `fragments/` subdirectory
 - **Schema**: `schema.graphqls`
-- **Generated code**: Apollo Kotlin generates DTOs in `au.com.alfie.ecomm.graphql` package
+- **Generated code**: Apollo Kotlin generates DTOs in `com.mindera.alfie.graphql` package
 
 ### Adding a New Query
 
@@ -335,7 +335,7 @@ Text(text = stringResource(R.string.home_member_since, memberDate))
 
 ### Theme System
 
-- **Location**: `designsystem/src/main/java/au/com/alfie/ecomm/designsystem/theme/`
+- **Location**: `designsystem/src/main/java/com/mindera/alfie/designsystem/theme/`
 - **Access**: Via `Theme` object
 - **Components**:
   - `Theme.color` - Color palette
@@ -361,7 +361,7 @@ Box(
 
 ### Reusable Components
 
-Located in `designsystem/src/main/java/au/com/alfie/ecomm/designsystem/component/`:
+Located in `designsystem/src/main/java/com/mindera/alfie/designsystem/component/`:
 
 - **Buttons**: Various button styles and states
 - **Indicators**: Loading indicators, badges, progress
@@ -466,7 +466,7 @@ internal object NetworkModule {
 feature/<feature-name>/
 ├── src/
 │   ├── main/
-│   │   └── java/au/com/alfie/ecomm/feature/<feature>/
+│   │   └── java/com/mindera/alfie/feature/<feature>/
 │   │       ├── <Feature>Screen.kt           # Composable screen
 │   │       ├── <Feature>ViewModel.kt        # ViewModel
 │   │       ├── <Feature>UIFactory.kt        # UI model factory

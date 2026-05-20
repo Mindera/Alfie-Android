@@ -20,31 +20,31 @@ gradlePlugin {
     plugins {
         register("androidApplication") {
             id = buildConvention.plugins.application.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.AppConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.AppConventionPlugin"
         }
         register("hilt") {
             id = buildConvention.plugins.hilt.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.HiltConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.HiltConventionPlugin"
         }
         register("projectLib") {
             id = buildConvention.plugins.lib.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.LibConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.LibConventionPlugin"
         }
         register("projectComposeLib") {
             id = buildConvention.plugins.compose.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.ComposeLibConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.ComposeLibConventionPlugin"
         }
         register("projectFeature") {
             id = buildConvention.plugins.feature.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.FeatureConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.FeatureConventionPlugin"
         }
         register("projectDestinations") {
             id = buildConvention.plugins.destinations.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.DestinationsConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.DestinationsConventionPlugin"
         }
         register("firebase") {
             id = buildConvention.plugins.firebase.get().pluginId
-            implementationClass = "au.com.alfie.ecomm.buildconvention.plugin.FirebaseConventionPlugin"
+            implementationClass = "com.mindera.alfie.buildconvention.plugin.FirebaseConventionPlugin"
         }
     }
 }

@@ -1,7 +1,7 @@
-import au.com.alfie.ecomm.buildconvention.AppConfig
-import au.com.alfie.ecomm.buildconvention.extension.testImplementation
-import au.com.alfie.ecomm.buildconvention.module.FeatureModule
-import au.com.alfie.ecomm.buildconvention.module.ProjectModule
+import com.mindera.alfie.buildconvention.AppConfig
+import com.mindera.alfie.buildconvention.extension.testImplementation
+import com.mindera.alfie.buildconvention.module.FeatureModule
+import com.mindera.alfie.buildconvention.module.ProjectModule
 
 plugins {
     alias(buildConvention.plugins.compose)
@@ -45,6 +45,11 @@ dependencies {
     implementation(libs.firebase.app.distribution.full)
 }
 
-fun getGitDetails(command: String): String = providers.exec {
-    commandLine("git", "rev-parse", command, "HEAD")
-}.standardOutput.asText.get().trim()
+fun getGitDetails(command: String): String = runCatching {
+    val output = providers.exec {
+        workingDir = rootProject.projectDir
+        commandLine("git", "rev-parse", command, "HEAD")
+        isIgnoreExitValue = true
+    }.standardOutput.asText.get().trim()
+    output.ifEmpty { "unknown" }
+}.getOrDefault("unknown")

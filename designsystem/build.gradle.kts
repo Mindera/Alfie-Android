@@ -1,6 +1,6 @@
-import au.com.alfie.ecomm.buildconvention.AppConfig
-import au.com.alfie.ecomm.buildconvention.extension.implementation
-import au.com.alfie.ecomm.buildconvention.module.ProjectModule
+import com.mindera.alfie.buildconvention.AppConfig
+import com.mindera.alfie.buildconvention.extension.implementation
+import com.mindera.alfie.buildconvention.module.ProjectModule
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
