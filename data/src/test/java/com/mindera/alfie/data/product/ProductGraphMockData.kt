@@ -1,0 +1,512 @@
+package com.mindera.alfie.data.product
+
+import com.mindera.alfie.graphql.ProductQuery
+import com.mindera.alfie.graphql.fragment.BrandInfo
+import com.mindera.alfie.graphql.fragment.ColorInfo
+import com.mindera.alfie.graphql.fragment.ImageInfo
+import com.mindera.alfie.graphql.fragment.MediaInfo
+import com.mindera.alfie.graphql.fragment.MoneyInfo
+import com.mindera.alfie.graphql.fragment.PriceInfo
+import com.mindera.alfie.graphql.fragment.ProductInfo
+import com.mindera.alfie.graphql.fragment.SizeContainer
+import com.mindera.alfie.graphql.fragment.SizeInfo
+import com.mindera.alfie.graphql.fragment.VariantInfo
+import com.mindera.alfie.graphql.type.MediaContentType
+import com.mindera.alfie.repository.product.model.Color
+import com.mindera.alfie.repository.product.model.Price
+import com.mindera.alfie.repository.product.model.Product
+import com.mindera.alfie.repository.product.model.Variant
+import com.mindera.alfie.repository.shared.model.Brand
+import com.mindera.alfie.repository.shared.model.Media
+import com.mindera.alfie.repository.shared.model.Money
+import com.mindera.alfie.repository.shared.model.Size
+
+internal val productData = ProductQuery.Data(
+    product = ProductQuery.Product(
+        __typename = "",
+        productInfo = ProductInfo(
+            id = "2666503",
+            attributes = null,
+            brand = ProductInfo.Brand(
+                __typename = "",
+                brandInfo = BrandInfo(
+                    id = "1",
+                    name = "Camilla and Marc",
+                    slug = "camilla-and-marc"
+                )
+            ),
+            defaultVariant = ProductInfo.DefaultVariant(
+                __typename = "",
+                variantInfo = VariantInfo(
+                    sku = "UNKNOWN",
+                    size = VariantInfo.Size(
+                        __typename = "",
+                        sizeContainer = SizeContainer(
+                            __typename = "",
+                            sizeGuide = null,
+                            sizeInfo = SizeInfo(
+                                id = "25927",
+                                value = "10 AU",
+                                scale = null,
+                                description = "10 AU"
+                            )
+                        )
+                    ),
+                    colour = VariantInfo.Colour(
+                        id = "3406543"
+                    ),
+                    attributes = null,
+                    stock = 100,
+                    price = VariantInfo.Price(
+                        __typename = "",
+                        priceInfo = PriceInfo(
+                            amount = PriceInfo.Amount(
+                                __typename = "",
+                                moneyInfo = MoneyInfo(
+                                    currencyCode = "AUD",
+                                    amount = 40000,
+                                    amountFormatted = "$400.00"
+                                )
+                            ),
+                            was = null
+                        )
+                    )
+                )
+            ),
+            labels = null,
+            longDescription = "Long description",
+            name = "patterson mini skirt",
+            priceRange = null,
+            shortDescription = "Short description",
+            slug = "camilla-and-marc-patterson-mini-skirt-26531650",
+            styleNumber = "26531650",
+            variants = listOf(
+                ProductInfo.Variant(
+                    __typename = "",
+                    variantInfo = VariantInfo(
+                        sku = "UNKNOWN",
+                        size = VariantInfo.Size(
+                            __typename = "",
+                            sizeContainer = SizeContainer(
+                                __typename = "",
+                                sizeGuide = null,
+                                sizeInfo = SizeInfo(
+                                    id = "25927",
+                                    value = "10 AU",
+                                    scale = null,
+                                    description = "10 AU"
+                                )
+                            )
+                        ),
+                        colour = VariantInfo.Colour(
+                            id = "3406543"
+                        ),
+                        attributes = null,
+                        stock = 100,
+                        price = VariantInfo.Price(
+                            __typename = "",
+                            priceInfo = PriceInfo(
+                                amount = PriceInfo.Amount(
+                                    __typename = "",
+                                    moneyInfo = MoneyInfo(
+                                        currencyCode = "AUD",
+                                        amount = 40000,
+                                        amountFormatted = "$400.00"
+                                    )
+                                ),
+                                was = null
+                            )
+                        )
+                    )
+                ),
+                ProductInfo.Variant(
+                    __typename = "",
+                    variantInfo = VariantInfo(
+                        sku = "UNKNOWN",
+                        size = VariantInfo.Size(
+                            __typename = "",
+                            sizeContainer = SizeContainer(
+                                __typename = "",
+                                sizeGuide = null,
+                                sizeInfo = SizeInfo(
+                                    id = "25937",
+                                    value = "12 AU",
+                                    scale = null,
+                                    description = "12 AU"
+                                )
+                            )
+                        ),
+                        colour = VariantInfo.Colour(
+                            id = "3406543"
+                        ),
+                        attributes = null,
+                        stock = 100,
+                        price = VariantInfo.Price(
+                            __typename = "",
+                            priceInfo = PriceInfo(
+                                amount = PriceInfo.Amount(
+                                    __typename = "",
+                                    moneyInfo = MoneyInfo(
+                                        currencyCode = "AUD",
+                                        amount = 40000,
+                                        amountFormatted = "$400.00"
+                                    )
+                                ),
+                                was = null
+                            )
+                        )
+                    )
+                ),
+                ProductInfo.Variant(
+                    __typename = "",
+                    variantInfo = VariantInfo(
+                        sku = "UNKNOWN",
+                        size = VariantInfo.Size(
+                            __typename = "",
+                            sizeContainer = SizeContainer(
+                                __typename = "",
+                                sizeGuide = null,
+                                sizeInfo = SizeInfo(
+                                    id = "25974",
+                                    value = "6 AU",
+                                    scale = null,
+                                    description = "6 AU"
+                                )
+                            )
+                        ),
+                        colour = VariantInfo.Colour(
+                            id = "3406543"
+                        ),
+                        attributes = null,
+                        stock = 100,
+                        price = VariantInfo.Price(
+                            __typename = "",
+                            priceInfo = PriceInfo(
+                                amount = PriceInfo.Amount(
+                                    __typename = "",
+                                    moneyInfo = MoneyInfo(
+                                        currencyCode = "AUD",
+                                        amount = 40000,
+                                        amountFormatted = "$400.00"
+                                    )
+                                ),
+                                was = null
+                            )
+                        )
+                    )
+                ),
+                ProductInfo.Variant(
+                    __typename = "",
+                    variantInfo = VariantInfo(
+                        sku = "UNKNOWN",
+                        size = VariantInfo.Size(
+                            __typename = "",
+                            sizeContainer = SizeContainer(
+                                __typename = "",
+                                sizeGuide = null,
+                                sizeInfo = SizeInfo(
+                                    id = "25988",
+                                    value = "8 AU",
+                                    scale = null,
+                                    description = "8 AU"
+                                )
+                            )
+                        ),
+                        colour = VariantInfo.Colour(
+                            id = "3406543"
+                        ),
+                        attributes = null,
+                        stock = 100,
+                        price = VariantInfo.Price(
+                            __typename = "",
+                            priceInfo = PriceInfo(
+                                amount = PriceInfo.Amount(
+                                    __typename = "",
+                                    moneyInfo = MoneyInfo(
+                                        currencyCode = "AUD",
+                                        amount = 40000,
+                                        amountFormatted = "$400.00"
+                                    )
+                                ),
+                                was = null
+                            )
+                        )
+                    )
+                )
+            ),
+            colours = listOf(
+                ProductInfo.Colour(
+                    __typename = "",
+                    colorInfo = ColorInfo(
+                        id = "3406543",
+                        swatch = null,
+                        name = "steel",
+                        media = listOf(
+                            ColorInfo.Medium(
+                                __typename = "",
+                                mediaInfo = MediaInfo(
+                                    __typename = "",
+                                    onImage = MediaInfo.OnImage(
+                                        __typename = "",
+                                        imageInfo = ImageInfo(
+                                            alt = "patterson mini skirt",
+                                            mediaContentType = MediaContentType.IMAGE,
+                                            url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                                        )
+                                    ),
+                                    onVideo = null
+                                )
+                            ),
+                            ColorInfo.Medium(
+                                __typename = "",
+                                mediaInfo = MediaInfo(
+                                    __typename = "",
+                                    onImage = MediaInfo.OnImage(
+                                        __typename = "",
+                                        imageInfo = ImageInfo(
+                                            alt = "patterson mini skirt",
+                                            mediaContentType = MediaContentType.IMAGE,
+                                            url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                                        )
+                                    ),
+                                    onVideo = null
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+)
+
+internal val product = Product(
+    id = "2666503",
+    attributes = emptyList(),
+    brand = Brand(
+        id = "1",
+        name = "Camilla and Marc",
+        slug = "camilla-and-marc"
+    ),
+    defaultVariant = Variant(
+        attributes = emptyList(),
+        sku = "UNKNOWN",
+        size = Size(
+            id = "25927",
+            value = "10 AU",
+            scale = null,
+            description = "10 AU",
+            sizeGuide = null
+        ),
+        color = Color(
+            id = "3406543",
+            swatch = null,
+            name = "steel",
+            media = listOf(
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                ),
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                )
+            )
+        ),
+        media = Media.Image(
+            alt = "patterson mini skirt",
+            url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+        ),
+        stock = 100,
+        price = Price(
+            amount = Money(
+                currencyCode = "AUD",
+                amount = 40000,
+                amountFormatted = "$400.00"
+            ),
+            was = null
+        )
+    ),
+    labels = emptyList(),
+    longDescription = "Long description",
+    name = "patterson mini skirt",
+    priceRange = null,
+    shortDescription = "Short description",
+    slug = "camilla-and-marc-patterson-mini-skirt-26531650",
+    styleNumber = "26531650",
+    variants = listOf(
+        Variant(
+            attributes = emptyList(),
+            sku = "UNKNOWN",
+            size = Size(
+                id = "25927",
+                value = "10 AU",
+                scale = null,
+                description = "10 AU",
+                sizeGuide = null
+            ),
+            color = Color(
+                id = "3406543",
+                swatch = null,
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+            ),
+            stock = 100,
+            price = Price(
+                amount = Money(
+                    currencyCode = "AUD",
+                    amount = 40000,
+                    amountFormatted = "$400.00"
+                ),
+                was = null
+            )
+        ),
+        Variant(
+            attributes = emptyList(),
+            sku = "UNKNOWN",
+            size = Size(
+                id = "25937",
+                value = "12 AU",
+                scale = null,
+                description = "12 AU",
+                sizeGuide = null
+            ),
+            color = Color(
+                id = "3406543",
+                swatch = null,
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+            ),
+            stock = 100,
+            price = Price(
+                amount = Money(
+                    currencyCode = "AUD",
+                    amount = 40000,
+                    amountFormatted = "$400.00"
+                ),
+                was = null
+            )
+        ),
+        Variant(
+            attributes = emptyList(),
+            sku = "UNKNOWN",
+            size = Size(
+                id = "25974",
+                value = "6 AU",
+                scale = null,
+                description = "6 AU",
+                sizeGuide = null
+            ),
+            color = Color(
+                id = "3406543",
+                swatch = null,
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+            ),
+            stock = 100,
+            price = Price(
+                amount = Money(
+                    currencyCode = "AUD",
+                    amount = 40000,
+                    amountFormatted = "$400.00"
+                ),
+                was = null
+            )
+        ),
+        Variant(
+            attributes = emptyList(),
+            sku = "UNKNOWN",
+            size = Size(
+                id = "25988",
+                value = "8 AU",
+                scale = null,
+                description = "8 AU",
+                sizeGuide = null
+            ),
+            color = Color(
+                id = "3406543",
+                swatch = null,
+                name = "steel",
+                media = listOf(
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                    ),
+                    Media.Image(
+                        alt = "patterson mini skirt",
+                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                    )
+                )
+            ),
+            media = Media.Image(
+                alt = "patterson mini skirt",
+                url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+            ),
+            stock = 100,
+            price = Price(
+                amount = Money(
+                    currencyCode = "AUD",
+                    amount = 40000,
+                    amountFormatted = "$400.00"
+                ),
+                was = null
+            )
+        )
+    ),
+    colors = listOf(
+        Color(
+            id = "3406543",
+            swatch = null,
+            name = "steel",
+            media = listOf(
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
+                ),
+                Media.Image(
+                    alt = "patterson mini skirt",
+                    url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
+                )
+            )
+        )
+    )
+)
