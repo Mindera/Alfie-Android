@@ -26,7 +26,7 @@ class WishlistUIFactory @Inject constructor() {
                     onRemoveClick = { onRemoveClick(it) },
                     onAddToBagClick = { onAddToBagClick(it) },
                     onClick = { onProductClick(it) }
-                ),
+                )
             )
         }.toImmutableList()
 

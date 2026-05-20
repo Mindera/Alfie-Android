@@ -54,8 +54,9 @@ internal class BagViewModelTest {
             bagUiFactory(
                 bagProducts = bagProducts,
                 products = products,
-                any(),
-                any())
+                onRemoveClick = any(),
+                onProductClick = any()
+            )
         } returns bagProductUi
 
         val viewModel = buildViewModel()
