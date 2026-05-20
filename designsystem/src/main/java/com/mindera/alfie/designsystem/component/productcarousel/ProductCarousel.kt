@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.commons.string.toString
 import com.mindera.alfie.core.ui.event.ClickEvent
-import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.R
@@ -50,7 +49,6 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun ProductCarousel(
     items: List<ProductCardType.Vertical>,
-    onProductClick: ClickEventOneArg<Int>,
     modifier: Modifier = Modifier,
     title: StringResource? = null,
     description: StringResource? = null,
@@ -131,13 +129,10 @@ fun ProductCarousel(
                 itemsIndexed(
                     items = items,
                     key = { index, item -> item.name + index }
-                ) { index, item ->
+                ) { _, item ->
                     ProductCard(
                         productCardType = item,
-                        size = VerticalProductCardSize.Medium(mediumCardWidth),
-                        onClick = {
-                            onProductClick(index)
-                        }
+                        size = VerticalProductCardSize.Medium(mediumCardWidth)
                     )
                 }
             }
@@ -178,7 +173,6 @@ private fun ProductCarouselPreview() {
         }
         ProductCarousel(
             items = items,
-            onProductClick = { },
             title = StringResource.fromText("New In"),
             description = StringResource.fromText("Get a latest in fashion"),
             actionText = StringResource.fromText("See All"),

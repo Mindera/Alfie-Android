@@ -16,11 +16,15 @@ internal class BagUiFactory @Inject constructor() {
     operator fun invoke(
         bagProducts: List<BagProduct>,
         products: List<Product>,
-        onRemoveClick: ClickEventOneArg<BagProduct>
+        onRemoveClick: ClickEventOneArg<BagProduct>,
+        onProductClick: ClickEventOneArg<String>
     ): ImmutableList<BagProductUi> = bagProducts.map { item ->
         val product = products.first { it.id == item.productId }
         val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.defaultVariant
-        val productCard = product.copy(defaultVariant = selectedVariant).toProductCard(onRemoveClick)
+        val productCard = product.copy(defaultVariant = selectedVariant).toProductCard(
+            onRemoveClick = onRemoveClick,
+            onProductClick = onProductClick
+        )
 
         BagProductUi(
             id = item.productId,
@@ -28,13 +32,17 @@ internal class BagUiFactory @Inject constructor() {
         )
     }.toImmutableList()
 
-    private fun Product.toProductCard(onRemoveClick: ClickEventOneArg<BagProduct>) = ProductCardType.Horizontal(
+    private fun Product.toProductCard(
+        onRemoveClick: ClickEventOneArg<BagProduct>,
+        onProductClick: ClickEventOneArg<String>
+    ) = ProductCardType.Horizontal(
         brand = brand.name,
         name = name,
         price = priceRange.toPriceType(defaultVariant.price),
         image = defaultVariant.media.toImageUI(),
         color = defaultVariant.color?.name.orEmpty(),
         size = defaultVariant.size?.value.orEmpty(),
+        onClick = { onProductClick(id) },
         onRemoveClick = {
             onRemoveClick(
                 BagProduct(

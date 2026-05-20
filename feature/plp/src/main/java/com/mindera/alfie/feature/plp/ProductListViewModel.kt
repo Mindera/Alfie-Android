@@ -123,7 +123,8 @@ internal class ProductListViewModel @Inject constructor(
                     pagingData.map { entry ->
                         productListEntryUIFactory(
                             entry = entry,
-                            onFavoriteClick = { onFavoriteClick(entry.id) }
+                            onFavoriteClick = { onFavoriteClick(entry.id) },
+                            onProductClick = { navigateToProduct(entry.id) }
                         )
                     }
                 }

@@ -17,7 +17,6 @@ import com.mindera.alfie.domain.usecase.search.SaveRecentSearchUseCase
 import com.mindera.alfie.feature.search.factory.SearchUIFactory
 import com.mindera.alfie.feature.search.model.BrandSuggestionUI
 import com.mindera.alfie.feature.search.model.KeywordSuggestionUI
-import com.mindera.alfie.feature.search.model.ProductSuggestionUI
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnBrandSuggestionClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
@@ -25,7 +24,6 @@ import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch
 import com.mindera.alfie.feature.search.model.SearchEvent.OnKeywordSuggestionClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnMoreProductsClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnOpenSearchScreen
-import com.mindera.alfie.feature.search.model.SearchEvent.OnProductSuggestionClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnRecentSearchClick
 import com.mindera.alfie.feature.search.model.SearchEvent.OnSearchAction
 import com.mindera.alfie.feature.search.model.SearchEvent.OnUpdateSearchTerm
@@ -81,7 +79,6 @@ internal class SearchViewModel @Inject constructor(
             is OnOpenSearchScreen -> handleResetSearchState()
             is OnKeywordSuggestionClick -> handleKeywordSuggestionClick(suggestion = event.keywordSuggestion)
             is OnBrandSuggestionClick -> handleBrandSuggestionClick(suggestion = event.brandSuggestion)
-            is OnProductSuggestionClick -> handleProductSuggestionClick(suggestion = event.productSuggestion)
             is OnMoreProductsClick -> handleMoreProductsClick()
             is OnViewAllBrandsClick -> handleViewAllBrandsClick()
         }
@@ -136,7 +133,10 @@ internal class SearchViewModel @Inject constructor(
                     } else {
                         val searchUI = searchUIFactory(
                             searchTerm = searchTerm,
-                            searchSuggestions = suggestions
+                            searchSuggestions = suggestions,
+                            onProductClick = { productId ->
+                                navigateTo(Screen.ProductDetails(productDetailsNavArgs(id = productId)))
+                            }
                         )
                         _state.value = SearchUIState.Loaded(searchUI)
                     }
@@ -161,12 +161,6 @@ internal class SearchViewModel @Inject constructor(
             name = suggestion.name,
             slug = suggestion.slug
         )
-    }
-
-    private fun handleProductSuggestionClick(suggestion: ProductSuggestionUI) {
-        val navArgs = productDetailsNavArgs(id = suggestion.id)
-        val screen = Screen.ProductDetails(navArgs)
-        navigateTo(screen = screen)
     }
 
     private fun handleMoreProductsClick() {

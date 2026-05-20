@@ -176,7 +176,6 @@ private fun ProductListGrid(
                     item?.let { entry ->
                         ProductCard(
                             productCardType = entry.productCardData,
-                            onClick = { onEvent(ProductListEvent.OpenProduct(entry.id)) },
                             modifier = Modifier.productListEntryPadding(
                                 index = index,
                                 columnCount = columnCount
@@ -401,7 +400,6 @@ private fun ProductListGridLoadingItem(
             index = index,
             columnCount = columnCount
         ),
-        onClick = { },
         isLoading = true
     )
 }

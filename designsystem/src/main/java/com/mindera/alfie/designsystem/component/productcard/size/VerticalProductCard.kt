@@ -20,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.StringResource
-import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.core.ui.util.stringResource
@@ -43,7 +42,6 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun VerticalProductCard(
     productCard: ProductCardType.Vertical,
-    onClick: ClickEvent,
     modifier: Modifier = Modifier,
     size: VerticalProductCardSize = VerticalProductCardSize.Large,
     isLoading: Boolean = false,
@@ -55,7 +53,7 @@ internal fun VerticalProductCard(
     }
     Column(
         modifier = modifier then sizeModifier then Modifier
-            .clickable(enabled = isLoading.not()) { onClick() }
+            .clickable(enabled = isLoading.not()) { productCard.onClick?.invoke() }
             .testTag(productCard.cardTestTag),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)
     ) {
@@ -166,7 +164,7 @@ private fun VerticalProductCardPreview() {
         onFavoriteClick = {},
         addToBagClick = {}
     )
-    VerticalProductCard(productCard = productCard, onClick = { })
+    VerticalProductCard(productCard = productCard)
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
@@ -184,7 +182,6 @@ private fun VerticalProductCardLoadingPreview() {
     )
     VerticalProductCard(
         productCard = productCard,
-        onClick = { },
         isLoading = true
     )
 }

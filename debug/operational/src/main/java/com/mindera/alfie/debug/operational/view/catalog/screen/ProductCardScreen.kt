@@ -51,7 +51,6 @@ internal fun ProductCardScreen() {
         ) {
             ProductCard(
                 productCardType = it,
-                onClick = {},
                 modifier = Modifier.padding(
                     horizontal = Theme.spacing.spacing16,
                     vertical = Theme.spacing.spacing8
@@ -68,7 +67,6 @@ internal fun ProductCardScreen() {
         ) {
             ProductCard(
                 productCardType = it,
-                onClick = {},
                 modifier = Modifier.padding(Theme.spacing.spacing16),
                 isLoading = isLoading
             )

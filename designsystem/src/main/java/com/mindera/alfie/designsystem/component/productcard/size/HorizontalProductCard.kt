@@ -18,7 +18,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.R
@@ -36,13 +35,12 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun HorizontalProductCard(
     productCard: ProductCardType.Horizontal,
-    onClick: ClickEvent,
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
 ) {
     Row(
         modifier = Modifier
-            .clickable(enabled = isLoading.not()) { onClick() }
+            .clickable(enabled = isLoading.not()) { productCard.onClick?.invoke() }
             .testTag(productCard.cardTestTag) then modifier
     ) {
         Image(
@@ -170,7 +168,7 @@ private fun HorizontalProductCardPreview() {
         size = "29 in"
     )
 
-    HorizontalProductCard(productCard = productCard, onClick = {})
+    HorizontalProductCard(productCard = productCard)
 }
 
 @Composable
@@ -190,7 +188,6 @@ private fun HorizontalProductCardLoadingPreview() {
 
     HorizontalProductCard(
         productCard = productCard,
-        onClick = {},
         isLoading = true
     )
 }

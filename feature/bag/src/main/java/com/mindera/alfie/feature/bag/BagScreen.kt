@@ -23,7 +23,6 @@ import androidx.navigation.NavController
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.wishlist.wishlistNavArgs
-import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
@@ -31,7 +30,6 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.theme.dimen.Spacing.spacing10
-import com.mindera.alfie.feature.bag.models.BagEvent
 import com.mindera.alfie.feature.bag.models.BagProductUi
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.ramcosta.composedestinations.annotation.Destination
@@ -73,16 +71,15 @@ internal fun BagScreen(
         snackbarHostState = snackbarHostState
     )
 
-    BagScreenContent(state, viewModel::handleEvent)
+    BagScreenContent(state)
 }
 
 @Composable
 private fun BagScreenContent(
-    state: BagUiState,
-    onEvent: ClickEventOneArg<BagEvent>
+    state: BagUiState
 ) {
     when (state) {
-        is BagUiState.Data.Loaded -> BagListScreen(bag = state.bag, onEvent = onEvent)
+        is BagUiState.Data.Loaded -> BagListScreen(bag = state.bag)
         is BagUiState.Data.Empty,
         is BagUiState.Data.Loading,
         is BagUiState.Error -> EmptyBagScreen()
@@ -91,8 +88,7 @@ private fun BagScreenContent(
 
 @Composable
 private fun BagListScreen(
-    bag: ImmutableList<BagProductUi>,
-    onEvent: ClickEventOneArg<BagEvent>
+    bag: ImmutableList<BagProductUi>
 ) {
     LazyColumn(
         contentPadding = PaddingValues(spacing10),
@@ -100,10 +96,7 @@ private fun BagListScreen(
     ) {
         items(bag) { item ->
             ProductCard(
-                productCardType = item.productCardData,
-                onClick = {
-                    onEvent(BagEvent.OnProductClick(item.id))
-                }
+                productCardType = item.productCardData
             )
         }
     }
@@ -133,6 +126,6 @@ private fun EmptyBagScreen() {
 @Composable
 private fun BagScreenPreview() {
     Theme {
-        BagScreenContent(BagUiState.Data.Loading) { }
+        BagScreenContent(BagUiState.Data.Loading)
     }
 }

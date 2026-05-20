@@ -9,7 +9,6 @@ import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
 import com.mindera.alfie.domain.usecase.bag.RemoveFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
 import com.mindera.alfie.feature.bag.BagUiState.Data.Loading
-import com.mindera.alfie.feature.bag.models.BagEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.bag.BagProduct
@@ -41,12 +40,6 @@ internal class BagViewModel @Inject constructor(
         getBagList()
     }
 
-    fun handleEvent(event: BagEvent) {
-        when (event) {
-            is BagEvent.OnProductClick -> openProduct(event.productId)
-        }
-    }
-
     private fun getBagList() {
         viewModelScope.launch {
             getBagUseCase().collectLatest { result ->
@@ -55,7 +48,8 @@ internal class BagViewModel @Inject constructor(
                         val bag = bagUiFactory(
                             bagProducts = it,
                             products = getBagProductDetails(it),
-                            onRemoveClick = { onRemoveClicked(it) }
+                            onRemoveClick = { onRemoveClicked(it) },
+                            onProductClick = { openProduct(it) }
                         )
                         _state.value = BagUiState.Data.Loaded(bag)
                     },

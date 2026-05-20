@@ -105,8 +105,7 @@ private fun WishlistGrid(
     ) {
         items(wishlist) { item ->
             ProductCard(
-                productCardType = item.productCardData,
-                onClick = item.onClick
+                productCardType = item.productCardData
             )
         }
     }

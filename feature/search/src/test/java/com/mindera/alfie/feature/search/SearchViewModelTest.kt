@@ -2,7 +2,6 @@ package com.mindera.alfie.feature.search
 
 import app.cash.turbine.test
 import com.mindera.alfie.core.navigation.Screen
-import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.core.navigation.arguments.productlist.productListNavArgs
 import com.mindera.alfie.core.navigation.arguments.shop.ShopTab
@@ -94,7 +93,7 @@ internal class SearchViewModelTest {
     @Test
     fun `WHEN handleEvent GIVEN OnUpdateSearchTerm WHEN term is not empty and result is success THEN return Loading and next Loaded`() = runTest {
         coEvery { getSearchSuggestions(any()) } returns UseCaseResult.Success(searchSuggestions)
-        coEvery { searchUIFactory(any(), any()) } returns searchUI
+        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI
         val expected = SearchUIState.Loaded(searchUI)
         val event = SearchEvent.OnUpdateSearchTerm(searchTerm = "Boot")
 
@@ -264,22 +263,9 @@ internal class SearchViewModelTest {
     }
 
     @Test
-    fun `WHEN handleEvent GIVEN OnProductSuggestionClick THEN navigates`() = runTest {
-        val productSuggestion = searchUI.products[0]
-        val screen = Screen.ProductDetails(productDetailsNavArgs(id = productSuggestion.id))
-        val event = SearchEvent.OnProductSuggestionClick(productSuggestion)
-
-        viewModel.handleEvent(event)
-
-        viewModel.run {
-            verify { navigateTo(screen = screen) }
-        }
-    }
-
-    @Test
     fun `WHEN handleEvent GIVEN OnMoreProductsClick WHEN state is loaded THEN saves recent search and navigates`() = runTest {
         coEvery { getSearchSuggestions(any()) } returns UseCaseResult.Success(searchSuggestions)
-        coEvery { searchUIFactory(any(), any()) } returns searchUI
+        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI
         val loaded = SearchUIState.Loaded(searchUI)
         val screen = Screen.ProductList(productListNavArgs(ProductListType.Search(loaded.searchUI.searchTerm)))
         val updateSearchTermEvent = SearchEvent.OnUpdateSearchTerm(searchTerm = loaded.searchUI.searchTerm)

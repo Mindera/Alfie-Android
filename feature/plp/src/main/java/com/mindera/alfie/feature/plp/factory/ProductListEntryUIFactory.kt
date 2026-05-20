@@ -16,7 +16,8 @@ internal class ProductListEntryUIFactory @Inject constructor(
 
     suspend operator fun invoke(
         entry: ProductListEntry,
-        onFavoriteClick: ClickEvent
+        onFavoriteClick: ClickEvent,
+        onProductClick: ClickEvent
     ): ProductListEntryUI = withContext(dispatcher.default()) {
         ProductListEntryUI(
             id = entry.id,
@@ -25,6 +26,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
                 name = entry.name,
                 price = entry.priceRange.toPriceType(default = entry.defaultVariant.price),
                 image = entry.defaultVariant.defaultMedia.toImageUI(),
+                onClick = onProductClick,
                 onFavoriteClick = onFavoriteClick
             )
         )

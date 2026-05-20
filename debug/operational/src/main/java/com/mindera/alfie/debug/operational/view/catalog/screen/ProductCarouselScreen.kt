@@ -87,7 +87,6 @@ private fun ProductCarouselSection(
     Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
     ProductCarousel(
         items = items,
-        onProductClick = { },
         title = title,
         description = description,
         actionText = actionText,

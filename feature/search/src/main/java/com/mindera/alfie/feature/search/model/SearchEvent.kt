@@ -20,8 +20,6 @@ internal sealed interface SearchEvent {
 
     data class OnBrandSuggestionClick(val brandSuggestion: BrandSuggestionUI) : SearchEvent
 
-    data class OnProductSuggestionClick(val productSuggestion: ProductSuggestionUI) : SearchEvent
-
     data object OnMoreProductsClick : SearchEvent
 
     data object OnViewAllBrandsClick : SearchEvent

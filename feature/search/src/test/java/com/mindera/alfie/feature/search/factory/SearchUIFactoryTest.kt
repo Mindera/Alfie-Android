@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 @ExtendWith(MockKExtension::class)
 class SearchUIFactoryTest {
@@ -37,10 +38,43 @@ class SearchUIFactoryTest {
     fun `invoke - correctly maps to UI model`() = runTest {
         val result = uiFactory(
             searchTerm = "query",
-            searchSuggestions = searchSuggestions
+            searchSuggestions = searchSuggestions,
+            onProductClick = { }
         )
 
-        assertEquals(searchUI, result)
+        assertEquals(searchUI.searchTerm, result.searchTerm)
+        assertEquals(searchUI.keywords, result.keywords)
+        assertEquals(searchUI.brands, result.brands)
+        assertEquals(searchUI.products.size, result.products.size)
+        searchUI.products.forEachIndexed { index, expected ->
+            val actual = result.products[index]
+            assertEquals(expected.id, actual.id)
+            assertEquals(expected.slug, actual.slug)
+            assertEquals(expected.productCardData.brand, actual.productCardData.brand)
+            assertEquals(expected.productCardData.name, actual.productCardData.name)
+            assertEquals(expected.productCardData.price, actual.productCardData.price)
+            assertEquals(expected.productCardData.image, actual.productCardData.image)
+        }
+    }
+
+    @Test
+    fun `invoke - WHEN onProductClick provided THEN each product card onClick is wired to call it with product id`() = runTest {
+        val clickedIds = mutableListOf<String>()
+
+        val result = uiFactory(
+            searchTerm = "query",
+            searchSuggestions = searchSuggestions,
+            onProductClick = { id -> clickedIds.add(id) }
+        )
+
+        result.products.forEachIndexed { index, productSuggestionUI ->
+            val onClick = productSuggestionUI.productCardData.onClick
+            assertNotNull(onClick, "Expected onClick to be set for product at index $index")
+            onClick()
+        }
+
+        val expectedIds = searchSuggestions.products.map { it.id }
+        assertEquals(expectedIds, clickedIds)
     }
 
     @Test
@@ -59,7 +93,8 @@ class SearchUIFactoryTest {
 
         val result = uiFactory(
             searchTerm = "query",
-            searchSuggestions = searchSuggestions
+            searchSuggestions = searchSuggestions,
+            onProductClick = { }
         )
 
         assertEquals(6, result.keywords.size)
@@ -82,7 +117,8 @@ class SearchUIFactoryTest {
 
         val result = uiFactory(
             searchTerm = "query",
-            searchSuggestions = searchSuggestions
+            searchSuggestions = searchSuggestions,
+            onProductClick = { }
         )
 
         assertEquals(6, result.brands.size)
@@ -120,7 +156,8 @@ class SearchUIFactoryTest {
 
         val result = uiFactory(
             searchTerm = "query",
-            searchSuggestions = searchSuggestions
+            searchSuggestions = searchSuggestions,
+            onProductClick = { }
         )
 
         assertEquals(8, result.products.size)
