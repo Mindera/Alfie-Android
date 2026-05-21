@@ -1,10 +1,10 @@
 package com.mindera.alfie.network.interceptor
 
-import com.apollographql.apollo3.api.ApolloRequest
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Operation.Data
-import com.apollographql.apollo3.interceptor.ApolloInterceptor
-import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
+import com.apollographql.apollo.api.ApolloRequest
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Operation.Data
+import com.apollographql.apollo.interceptor.ApolloInterceptor
+import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.INTERNAL_HTTP_ERROR
 import com.mindera.alfie.network.exception.GraphNetworkException.NetworkException
 import com.mindera.alfie.network.util.ConnectionManager

@@ -1,6 +1,6 @@
 package com.mindera.alfie.data.product.service
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.mindera.alfie.graphql.ProductQuery
 import com.mindera.alfie.network.extension.unwrap
 import com.mindera.alfie.network.graphql.GraphService

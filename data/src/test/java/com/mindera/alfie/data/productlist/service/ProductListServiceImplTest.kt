@@ -1,9 +1,9 @@
 package com.mindera.alfie.data.productlist.service
 
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.exception.DefaultApolloException
+import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.exception.DefaultApolloException
 import com.mindera.alfie.core.test.setPrivatePropertyField
 import com.mindera.alfie.graphql.ProductListingQuery
 import io.mockk.coEvery
