@@ -8,8 +8,9 @@ sealed class Environment(
 
     data class Dev(
         override val graphQLUrl: String,
-        override val legacyGraphQLUrl: String,
-        override val webUrl: String
+        override val webUrl: String,
+        // Mark as same for now to support unit-test, we'll get rid of this after migration anw
+        override val legacyGraphQLUrl: String = graphQLUrl
     ) : Environment(
         graphQLUrl = graphQLUrl,
         legacyGraphQLUrl = legacyGraphQLUrl,
@@ -18,8 +19,9 @@ sealed class Environment(
 
     data class PreProd(
         override val graphQLUrl: String,
-        override val legacyGraphQLUrl: String,
-        override val webUrl: String
+        override val webUrl: String,
+        // Mark as same for now to support unit-test, we'll get rid of this after migration anw
+        override val legacyGraphQLUrl: String = graphQLUrl
     ) : Environment(
         graphQLUrl = graphQLUrl,
         legacyGraphQLUrl = legacyGraphQLUrl,
@@ -28,8 +30,9 @@ sealed class Environment(
 
     data class Prod(
         override val graphQLUrl: String,
-        override val legacyGraphQLUrl: String,
-        override val webUrl: String
+        override val webUrl: String,
+        // Mark as same for now to support unit-test, we'll get rid of this after migration anw
+        override val legacyGraphQLUrl: String =  graphQLUrl
     ) : Environment(
         graphQLUrl = graphQLUrl,
         legacyGraphQLUrl = legacyGraphQLUrl,
@@ -38,8 +41,9 @@ sealed class Environment(
 
     data class Custom(
         override val graphQLUrl: String,
-        override val legacyGraphQLUrl: String,
-        override val webUrl: String
+        override val webUrl: String,
+        // Mark as same for now to support unit-test, we'll get rid of this after migration anw
+        override val legacyGraphQLUrl: String = graphQLUrl
     ) : Environment(
         graphQLUrl = graphQLUrl,
         legacyGraphQLUrl = legacyGraphQLUrl,
