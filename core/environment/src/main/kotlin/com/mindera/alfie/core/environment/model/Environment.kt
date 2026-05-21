@@ -32,7 +32,7 @@ sealed class Environment(
         override val graphQLUrl: String,
         override val webUrl: String,
         // Mark as same for now to support unit-test, we'll get rid of this after migration anw
-        override val legacyGraphQLUrl: String =  graphQLUrl
+        override val legacyGraphQLUrl: String = graphQLUrl
     ) : Environment(
         graphQLUrl = graphQLUrl,
         legacyGraphQLUrl = legacyGraphQLUrl,
