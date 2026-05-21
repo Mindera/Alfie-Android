@@ -1,8 +1,8 @@
 package com.mindera.alfie.data.brand.service
 
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
 import com.mindera.alfie.core.test.setPrivatePropertyField
 import com.mindera.alfie.data.brand.brandData
 import com.mindera.alfie.graphql.BrandsQuery

@@ -26,7 +26,7 @@ internal class EnvironmentManagerImpl @Inject constructor(
                     EnvironmentProto.UNRECOGNIZED -> buildConfiguration.environments.dev
                     EnvironmentProto.PRE_PROD -> buildConfiguration.environments.preProd
                     EnvironmentProto.PROD -> buildConfiguration.environments.prod
-                    EnvironmentProto.CUSTOM -> Environment.Custom(graphQLUrl = customUrl.orEmpty(), webUrl = DEFAULT_WEB_URL)
+                    EnvironmentProto.CUSTOM -> Environment.Custom(graphQLUrl = customUrl.orEmpty(), legacyGraphQLUrl = customUrl.orEmpty(), webUrl = DEFAULT_WEB_URL)
                 }
             }
         }
@@ -37,6 +37,9 @@ internal class EnvironmentManagerImpl @Inject constructor(
     override suspend fun custom(): Environment.Custom = current() as? Environment.Custom
         ?: Environment.Custom(
             graphQLUrl = debugPreferencesDataSource.getCustomUrl()
+                ?.takeIf { it.isNotBlank() }
+                ?: DEFAULT_CUSTOM_URL,
+            legacyGraphQLUrl = debugPreferencesDataSource.getCustomUrl()
                 ?.takeIf { it.isNotBlank() }
                 ?: DEFAULT_CUSTOM_URL,
             webUrl = DEFAULT_WEB_URL

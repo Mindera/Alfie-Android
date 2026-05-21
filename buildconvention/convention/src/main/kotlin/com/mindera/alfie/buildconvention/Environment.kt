@@ -7,19 +7,28 @@ private const val WEB_SUFFIX = "Web"
 
 enum class Environment(
     val url: String,
+    val legacyUrl: String,
     val buildType: BuildType,
     val webHost: String = "localhost:4000"
 ) {
     Dev(
-        url = "http://localhost:4000/graphql",
+        // Android emulator reaches the host machine via 10.0.2.2.
+        // BFF runs on port 3000 by default.
+        // For a real device, use the Custom environment with your machine's LAN IP.
+        url = "http://10.0.2.2:3000/graphql",
+        legacyUrl = "http://10.0.2.2:4000/graphql",
         buildType = BuildType.DEBUG
     ),
     PreProd(
-        url = "https://api-preprod.localhost:4000/graphql",
+        // TODO(ALFMOB-336): Replace with real PreProd BFF URL once confirmed by the BFF team.
+        url = "https://api-preprod.alfie.com/graphql",
+        legacyUrl = "https://api-legacy-preprod.alfie.com/graphql",
         buildType = BuildType.BETA
     ),
     Prod(
-        url = "https://api.localhost:4000/graphql",
+        // TODO(ALFMOB-336): Replace with real Prod BFF URL once confirmed by the BFF team.
+        url = "https://api.alfie.com/graphql",
+        legacyUrl = "https://api-legacy.alfie.com/graphql",
         buildType = BuildType.RELEASE
     )
 }
@@ -27,6 +36,7 @@ enum class Environment(
 fun ApplicationDefaultConfig.setEnvironmentsFields() {
     Environment.values().forEach {
         buildConfigField("String", "${it.name}$GRAPHQL_SUFFIX", "\"${it.url}\"")
+        buildConfigField("String", "${it.name}Legacy$GRAPHQL_SUFFIX", "\"${it.legacyUrl}\"")
         buildConfigField("String", "${it.name}$WEB_SUFFIX", "\"https://${it.webHost}\"")
     }
 }
