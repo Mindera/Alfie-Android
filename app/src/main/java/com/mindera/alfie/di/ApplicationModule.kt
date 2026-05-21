@@ -30,9 +30,9 @@ internal abstract class ApplicationModule {
             applicationId = BuildConfig.APPLICATION_ID,
             debug = BuildConfig.DEBUG,
             environments = Environments(
-                dev = Environment.Dev(graphQLUrl = BuildConfig.DevGraphQL, webUrl = BuildConfig.DevWeb),
-                preProd = Environment.PreProd(graphQLUrl = BuildConfig.PreProdGraphQL, webUrl = BuildConfig.PreProdWeb),
-                prod = Environment.Prod(graphQLUrl = BuildConfig.ProdGraphQL, webUrl = BuildConfig.ProdWeb)
+                dev = Environment.Dev(graphQLUrl = BuildConfig.DevGraphQL, legacyGraphQLUrl = BuildConfig.DevLegacyGraphQL, webUrl = BuildConfig.DevWeb),
+                preProd = Environment.PreProd(graphQLUrl = BuildConfig.PreProdGraphQL, legacyGraphQLUrl = BuildConfig.PreProdLegacyGraphQL, webUrl = BuildConfig.PreProdWeb),
+                prod = Environment.Prod(graphQLUrl = BuildConfig.ProdGraphQL, legacyGraphQLUrl = BuildConfig.ProdLegacyGraphQL, webUrl = BuildConfig.ProdWeb)
             )
         )
     }
