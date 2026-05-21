@@ -4,7 +4,7 @@ androidGradlePlugin = "8.3.2"
 androidJunit5 = "1.9.3.0"
 androidx-splash = "1.0.1"
 androidx-test-ext-junit = "1.2.1"
-apollo = "4.0.0-beta.4"
+apollo = "4.3.1"
 appcompat = "1.7.0"
 browser = "1.8.0"
 chucker = "4.0.0"
@@ -64,8 +64,8 @@ android-gradleTools = { group = "com.android.tools.build", name = "gradle", vers
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-splash" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
-apollo = { group = "com.apollographql.apollo3", name = "apollo-runtime", version.ref = "apollo" }
-apollo-testing = { group = "com.apollographql.apollo3", name = "apollo-testing-support", version.ref = "apollo" }
+apollo = { group = "com.apollographql.apollo", name = "apollo-runtime", version.ref = "apollo" }
+apollo-testing = { group = "com.apollographql.apollo", name = "apollo-testing-support", version.ref = "apollo" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 chucker = { group = "com.github.chuckerteam.chucker", name = "library", version.ref = "chucker" }
 chucker-noOp = { group = "com.github.chuckerteam.chucker", name = "library-no-op", version.ref = "chucker" }
@@ -145,7 +145,7 @@ zoomable = { group = "net.engawapg.lib", name = "zoomable", version.ref = "zooma
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "androidJunit5" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google" }

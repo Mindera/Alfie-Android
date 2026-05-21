@@ -1,10 +1,10 @@
 package com.mindera.alfie.network.interceptor
 
 import app.cash.turbine.test
-import com.apollographql.apollo3.api.ApolloRequest
-import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Operation
-import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
+import com.apollographql.apollo.api.ApolloRequest
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.interceptor.ApolloInterceptorChain
 import com.benasher44.uuid.Uuid
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.INTERNAL_HTTP_ERROR
 import com.mindera.alfie.network.exception.GraphNetworkException.NetworkException

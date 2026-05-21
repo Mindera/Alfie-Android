@@ -1,7 +1,7 @@
 package com.mindera.alfie.data.productlist.service
 
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Optional
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
 import com.mindera.alfie.graphql.ProductListingQuery
 import com.mindera.alfie.network.extension.unwrap
 import com.mindera.alfie.network.graphql.GraphService

@@ -1,8 +1,8 @@
 package com.mindera.alfie.network.graphql
 
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Mutation
-import com.apollographql.apollo3.api.Query
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Mutation
+import com.apollographql.apollo.api.Query
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
