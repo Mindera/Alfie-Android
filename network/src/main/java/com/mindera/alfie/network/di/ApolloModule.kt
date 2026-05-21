@@ -33,16 +33,32 @@ internal object ApolloModule {
 
     @Provides
     @Singleton
-    fun provideApolloClient(
+    @LegacyClient
+    fun provideLegacyApolloClient(
         environmentManager: EnvironmentManager,
         okHttpClient: OkHttpClient,
         networkStatusInterceptor: NetworkStatusInterceptor
     ) = ApolloClient.Builder()
-        .serverUrl(environmentManager.url())
+        .serverUrl(environmentManager.legacyUrl())
         .okHttpClient(okHttpClient)
         .addHttpInterceptor(LoggingInterceptor(level = BODY))
         .addInterceptor(networkStatusInterceptor)
         .build()
 
-    private fun EnvironmentManager.url() = runBlocking { current().graphQLUrl }
+    @Provides
+    @Singleton
+    @NewClient
+    fun provideNewApolloClient(
+        environmentManager: EnvironmentManager,
+        okHttpClient: OkHttpClient,
+        networkStatusInterceptor: NetworkStatusInterceptor
+    ) = ApolloClient.Builder()
+        .serverUrl(environmentManager.newUrl())
+        .okHttpClient(okHttpClient)
+        .addHttpInterceptor(LoggingInterceptor(level = BODY))
+        .addInterceptor(networkStatusInterceptor)
+        .build()
+
+    private fun EnvironmentManager.legacyUrl() = runBlocking { current().legacyGraphQLUrl }
+    private fun EnvironmentManager.newUrl() = runBlocking { current().graphQLUrl }
 }
