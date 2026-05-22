@@ -134,7 +134,7 @@ private fun ShopScreenContent(
         },
         SegmentedItem(label = StringResource.fromId(R.string.shop_segment_services)) to {
             WebViewContent(
-                url = (state as? ShopUIState.Data)?.shopUI?.servicesUrl.orEmpty(),
+                url = state.shopUI.servicesUrl,
                 queryParameters = emptyMap(),
                 headers = emptyMap(),
                 deeplinkHandler = deeplinkHandler,
