@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mindera.alfie.core.analytics.AnalyticsManager
+import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.webview.webViewNavArgs
@@ -15,6 +17,7 @@ import com.mindera.alfie.domain.usecase.product.GetProductUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import com.mindera.alfie.feature.mappers.toEventErrorValue
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
@@ -42,6 +45,7 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val addToWishlistUseCase: AddToWishlistUseCase,
     private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val uiFactory: ProductDetailsUIFactory,
+    private val analyticsManager: AnalyticsManager,
     savedStateHandle: SavedStateHandle,
     uiEventEmitterDelegate: UIEventEmitterDelegate,
     @ApplicationContext private val context: Context
@@ -85,6 +89,12 @@ internal class ProductDetailsViewModel @Inject constructor(
                     )
                 },
                 onError = {
+                    analyticsManager.trackError(
+                        screenName = SCREEN_NAME,
+                        eventName = EVENT_LOAD_ERROR,
+                        eventErrorValue = it.type.toEventErrorValue(),
+                        params = EmptyParams()
+                    )
                     _state.value = Error
                 }
             )
@@ -190,5 +200,10 @@ internal class ProductDetailsViewModel @Inject constructor(
                 _state.value = Loaded(updatedState)
             }
         }
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "product_details"
+        private const val EVENT_LOAD_ERROR = "load_error"
     }
 }

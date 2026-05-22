@@ -1,5 +1,6 @@
 package com.mindera.alfie.feature.shop.category
 
+import com.mindera.alfie.core.analytics.AnalyticsManager
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.domain.UseCaseResult
@@ -25,6 +26,9 @@ internal class CategoryViewModelTest {
 
     @RelaxedMockK
     private lateinit var getRootNavEntriesUseCase: GetRootNavEntriesUseCase
+
+    @RelaxedMockK
+    private lateinit var analyticsManager: AnalyticsManager
 
     @RelaxedMockK
     private lateinit var uiFactory: CategoryUIStateFactory
@@ -79,6 +83,7 @@ internal class CategoryViewModelTest {
     private fun buildViewModel() = CategoryViewModel(
         getRootNavEntriesUseCase = getRootNavEntriesUseCase,
         uiFactory = uiFactory,
+        analyticsManager = analyticsManager,
         navigateToEntryDelegate = navigateToEntryDelegate,
         uiEventEmitterDelegate = UIEventEmitterDelegate()
     )

@@ -2,8 +2,11 @@ package com.mindera.alfie.feature.shop.brand
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mindera.alfie.core.analytics.AnalyticsManager
+import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.brand.GetBrandsUseCase
+import com.mindera.alfie.feature.mappers.toEventErrorValue
 import com.mindera.alfie.feature.shop.brand.factory.BrandUIStateFactory
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.brand.model.BrandEvent
@@ -25,6 +28,7 @@ import javax.inject.Inject
 internal class BrandsViewModel @Inject constructor(
     private val getBrandsUseCase: GetBrandsUseCase,
     private val uiFactory: BrandUIStateFactory,
+    private val analyticsManager: AnalyticsManager,
     navigateToEntryDelegate: NavigateToEntryDelegate,
     uiEventEmitterDelegate: UIEventEmitterDelegate
 ) : ViewModel(),
@@ -45,6 +49,12 @@ internal class BrandsViewModel @Inject constructor(
                     _state.value = uiState
                 },
                 onError = {
+                    analyticsManager.trackError(
+                        screenName = SCREEN_NAME,
+                        eventName = EVENT_LOAD_ERROR,
+                        eventErrorValue = it.type.toEventErrorValue(),
+                        params = EmptyParams()
+                    )
                     _state.value = BrandUIState.Error()
                 }
             )
@@ -76,5 +86,10 @@ internal class BrandsViewModel @Inject constructor(
                 _state.value = filteredBrandUiState
             }
         }
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "shop_brands"
+        private const val EVENT_LOAD_ERROR = "load_error"
     }
 }
