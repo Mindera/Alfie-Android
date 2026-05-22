@@ -17,6 +17,7 @@ import com.mindera.alfie.domain.usecase.product.GetProductUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import com.mindera.alfie.feature.mappers.toApiErrorType
 import com.mindera.alfie.feature.mappers.toEventErrorValue
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
@@ -75,6 +76,8 @@ internal class ProductDetailsViewModel @Inject constructor(
         }
     }
 
+    fun retry() = loadDetails()
+
     private fun loadDetails() {
         viewModelScope.launch {
             _state.value = Loading
@@ -95,7 +98,7 @@ internal class ProductDetailsViewModel @Inject constructor(
                         eventErrorValue = it.type.toEventErrorValue(),
                         params = EmptyParams()
                     )
-                    _state.value = Error
+                    _state.value = Error(it.type.toApiErrorType())
                 }
             )
         }

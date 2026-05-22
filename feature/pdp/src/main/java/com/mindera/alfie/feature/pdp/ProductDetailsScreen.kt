@@ -64,6 +64,7 @@ import com.mindera.alfie.designsystem.component.tab.FixedTabPager
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.pdp.component.ProductDetailsColorPicker
 import com.mindera.alfie.feature.pdp.component.ProductDetailsSize
 import com.mindera.alfie.feature.pdp.model.ColorUI
@@ -81,6 +82,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.feature.R as FeatureR
 
 @Destination(navArgsDelegate = ProductDetailsNavArgs::class)
 @Composable
@@ -132,7 +134,10 @@ internal fun ProductDetailsScreen(
             state = state as ProductDetailsUIState.Data,
             onEvent = viewModel::handleEvent
         )
-        is ProductDetailsUIState.Error -> ProductDetailsScreenError()
+        is ProductDetailsUIState.Error -> ProductDetailsScreenError(
+            errorType = (state as ProductDetailsUIState.Error).errorType,
+            onRetry = viewModel::retry
+        )
     }
 }
 
@@ -224,7 +229,10 @@ private fun TabletLayout(
 }
 
 @Composable
-private fun ProductDetailsScreenError() {
+private fun ProductDetailsScreenError(
+    errorType: ApiErrorType,
+    onRetry: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -238,12 +246,27 @@ private fun ProductDetailsScreenError() {
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
-            text = stringResource(R.string.product_details_product_not_found),
+            text = stringResource(errorType.toStringRes()),
             style = Theme.typography.paragraphBold,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
+        Button(
+            type = ButtonType.Secondary,
+            buttonSize = ButtonSize.Medium,
+            text = stringResource(FeatureR.string.retry),
+            onClick = onRetry
+        )
     }
+}
+
+private fun ApiErrorType.toStringRes(): Int = when (this) {
+    ApiErrorType.Throttled -> FeatureR.string.error_throttled
+    ApiErrorType.Server -> FeatureR.string.error_server
+    ApiErrorType.Network -> FeatureR.string.error_network
+    ApiErrorType.NotFound -> R.string.product_details_product_not_found
+    ApiErrorType.Generic -> FeatureR.string.error_generic
 }
 
 @Composable

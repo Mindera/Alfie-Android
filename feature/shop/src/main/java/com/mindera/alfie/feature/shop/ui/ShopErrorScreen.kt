@@ -13,12 +13,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.mindera.alfie.designsystem.component.button.Button
+import com.mindera.alfie.designsystem.component.button.ButtonSize
+import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.feature.R as FeatureR
 
 @Composable
-internal fun ShopErrorScreen(text: String) {
+internal fun ShopErrorScreen(
+    errorType: ApiErrorType,
+    onRetry: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -31,16 +39,47 @@ internal fun ShopErrorScreen(text: String) {
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         Text(
-            text = text,
+            text = stringResource(errorType.toStringRes()),
             style = Theme.typography.paragraphLarge
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
-        Text(text = stringResource(R.string.shop_error_please_try_again_later))
+        Button(
+            type = ButtonType.Secondary,
+            buttonSize = ButtonSize.Medium,
+            text = stringResource(FeatureR.string.retry),
+            onClick = onRetry
+        )
+    }
+}
+
+private fun ApiErrorType.toStringRes(): Int = when (this) {
+    ApiErrorType.Throttled -> FeatureR.string.error_throttled
+    ApiErrorType.Server -> FeatureR.string.error_server
+    ApiErrorType.Network -> FeatureR.string.error_network
+    ApiErrorType.NotFound -> R.string.shop_error_not_found
+    ApiErrorType.Generic -> FeatureR.string.error_generic
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun ShopErrorScreenGenericPreview() {
+    Theme {
+        ShopErrorScreen(errorType = ApiErrorType.Generic, onRetry = {})
     }
 }
 
 @Composable
 @Preview(showBackground = true)
-private fun ShopErrorScreenPreview() {
-    ShopErrorScreen(text = "Could not load data")
+private fun ShopErrorScreenThrottledPreview() {
+    Theme {
+        ShopErrorScreen(errorType = ApiErrorType.Throttled, onRetry = {})
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+private fun ShopErrorScreenNetworkPreview() {
+    Theme {
+        ShopErrorScreen(errorType = ApiErrorType.Network, onRetry = {})
+    }
 }

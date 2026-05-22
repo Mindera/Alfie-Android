@@ -7,6 +7,7 @@ import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.navigation.GetRootNavEntriesUseCase
+import com.mindera.alfie.feature.mappers.toApiErrorType
 import com.mindera.alfie.feature.mappers.toEventErrorValue
 import com.mindera.alfie.feature.shop.category.factory.CategoryUIStateFactory
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
@@ -38,6 +39,18 @@ internal class CategoryViewModel @Inject constructor(
     val state: StateFlow<CategoryUIState> = _state.asStateFlow()
 
     init {
+        loadCategories()
+    }
+
+    fun retry() = loadCategories()
+
+    fun handleEvent(event: CategoryEvent) {
+        when (event) {
+            is CategoryEvent.OnEntryClickEvent -> navigateToCategoryEntry(event.entry)
+        }
+    }
+
+    private fun loadCategories() {
         viewModelScope.launch {
             getRootNavEntriesUseCase().doOnResult(
                 onSuccess = {
@@ -53,15 +66,9 @@ internal class CategoryViewModel @Inject constructor(
                         eventErrorValue = it.type.toEventErrorValue(),
                         params = EmptyParams()
                     )
-                    _state.value = CategoryUIState.Error()
+                    _state.value = CategoryUIState.Error(it.type.toApiErrorType())
                 }
             )
-        }
-    }
-
-    fun handleEvent(event: CategoryEvent) {
-        when (event) {
-            is CategoryEvent.OnEntryClickEvent -> navigateToCategoryEntry(event.entry)
         }
     }
 

@@ -6,6 +6,7 @@ import com.mindera.alfie.core.analytics.AnalyticsManager
 import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.brand.GetBrandsUseCase
+import com.mindera.alfie.feature.mappers.toApiErrorType
 import com.mindera.alfie.feature.mappers.toEventErrorValue
 import com.mindera.alfie.feature.shop.brand.factory.BrandUIStateFactory
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
@@ -41,6 +42,19 @@ internal class BrandsViewModel @Inject constructor(
     private var entries: ImmutableList<BrandEntryUI> = persistentListOf()
 
     init {
+        loadBrands()
+    }
+
+    fun retry() = loadBrands()
+
+    fun handleEvent(event: BrandEvent) {
+        when (event) {
+            is BrandEvent.OnBrandEntryClickEvent -> navigateToBrandEntry(entry = event.entry)
+            is BrandEvent.OnBrandSearchEvent -> filterBrandsBySearchTerm(searchTerm = event.searchTerm)
+        }
+    }
+
+    private fun loadBrands() {
         viewModelScope.launch {
             getBrandsUseCase().doOnResult(
                 onSuccess = {
@@ -55,16 +69,9 @@ internal class BrandsViewModel @Inject constructor(
                         eventErrorValue = it.type.toEventErrorValue(),
                         params = EmptyParams()
                     )
-                    _state.value = BrandUIState.Error()
+                    _state.value = BrandUIState.Error(it.type.toApiErrorType())
                 }
             )
-        }
-    }
-
-    fun handleEvent(event: BrandEvent) {
-        when (event) {
-            is BrandEvent.OnBrandEntryClickEvent -> navigateToBrandEntry(entry = event.entry)
-            is BrandEvent.OnBrandSearchEvent -> filterBrandsBySearchTerm(searchTerm = event.searchTerm)
         }
     }
 
