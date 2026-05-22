@@ -9,6 +9,8 @@ import com.mindera.alfie.network.exception.GraphNetworkException.MethodNotAllowe
 import com.mindera.alfie.network.exception.GraphNetworkException.NetworkException
 import com.mindera.alfie.network.exception.GraphNetworkException.NotFoundException
 import com.mindera.alfie.network.exception.GraphNetworkException.ServerException
+import com.mindera.alfie.network.exception.GraphNetworkException.ThrottledException
+import com.mindera.alfie.network.exception.GraphNetworkException.TimeoutException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnProcessableEntityException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnauthorizedException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnexpectedException
@@ -36,6 +38,8 @@ fun GraphNetworkException.toErrorResult(): ErrorResult {
         is InvalidResponseException -> INVALID_REQUEST
         is ClientException -> GENERIC_ERROR
         is ServerException -> GENERIC_ERROR
+        is ThrottledException -> GENERIC_ERROR
+        is TimeoutException -> UNKNOWN
         is UnexpectedException -> UNKNOWN
     }
 

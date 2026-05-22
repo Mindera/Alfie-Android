@@ -8,6 +8,8 @@ import com.mindera.alfie.network.exception.GraphNetworkException.MethodNotAllowe
 import com.mindera.alfie.network.exception.GraphNetworkException.NetworkException
 import com.mindera.alfie.network.exception.GraphNetworkException.NotFoundException
 import com.mindera.alfie.network.exception.GraphNetworkException.ServerException
+import com.mindera.alfie.network.exception.GraphNetworkException.ThrottledException
+import com.mindera.alfie.network.exception.GraphNetworkException.TimeoutException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnProcessableEntityException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnauthorizedException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnexpectedException
@@ -189,6 +191,35 @@ internal class ErrorResultMapperTest {
         val exception = UnexpectedException(
             message = "message"
         )
+        val expected = ErrorResult(
+            type = UNKNOWN,
+            code = "0",
+            errorMessage = "message"
+        )
+
+        val result = exception.toErrorResult()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `WHEN ThrottledException THEN ErrorResult should be of type GENERIC_ERROR`() = runTest {
+        val exception = ThrottledException(
+            code = 429,
+            message = "message"
+        )
+        val expected = ErrorResult(
+            type = GENERIC_ERROR,
+            code = "429",
+            errorMessage = "message"
+        )
+
+        val result = exception.toErrorResult()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `WHEN TimeoutException THEN ErrorResult should be of type UNKNOWN`() = runTest {
+        val exception = TimeoutException(message = "message")
         val expected = ErrorResult(
             type = UNKNOWN,
             code = "0",
