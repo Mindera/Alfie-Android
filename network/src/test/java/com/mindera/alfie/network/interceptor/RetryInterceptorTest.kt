@@ -16,7 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @ExtendWith(MockKExtension::class)
@@ -124,6 +126,57 @@ internal class RetryInterceptorTest {
 
         assertEquals(1, delays.size)
         assertEquals(5.seconds, delays.first())
+    }
+
+    @Test
+    fun `WHEN Retry-After header is zero THEN delay is clamped to MIN_DELAY`() {
+        val delays = mutableListOf<Duration>()
+        interceptor.delayFn = { delays.add(it) }
+        every { chain.proceed(any()) } answers { buildResponse(429, retryAfterSeconds = 0) } andThenAnswer { buildResponse(200) }
+
+        interceptor.intercept(chain)
+
+        assertEquals(1, delays.size)
+        assertEquals(100.milliseconds, delays.first())
+    }
+
+    @Test
+    fun `WHEN Retry-After header exceeds MAX_DELAY THEN delay is clamped to MAX_DELAY`() {
+        val delays = mutableListOf<Duration>()
+        interceptor.delayFn = { delays.add(it) }
+        every { chain.proceed(any()) } answers { buildResponse(429, retryAfterSeconds = 9999) } andThenAnswer { buildResponse(200) }
+
+        interceptor.intercept(chain)
+
+        assertEquals(1, delays.size)
+        assertEquals(30.seconds, delays.first())
+    }
+
+    @Test
+    fun `WHEN multiple retries occur THEN delays follow exponential backoff progression`() {
+        val delays = mutableListOf<Duration>()
+        interceptor.delayFn = { delays.add(it) }
+        every { chain.proceed(any()) } answers { buildResponse(500) }
+
+        interceptor.intercept(chain)
+
+        // 3 attempts → 2 inter-attempt delays
+        assertEquals(2, delays.size)
+        assertTrue(delays[1] > delays[0], "Second delay (${delays[1]}) should be greater than first (${delays[0]})")
+    }
+
+    @Test
+    fun `WHEN computing backoff delays THEN jitter keeps them within 20 percent bounds`() {
+        val delays = mutableListOf<Duration>()
+        interceptor.delayFn = { delays.add(it) }
+        every { chain.proceed(any()) } answers { buildResponse(500) }
+
+        interceptor.intercept(chain)
+
+        // Attempt 1: base=1s, jitter ±20% → [0.8s, 1.2s]
+        assertTrue(delays[0] >= 0.8.seconds && delays[0] <= 1.2.seconds, "First delay ${delays[0]} should be within [0.8s, 1.2s]")
+        // Attempt 2: base=2s, jitter ±20% → [1.6s, 2.4s]
+        assertTrue(delays[1] >= 1.6.seconds && delays[1] <= 2.4.seconds, "Second delay ${delays[1]} should be within [1.6s, 2.4s]")
     }
 
     private fun buildResponse(code: Int, retryAfterSeconds: Long? = null): Response {

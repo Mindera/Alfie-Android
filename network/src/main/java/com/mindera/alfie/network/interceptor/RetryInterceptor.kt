@@ -40,10 +40,11 @@ internal class RetryInterceptor @Inject constructor() : Interceptor {
             code in HTTP_5XX_RANGE
 
     private fun retryDelay(attempt: Int, response: Response?): Duration {
-        // Honour Retry-After header when present (seconds as integer)
+        // Honour Retry-After header when present (seconds as integer), clamped to sane bounds
         val retryAfter = response?.header(RETRY_AFTER_HEADER)
             ?.toLongOrNull()
             ?.seconds
+            ?.coerceIn(MIN_DELAY, MAX_DELAY)
         if (retryAfter != null) return retryAfter
 
         // Exponential backoff: 1s, 2s, 4s… capped at 30s, ±20% jitter

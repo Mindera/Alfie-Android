@@ -105,8 +105,7 @@ internal fun ShopScreen(
         }
         is ShopUIState.Error -> {
             ShopErrorScreen(
-                errorType = (state as ShopUIState.Error).errorType,
-                onRetry = {}
+                errorType = (state as ShopUIState.Error).errorType
             )
         }
     }

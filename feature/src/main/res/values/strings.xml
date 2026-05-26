@@ -6,4 +6,5 @@
     <string name="error_server">Service unavailable, please try again</string>
     <string name="error_network">No internet connection</string>
     <string name="error_generic">Something went wrong</string>
+    <string name="error_not_found">Content not found</string>
 </resources>

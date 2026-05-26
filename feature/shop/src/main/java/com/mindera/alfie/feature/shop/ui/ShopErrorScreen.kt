@@ -18,6 +18,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.model.ApiErrorType
+import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.designsystem.R as RD
 import com.mindera.alfie.feature.R as FeatureR
@@ -25,7 +26,7 @@ import com.mindera.alfie.feature.R as FeatureR
 @Composable
 internal fun ShopErrorScreen(
     errorType: ApiErrorType,
-    onRetry: () -> Unit
+    onRetry: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -39,25 +40,19 @@ internal fun ShopErrorScreen(
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         Text(
-            text = stringResource(errorType.toStringRes()),
+            text = stringResource(errorType.toStringRes(notFoundRes = R.string.shop_error_not_found)),
             style = Theme.typography.paragraphLarge
         )
-        Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
-        Button(
-            type = ButtonType.Secondary,
-            buttonSize = ButtonSize.Medium,
-            text = stringResource(FeatureR.string.retry),
-            onClick = onRetry
-        )
+        if (onRetry != null) {
+            Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
+            Button(
+                type = ButtonType.Secondary,
+                buttonSize = ButtonSize.Medium,
+                text = stringResource(FeatureR.string.retry),
+                onClick = onRetry
+            )
+        }
     }
-}
-
-private fun ApiErrorType.toStringRes(): Int = when (this) {
-    ApiErrorType.Throttled -> FeatureR.string.error_throttled
-    ApiErrorType.Server -> FeatureR.string.error_server
-    ApiErrorType.Network -> FeatureR.string.error_network
-    ApiErrorType.NotFound -> R.string.shop_error_not_found
-    ApiErrorType.Generic -> FeatureR.string.error_generic
 }
 
 @Composable

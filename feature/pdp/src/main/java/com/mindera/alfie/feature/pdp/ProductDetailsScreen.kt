@@ -65,6 +65,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.model.ApiErrorType
+import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.pdp.component.ProductDetailsColorPicker
 import com.mindera.alfie.feature.pdp.component.ProductDetailsSize
 import com.mindera.alfie.feature.pdp.model.ColorUI
@@ -246,7 +247,7 @@ private fun ProductDetailsScreenError(
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
-            text = stringResource(errorType.toStringRes()),
+            text = stringResource(errorType.toStringRes(notFoundRes = R.string.product_details_product_not_found)),
             style = Theme.typography.paragraphBold,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -259,14 +260,6 @@ private fun ProductDetailsScreenError(
             onClick = onRetry
         )
     }
-}
-
-private fun ApiErrorType.toStringRes(): Int = when (this) {
-    ApiErrorType.Throttled -> FeatureR.string.error_throttled
-    ApiErrorType.Server -> FeatureR.string.error_server
-    ApiErrorType.Network -> FeatureR.string.error_network
-    ApiErrorType.NotFound -> R.string.product_details_product_not_found
-    ApiErrorType.Generic -> FeatureR.string.error_generic
 }
 
 @Composable
