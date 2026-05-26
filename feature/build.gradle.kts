@@ -12,6 +12,7 @@ android {
 }
 
 dependencies {
+    implementation(project(ProjectModule.coreAnalytics))
     implementation(project(ProjectModule.coreCommons))
     implementation(project(ProjectModule.coreDeeplink))
     implementation(project(ProjectModule.coreNavigation))

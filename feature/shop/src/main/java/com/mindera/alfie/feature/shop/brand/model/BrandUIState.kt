@@ -1,8 +1,7 @@
 package com.mindera.alfie.feature.shop.brand.model
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
-import com.mindera.alfie.feature.shop.R
+import com.mindera.alfie.feature.model.ApiErrorType
 import kotlinx.collections.immutable.ImmutableList
 
 @Stable
@@ -15,7 +14,5 @@ internal sealed class BrandUIState {
     ) : BrandUIState()
 
     @Stable
-    data class Error(
-        @StringRes val errorId: Int = R.string.shop_error_cannot_load_brands_list
-    ) : BrandUIState()
+    data class Error(val errorType: ApiErrorType = ApiErrorType.Generic) : BrandUIState()
 }

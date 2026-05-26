@@ -8,6 +8,8 @@ import com.mindera.alfie.network.exception.GraphNetworkException.MethodNotAllowe
 import com.mindera.alfie.network.exception.GraphNetworkException.NetworkException
 import com.mindera.alfie.network.exception.GraphNetworkException.NotFoundException
 import com.mindera.alfie.network.exception.GraphNetworkException.ServerException
+import com.mindera.alfie.network.exception.GraphNetworkException.ThrottledException
+import com.mindera.alfie.network.exception.GraphNetworkException.TimeoutException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnProcessableEntityException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnauthorizedException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnexpectedException
@@ -20,6 +22,9 @@ import com.mindera.alfie.repository.result.ErrorType.INVALID_REQUEST
 import com.mindera.alfie.repository.result.ErrorType.METHOD_NOT_ALLOWED
 import com.mindera.alfie.repository.result.ErrorType.NETWORK
 import com.mindera.alfie.repository.result.ErrorType.RESOURCE_NOT_FOUND
+import com.mindera.alfie.repository.result.ErrorType.SERVER_ERROR
+import com.mindera.alfie.repository.result.ErrorType.THROTTLED
+import com.mindera.alfie.repository.result.ErrorType.TIMEOUT
 import com.mindera.alfie.repository.result.ErrorType.UNKNOWN
 import com.mindera.alfie.repository.result.ErrorType.UN_PROCESSABLE_ENTITY
 import io.mockk.junit5.MockKExtension
@@ -138,13 +143,13 @@ internal class ErrorResultMapperTest {
     }
 
     @Test
-    fun `WHEN ServerException THEN ErrorResult should be of type GENERIC_ERROR`() = runTest {
+    fun `WHEN ServerException THEN ErrorResult should be of type SERVER_ERROR`() = runTest {
         val exception = ServerException(
             code = 599,
             message = "message"
         )
         val expected = ErrorResult(
-            type = GENERIC_ERROR,
+            type = SERVER_ERROR,
             code = "599",
             errorMessage = "message"
         )
@@ -191,6 +196,35 @@ internal class ErrorResultMapperTest {
         )
         val expected = ErrorResult(
             type = UNKNOWN,
+            code = "0",
+            errorMessage = "message"
+        )
+
+        val result = exception.toErrorResult()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `WHEN ThrottledException THEN ErrorResult should be of type THROTTLED`() = runTest {
+        val exception = ThrottledException(
+            code = 429,
+            message = "message"
+        )
+        val expected = ErrorResult(
+            type = THROTTLED,
+            code = "429",
+            errorMessage = "message"
+        )
+
+        val result = exception.toErrorResult()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `WHEN TimeoutException THEN ErrorResult should be of type TIMEOUT`() = runTest {
+        val exception = TimeoutException(message = "message")
+        val expected = ErrorResult(
+            type = TIMEOUT,
             code = "0",
             errorMessage = "message"
         )

@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
@@ -35,7 +34,8 @@ internal fun ShopCategoriesScreen(
         }
         is CategoryUIState.Error -> {
             ShopErrorScreen(
-                text = stringResource(id = (state as CategoryUIState.Error).errorId)
+                errorType = (state as CategoryUIState.Error).errorType,
+                onRetry = viewModel::retry
             )
         }
     }

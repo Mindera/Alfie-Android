@@ -2,4 +2,9 @@
 <resources>
     <string name="retry">Retry</string>
     <string name="error_failed_to_load_page">Failed to Load Page</string>
+    <string name="error_throttled">Too many requests, please try again later</string>
+    <string name="error_server">Service unavailable, please try again</string>
+    <string name="error_network">No internet connection</string>
+    <string name="error_generic">Something went wrong</string>
+    <string name="error_not_found">Content not found</string>
 </resources>

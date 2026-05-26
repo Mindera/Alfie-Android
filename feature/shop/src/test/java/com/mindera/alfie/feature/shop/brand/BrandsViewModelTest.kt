@@ -1,6 +1,7 @@
 package com.mindera.alfie.feature.shop.brand
 
 import app.cash.turbine.test
+import com.mindera.alfie.core.analytics.AnalyticsManager
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.domain.UseCaseResult
@@ -29,6 +30,9 @@ internal class BrandsViewModelTest {
 
     @RelaxedMockK
     private lateinit var dispatcher: DispatcherProvider
+
+    @RelaxedMockK
+    private lateinit var analyticsManager: AnalyticsManager
 
     @RelaxedMockK
     private lateinit var getBrandsUseCase: GetBrandsUseCase
@@ -94,6 +98,7 @@ internal class BrandsViewModelTest {
     private fun buildViewModel() = BrandsViewModel(
         getBrandsUseCase = getBrandsUseCase,
         uiFactory = uiFactory,
+        analyticsManager = analyticsManager,
         navigateToEntryDelegate = navigateToEntryDelegate,
         uiEventEmitterDelegate = UIEventEmitterDelegate()
     )

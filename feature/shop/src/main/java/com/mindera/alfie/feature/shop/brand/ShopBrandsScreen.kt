@@ -65,7 +65,8 @@ internal fun ShopBrandsScreen(
         }
         is BrandUIState.Error -> {
             ShopErrorScreen(
-                text = stringResource(id = (state as BrandUIState.Error).errorId)
+                errorType = (state as BrandUIState.Error).errorType,
+                onRetry = viewModel::retry
             )
         }
     }
