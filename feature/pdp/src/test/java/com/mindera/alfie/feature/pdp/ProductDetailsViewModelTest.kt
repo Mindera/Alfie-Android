@@ -3,6 +3,7 @@ package com.mindera.alfie.feature.pdp
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.mindera.alfie.core.analytics.AnalyticsManager
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
@@ -55,6 +56,9 @@ internal class ProductDetailsViewModelTest {
 
     @RelaxedMockK
     private lateinit var productDetailsUIFactory: ProductDetailsUIFactory
+
+    @RelaxedMockK
+    private lateinit var analyticsManager: AnalyticsManager
 
     @RelaxedMockK
     private lateinit var savedStateHandle: SavedStateHandle
@@ -164,6 +168,7 @@ internal class ProductDetailsViewModelTest {
         addToWishlistUseCase = addToWishlistUseCase,
         removeWishlistUseCase = removeWishlistUseCase,
         uiFactory = productDetailsUIFactory,
+        analyticsManager = analyticsManager,
         savedStateHandle = savedStateHandle,
         uiEventEmitterDelegate = UIEventEmitterDelegate(),
         context = context

@@ -65,7 +65,9 @@ internal fun ShopBrandsScreen(
         }
         is BrandUIState.Error -> {
             ShopErrorScreen(
-                text = stringResource(id = (state as BrandUIState.Error).errorId)
+                errorType = (state as BrandUIState.Error).errorType,
+                customGenericError = R.string.shop_error_cannot_load_brands_list,
+                onRetry = viewModel::retry
             )
         }
     }

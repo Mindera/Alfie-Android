@@ -4,8 +4,11 @@ import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_CONFLICT
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_METHOD_NOT_ALLOWED
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_NOT_FOUND
+import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS
+import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS_EXTENDED
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_UNAUTHORIZED
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_UN_PROCESSABLE_CONTENT
+import kotlin.time.Duration
 
 sealed class GraphNetworkException(override val message: String) : Exception(message) {
 
@@ -41,6 +44,16 @@ sealed class GraphNetworkException(override val message: String) : Exception(mes
         override val message: String
     ) : GraphNetworkException(message)
 
+    data class ThrottledException(
+        override val code: Int,
+        override val message: String,
+        val retryAfter: Duration? = null
+    ) : GraphNetworkException(message) {
+        init {
+            require(code == HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS.code || code == HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS_EXTENDED.code)
+        }
+    }
+
     data class ClientException(
         override val code: Int,
         override val message: String
@@ -55,6 +68,15 @@ sealed class GraphNetworkException(override val message: String) : Exception(mes
         override val code: Int,
         override val message: String
     ) : GraphNetworkException(message)
+
+    class TimeoutException(
+        override val message: String,
+        cause: Throwable? = null
+    ) : GraphNetworkException(message) {
+        init {
+            cause?.let(::initCause)
+        }
+    }
 
     data class InvalidResponseException(
         override val message: String

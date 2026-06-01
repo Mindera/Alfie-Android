@@ -9,6 +9,7 @@ import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_CONFLICT
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_METHOD_NOT_ALLOWED
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_NOT_FOUND
+import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_UNAUTHORIZED
 import com.mindera.alfie.network.exception.ExceptionErrorCodes.HTTP_CLIENT_ERROR_UN_PROCESSABLE_CONTENT
 import com.mindera.alfie.network.exception.GraphNetworkException.BadRequestException
@@ -16,6 +17,8 @@ import com.mindera.alfie.network.exception.GraphNetworkException.ConflictExcepti
 import com.mindera.alfie.network.exception.GraphNetworkException.MethodNotAllowedException
 import com.mindera.alfie.network.exception.GraphNetworkException.NetworkException
 import com.mindera.alfie.network.exception.GraphNetworkException.NotFoundException
+import com.mindera.alfie.network.exception.GraphNetworkException.ThrottledException
+import com.mindera.alfie.network.exception.GraphNetworkException.TimeoutException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnProcessableEntityException
 import com.mindera.alfie.network.exception.GraphNetworkException.UnauthorizedException
 import io.mockk.coEvery
@@ -27,6 +30,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.net.SocketTimeoutException
 import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
@@ -169,5 +173,54 @@ internal class ApolloCallExtTest {
 
         assert(result.isFailure)
         assert(result.exceptionOrNull() is UnProcessableEntityException)
+    }
+
+    @Test
+    fun `WHEN response has error 429 exception THEN throw ThrottledException`() = runTest {
+        val exception = ApolloHttpException(
+            statusCode = HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS.code,
+            headers = listOf(),
+            message = "Unit test",
+            body = null
+        )
+        apolloResponse.setPrivatePropertyField("exception", exception)
+
+        coEvery { apolloCall.execute() } returns apolloResponse
+
+        val result = apolloCall.unwrap()
+
+        assert(result.isFailure)
+        assert(result.exceptionOrNull() is ThrottledException)
+    }
+
+    @Test
+    fun `WHEN response has error 429 with Retry-After header THEN ThrottledException carries retryAfter`() = runTest {
+        val retryAfterHeader = com.apollographql.apollo.api.http.HttpHeader("Retry-After", "60")
+        val exception = ApolloHttpException(
+            statusCode = HTTP_CLIENT_ERROR_TOO_MANY_REQUESTS.code,
+            headers = listOf(retryAfterHeader),
+            message = "Unit test",
+            body = null
+        )
+        apolloResponse.setPrivatePropertyField("exception", exception)
+
+        coEvery { apolloCall.execute() } returns apolloResponse
+
+        val result = apolloCall.unwrap()
+
+        assert(result.isFailure)
+        val throttled = result.exceptionOrNull() as? ThrottledException
+        assert(throttled?.retryAfter != null)
+        assert(throttled?.retryAfter?.inWholeSeconds == 60L)
+    }
+
+    @Test
+    fun `WHEN SocketTimeoutException is thrown THEN unwrap returns TimeoutException`() = runTest {
+        coEvery { apolloCall.execute() } throws SocketTimeoutException("timeout")
+
+        val result = apolloCall.unwrap()
+
+        assert(result.isFailure)
+        assert(result.exceptionOrNull() is TimeoutException)
     }
 }

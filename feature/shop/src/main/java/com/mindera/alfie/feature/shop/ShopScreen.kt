@@ -47,6 +47,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
+import com.mindera.alfie.feature.R as FeatureR
 
 @Destination(navArgsDelegate = ShopNavArgs::class)
 @Composable
@@ -104,7 +105,7 @@ internal fun ShopScreen(
         }
         is ShopUIState.Error -> {
             ShopErrorScreen(
-                text = stringResource(R.string.shop_error_unknown_error_occurred)
+                errorType = (state as ShopUIState.Error).errorType
             )
         }
     }
@@ -132,7 +133,7 @@ private fun ShopScreenContent(
         },
         SegmentedItem(label = StringResource.fromId(R.string.shop_segment_services)) to {
             WebViewContent(
-                url = (state as? ShopUIState.Data)?.shopUI?.servicesUrl.orEmpty(),
+                url = state.shopUI.servicesUrl,
                 queryParameters = emptyMap(),
                 headers = emptyMap(),
                 deeplinkHandler = deeplinkHandler,
@@ -140,8 +141,8 @@ private fun ShopScreenContent(
                 isBackHandlerEnabled = false,
                 modifier = Modifier.testTag(SERVICES_PAGE),
                 errorType = ErrorType(
-                    message = stringResource(R.string.error_failed_to_load_page),
-                    buttonLabel = stringResource(R.string.retry)
+                    message = stringResource(FeatureR.string.error_failed_to_load_page),
+                    buttonLabel = stringResource(FeatureR.string.retry)
                 )
             )
         }

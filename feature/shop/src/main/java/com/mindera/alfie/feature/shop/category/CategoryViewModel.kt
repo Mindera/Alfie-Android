@@ -2,9 +2,13 @@ package com.mindera.alfie.feature.shop.category
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mindera.alfie.core.analytics.AnalyticsManager
+import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.navigation.GetRootNavEntriesUseCase
+import com.mindera.alfie.feature.mappers.toApiErrorType
+import com.mindera.alfie.feature.mappers.toEventErrorValue
 import com.mindera.alfie.feature.shop.category.factory.CategoryUIStateFactory
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEvent
@@ -24,6 +28,7 @@ import javax.inject.Inject
 internal class CategoryViewModel @Inject constructor(
     private val getRootNavEntriesUseCase: GetRootNavEntriesUseCase,
     private val uiFactory: CategoryUIStateFactory,
+    private val analyticsManager: AnalyticsManager,
     navigateToEntryDelegate: NavigateToEntryDelegate,
     uiEventEmitterDelegate: UIEventEmitterDelegate
 ) : ViewModel(),
@@ -34,6 +39,18 @@ internal class CategoryViewModel @Inject constructor(
     val state: StateFlow<CategoryUIState> = _state.asStateFlow()
 
     init {
+        loadCategories()
+    }
+
+    fun retry() = loadCategories()
+
+    fun handleEvent(event: CategoryEvent) {
+        when (event) {
+            is CategoryEvent.OnEntryClickEvent -> navigateToCategoryEntry(event.entry)
+        }
+    }
+
+    private fun loadCategories() {
         viewModelScope.launch {
             getRootNavEntriesUseCase().doOnResult(
                 onSuccess = {
@@ -42,14 +59,16 @@ internal class CategoryViewModel @Inject constructor(
                         navEntries = it
                     )
                 },
-                onError = { _state.value = CategoryUIState.Error() }
+                onError = {
+                    analyticsManager.trackError(
+                        screenName = SCREEN_NAME,
+                        eventName = EVENT_LOAD_ERROR,
+                        eventErrorValue = it.type.toEventErrorValue(),
+                        params = EmptyParams()
+                    )
+                    _state.value = CategoryUIState.Error(it.type.toApiErrorType())
+                }
             )
-        }
-    }
-
-    fun handleEvent(event: CategoryEvent) {
-        when (event) {
-            is CategoryEvent.OnEntryClickEvent -> navigateToCategoryEntry(event.entry)
         }
     }
 
@@ -58,5 +77,10 @@ internal class CategoryViewModel @Inject constructor(
         if (state is CategoryUIState.Data && entry.path.isNotEmpty()) {
             openCategoryEntry(entry)
         }
+    }
+
+    companion object {
+        private const val SCREEN_NAME = "shop_category"
+        private const val EVENT_LOAD_ERROR = "load_error"
     }
 }

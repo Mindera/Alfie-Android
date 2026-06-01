@@ -1,5 +1,6 @@
 package com.mindera.alfie.feature.pdp.model
 
+import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.pdp.ProductDetailsUIFactory
 
 internal sealed interface ProductDetailsUIState {
@@ -11,5 +12,5 @@ internal sealed interface ProductDetailsUIState {
         data class Loaded(override val details: ProductDetailsUI) : Data(details)
     }
 
-    data object Error : ProductDetailsUIState
+    data class Error(val errorType: ApiErrorType = ApiErrorType.Generic) : ProductDetailsUIState
 }

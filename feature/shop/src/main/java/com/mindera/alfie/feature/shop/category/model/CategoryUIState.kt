@@ -1,9 +1,8 @@
 package com.mindera.alfie.feature.shop.category.model
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
 import com.mindera.alfie.core.commons.string.StringResource
-import com.mindera.alfie.feature.shop.R
+import com.mindera.alfie.feature.model.ApiErrorType
 import kotlinx.collections.immutable.ImmutableList
 
 @Stable
@@ -17,8 +16,5 @@ internal sealed interface CategoryUIState {
     ) : CategoryUIState
 
     @Stable
-    data class Error(
-        @StringRes
-        val errorId: Int = R.string.shop_error_cannot_load_categories_list
-    ) : CategoryUIState
+    data class Error(val errorType: ApiErrorType = ApiErrorType.Generic) : CategoryUIState
 }
