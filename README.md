@@ -17,6 +17,73 @@ network_security_config.xml:
 
 <img width="599" height="131" alt="Screenshot 2026-01-14 at 14 29 11" src="https://github.com/user-attachments/assets/7569c01f-36aa-42e9-a513-404a05bbf8b7" />
 
+## Network / GraphQL Setup
+
+The app connects to two Apollo GraphQL services managed via Hilt-qualified `ApolloClient`s:
+
+| Qualifier | Service | Default emulator URL | Purpose |
+|---|---|---|---|
+| `@LegacyClient` | `legacy` | `http://10.0.2.2:4000/graphql` | Existing Mock Server — queries live here during migration |
+| `@NewClient` | `bff` | `http://10.0.2.2:3000/graphql` | New BFF ([Alfie-BFF](https://github.com/Mindera/Alfie-BFF)) — add migrated `.graphql` files under `network/src/main/graphql/bff/` |
+
+### Local development (emulator)
+
+The Android emulator routes `10.0.2.2` to your host machine's `localhost`, so no extra config is needed when running on the emulator.
+
+#### Legacy — Mock Server (port 4000)
+
+The legacy client points to the existing Mock Server, which is already documented in the [Setup](#setup) section above. Follow those instructions to run it locally.
+
+#### New BFF — Alfie-BFF (port 3000)
+
+The new BFF client points to **[Alfie-BFF](https://github.com/Mindera/Alfie-BFF)**. Clone it and follow its README to start it locally:
+
+```bash
+git clone https://github.com/Mindera/Alfie-BFF.git
+```
+
+Once both servers are running, build and run the app on the emulator — it will connect to each automatically.
+
+#### Updating GraphQL schemas via introspection
+
+Run these Gradle tasks to pull the latest schema from a running local server:
+
+```bash
+# Legacy schema
+./gradlew :network:downloadLegacyApolloSchemaFromIntrospection
+
+# New BFF schema
+./gradlew :network:downloadBffApolloSchemaFromIntrospection
+```
+
+This overwrites `network/src/main/graphql/schema-legacy.graphqls` and `schema-new.graphqls` respectively. Commit the updated schema file after running.
+
+#### Adding new GraphQL operations
+
+- **Legacy operations** → add `.graphql` files under `network/src/main/graphql/legacy/`
+- **New BFF operations** → add `.graphql` files under `network/src/main/graphql/bff/`
+
+Apollo Kotlin generates Kotlin code automatically on build. Generated classes land in:
+- `com.mindera.alfie.graphql` (legacy)
+- `com.mindera.alfie.graphql.bff` (new BFF)
+
+### Real device setup
+
+`10.0.2.2` only works on the emulator. To connect a physical device to a local server:
+
+1. Ensure your device and dev machine are on the **same Wi-Fi network**.
+2. Find your machine's local IP (e.g. `192.168.1.42`).
+3. In `ApolloModule.kt`, replace the URL resolution with your machine IP temporarily — or use the in-app debug menu to override the server URL at runtime.
+4. Allow cleartext traffic to your IP in `network/src/main/res/xml/network_security_config.xml`:
+
+```xml
+<domain-config cleartextTrafficPermitted="true">
+    <domain includeSubdomains="false">192.168.1.42</domain>
+</domain-config>
+```
+
+> ⚠️ Never commit hard-coded local IPs or cleartext exceptions targeting non-localhost addresses.
+
 ## Features
 
 ----
