@@ -1,9 +1,9 @@
 package com.mindera.alfie.network.graphql
 
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Mutation
-import com.apollographql.apollo3.api.Query
+import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Mutation
+import com.apollographql.apollo.api.Query
 
 abstract class GraphService(private val apolloClient: ApolloClient) {
 

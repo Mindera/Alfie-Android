@@ -1,7 +1,7 @@
 package com.mindera.alfie.network.extension
 
-import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.api.Operation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

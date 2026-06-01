@@ -1,0 +1,59 @@
+fragment MoneyFragment on Money {
+    amount
+    currencyCode
+}
+
+fragment ImageFragment on Image {
+    url
+    altText
+}
+
+fragment ProductVariantFragment on ProductVariant {
+    id
+    sku
+    price {
+        ...MoneyFragment
+    }
+    compareAtPrice {
+        ...MoneyFragment
+    }
+    optionValues {
+        name
+        value
+    }
+    inventory {
+        available
+    }
+    media {
+        ...ImageFragment
+    }
+}
+
+fragment ProductFragment on OmniProduct {
+    id
+    name
+    slug
+    brandName
+    descriptionHtml
+    primaryImage {
+        ...ImageFragment
+    }
+    images {
+        ...ImageFragment
+    }
+    priceRange {
+        minVariantPrice {
+            ...MoneyFragment
+        }
+        maxVariantPrice {
+            ...MoneyFragment
+        }
+    }
+    options {
+        name
+        values
+    }
+    variants {
+        ...ProductVariantFragment
+    }
+}
