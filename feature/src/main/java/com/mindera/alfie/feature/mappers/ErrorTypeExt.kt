@@ -15,8 +15,8 @@ fun ErrorType.toEventErrorValue(): EventErrorValue = when (this) {
 
 fun ErrorType.toApiErrorType(): ApiErrorType = when (this) {
     ErrorType.THROTTLED -> ApiErrorType.Throttled
-    ErrorType.TIMEOUT, ErrorType.SERVER_ERROR -> ApiErrorType.Server
-    ErrorType.NETWORK -> ApiErrorType.Network
+    ErrorType.SERVER_ERROR -> ApiErrorType.Server
+    ErrorType.TIMEOUT, ErrorType.NETWORK -> ApiErrorType.Network
     ErrorType.RESOURCE_NOT_FOUND -> ApiErrorType.NotFound
     else -> ApiErrorType.Generic
 }

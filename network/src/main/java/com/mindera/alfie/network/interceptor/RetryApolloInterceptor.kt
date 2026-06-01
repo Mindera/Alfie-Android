@@ -55,7 +55,7 @@ internal class RetryApolloInterceptor @Inject constructor() : ApolloInterceptor 
 
     private fun retryDelay(attempt: Int, httpException: ApolloHttpException?): Duration {
         val retryAfter = httpException?.headers
-            ?.firstOrNull { it.name == RETRY_AFTER_HEADER }
+            ?.firstOrNull { it.name.equals(RETRY_AFTER_HEADER, ignoreCase = true) }
             ?.value
             ?.toLongOrNull()
             ?.seconds
