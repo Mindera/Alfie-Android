@@ -48,12 +48,12 @@ apollo {
         }
     }
 
-    // New service — queries against the new server (port 3000).
-    // Add migrated .graphql files under src/main/graphql/new/.
-    service("new") {
-        packageName.set("${AppConfig.applicationId}.graphql.new")
+    // New BFF service — queries against the new server (port 3000).
+    // Add migrated .graphql files under src/main/graphql/bff/.
+    service("bff") {
+        packageName.set("${AppConfig.applicationId}.graphql.bff")
         schemaFiles.from(file("src/main/graphql/schema-new.graphqls"))
-        srcDir(file("src/main/graphql/new"))
+        srcDir(file("src/main/graphql/bff"))
         introspection {
             endpointUrl.set("http://10.0.2.2:3000/graphql")
             schemaFile.set(file("src/main/graphql/schema-new.graphqls"))
