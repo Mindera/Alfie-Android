@@ -69,9 +69,14 @@ sealed class GraphNetworkException(override val message: String) : Exception(mes
         override val message: String
     ) : GraphNetworkException(message)
 
-    data class TimeoutException(
-        override val message: String
-    ) : GraphNetworkException(message)
+    class TimeoutException(
+        override val message: String,
+        cause: Throwable? = null
+    ) : GraphNetworkException(message) {
+        init {
+            cause?.let(::initCause)
+        }
+    }
 
     data class InvalidResponseException(
         override val message: String

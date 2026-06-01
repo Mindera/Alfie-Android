@@ -7,7 +7,7 @@ import com.apollographql.apollo.network.okHttpClient
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.debug.interceptor.DebugInterceptors
 import com.mindera.alfie.network.interceptor.NetworkStatusInterceptor
-import com.mindera.alfie.network.interceptor.RetryInterceptor
+import com.mindera.alfie.network.interceptor.RetryApolloInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,13 +29,11 @@ internal object ApolloModule {
     @Provides
     @Singleton
     fun providesOkHttp(
-        retryInterceptor: RetryInterceptor,
         debugInterceptors: DebugInterceptors
     ) = OkHttpClient.Builder()
         .connectTimeout(CONNECT_TIMEOUT.toJavaDuration())
         .readTimeout(READ_TIMEOUT.toJavaDuration())
         .writeTimeout(WRITE_TIMEOUT.toJavaDuration())
-        .addInterceptor(retryInterceptor)
         .apply {
             debugInterceptors().forEach {
                 addInterceptor(it)
@@ -49,12 +47,14 @@ internal object ApolloModule {
     fun provideLegacyApolloClient(
         environmentManager: EnvironmentManager,
         okHttpClient: OkHttpClient,
-        networkStatusInterceptor: NetworkStatusInterceptor
+        networkStatusInterceptor: NetworkStatusInterceptor,
+        retryInterceptor: RetryApolloInterceptor,
     ) = ApolloClient.Builder()
         .serverUrl(environmentManager.legacyUrl())
         .okHttpClient(okHttpClient)
         .addHttpInterceptor(LoggingInterceptor(level = BODY))
         .addInterceptor(networkStatusInterceptor)
+        .addInterceptor(retryInterceptor)
         .build()
 
     @Provides
@@ -63,12 +63,14 @@ internal object ApolloModule {
     fun provideNewApolloClient(
         environmentManager: EnvironmentManager,
         okHttpClient: OkHttpClient,
-        networkStatusInterceptor: NetworkStatusInterceptor
+        networkStatusInterceptor: NetworkStatusInterceptor,
+        retryInterceptor: RetryApolloInterceptor,
     ) = ApolloClient.Builder()
         .serverUrl(environmentManager.newUrl())
         .okHttpClient(okHttpClient)
         .addHttpInterceptor(LoggingInterceptor(level = BODY))
         .addInterceptor(networkStatusInterceptor)
+        .addInterceptor(retryInterceptor)
         .build()
 
     private fun EnvironmentManager.legacyUrl() = runBlocking { current().legacyGraphQLUrl }

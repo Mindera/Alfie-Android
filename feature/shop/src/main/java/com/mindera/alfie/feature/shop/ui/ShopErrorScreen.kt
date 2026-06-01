@@ -1,5 +1,6 @@
 package com.mindera.alfie.feature.shop.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import com.mindera.alfie.feature.R as FeatureR
 @Composable
 internal fun ShopErrorScreen(
     errorType: ApiErrorType,
+    @StringRes customGenericError: Int = FeatureR.string.error_generic,
     onRetry: (() -> Unit)? = null
 ) {
     Column(
@@ -40,7 +42,12 @@ internal fun ShopErrorScreen(
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         Text(
-            text = stringResource(errorType.toStringRes(notFoundRes = R.string.shop_error_not_found)),
+            text = stringResource(
+                errorType.toStringRes(
+                    genericRes = customGenericError,
+                    notFoundRes = R.string.shop_error_not_found
+                )
+            ),
             style = Theme.typography.paragraphLarge
         )
         if (onRetry != null) {

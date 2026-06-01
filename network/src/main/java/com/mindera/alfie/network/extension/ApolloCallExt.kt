@@ -19,7 +19,8 @@ suspend fun <T : Operation.Data> ApolloCall<T>.unwrap(): Result<T> = withContext
         }
     }.recoverCatching { cause ->
         val mapped = if (cause is SocketTimeoutException || cause.cause is SocketTimeoutException) {
-            TimeoutException(message = cause.message ?: "Request timed out")
+            val originalCause = if (cause is SocketTimeoutException) cause else cause.cause as SocketTimeoutException
+            TimeoutException(message = cause.message ?: "Request timed out", cause = originalCause)
         } else {
             cause
         }

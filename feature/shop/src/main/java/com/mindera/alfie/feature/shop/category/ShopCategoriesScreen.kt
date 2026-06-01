@@ -11,6 +11,7 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.feature.shop.category.model.CategoryEvent
 import com.mindera.alfie.feature.shop.category.model.CategoryUIState
 import com.mindera.alfie.feature.shop.ui.ShopErrorScreen
+import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handleUIEvents
 
@@ -35,6 +36,7 @@ internal fun ShopCategoriesScreen(
         is CategoryUIState.Error -> {
             ShopErrorScreen(
                 errorType = (state as CategoryUIState.Error).errorType,
+                customGenericError = R.string.shop_error_cannot_load_categories_list,
                 onRetry = viewModel::retry
             )
         }
