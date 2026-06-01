@@ -25,7 +25,7 @@ internal class RetryApolloInterceptor @Inject constructor() : ApolloInterceptor 
 
     override fun <D : Operation.Data> intercept(
         request: ApolloRequest<D>,
-        chain: ApolloInterceptorChain,
+        chain: ApolloInterceptorChain
     ): Flow<ApolloResponse<D>> {
         if (request.operation is Mutation<*>) return chain.proceed(request)
 

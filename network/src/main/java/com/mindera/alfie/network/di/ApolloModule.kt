@@ -48,7 +48,7 @@ internal object ApolloModule {
         environmentManager: EnvironmentManager,
         okHttpClient: OkHttpClient,
         networkStatusInterceptor: NetworkStatusInterceptor,
-        retryInterceptor: RetryApolloInterceptor,
+        retryInterceptor: RetryApolloInterceptor
     ) = ApolloClient.Builder()
         .serverUrl(environmentManager.legacyUrl())
         .okHttpClient(okHttpClient)
@@ -64,7 +64,7 @@ internal object ApolloModule {
         environmentManager: EnvironmentManager,
         okHttpClient: OkHttpClient,
         networkStatusInterceptor: NetworkStatusInterceptor,
-        retryInterceptor: RetryApolloInterceptor,
+        retryInterceptor: RetryApolloInterceptor
     ) = ApolloClient.Builder()
         .serverUrl(environmentManager.newUrl())
         .okHttpClient(okHttpClient)

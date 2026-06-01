@@ -8,10 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
+import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.shop.category.model.CategoryEvent
 import com.mindera.alfie.feature.shop.category.model.CategoryUIState
 import com.mindera.alfie.feature.shop.ui.ShopErrorScreen
-import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handleUIEvents
 
