@@ -1,7 +1,6 @@
 package com.mindera.alfie.feature.plp
 
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
@@ -11,8 +10,6 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
@@ -30,10 +27,13 @@ import com.mindera.alfie.feature.plp.model.ProductListEvent
 import com.mindera.alfie.feature.plp.model.ProductListUI
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +55,6 @@ internal class ProductListViewModel @Inject constructor(
     private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val productListEntryUIFactory: ProductListEntryUIFactory,
     private val productListUIFactory: ProductListUIFactory,
-    savedStateHandle: SavedStateHandle,
     uiEventEmitterDelegate: UIEventEmitterDelegate,
     @ApplicationContext private val context: Context
 ) : ViewModel(),
@@ -64,6 +63,9 @@ internal class ProductListViewModel @Inject constructor(
     companion object {
         private const val PAGE_SIZE = 15
 
+        // TODO: replace with dynamic collectionHandle when BFF navigation query is available
+        private const val COLLECTION_HANDLE = "women"
+
         private val initialPagerLoadState = LoadStates(
             refresh = LoadState.Loading,
             append = LoadState.NotLoading(false),
@@ -71,8 +73,7 @@ internal class ProductListViewModel @Inject constructor(
         )
     }
 
-    private val args: ProductListNavArgs = savedStateHandle.navArgs()
-    private val listType = args.type
+    private var pagerJob: Job? = null
 
     private val _productPager =
         MutableStateFlow<PagingData<ProductListEntryUI>>(PagingData.empty(initialPagerLoadState))
@@ -90,10 +91,10 @@ internal class ProductListViewModel @Inject constructor(
     fun handleEvent(event: ProductListEvent) {
         when (event) {
             is ProductListEvent.OpenProduct -> navigateToProduct(event.productId)
-            is ProductListEvent.OpenFilters -> { /* TODO */
-            }
-
+            is ProductListEvent.OpenFilters -> { /* TODO: navigate to RefineScreen */ }
             is ProductListEvent.ChangeLayoutMode -> changeLayoutMode(event.layoutMode)
+            is ProductListEvent.ApplySort -> applySort(event.sort)
+            is ProductListEvent.ApplyFilters -> applyFilters(event.filters)
         }
     }
 
@@ -110,11 +111,13 @@ internal class ProductListViewModel @Inject constructor(
     }
 
     private fun collectPaginatedProductList() {
-        viewModelScope.launch {
-            // TODO Improve listing parameters when there's more support from the API
+        pagerJob?.cancel()
+        pagerJob = viewModelScope.launch {
+            val currentState = _state.value
             val pagerFlow = getPaginatedProductList(
-                categoryId = (listType as? ProductListType.Category.Id)?.id,
-                query = (listType as? ProductListType.Search)?.query,
+                collectionHandle = COLLECTION_HANDLE,
+                filters = currentState.selectedFilters,
+                sort = currentState.selectedSort,
                 pageSize = PAGE_SIZE,
                 metadataProvider = ::handleProductMetadata
             )
@@ -130,6 +133,21 @@ internal class ProductListViewModel @Inject constructor(
                 }
             _productPager.emitAll(pagerFlow)
         }
+    }
+
+    private fun applySort(sort: ProductSortOption) {
+        _state.update { it.copy(selectedSort = sort) }
+        restartPager()
+    }
+
+    private fun applyFilters(filters: ProductListFilter?) {
+        _state.update { it.copy(selectedFilters = filters) }
+        restartPager()
+    }
+
+    private fun restartPager() {
+        _productPager.value = PagingData.empty(initialPagerLoadState)
+        collectPaginatedProductList()
     }
 
     private fun handleProductMetadata(metadata: ProductListMetadata) {

@@ -1,5 +1,6 @@
 package com.mindera.alfie.designsystem.component.productcard.size
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -84,9 +86,7 @@ private fun ProductImage(
     isLoading: Boolean,
     isWishlisted: Boolean
 ) {
-    Box(
-        contentAlignment = Alignment.TopEnd
-    ) {
+    Box {
         Image(
             imageUI = productCard.image,
             modifier = Modifier
@@ -95,18 +95,39 @@ private fun ProductImage(
                 .testTag(productCard.imageTestTag),
             ratio = Ratio.RATIO3x4
         )
-        if (isLoading.not() && productCard.onFavoriteClick != null) {
-            IconButton(
-                modifier = Modifier.size(Theme.iconSize.large),
-                onClick = productCard.onFavoriteClick
-            ) {
-                val iconRes =
-                    if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
-                Icon(
-                    painter = painterResource(iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(Theme.iconSize.medium)
+        if (isLoading.not()) {
+            productCard.label?.let { label ->
+                Text(
+                    text = label,
+                    style = Theme.typography.tinyBold,
+                    color = Theme.color.white,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .background(
+                            color = Theme.color.primary.mono900,
+                            shape = Theme.shape.none
+                        )
+                        .padding(
+                            horizontal = Theme.spacing.spacing8,
+                            vertical = Theme.spacing.spacing4
+                        )
                 )
+            }
+            if (productCard.onFavoriteClick != null) {
+                IconButton(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(Theme.iconSize.large),
+                    onClick = productCard.onFavoriteClick
+                ) {
+                    val iconRes =
+                        if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
+                    Icon(
+                        painter = painterResource(iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.size(Theme.iconSize.medium)
+                    )
+                }
             }
         }
     }
@@ -120,9 +141,9 @@ private fun ProductDescription(
     Row(verticalAlignment = Alignment.Bottom) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = productCard.name,
-                style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono900,
+                text = productCard.brand,
+                style = Theme.typography.tiny,
+                color = Theme.color.primary.mono500,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -132,6 +153,21 @@ private fun ProductDescription(
                         xScale = Theme.scale.scale40
                     )
                     .testTag(productCard.brandTestTag)
+            )
+            Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
+            Text(
+                text = productCard.name,
+                style = Theme.typography.paragraph,
+                color = Theme.color.primary.mono900,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .shimmer(
+                        isShimmering = isLoading,
+                        xScale = Theme.scale.scale60
+                    )
+                    .testTag(productCard.nameTestTag)
             )
             Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
             Price(

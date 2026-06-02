@@ -4,6 +4,8 @@ import com.mindera.alfie.domain.UseCaseInteractor
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.ProductList
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import javax.inject.Inject
 
 class GetProductListUseCase @Inject constructor(
@@ -11,17 +13,19 @@ class GetProductListUseCase @Inject constructor(
 ) : UseCaseInteractor {
 
     suspend operator fun invoke(
-        offset: Int,
-        limit: Int,
-        categoryId: String?,
-        query: String?
+        after: String?,
+        collectionHandle: String,
+        filters: ProductListFilter?,
+        sort: ProductSortOption,
+        limit: Int
     ): UseCaseResult<ProductList> =
         run(
             productListRepository.getProductList(
-                offset = offset,
-                limit = limit,
-                categoryId = categoryId,
-                query = query
+                after = after,
+                collectionHandle = collectionHandle,
+                filters = filters,
+                sort = sort,
+                limit = limit
             )
         )
 }

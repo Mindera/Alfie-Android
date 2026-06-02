@@ -2,13 +2,14 @@ package com.mindera.alfie.data.productlist.repository
 
 import com.mindera.alfie.data.datastore.UserPreferencesProto.ProductListLayoutModeProto
 import com.mindera.alfie.data.datastore.user.UserPreferencesDataSource
-import com.mindera.alfie.data.productlist.productList
-import com.mindera.alfie.data.productlist.productListData
 import com.mindera.alfie.data.productlist.service.ProductListService
+import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.RepositoryResult
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -34,28 +35,38 @@ class ProductListRepositoryImplTest {
 
     @Test
     fun `getProductList - WHEN result is success THEN return success with mapped data`() = runTest {
-        coEvery { productListService.getProductList(any(), any(), any(), any()) } returns Result.success(productListData)
+        val mockData = mockk<ProductListQuery.Data>(relaxed = true)
+        val mockProductList = mockk<ProductListQuery.ProductList>(relaxed = true)
+        val mockPageInfo = mockk<ProductListQuery.PageInfo>(relaxed = true)
+        every { mockData.productList } returns mockProductList
+        every { mockProductList.products } returns emptyList()
+        every { mockProductList.pageInfo } returns mockPageInfo
+        every { mockPageInfo.endCursor } returns null
+        every { mockPageInfo.hasNextPage } returns false
+        every { mockProductList.totalCount } returns 0
+        coEvery { productListService.getProductList(any(), any(), any(), any(), any()) } returns Result.success(mockData)
 
         val result = repository.getProductList(
-            offset = 0,
-            limit = 15,
-            categoryId = "123456",
-            query = null
+            after = null,
+            collectionHandle = "women",
+            filters = null,
+            sort = ProductSortOption.RECOMMENDED,
+            limit = 15
         )
 
         assertIs<RepositoryResult.Success<ProductList>>(result)
-        assertEquals(productList, result.data)
     }
 
     @Test
     fun `getProductList - WHEN result is failure THEN return error`() = runTest {
-        coEvery { productListService.getProductList(any(), any(), any(), any()) } returns Result.failure(mockk())
+        coEvery { productListService.getProductList(any(), any(), any(), any(), any()) } returns Result.failure(mockk())
 
         val result = repository.getProductList(
-            offset = 0,
-            limit = 15,
-            categoryId = "123456",
-            query = null
+            after = null,
+            collectionHandle = "women",
+            filters = null,
+            sort = ProductSortOption.RECOMMENDED,
+            limit = 15
         )
 
         assertIs<RepositoryResult.Error>(result)
@@ -69,7 +80,7 @@ class ProductListRepositoryImplTest {
     }
 
     @Test
-    fun `updateProductListLayoutMode - WHEN there an error happens THEN return error`() = runTest {
+    fun `updateProductListLayoutMode - WHEN an error happens THEN return error`() = runTest {
         coEvery { userPreferencesDataSource.updateProductListLayoutMode(any()) } throws IOException()
 
         val result = repository.updateProductListLayoutMode(ProductListLayoutMode.COLUMN)

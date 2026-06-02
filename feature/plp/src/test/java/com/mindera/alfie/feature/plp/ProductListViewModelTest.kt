@@ -1,7 +1,6 @@
 package com.mindera.alfie.feature.plp
 
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.testing.asPagingSourceFactory
@@ -9,9 +8,6 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
-import com.mindera.alfie.core.navigation.arguments.productlist.productListNavArgs
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.productlist.GetPaginatedProductListUseCase
@@ -24,14 +20,15 @@ import com.mindera.alfie.feature.plp.factory.ProductListEntryUIFactory
 import com.mindera.alfie.feature.plp.factory.ProductListUIFactory
 import com.mindera.alfie.feature.plp.model.ProductListEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.invoke
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -39,6 +36,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
 class ProductListViewModelTest {
@@ -63,9 +61,6 @@ class ProductListViewModelTest {
     private lateinit var productListUIFactory: ProductListUIFactory
 
     @RelaxedMockK
-    private lateinit var savedStateHandle: SavedStateHandle
-
-    @RelaxedMockK
     private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
 
     @RelaxedMockK
@@ -82,10 +77,7 @@ class ProductListViewModelTest {
 
     @BeforeEach
     fun setUp() {
-        mockkStatic("com.mindera.alfie.feature.plp.NavArgsGettersKt")
-        every { savedStateHandle.navArgs<ProductListNavArgs>() } returns productListNavArgs(
-            type = ProductListType.Search("query")
-        )
+        coEvery { productListUIFactory(any(), any<ProductListLayoutMode>()) } answers { firstArg() }
         products.forEachIndexed { index, product ->
             coEvery { entryUiFactory(product, any(), any()) } returns productsVerticalUI[index]
         }
@@ -97,7 +89,7 @@ class ProductListViewModelTest {
     }
 
     @Test
-    fun `init - WHEN layout mode is GRID THEN products are correctly loaded and mapped to Medium product cards`() = runTest {
+    fun `init - WHEN layout mode is GRID THEN products are correctly loaded and mapped to product cards`() = runTest {
         coEvery { getProductListLayoutModeUseCase() } returns ProductListLayoutMode.GRID
         coEvery { productListUIFactory(any(), ProductListLayoutMode.GRID) } returns gridProductListUI
 
@@ -109,7 +101,7 @@ class ProductListViewModelTest {
     }
 
     @Test
-    fun `init - WHEN layout mode is COLUMN THEN products are correctly loaded and mapped to Large product cards`() = runTest {
+    fun `init - WHEN layout mode is COLUMN THEN products are correctly loaded and mapped to product cards`() = runTest {
         coEvery { getProductListLayoutModeUseCase() } returns ProductListLayoutMode.COLUMN
         coEvery { productListUIFactory(any(), ProductListLayoutMode.COLUMN) } returns columnProductListUI
 
@@ -125,7 +117,7 @@ class ProductListViewModelTest {
         coEvery { getProductListLayoutModeUseCase() } returns ProductListLayoutMode.GRID
         coEvery { productListUIFactory(any(), ProductListLayoutMode.GRID) } returns gridProductListUI
         coEvery { productListUIFactory(any(), metadata = any()) } returns gridProductListUI
-        every { getPaginatedProductListUseCase(any(), any(), captureLambda(), any(), any()) } answers {
+        every { getPaginatedProductListUseCase(any(), any(), any(), captureLambda(), any()) } answers {
             lambda<(ProductListMetadata) -> Unit>().invoke(productListMetadata)
             Pager(
                 config = pagerConfig,
@@ -139,34 +131,37 @@ class ProductListViewModelTest {
         viewModel.state.test {
             val result = awaitItem()
 
-            assertEquals("Women", result.title)
             assertEquals(2, result.resultCount)
             assertFalse(result.isLoadingMetadata)
         }
     }
 
     @Test
-    fun `init - when list type is Category Id then categoryId is used`() = runTest {
-        every { savedStateHandle.navArgs<ProductListNavArgs>() } returns productListNavArgs(
-            type = ProductListType.Category.Id("123456")
-        )
-
+    fun `init - THEN uses hardcoded women collection handle`() = runTest {
         buildViewModel()
 
         @Suppress("UnusedFlow")
-        verify { getPaginatedProductListUseCase("123456", null, any(), any(), any()) }
+        verify { getPaginatedProductListUseCase("women", any(), any(), any(), any()) }
     }
 
     @Test
-    fun `init - when list type is Search then query is used`() = runTest {
-        every { savedStateHandle.navArgs<ProductListNavArgs>() } returns productListNavArgs(
-            type = ProductListType.Search("query")
-        )
+    fun `init - THEN default sort is RECOMMENDED`() = runTest {
+        val viewModel = buildViewModel()
 
-        buildViewModel()
+        viewModel.state.test {
+            val result = awaitItem()
+            assertEquals(ProductSortOption.RECOMMENDED, result.selectedSort)
+        }
+    }
 
-        @Suppress("UnusedFlow")
-        verify { getPaginatedProductListUseCase(null, "query", any(), any(), any()) }
+    @Test
+    fun `init - THEN default filters are null`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            val result = awaitItem()
+            assertNull(result.selectedFilters)
+        }
     }
 
     @Test
@@ -257,13 +252,55 @@ class ProductListViewModelTest {
         }
     }
 
+    @Test
+    fun `handleEvent - GIVEN ApplySort THEN updates state and restarts pager`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.handleEvent(ProductListEvent.ApplySort(ProductSortOption.HIGHEST_PRICE))
+
+            val result = awaitItem()
+            assertEquals(ProductSortOption.HIGHEST_PRICE, result.selectedSort)
+        }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN ApplyFilters THEN updates state`() = runTest {
+        val filters = ProductListFilter(brandNames = listOf("Brand"), minPrice = null, maxPrice = null, productTypes = null)
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.handleEvent(ProductListEvent.ApplyFilters(filters))
+
+            val result = awaitItem()
+            assertEquals(filters, result.selectedFilters)
+        }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN ApplyFilters with null THEN clears filters`() = runTest {
+        val filters = ProductListFilter(brandNames = listOf("Brand"), minPrice = null, maxPrice = null, productTypes = null)
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.handleEvent(ProductListEvent.ApplyFilters(filters))
+            awaitItem() // State with filters applied
+            viewModel.handleEvent(ProductListEvent.ApplyFilters(null))
+
+            val result = awaitItem()
+            assertNull(result.selectedFilters)
+        }
+    }
+
     private fun buildViewModel() = ProductListViewModel(
         getPaginatedProductList = getPaginatedProductListUseCase,
         getProductListLayoutMode = getProductListLayoutModeUseCase,
         updateProductListLayoutMode = updateProductListLayoutModeUseCase,
         productListEntryUIFactory = entryUiFactory,
         productListUIFactory = productListUIFactory,
-        savedStateHandle = savedStateHandle,
         uiEventEmitterDelegate = uiEventEmitterDelegate,
         addToWishlistUseCase = addToWishlistUseCase,
         removeWishlistUseCase = removeFromWishlistUseCase,
