@@ -111,6 +111,7 @@ internal class ProductListViewModel @Inject constructor(
             is ProductListEvent.ChangeLayoutMode -> changeLayoutMode(event.layoutMode)
             is ProductListEvent.ApplySort -> applySort(event.sort)
             is ProductListEvent.ApplyFilters -> applyFilters(event.filters)
+            is ProductListEvent.ToggleFilterChip -> toggleFilterChip(event.chipId)
         }
     }
 
@@ -158,6 +159,20 @@ internal class ProductListViewModel @Inject constructor(
 
     private fun applyFilters(filters: ProductListFilter?) {
         _state.update { it.copy(selectedFilters = filters) }
+        restartPager()
+    }
+
+    private fun toggleFilterChip(chipId: String) {
+        _state.update { current ->
+            current.copy(
+                availableFilters = current.availableFilters.map { chip ->
+                    if (chip.id == chipId) chip.copy(isSelected = !chip.isSelected) else chip
+                }
+            )
+        }
+        // TODO: When BFF exposes filter facets, map selected chips to the appropriate
+        //  ProductListFilter fields (e.g. brandNames, productTypes) and merge with the
+        //  price-range filter before restarting the pager.
         restartPager()
     }
 

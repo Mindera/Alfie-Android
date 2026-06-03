@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -59,14 +60,12 @@ import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.feature.plp.model.ProductListEntryUI
 import com.mindera.alfie.feature.plp.model.ProductListEvent
 import com.mindera.alfie.feature.plp.model.ProductListUI
+import com.mindera.alfie.feature.plp.model.QuickFilterChipUI
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 import com.mindera.alfie.designsystem.R as RD
 
 private const val NUM_LOADING_ITEMS = 16
@@ -183,11 +182,15 @@ private fun ProductListGrid(
                         isLoading = state.isLoadingMetadata
                     )
                 }
-                if (state.selectedFilters != null) {
+                // TODO: ALFMOB-337 – Add a horizontally-scrollable quick-filter chip row here once
+                //  the BFF exposes available filter facets (e.g. brand names, product types, sizes).
+                //  Each chip should toggle the corresponding filter on/off without opening the Refine
+                //  sheet. BFF schema currently has no facets in ProductListResponse.
+                if (state.availableFilters.isNotEmpty()) {
                     item(span = { GridItemSpan(columnCount) }) {
-                        ActiveFiltersRow(
-                            filters = state.selectedFilters,
-                            onRemoveFilter = { onEvent(ProductListEvent.ApplyFilters(null)) }
+                        FilterChipsRow(
+                            filters = state.availableFilters,
+                            onToggle = { chipId -> onEvent(ProductListEvent.ToggleFilterChip(chipId)) }
                         )
                     }
                 }
@@ -320,59 +323,21 @@ private fun ResultCounter(
 }
 
 @Composable
-private fun ActiveFiltersRow(
-    filters: com.mindera.alfie.repository.productlist.model.ProductListFilter,
-    onRemoveFilter: ClickEvent
+private fun FilterChipsRow(
+    filters: List<QuickFilterChipUI>,
+    onToggle: (String) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = Theme.spacing.spacing12),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = Theme.spacing.spacing8)
+        modifier = Modifier.fillMaxWidth()
     ) {
-        filters.brandNames?.forEach { brand ->
-            item(key = "brand_$brand") {
-                Chip(
-                    label = brand,
-                    isSelected = true,
-                    isDismissible = true,
-                    // TODO: dismissing any chip clears all filters; update when RefineScreen supports partial removal
-                    onDismiss = onRemoveFilter,
-                    onClickEvent = {}
-                )
-            }
-        }
-        filters.productTypes?.forEach { type ->
-            item(key = "type_$type") {
-                Chip(
-                    label = type,
-                    isSelected = true,
-                    isDismissible = true,
-                    // TODO: dismissing any chip clears all filters; update when RefineScreen supports partial removal
-                    onDismiss = onRemoveFilter,
-                    onClickEvent = {}
-                )
-            }
-        }
-        if (filters.minPrice != null || filters.maxPrice != null) {
-            item(key = "price") {
-                val priceLabel = buildString {
-                    val min = filters.minPrice
-                    val max = filters.maxPrice
-                    if (min != null) append(formatAsMoney(min, filters.currencyCode))
-                    if (min != null && max != null) append(" - ")
-                    if (max != null) append(formatAsMoney(max, filters.currencyCode))
-                }
-                Chip(
-                    label = priceLabel,
-                    isSelected = true,
-                    isDismissible = true,
-                    // TODO: dismissing any chip clears all filters; update when RefineScreen supports partial removal
-                    onDismiss = onRemoveFilter,
-                    onClickEvent = {}
-                )
-            }
+        items(filters, key = { it.id }) { chip ->
+            Chip(
+                label = chip.label,
+                isSelected = chip.isSelected,
+                onClickEvent = { onToggle(chip.id) }
+            )
         }
     }
 }
@@ -462,9 +427,3 @@ private fun ProductListGridLoadingItem(
         isLoading = true
     )
 }
-
-private fun formatAsMoney(amount: Double, currencyCode: String): String = runCatching {
-    val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
-    format.currency = Currency.getInstance(currencyCode)
-    format.format(amount)
-}.getOrElse { "%.2f".format(amount) }

@@ -6,6 +6,6 @@ data class ProductListFilter(
     val maxPrice: Double? = null,
     val productTypes: List<String>? = null,
     // TODO: derive currencyCode from product price metadata once the BFF exposes it;
-    //  hardcoded as "AUD" placeholder until then (same pattern as COLLECTION_HANDLE).
-    val currencyCode: String = "AUD"
+    //  hardcoded as "USD" placeholder until then (same pattern as COLLECTION_HANDLE).
+    val currencyCode: String = "USD"
 )

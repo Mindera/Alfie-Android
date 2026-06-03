@@ -13,6 +13,7 @@ internal data class ProductListUI(
     val wishlistIds: Set<String>,
     val selectedSort: ProductSortOption,
     val selectedFilters: ProductListFilter?,
+    val availableFilters: List<QuickFilterChipUI>,
     val showRefine: Boolean
 ) {
 
@@ -26,6 +27,7 @@ internal data class ProductListUI(
             wishlistIds = emptySet(),
             selectedSort = ProductSortOption.RECOMMENDED,
             selectedFilters = null,
+            availableFilters = emptyList(),
             showRefine = false
         )
     }
