@@ -1,14 +1,17 @@
 package com.mindera.alfie.data.productlist.service
 
 import com.mindera.alfie.graphql.bff.ProductListQuery
+import com.mindera.alfie.graphql.bff.type.ProductFilterInput
+import com.mindera.alfie.graphql.bff.type.ProductSortEnum
+import java.util.Optional
 
 internal interface ProductListService {
 
     suspend fun getProductList(
         after: String?,
         collectionHandle: String,
-        filters: com.apollographql.apollo.api.Optional<com.mindera.alfie.graphql.bff.type.ProductFilterInput>,
-        sort: com.mindera.alfie.graphql.bff.type.ProductSortEnum,
+        filters: Optional<ProductFilterInput>,
+        sort: ProductSortEnum,
         limit: Int
     ): Result<ProductListQuery.Data>
 }
