@@ -253,7 +253,7 @@ private fun PriceRangeContent(
     currentFilters: ProductListFilter?,
     onFiltersChange: (ProductListFilter?) -> Unit
 ) {
-    val currencySymbol = formatCurrencySymbol(currentFilters?.currencyCode ?: "AUD")
+    val currencySymbol = formatCurrencySymbol(currentFilters?.currencyCode ?: "USD")
     val initialMin = currentFilters?.minPrice?.toFloat() ?: 0f
     val initialMax = currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP
 
