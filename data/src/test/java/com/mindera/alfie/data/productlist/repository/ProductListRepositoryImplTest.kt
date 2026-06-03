@@ -41,9 +41,9 @@ class ProductListRepositoryImplTest {
         every { mockData.productList } returns mockProductList
         every { mockProductList.products } returns emptyList()
         every { mockProductList.pageInfo } returns mockPageInfo
-        every { mockPageInfo.endCursor } returns null
-        every { mockPageInfo.hasNextPage } returns false
-        every { mockProductList.totalCount } returns 0
+        every { mockPageInfo.endCursor } returns "next-cursor"
+        every { mockPageInfo.hasNextPage } returns true
+        every { mockProductList.totalCount } returns 42
         coEvery { productListService.getProductList(any(), any(), any(), any(), any()) } returns Result.success(mockData)
 
         val result = repository.getProductList(
@@ -55,6 +55,10 @@ class ProductListRepositoryImplTest {
         )
 
         assertIs<RepositoryResult.Success<ProductList>>(result)
+        assertEquals(0, result.data.products.size)
+        assertEquals("next-cursor", result.data.pagination.endCursor)
+        assertEquals(true, result.data.pagination.hasNextPage)
+        assertEquals(42, result.data.pagination.totalCount)
     }
 
     @Test

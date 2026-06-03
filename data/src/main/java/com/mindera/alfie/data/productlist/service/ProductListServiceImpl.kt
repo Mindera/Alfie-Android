@@ -35,7 +35,7 @@ internal class ProductListServiceImpl @Inject constructor(
 }
 
 internal fun ProductSortOption.toGraphQL(): ProductSortEnum = when (this) {
-    ProductSortOption.RECOMMENDED -> ProductSortEnum.NEWEST
+    ProductSortOption.RECOMMENDED -> ProductSortEnum.RELEVANCE
     ProductSortOption.MOST_RECENT -> ProductSortEnum.RECENTLY_UPDATED
     ProductSortOption.LOWEST_PRICE -> ProductSortEnum.PRICE_ASC
     ProductSortOption.HIGHEST_PRICE -> ProductSortEnum.PRICE_DESC

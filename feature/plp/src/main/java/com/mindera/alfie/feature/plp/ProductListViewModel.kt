@@ -176,9 +176,10 @@ internal class ProductListViewModel @Inject constructor(
             )
         }
         // TODO: When BFF exposes filter facets, map selected chips to the appropriate
-        //  ProductListFilter fields (e.g. brandNames, productTypes) and merge with the
-        //  price-range filter before restarting the pager.
-        restartPager()
+        //  ProductListFilter fields (e.g. brandNames, productTypes), merge with the
+        //  price-range filter, and call restartPager() to refetch with the new filters.
+        //  Until then, toggling chips only updates UI state and must not restart the pager
+        //  (no facets are applied to the request, so a restart would be a wasted reload).
     }
 
     private fun restartPager() {

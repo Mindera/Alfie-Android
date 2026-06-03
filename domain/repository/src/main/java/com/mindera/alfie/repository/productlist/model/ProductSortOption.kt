@@ -1,7 +1,7 @@
 package com.mindera.alfie.repository.productlist.model
 
 enum class ProductSortOption {
-    /** Maps to BFF ProductSortEnum.NEWEST */
+    /** Maps to BFF ProductSortEnum.RELEVANCE */
     RECOMMENDED,
 
     /** Maps to BFF ProductSortEnum.RECENTLY_UPDATED */
