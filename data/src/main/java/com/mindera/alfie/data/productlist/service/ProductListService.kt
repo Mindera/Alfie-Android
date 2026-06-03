@@ -1,9 +1,9 @@
 package com.mindera.alfie.data.productlist.service
 
+import com.apollographql.apollo.api.Optional
 import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.graphql.bff.type.ProductFilterInput
 import com.mindera.alfie.graphql.bff.type.ProductSortEnum
-import java.util.Optional
 
 internal interface ProductListService {
 
