@@ -45,5 +45,5 @@ class ProductListPagingSource(
 
     override fun getRefreshKey(state: PagingState<String, ProductListEntry>): String? = null
 
-    override val keyReuseSupported: Boolean = true
+    override val keyReuseSupported: Boolean = false
 }

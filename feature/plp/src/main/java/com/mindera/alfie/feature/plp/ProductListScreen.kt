@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -63,6 +64,9 @@ import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
+import java.text.NumberFormat
+import java.util.Currency
+import java.util.Locale
 import com.mindera.alfie.designsystem.R as RD
 
 private const val NUM_LOADING_ITEMS = 16
@@ -82,7 +86,7 @@ internal fun ProductListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     topBarState.textTopBar(
-        title = "",
+        title = viewModel.collectionTitle,
         actions = persistentListOf()
     )
     bottomBarState.hideBottomBar()
@@ -127,6 +131,20 @@ private fun ProductListScreenContent(
                     onEvent = onEvent
                 )
             }
+        }
+
+        if (state.showRefine) {
+            RefineSheet(
+                currentSort = state.selectedSort,
+                currentFilters = state.selectedFilters,
+                totalCount = state.resultCount,
+                onApply = { sort, filters ->
+                    onEvent(ProductListEvent.ApplySort(sort))
+                    onEvent(ProductListEvent.ApplyFilters(filters))
+                    onEvent(ProductListEvent.DismissRefine)
+                },
+                onDismiss = { onEvent(ProductListEvent.DismissRefine) }
+            )
         }
     }
 }
@@ -319,6 +337,7 @@ private fun ActiveFiltersRow(
                     label = brand,
                     isSelected = true,
                     isDismissible = true,
+                    // TODO: dismissing any chip clears all filters; update when RefineScreen supports partial removal
                     onDismiss = onRemoveFilter,
                     onClickEvent = {}
                 )
@@ -330,6 +349,7 @@ private fun ActiveFiltersRow(
                     label = type,
                     isSelected = true,
                     isDismissible = true,
+                    // TODO: dismissing any chip clears all filters; update when RefineScreen supports partial removal
                     onDismiss = onRemoveFilter,
                     onClickEvent = {}
                 )
@@ -338,14 +358,17 @@ private fun ActiveFiltersRow(
         if (filters.minPrice != null || filters.maxPrice != null) {
             item(key = "price") {
                 val priceLabel = buildString {
-                    if (filters.minPrice != null) append("$${filters.minPrice}")
-                    if (filters.minPrice != null && filters.maxPrice != null) append(" - ")
-                    if (filters.maxPrice != null) append("$${filters.maxPrice}")
+                    val min = filters.minPrice
+                    val max = filters.maxPrice
+                    if (min != null) append(formatAsMoney(min, filters.currencyCode))
+                    if (min != null && max != null) append(" - ")
+                    if (max != null) append(formatAsMoney(max, filters.currencyCode))
                 }
                 Chip(
                     label = priceLabel,
                     isSelected = true,
                     isDismissible = true,
+                    // TODO: dismissing any chip clears all filters; update when RefineScreen supports partial removal
                     onDismiss = onRemoveFilter,
                     onClickEvent = {}
                 )
@@ -439,3 +462,9 @@ private fun ProductListGridLoadingItem(
         isLoading = true
     )
 }
+
+private fun formatAsMoney(amount: Double, currencyCode: String): String = runCatching {
+    val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
+    format.currency = Currency.getInstance(currencyCode)
+    format.format(amount)
+}.getOrElse { "%.2f".format(amount) }

@@ -10,6 +10,8 @@ internal sealed interface ProductListEvent {
 
     data object OpenFilters : ProductListEvent
 
+    data object DismissRefine : ProductListEvent
+
     data class ChangeLayoutMode(val layoutMode: ProductListLayoutMode) : ProductListEvent
 
     data class ApplySort(val sort: ProductSortOption) : ProductListEvent

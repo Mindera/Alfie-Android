@@ -1,6 +1,7 @@
 package com.mindera.alfie.feature.plp
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.testing.asPagingSourceFactory
@@ -8,6 +9,8 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
+import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
+import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.productlist.GetPaginatedProductListUseCase
@@ -37,6 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
 class ProductListViewModelTest {
@@ -295,7 +299,38 @@ class ProductListViewModelTest {
         }
     }
 
-    private fun buildViewModel() = ProductListViewModel(
+    @Test
+    fun `handleEvent - GIVEN OpenFilters THEN showRefine becomes true`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.handleEvent(ProductListEvent.OpenFilters)
+
+            val result = awaitItem()
+            assertTrue(result.showRefine)
+        }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN DismissRefine THEN showRefine becomes false`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.handleEvent(ProductListEvent.OpenFilters)
+            awaitItem() // showRefine = true
+            viewModel.handleEvent(ProductListEvent.DismissRefine)
+
+            val result = awaitItem()
+            assertFalse(result.showRefine)
+        }
+    }
+
+    private fun buildViewModel(
+        type: ProductListType = ProductListType.Category.Slug("women")
+    ) = ProductListViewModel(
+        savedStateHandle = SavedStateHandle(mapOf("type" to type)),
         getPaginatedProductList = getPaginatedProductListUseCase,
         getProductListLayoutMode = getProductListLayoutModeUseCase,
         updateProductListLayoutMode = updateProductListLayoutModeUseCase,

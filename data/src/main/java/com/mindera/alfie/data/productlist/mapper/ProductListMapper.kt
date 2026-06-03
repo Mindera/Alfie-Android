@@ -7,9 +7,6 @@ import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
 import com.mindera.alfie.repository.productlist.model.ProductListPriceRange
 import com.mindera.alfie.repository.shared.model.Media
-import java.text.NumberFormat
-import java.util.Currency
-import java.util.Locale
 
 internal fun ProductListQuery.ProductList.toDomain() = ProductList(
     products = products.map { it.productListEntryFragment.toDomain() },
@@ -38,12 +35,3 @@ private fun ProductListEntryFragment.PriceRange.toDomain() = ProductListPriceRan
     currencyCode = minVariantPrice.moneyFragment.currencyCode
 )
 
-internal fun ProductListPriceRange.formatMin(): String = formatAsMoney(minAmount, currencyCode)
-
-internal fun ProductListPriceRange.formatMax(): String = formatAsMoney(maxAmount, currencyCode)
-
-private fun formatAsMoney(amount: Double, currencyCode: String): String = runCatching {
-    val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
-    format.currency = Currency.getInstance(currencyCode)
-    format.format(amount)
-}.getOrElse { "%.2f".format(amount) }

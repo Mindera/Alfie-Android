@@ -1,6 +1,7 @@
 package com.mindera.alfie.feature.plp
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
@@ -9,6 +10,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
+import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
+import com.mindera.alfie.feature.plp.navArgs
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
@@ -47,6 +51,7 @@ import com.mindera.alfie.designsystem.R as DesignR
 
 @HiltViewModel
 internal class ProductListViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getPaginatedProductList: GetPaginatedProductListUseCase,
     private val getProductListLayoutMode: GetProductListLayoutModeUseCase,
     private val updateProductListLayoutMode: UpdateProductListLayoutModeUseCase,
@@ -73,6 +78,17 @@ internal class ProductListViewModel @Inject constructor(
         )
     }
 
+    private val navArgs: ProductListNavArgs = savedStateHandle.navArgs()
+
+    /** Display title derived from nav args; empty until BFF navigation query provides a real value. */
+    val collectionTitle: String = when (val type = navArgs.type) {
+        is ProductListType.Category.Slug -> type.slug
+        is ProductListType.Category.Id -> type.id
+        is ProductListType.Brand.Slug -> type.slug
+        is ProductListType.Brand.Id -> type.id
+        is ProductListType.Search -> type.query
+    }
+
     private var pagerJob: Job? = null
 
     private val _productPager =
@@ -91,7 +107,8 @@ internal class ProductListViewModel @Inject constructor(
     fun handleEvent(event: ProductListEvent) {
         when (event) {
             is ProductListEvent.OpenProduct -> navigateToProduct(event.productId)
-            is ProductListEvent.OpenFilters -> { /* TODO: navigate to RefineScreen */ }
+            is ProductListEvent.OpenFilters -> _state.update { it.copy(showRefine = true) }
+            is ProductListEvent.DismissRefine -> _state.update { it.copy(showRefine = false) }
             is ProductListEvent.ChangeLayoutMode -> changeLayoutMode(event.layoutMode)
             is ProductListEvent.ApplySort -> applySort(event.sort)
             is ProductListEvent.ApplyFilters -> applyFilters(event.filters)

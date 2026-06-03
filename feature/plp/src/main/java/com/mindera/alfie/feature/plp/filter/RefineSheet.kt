@@ -1,0 +1,464 @@
+package com.mindera.alfie.feature.plp.filter
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.component.button.Button
+import com.mindera.alfie.designsystem.component.button.ButtonSize
+import com.mindera.alfie.designsystem.component.button.ButtonType
+import com.mindera.alfie.designsystem.component.modal.BottomSheet
+import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
+import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
+import com.mindera.alfie.feature.plp.R as PlpR
+
+/** Maximum price cap used when no upper bound is set on the slider. */
+private const val MAX_PRICE_CAP = 10_000f
+private const val DISABLED_ALPHA = 0.4f
+
+/** Which sub-panel inside the Refine sheet is currently showing. */
+private sealed interface RefinePanel {
+    data object Main : RefinePanel
+    data object SortBy : RefinePanel
+    data object PriceRange : RefinePanel
+}
+
+/**
+ * Full-screen BottomSheet for Refine (sort + filter).
+ *
+ * Pending state is managed locally: changes are only applied when the user taps
+ * "Show X Results". Dismissing without tapping that button discards all changes.
+ */
+@Composable
+internal fun RefineSheet(
+    currentSort: ProductSortOption,
+    currentFilters: ProductListFilter?,
+    totalCount: Int,
+    onApply: (sort: ProductSortOption, filters: ProductListFilter?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var pendingSort by remember { mutableStateOf(currentSort) }
+    var pendingFilters by remember { mutableStateOf(currentFilters) }
+    var currentPanel by remember { mutableStateOf<RefinePanel>(RefinePanel.Main) }
+
+    BackHandler(enabled = currentPanel != RefinePanel.Main) {
+        currentPanel = RefinePanel.Main
+    }
+
+    val title = when (currentPanel) {
+        RefinePanel.Main -> stringResource(PlpR.string.refine_title)
+        RefinePanel.SortBy -> stringResource(PlpR.string.refine_category_sort_by)
+        RefinePanel.PriceRange -> stringResource(PlpR.string.refine_category_price)
+    }
+
+    BottomSheet(
+        title = title,
+        onDismiss = onDismiss
+    ) {
+        Column {
+            // Scrollable content
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .fillMaxWidth()
+            ) {
+                when (currentPanel) {
+                    RefinePanel.Main -> {
+                        item { MainContent(pendingSort, pendingFilters) { currentPanel = it } }
+                    }
+                    RefinePanel.SortBy -> {
+                        item {
+                            SortByContent(
+                                selectedSort = pendingSort,
+                                onSortSelected = { pendingSort = it }
+                            )
+                        }
+                    }
+                    RefinePanel.PriceRange -> {
+                        item {
+                            PriceRangeContent(
+                                currentFilters = pendingFilters,
+                                onFiltersChanged = { pendingFilters = it }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Sticky bottom action bar
+            BottomActionBar(
+                totalCount = totalCount,
+                onRemoveAll = {
+                    pendingSort = ProductSortOption.RECOMMENDED
+                    pendingFilters = null
+                },
+                onShowResults = { onApply(pendingSort, pendingFilters) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainContent(
+    pendingSort: ProductSortOption,
+    pendingFilters: ProductListFilter?,
+    onNavigate: (RefinePanel) -> Unit
+) {
+    val sortLabel = pendingSort.toLabel()
+    val priceLabel = pendingFilters?.toPriceLabel() ?: stringResource(PlpR.string.price_filter_all_prices)
+
+    Column {
+        FilterCategoryRow(
+            label = stringResource(PlpR.string.refine_category_sort_by),
+            value = sortLabel,
+            onClick = { onNavigate(RefinePanel.SortBy) }
+        )
+        HorizontalDivider(color = Theme.color.primary.mono100)
+        FilterCategoryRow(
+            label = stringResource(PlpR.string.refine_category_price),
+            value = priceLabel,
+            onClick = { onNavigate(RefinePanel.PriceRange) }
+        )
+        HorizontalDivider(color = Theme.color.primary.mono100)
+
+        // TODO: Enable these rows when the BFF returns available filter metadata
+        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_size))
+        HorizontalDivider(color = Theme.color.primary.mono100)
+        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_colour))
+        HorizontalDivider(color = Theme.color.primary.mono100)
+        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_materials))
+        HorizontalDivider(color = Theme.color.primary.mono100)
+        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_brand))
+        HorizontalDivider(color = Theme.color.primary.mono100)
+        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_style))
+        HorizontalDivider(color = Theme.color.primary.mono100)
+        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_function))
+        HorizontalDivider(color = Theme.color.primary.mono100)
+    }
+}
+
+@Composable
+private fun FilterCategoryRow(
+    label: String,
+    value: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing16),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = Theme.typography.paragraph,
+            color = Theme.color.primary.mono900,
+            modifier = Modifier.weight(1f)
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = value,
+                style = Theme.typography.smallBold,
+                color = Theme.color.primary.mono500
+            )
+            Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
+            Icon(
+                painter = painterResource(R.drawable.ic_action_chevron_right),
+                contentDescription = null,
+                modifier = Modifier.size(Theme.iconSize.small),
+                tint = Theme.color.primary.mono900
+            )
+        }
+    }
+}
+
+@Composable
+private fun DisabledFilterCategoryRow(label: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(DISABLED_ALPHA)
+            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing16),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = Theme.typography.paragraph,
+            color = Theme.color.primary.mono900,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            painter = painterResource(R.drawable.ic_action_chevron_right),
+            contentDescription = null,
+            modifier = Modifier.size(Theme.iconSize.small),
+            tint = Theme.color.primary.mono900
+        )
+    }
+}
+
+@Composable
+private fun SortByContent(
+    selectedSort: ProductSortOption,
+    onSortSelected: (ProductSortOption) -> Unit
+) {
+    val sortOptions = ProductSortOption.entries
+    val labels = sortOptions.map { it.toLabel() }
+    val selectedIndex = sortOptions.indexOf(selectedSort).coerceAtLeast(0)
+
+    RadioButtonGroup(
+        options = labels,
+        optionSelected = selectedIndex,
+        onSelectionChange = { index -> onSortSelected(sortOptions[index]) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = Theme.spacing.spacing8)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PriceRangeContent(
+    currentFilters: ProductListFilter?,
+    onFiltersChanged: (ProductListFilter?) -> Unit
+) {
+    val initialMin = currentFilters?.minPrice?.toFloat() ?: 0f
+    val initialMax = currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP
+
+    var sliderRange by remember { mutableStateOf(initialMin..initialMax) }
+    var minText by remember { mutableStateOf(if (initialMin > 0f) initialMin.toInt().toString() else "") }
+    var maxText by remember { mutableStateOf(if (initialMax < MAX_PRICE_CAP) initialMax.toInt().toString() else "") }
+
+    fun emitChange(min: Float, max: Float) {
+        val minVal = min.toDouble().takeIf { it > 0 }
+        val maxVal = max.toDouble().takeIf { it < MAX_PRICE_CAP }
+        onFiltersChanged(
+            if (minVal == null && maxVal == null) null
+            else (currentFilters ?: ProductListFilter()).copy(minPrice = minVal, maxPrice = maxVal)
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing16)
+    ) {
+        RangeSlider(
+            value = sliderRange,
+            onValueChange = { range ->
+                sliderRange = range
+                minText = if (range.start > 0f) range.start.toInt().toString() else ""
+                maxText = if (range.endInclusive < MAX_PRICE_CAP) range.endInclusive.toInt().toString() else ""
+            },
+            onValueChangeFinished = { emitChange(sliderRange.start, sliderRange.endInclusive) },
+            valueRange = 0f..MAX_PRICE_CAP,
+            colors = SliderDefaults.colors(
+                thumbColor = Theme.color.primary.mono900,
+                activeTrackColor = Theme.color.primary.mono900,
+                inactiveTrackColor = Theme.color.primary.mono200
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
+        ) {
+            PriceTextField(
+                label = stringResource(PlpR.string.price_filter_min_label),
+                value = minText,
+                modifier = Modifier.weight(1f),
+                onValueChange = { text ->
+                    minText = text
+                    val min = text.toFloatOrNull() ?: 0f
+                    sliderRange = min..sliderRange.endInclusive
+                    emitChange(min, sliderRange.endInclusive)
+                }
+            )
+            PriceTextField(
+                label = stringResource(PlpR.string.price_filter_max_label),
+                value = maxText,
+                modifier = Modifier.weight(1f),
+                onValueChange = { text ->
+                    maxText = text
+                    val max = text.toFloatOrNull() ?: MAX_PRICE_CAP
+                    sliderRange = sliderRange.start..max
+                    emitChange(sliderRange.start, max)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PriceTextField(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label, style = Theme.typography.small) },
+        prefix = { Text("$", style = Theme.typography.paragraph) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        textStyle = Theme.typography.paragraph,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Theme.color.primary.mono900,
+            unfocusedBorderColor = Theme.color.primary.mono200,
+            focusedLabelColor = Theme.color.primary.mono900,
+            unfocusedLabelColor = Theme.color.primary.mono500,
+            cursorColor = Theme.color.primary.mono900
+        ),
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun BottomActionBar(
+    totalCount: Int,
+    onRemoveAll: () -> Unit,
+    onShowResults: () -> Unit
+) {
+    HorizontalDivider(color = Theme.color.primary.mono100)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing12),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing12),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Button(
+            type = ButtonType.Underlined,
+            text = stringResource(PlpR.string.refine_remove_all),
+            buttonSize = ButtonSize.Medium,
+            onClick = onRemoveAll,
+            modifier = Modifier.weight(1f)
+        )
+        Button(
+            type = ButtonType.Primary,
+            text = if (totalCount > 0) {
+                stringResource(PlpR.string.refine_show_results, totalCount)
+            } else {
+                stringResource(PlpR.string.refine_show_results_loading)
+            },
+            buttonSize = ButtonSize.Medium,
+            onClick = onShowResults,
+            modifier = Modifier.weight(2f)
+        )
+    }
+}
+
+@Composable
+private fun ProductSortOption.toLabel(): String = when (this) {
+    ProductSortOption.RECOMMENDED -> stringResource(PlpR.string.sort_option_recommended)
+    ProductSortOption.MOST_RECENT -> stringResource(PlpR.string.sort_option_most_recent)
+    ProductSortOption.LOWEST_PRICE -> stringResource(PlpR.string.sort_option_lowest_price)
+    ProductSortOption.HIGHEST_PRICE -> stringResource(PlpR.string.sort_option_highest_price)
+}
+
+@Composable
+private fun ProductListFilter.toPriceLabel(): String? {
+    val hasMin = minPrice != null
+    val hasMax = maxPrice != null
+    return when {
+        hasMin && hasMax -> stringResource(
+            PlpR.string.price_filter_range,
+            formatMoney(minPrice!!, currencyCode),
+            formatMoney(maxPrice!!, currencyCode)
+        )
+        hasMin -> stringResource(
+            PlpR.string.price_filter_range,
+            formatMoney(minPrice!!, currencyCode),
+            "∞"
+        )
+        hasMax -> stringResource(
+            PlpR.string.price_filter_range,
+            "$0",
+            formatMoney(maxPrice!!, currencyCode)
+        )
+        else -> null
+    }
+}
+
+private fun formatMoney(amount: Double, currencyCode: String): String {
+    val symbol = when (currencyCode.uppercase()) {
+        "USD" -> "$"
+        "GBP" -> "£"
+        "EUR" -> "€"
+        else -> "$"
+    }
+    return "$symbol${amount.toInt()}"
+}
+
+// region Previews
+
+@Preview(showBackground = true)
+@Composable
+private fun RefineSheetMainPreview() {
+    Theme {
+        RefineSheet(
+            currentSort = ProductSortOption.RECOMMENDED,
+            currentFilters = null,
+            totalCount = 283,
+            onApply = { _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RefineSheetWithFiltersPreview() {
+    Theme {
+        RefineSheet(
+            currentSort = ProductSortOption.LOWEST_PRICE,
+            currentFilters = ProductListFilter(minPrice = 50.0, maxPrice = 500.0),
+            totalCount = 128,
+            onApply = { _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+// endregion

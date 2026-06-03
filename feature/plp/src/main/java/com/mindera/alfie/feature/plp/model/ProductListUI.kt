@@ -12,7 +12,8 @@ internal data class ProductListUI(
     val nonCompactColumnCount: Int,
     val wishlistIds: Set<String>,
     val selectedSort: ProductSortOption,
-    val selectedFilters: ProductListFilter?
+    val selectedFilters: ProductListFilter?,
+    val showRefine: Boolean
 ) {
 
     companion object {
@@ -24,7 +25,8 @@ internal data class ProductListUI(
             nonCompactColumnCount = 1,
             wishlistIds = emptySet(),
             selectedSort = ProductSortOption.RECOMMENDED,
-            selectedFilters = null
+            selectedFilters = null,
+            showRefine = false
         )
     }
 }

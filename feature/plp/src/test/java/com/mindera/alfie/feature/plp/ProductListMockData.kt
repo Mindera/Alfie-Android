@@ -100,7 +100,8 @@ internal val gridProductListUI = ProductListUI(
     nonCompactColumnCount = 3,
     wishlistIds = emptySet(),
     selectedSort = ProductSortOption.RECOMMENDED,
-    selectedFilters = null
+    selectedFilters = null,
+    showRefine = false
 )
 
 internal val columnProductListUI = ProductListUI(
@@ -111,5 +112,6 @@ internal val columnProductListUI = ProductListUI(
     nonCompactColumnCount = 2,
     wishlistIds = emptySet(),
     selectedSort = ProductSortOption.RECOMMENDED,
-    selectedFilters = null
+    selectedFilters = null,
+    showRefine = false
 )
