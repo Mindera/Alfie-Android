@@ -10,10 +10,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
-import com.mindera.alfie.feature.plp.navArgs
-import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult

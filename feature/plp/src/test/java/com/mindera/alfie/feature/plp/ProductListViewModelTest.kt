@@ -9,7 +9,6 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.domain.UseCaseResult

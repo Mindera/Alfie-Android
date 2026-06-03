@@ -34,7 +34,6 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -56,6 +55,7 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.feature.plp.model.ProductListEntryUI
 import com.mindera.alfie.feature.plp.model.ProductListEvent
 import com.mindera.alfie.feature.plp.model.ProductListUI

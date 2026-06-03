@@ -23,7 +23,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
@@ -46,7 +44,7 @@ import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.feature.plp.R as PlpR
 
-/** Maximum price cap used when no upper bound is set on the slider. */
+/** Placeholder upper price cap; replace with BFF-supplied max when filter metadata is available. */
 private const val MAX_PRICE_CAP = 10_000f
 private const val DISABLED_ALPHA = 0.4f
 
@@ -90,12 +88,9 @@ internal fun RefineSheet(
         onDismiss = onDismiss
     ) {
         Column {
-            // Scrollable content
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f, fill = false)
-                    .fillMaxWidth()
-            ) {
+            // Content — no weight needed; all panels have short content that fits without scrolling.
+            // BottomSheet's content slot wraps in wrapContentHeight(), so weight is a no-op there.
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 when (currentPanel) {
                     RefinePanel.Main -> {
                         item { MainContent(pendingSort, pendingFilters) { currentPanel = it } }
@@ -104,7 +99,7 @@ internal fun RefineSheet(
                         item {
                             SortByContent(
                                 selectedSort = pendingSort,
-                                onSortSelected = { pendingSort = it }
+                                onSortSelect = { pendingSort = it }
                             )
                         }
                     }
@@ -112,7 +107,7 @@ internal fun RefineSheet(
                         item {
                             PriceRangeContent(
                                 currentFilters = pendingFilters,
-                                onFiltersChanged = { pendingFilters = it }
+                                onFiltersChange = { pendingFilters = it }
                             )
                         }
                     }
@@ -236,7 +231,7 @@ private fun DisabledFilterCategoryRow(label: String) {
 @Composable
 private fun SortByContent(
     selectedSort: ProductSortOption,
-    onSortSelected: (ProductSortOption) -> Unit
+    onSortSelect: (ProductSortOption) -> Unit
 ) {
     val sortOptions = ProductSortOption.entries
     val labels = sortOptions.map { it.toLabel() }
@@ -245,7 +240,7 @@ private fun SortByContent(
     RadioButtonGroup(
         options = labels,
         optionSelected = selectedIndex,
-        onSelectionChange = { index -> onSortSelected(sortOptions[index]) },
+        onSelectionChange = { index -> onSortSelect(sortOptions[index]) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = Theme.spacing.spacing8)
@@ -256,8 +251,9 @@ private fun SortByContent(
 @Composable
 private fun PriceRangeContent(
     currentFilters: ProductListFilter?,
-    onFiltersChanged: (ProductListFilter?) -> Unit
+    onFiltersChange: (ProductListFilter?) -> Unit
 ) {
+    val currencySymbol = formatCurrencySymbol(currentFilters?.currencyCode ?: "AUD")
     val initialMin = currentFilters?.minPrice?.toFloat() ?: 0f
     val initialMax = currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP
 
@@ -268,9 +264,12 @@ private fun PriceRangeContent(
     fun emitChange(min: Float, max: Float) {
         val minVal = min.toDouble().takeIf { it > 0 }
         val maxVal = max.toDouble().takeIf { it < MAX_PRICE_CAP }
-        onFiltersChanged(
-            if (minVal == null && maxVal == null) null
-            else (currentFilters ?: ProductListFilter()).copy(minPrice = minVal, maxPrice = maxVal)
+        onFiltersChange(
+            if (minVal == null && maxVal == null) {
+                null
+            } else {
+                (currentFilters ?: ProductListFilter()).copy(minPrice = minVal, maxPrice = maxVal)
+            }
         )
     }
 
@@ -305,6 +304,7 @@ private fun PriceRangeContent(
             PriceTextField(
                 label = stringResource(PlpR.string.price_filter_min_label),
                 value = minText,
+                currencySymbol = currencySymbol,
                 modifier = Modifier.weight(1f),
                 onValueChange = { text ->
                     minText = text
@@ -316,6 +316,7 @@ private fun PriceRangeContent(
             PriceTextField(
                 label = stringResource(PlpR.string.price_filter_max_label),
                 value = maxText,
+                currencySymbol = currencySymbol,
                 modifier = Modifier.weight(1f),
                 onValueChange = { text ->
                     maxText = text
@@ -332,14 +333,15 @@ private fun PriceRangeContent(
 private fun PriceTextField(
     label: String,
     value: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit
+    currencySymbol: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label, style = Theme.typography.small) },
-        prefix = { Text("$", style = Theme.typography.paragraph) },
+        prefix = { Text(currencySymbol, style = Theme.typography.paragraph) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         textStyle = Theme.typography.paragraph,
@@ -421,15 +423,15 @@ private fun ProductListFilter.toPriceLabel(): String? {
     }
 }
 
-private fun formatMoney(amount: Double, currencyCode: String): String {
-    val symbol = when (currencyCode.uppercase()) {
-        "USD" -> "$"
-        "GBP" -> "£"
-        "EUR" -> "€"
-        else -> "$"
-    }
-    return "$symbol${amount.toInt()}"
+private fun formatCurrencySymbol(currencyCode: String): String = when (currencyCode.uppercase()) {
+    "USD" -> "$"
+    "GBP" -> "£"
+    "EUR" -> "€"
+    else -> "$"
 }
+
+private fun formatMoney(amount: Double, currencyCode: String): String =
+    "${formatCurrencySymbol(currencyCode)}${amount.toInt()}"
 
 // region Previews
 

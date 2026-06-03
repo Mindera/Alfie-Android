@@ -34,4 +34,3 @@ private fun ProductListEntryFragment.PriceRange.toDomain() = ProductListPriceRan
     maxAmount = maxVariantPrice.moneyFragment.amount,
     currencyCode = minVariantPrice.moneyFragment.currencyCode
 )
-
