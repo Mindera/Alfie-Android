@@ -256,42 +256,30 @@ class ProductListViewModelTest {
     }
 
     @Test
-    fun `handleEvent - GIVEN ApplySort THEN updates state and restarts pager`() = runTest {
-        val viewModel = buildViewModel()
-
-        viewModel.state.test {
-            awaitItem() // Initial state
-            viewModel.handleEvent(ProductListEvent.ApplySort(ProductSortOption.HIGHEST_PRICE))
-
-            val result = awaitItem()
-            assertEquals(ProductSortOption.HIGHEST_PRICE, result.selectedSort)
-        }
-    }
-
-    @Test
-    fun `handleEvent - GIVEN ApplyFilters THEN updates state`() = runTest {
+    fun `handleEvent - GIVEN ApplyRefine THEN updates sort and filters in state`() = runTest {
         val filters = ProductListFilter(brandNames = listOf("Brand"), minPrice = null, maxPrice = null, productTypes = null)
         val viewModel = buildViewModel()
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.handleEvent(ProductListEvent.ApplyFilters(filters))
+            viewModel.handleEvent(ProductListEvent.ApplyRefine(ProductSortOption.HIGHEST_PRICE, filters))
 
             val result = awaitItem()
+            assertEquals(ProductSortOption.HIGHEST_PRICE, result.selectedSort)
             assertEquals(filters, result.selectedFilters)
         }
     }
 
     @Test
-    fun `handleEvent - GIVEN ApplyFilters with null THEN clears filters`() = runTest {
+    fun `handleEvent - GIVEN ApplyRefine with null filters THEN clears filters`() = runTest {
         val filters = ProductListFilter(brandNames = listOf("Brand"), minPrice = null, maxPrice = null, productTypes = null)
         val viewModel = buildViewModel()
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.handleEvent(ProductListEvent.ApplyFilters(filters))
+            viewModel.handleEvent(ProductListEvent.ApplyRefine(ProductSortOption.RECOMMENDED, filters))
             awaitItem() // State with filters applied
-            viewModel.handleEvent(ProductListEvent.ApplyFilters(null))
+            viewModel.handleEvent(ProductListEvent.ApplyRefine(ProductSortOption.RECOMMENDED, null))
 
             val result = awaitItem()
             assertNull(result.selectedFilters)

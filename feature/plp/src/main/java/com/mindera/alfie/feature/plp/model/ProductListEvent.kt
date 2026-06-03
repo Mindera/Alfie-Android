@@ -14,9 +14,10 @@ internal sealed interface ProductListEvent {
 
     data class ChangeLayoutMode(val layoutMode: ProductListLayoutMode) : ProductListEvent
 
-    data class ApplySort(val sort: ProductSortOption) : ProductListEvent
-
-    data class ApplyFilters(val filters: ProductListFilter?) : ProductListEvent
+    data class ApplyRefine(
+        val sort: ProductSortOption,
+        val filters: ProductListFilter?
+    ) : ProductListEvent
 
     data class ToggleFilterChip(val chipId: String) : ProductListEvent
 }

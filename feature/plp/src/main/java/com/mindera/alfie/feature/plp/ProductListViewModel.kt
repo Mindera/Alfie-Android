@@ -67,7 +67,12 @@ internal class ProductListViewModel @Inject constructor(
     companion object {
         private const val PAGE_SIZE = 15
 
-        // TODO: replace with dynamic collectionHandle when BFF navigation query is available
+        // BFF doesn't yet expose a navigation/category lookup, so the collection handle is
+        // hardcoded to "women" as a placeholder. Nav args are intentionally ignored when
+        // selecting products until the BFF supports resolving a handle from category slug/id,
+        // brand, or search query. The displayed title still uses nav args (see collectionTitle),
+        // which means the title may not match the products shown — this is a known trade-off
+        // until the BFF integration is complete.
         private const val COLLECTION_HANDLE = "women"
 
         private val initialPagerLoadState = LoadStates(
@@ -79,7 +84,13 @@ internal class ProductListViewModel @Inject constructor(
 
     private val navArgs: ProductListNavArgs = savedStateHandle.navArgs()
 
-    /** Display title derived from nav args; empty until BFF navigation query provides a real value. */
+    /**
+     * Display title derived from nav args.
+     *
+     * Note: this title may not match the products shown, because the underlying collection
+     * handle is hardcoded to [COLLECTION_HANDLE] until the BFF exposes a navigation query
+     * to resolve a handle from category slug/id, brand, or search query.
+     */
     val collectionTitle: String = when (val type = navArgs.type) {
         is ProductListType.Category.Slug -> type.slug
         is ProductListType.Category.Id -> type.id
@@ -109,8 +120,7 @@ internal class ProductListViewModel @Inject constructor(
             is ProductListEvent.OpenFilters -> _state.update { it.copy(showRefine = true) }
             is ProductListEvent.DismissRefine -> _state.update { it.copy(showRefine = false) }
             is ProductListEvent.ChangeLayoutMode -> changeLayoutMode(event.layoutMode)
-            is ProductListEvent.ApplySort -> applySort(event.sort)
-            is ProductListEvent.ApplyFilters -> applyFilters(event.filters)
+            is ProductListEvent.ApplyRefine -> applyRefine(event.sort, event.filters)
             is ProductListEvent.ToggleFilterChip -> toggleFilterChip(event.chipId)
         }
     }
@@ -152,13 +162,8 @@ internal class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun applySort(sort: ProductSortOption) {
-        _state.update { it.copy(selectedSort = sort) }
-        restartPager()
-    }
-
-    private fun applyFilters(filters: ProductListFilter?) {
-        _state.update { it.copy(selectedFilters = filters) }
+    private fun applyRefine(sort: ProductSortOption, filters: ProductListFilter?) {
+        _state.update { it.copy(selectedSort = sort, selectedFilters = filters) }
         restartPager()
     }
 

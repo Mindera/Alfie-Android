@@ -138,8 +138,7 @@ private fun ProductListScreenContent(
                 currentFilters = state.selectedFilters,
                 totalCount = state.resultCount,
                 onApply = { sort, filters ->
-                    onEvent(ProductListEvent.ApplySort(sort))
-                    onEvent(ProductListEvent.ApplyFilters(filters))
+                    onEvent(ProductListEvent.ApplyRefine(sort, filters))
                     onEvent(ProductListEvent.DismissRefine)
                 },
                 onDismiss = { onEvent(ProductListEvent.DismissRefine) }

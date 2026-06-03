@@ -254,8 +254,8 @@ private fun PriceRangeContent(
     onFiltersChange: (ProductListFilter?) -> Unit
 ) {
     val currencySymbol = formatCurrencySymbol(currentFilters?.currencyCode ?: "USD")
-    val initialMin = currentFilters?.minPrice?.toFloat() ?: 0f
-    val initialMax = currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP
+    val initialMin = (currentFilters?.minPrice?.toFloat() ?: 0f).coerceIn(0f, MAX_PRICE_CAP)
+    val initialMax = (currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP).coerceIn(initialMin, MAX_PRICE_CAP)
 
     var sliderRange by remember { mutableStateOf(initialMin..initialMax) }
     var minText by remember { mutableStateOf(if (initialMin > 0f) initialMin.toInt().toString() else "") }
@@ -304,9 +304,10 @@ private fun PriceRangeContent(
                 modifier = Modifier.weight(1f),
                 onValueChange = { text ->
                     minText = text
-                    val min = text.toFloatOrNull() ?: 0f
-                    sliderRange = min..sliderRange.endInclusive
-                    emitChange(min, sliderRange.endInclusive)
+                    val rawMin = text.toFloatOrNull() ?: 0f
+                    val clampedMin = rawMin.coerceIn(0f, sliderRange.endInclusive)
+                    sliderRange = clampedMin..sliderRange.endInclusive
+                    emitChange(clampedMin, sliderRange.endInclusive)
                 }
             )
             PriceTextField(
@@ -316,9 +317,10 @@ private fun PriceRangeContent(
                 modifier = Modifier.weight(1f),
                 onValueChange = { text ->
                     maxText = text
-                    val max = text.toFloatOrNull() ?: MAX_PRICE_CAP
-                    sliderRange = sliderRange.start..max
-                    emitChange(sliderRange.start, max)
+                    val rawMax = text.toFloatOrNull() ?: MAX_PRICE_CAP
+                    val clampedMax = rawMax.coerceIn(sliderRange.start, MAX_PRICE_CAP)
+                    sliderRange = sliderRange.start..clampedMax
+                    emitChange(sliderRange.start, clampedMax)
                 }
             )
         }
@@ -412,7 +414,7 @@ private fun ProductListFilter.toPriceLabel(): String? {
         )
         hasMax -> stringResource(
             PlpR.string.price_filter_range,
-            "$0",
+            formatMoney(0.0, currencyCode),
             formatMoney(maxPrice!!, currencyCode)
         )
         else -> null
