@@ -265,11 +265,7 @@ private fun PriceRangeContent(
         val minVal = min.toDouble().takeIf { it > 0 }
         val maxVal = max.toDouble().takeIf { it < MAX_PRICE_CAP }
         onFiltersChange(
-            if (minVal == null && maxVal == null) {
-                null
-            } else {
-                (currentFilters ?: ProductListFilter()).copy(minPrice = minVal, maxPrice = maxVal)
-            }
+            (currentFilters ?: ProductListFilter()).copy(minPrice = minVal, maxPrice = maxVal)
         )
     }
 
