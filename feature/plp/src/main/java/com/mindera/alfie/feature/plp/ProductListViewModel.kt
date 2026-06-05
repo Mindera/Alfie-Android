@@ -15,10 +15,12 @@ import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArg
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
+import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.onSuccess
 import com.mindera.alfie.domain.usecase.productlist.GetPaginatedProductListUseCase
 import com.mindera.alfie.domain.usecase.productlist.GetProductListLayoutModeUseCase
+import com.mindera.alfie.domain.usecase.productlist.GetProductListUseCase
 import com.mindera.alfie.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
@@ -36,12 +38,16 @@ import com.mindera.alfie.repository.productlist.model.ProductListMetadata
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -52,6 +58,7 @@ import com.mindera.alfie.designsystem.R as DesignR
 internal class ProductListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getPaginatedProductList: GetPaginatedProductListUseCase,
+    private val getProductList: GetProductListUseCase,
     private val getProductListLayoutMode: GetProductListLayoutModeUseCase,
     private val updateProductListLayoutMode: UpdateProductListLayoutModeUseCase,
     private val getWishlistIds: GetWishlistIdsUseCase,
@@ -66,6 +73,9 @@ internal class ProductListViewModel @Inject constructor(
 
     companion object {
         private const val PAGE_SIZE = 15
+
+        private const val PREVIEW_DEBOUNCE_MS = 300L
+        private const val PREVIEW_PAGE_SIZE = 1
 
         // BFF doesn't yet expose a navigation/category lookup, so the collection handle is
         // hardcoded to "women" as a placeholder. Nav args are intentionally ignored when
@@ -108,17 +118,25 @@ internal class ProductListViewModel @Inject constructor(
     private val _state = MutableStateFlow(ProductListUI.EMPTY)
     val state: StateFlow<ProductListUI> = _state.asStateFlow()
 
+    private val previewFiltersFlow = MutableSharedFlow<ProductListFilter?>(extraBufferCapacity = 1)
+
     init {
         collectPaginatedProductList()
         collectWishlistIds()
         checkLayoutModePreference()
+        collectPreviewResultCount()
     }
 
     fun handleEvent(event: ProductListEvent) {
         when (event) {
             is ProductListEvent.OpenProduct -> navigateToProduct(event.productId)
-            is ProductListEvent.OpenFilters -> _state.update { it.copy(showRefine = true) }
-            is ProductListEvent.DismissRefine -> _state.update { it.copy(showRefine = false) }
+            is ProductListEvent.OpenFilters -> _state.update {
+                it.copy(showRefine = true, previewResultCount = null)
+            }
+            is ProductListEvent.DismissRefine -> _state.update {
+                it.copy(showRefine = false, previewResultCount = null)
+            }
+            is ProductListEvent.PreviewRefine -> previewFiltersFlow.tryEmit(event.filters)
             is ProductListEvent.ChangeLayoutMode -> changeLayoutMode(event.layoutMode)
             is ProductListEvent.ApplyRefine -> applyRefine(event.sort, event.filters)
             is ProductListEvent.ToggleFilterChip -> toggleFilterChip(event.chipId)
@@ -153,7 +171,7 @@ internal class ProductListViewModel @Inject constructor(
                     pagingData.map { entry ->
                         productListEntryUIFactory(
                             entry = entry,
-                            onFavoriteClick = { onFavoriteClick(entry.id) },
+                            onFavoriteClick = { onFavoriteClick(entry.slug) },
                             onProductClick = { navigateToProduct(entry.slug) }
                         )
                     }
@@ -163,8 +181,34 @@ internal class ProductListViewModel @Inject constructor(
     }
 
     private fun applyRefine(sort: ProductSortOption, filters: ProductListFilter?) {
-        _state.update { it.copy(selectedSort = sort, selectedFilters = filters) }
+        _state.update {
+            it.copy(selectedSort = sort, selectedFilters = filters, previewResultCount = null)
+        }
         restartPager()
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun collectPreviewResultCount() {
+        viewModelScope.launch {
+            previewFiltersFlow
+                .distinctUntilChanged()
+                .debounce(PREVIEW_DEBOUNCE_MS)
+                .collect { filters ->
+                    if (filters == _state.value.selectedFilters) {
+                        _state.update { it.copy(previewResultCount = null) }
+                        return@collect
+                    }
+                    val result = getProductList(
+                        after = null,
+                        collectionHandle = COLLECTION_HANDLE,
+                        filters = filters,
+                        sort = _state.value.selectedSort,
+                        limit = PREVIEW_PAGE_SIZE
+                    )
+                    val count = (result as? UseCaseResult.Success)?.data?.pagination?.totalCount
+                    _state.update { it.copy(previewResultCount = count) }
+                }
+        }
     }
 
     private fun toggleFilterChip(chipId: String) {

@@ -20,7 +20,7 @@ internal class BagUiFactory @Inject constructor() {
         onRemoveClick: ClickEventOneArg<BagProduct>,
         onProductClick: ClickEventOneArg<String>
     ): ImmutableList<BagProductUi> = bagProducts.map { item ->
-        val product = products.first { it.id == item.productId }
+        val product = products.first { it.slug == item.productId }
         val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.resolveDefaultVariant()
         val productCard = product.toProductCard(
             variant = selectedVariant,
@@ -43,15 +43,13 @@ internal class BagUiFactory @Inject constructor() {
         name = name,
         price = priceRange.toPriceType(variant.price),
         image = variant.media.firstOrNull().toImageUI(),
-        // TODO(ALFMOB-388): bag stores productId, not handle/slug. PDP requires handle now;
-        // bag domain migration is out of scope for ALFMOB-338.
         color = variant.colorOption().orEmpty(),
         size = variant.sizeOption().orEmpty(),
-        onClick = { onProductClick(id) },
+        onClick = { onProductClick(slug) },
         onRemoveClick = {
             onRemoveClick(
                 BagProduct(
-                    productId = id,
+                    productId = slug,
                     variantSku = variant.sku
                 )
             )

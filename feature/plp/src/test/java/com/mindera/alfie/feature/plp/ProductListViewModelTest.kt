@@ -14,6 +14,7 @@ import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.productlist.GetPaginatedProductListUseCase
 import com.mindera.alfie.domain.usecase.productlist.GetProductListLayoutModeUseCase
+import com.mindera.alfie.domain.usecase.productlist.GetProductListUseCase
 import com.mindera.alfie.domain.usecase.productlist.UpdateProductListLayoutModeUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
@@ -50,6 +51,9 @@ class ProductListViewModelTest {
 
     @RelaxedMockK
     private lateinit var getPaginatedProductListUseCase: GetPaginatedProductListUseCase
+
+    @RelaxedMockK
+    private lateinit var getProductListUseCase: GetProductListUseCase
 
     @RelaxedMockK
     private lateinit var getProductListLayoutModeUseCase: GetProductListLayoutModeUseCase
@@ -319,6 +323,7 @@ class ProductListViewModelTest {
     ) = ProductListViewModel(
         savedStateHandle = SavedStateHandle(mapOf("type" to type)),
         getPaginatedProductList = getPaginatedProductListUseCase,
+        getProductList = getProductListUseCase,
         getProductListLayoutMode = getProductListLayoutModeUseCase,
         updateProductListLayoutMode = updateProductListLayoutModeUseCase,
         productListEntryUIFactory = entryUiFactory,

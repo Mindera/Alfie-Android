@@ -279,7 +279,7 @@ private fun ProductDetailsGallery(
         isFullscreen = isFullscreen,
         onClick = { isFullscreen = true },
         onDismissFullscreen = { isFullscreen = false },
-        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.id)) }
+        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.slug)) }
     )
 }
 

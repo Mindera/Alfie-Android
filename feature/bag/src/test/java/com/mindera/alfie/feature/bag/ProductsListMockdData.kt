@@ -83,13 +83,13 @@ internal val products = listOf(
 )
 
 internal val bagProducts = listOf(
-    BagProduct(productId = "123456", variantSku = "variant1"),
-    BagProduct(productId = "654321", variantSku = "variant11")
+    BagProduct(productId = "123456-product", variantSku = "variant1"),
+    BagProduct(productId = "654321-product", variantSku = "variant11")
 )
 
 internal val bagProductUi = persistentListOf(
     BagProductUi(
-        id = "123456",
+        id = "123456-product",
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product name",
@@ -100,7 +100,7 @@ internal val bagProductUi = persistentListOf(
         )
     ),
     BagProductUi(
-        id = "654321",
+        id = "654321-product",
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product 2",

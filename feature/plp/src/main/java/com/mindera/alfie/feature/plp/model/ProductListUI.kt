@@ -6,6 +6,7 @@ import com.mindera.alfie.repository.productlist.model.ProductSortOption
 
 internal data class ProductListUI(
     val resultCount: Int,
+    val previewResultCount: Int?,
     val isLoadingMetadata: Boolean,
     val layoutMode: ProductListLayoutMode,
     val compactColumnCount: Int,
@@ -20,6 +21,7 @@ internal data class ProductListUI(
     companion object {
         val EMPTY = ProductListUI(
             resultCount = 0,
+            previewResultCount = null,
             isLoadingMetadata = true,
             layoutMode = ProductListLayoutMode.GRID,
             compactColumnCount = 1,

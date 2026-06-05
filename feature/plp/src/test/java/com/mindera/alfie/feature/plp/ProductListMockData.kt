@@ -57,6 +57,7 @@ internal val productListMetadata = ProductListMetadata(
 internal val productsVerticalUI = listOf(
     ProductListEntryUI(
         id = "123456",
+        slug = "product-1-slug",
         productCardData = ProductCardType.Vertical(
             name = "Product name",
             brand = "Brand",
@@ -78,6 +79,7 @@ internal val productsVerticalUI = listOf(
     ),
     ProductListEntryUI(
         id = "654321",
+        slug = "product-2-slug",
         productCardData = ProductCardType.Vertical(
             name = "Product 2",
             brand = "Brand 2",
@@ -94,6 +96,7 @@ internal val productsVerticalUI = listOf(
 
 internal val gridProductListUI = ProductListUI(
     resultCount = 2,
+    previewResultCount = null,
     isLoadingMetadata = false,
     layoutMode = ProductListLayoutMode.GRID,
     compactColumnCount = 2,
@@ -107,6 +110,7 @@ internal val gridProductListUI = ProductListUI(
 
 internal val columnProductListUI = ProductListUI(
     resultCount = 2,
+    previewResultCount = null,
     isLoadingMetadata = false,
     layoutMode = ProductListLayoutMode.COLUMN,
     compactColumnCount = 1,

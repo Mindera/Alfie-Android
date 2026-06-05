@@ -42,8 +42,6 @@ class WishlistViewModel @Inject constructor(
     }
 
     fun onNavigateToProductDetails(productId: String) {
-        // TODO(ALFMOB-388): wishlist storage exposes ID; PDP requires the BFF handle/slug.
-        // Tracked separately — wishlist domain migration is out of scope for ALFMOB-338.
         navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(handle = productId)))
     }
 
@@ -54,8 +52,8 @@ class WishlistViewModel @Inject constructor(
                     val wishlist = wishlistUiFactory(
                         products = result.data,
                         onRemoveClick = ::onRemoveClicked,
-                        onAddToBagClick = { onNavigateToProductDetails(it.id) },
-                        onProductClick = { onNavigateToProductDetails(it.id) }
+                        onAddToBagClick = { onNavigateToProductDetails(it.slug) },
+                        onProductClick = { onNavigateToProductDetails(it.slug) }
                     )
                     _state.value = WishlistUiState.Data.Loaded(wishlist)
                 }
@@ -66,7 +64,7 @@ class WishlistViewModel @Inject constructor(
 
     private fun onRemoveClicked(product: Product) {
         viewModelScope.launch {
-            removeFromWishlist(product.id)
+            removeFromWishlist(product.slug)
         }
     }
 }

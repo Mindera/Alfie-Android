@@ -100,7 +100,7 @@ internal class WishlistViewModelTest {
         runTest {
             val savedStateHandle = buildSavedStateHandle()
             val product = products.first()
-            val expected = Screen.ProductDetails(args = productDetailsNavArgs(handle = product.id))
+            val expected = Screen.ProductDetails(args = productDetailsNavArgs(handle = product.slug))
             val onAddToBagClickSlot = slot<ClickEventOneArg<Product>>()
 
             coEvery { getWishlistUseCase() } returns flow {
@@ -123,7 +123,7 @@ internal class WishlistViewModelTest {
         runTest {
             val savedStateHandle = buildSavedStateHandle()
             val product = products.first()
-            val expected = Screen.ProductDetails(args = productDetailsNavArgs(handle = product.id))
+            val expected = Screen.ProductDetails(args = productDetailsNavArgs(handle = product.slug))
             val onProductClickSlot = slot<ClickEventOneArg<Product>>()
 
             coEvery { getWishlistUseCase() } returns flow {

@@ -137,6 +137,8 @@ private fun ProductListScreenContent(
                 currentSort = state.selectedSort,
                 currentFilters = state.selectedFilters,
                 totalCount = state.resultCount,
+                previewCount = state.previewResultCount,
+                onPreviewFilters = { onEvent(ProductListEvent.PreviewRefine(it)) },
                 onApply = { sort, filters ->
                     onEvent(ProductListEvent.ApplyRefine(sort, filters))
                     onEvent(ProductListEvent.DismissRefine)
@@ -204,7 +206,7 @@ private fun ProductListGrid(
                                 index = index,
                                 columnCount = columnCount
                             ),
-                            isWishlisted = state.wishlistIds.contains(entry.id)
+                            isWishlisted = state.wishlistIds.contains(entry.slug)
                         )
                     }
                 }

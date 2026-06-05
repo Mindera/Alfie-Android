@@ -29,9 +29,7 @@ class GetWishlistUseCase @Inject constructor(
             .mapLatest { ids ->
                 coroutineScope {
                     val results = ids
-                        // TODO(ALFMOB-388): wishlist storage uses ID; PDP repository now requires
-                        // a BFF handle/slug. Wishlist domain migration is tracked separately.
-                        .map { id -> async(dispatcherProvider.io()) { productRepository.getProduct(handle = id, platform = Platforms.SHOPIFY) } }
+                        .map { slug -> async(dispatcherProvider.io()) { productRepository.getProduct(handle = slug, platform = Platforms.SHOPIFY) } }
                         .awaitAll()
 
                     UseCaseResult.Success(

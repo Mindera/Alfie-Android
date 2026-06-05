@@ -22,6 +22,7 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,12 +69,18 @@ internal fun RefineSheet(
     currentSort: ProductSortOption,
     currentFilters: ProductListFilter?,
     totalCount: Int,
+    previewCount: Int?,
+    onPreviewFilters: (ProductListFilter?) -> Unit,
     onApply: (sort: ProductSortOption, filters: ProductListFilter?) -> Unit,
     onDismiss: () -> Unit
 ) {
     var pendingSort by remember { mutableStateOf(currentSort) }
     var pendingFilters by remember { mutableStateOf(currentFilters) }
     var currentPanel by remember { mutableStateOf<RefinePanel>(RefinePanel.Main) }
+
+    LaunchedEffect(pendingFilters) {
+        onPreviewFilters(pendingFilters)
+    }
 
     BackHandler(enabled = currentPanel != RefinePanel.Main) {
         currentPanel = RefinePanel.Main
@@ -118,7 +125,7 @@ internal fun RefineSheet(
 
             // Sticky bottom action bar
             BottomActionBar(
-                totalCount = totalCount,
+                totalCount = previewCount ?: totalCount,
                 onRemoveAll = {
                     pendingSort = ProductSortOption.RECOMMENDED
                     pendingFilters = null
@@ -256,12 +263,21 @@ private fun PriceRangeContent(
     onFiltersChange: (ProductListFilter?) -> Unit
 ) {
     val currencySymbol = currencySymbol(currentFilters?.currencyCode ?: "USD")
-    val initialMin = (currentFilters?.minPrice?.toFloat() ?: 0f).coerceIn(0f, MAX_PRICE_CAP)
-    val initialMax = (currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP).coerceIn(initialMin, MAX_PRICE_CAP)
 
-    var sliderRange by remember { mutableStateOf(initialMin..initialMax) }
-    var minText by remember { mutableStateOf(if (initialMin > 0f) initialMin.toInt().toString() else "") }
-    var maxText by remember { mutableStateOf(if (initialMax < MAX_PRICE_CAP) initialMax.toInt().toString() else "") }
+    fun resolvedMin() = (currentFilters?.minPrice?.toFloat() ?: 0f).coerceIn(0f, MAX_PRICE_CAP)
+    fun resolvedMax() = (currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP).coerceIn(resolvedMin(), MAX_PRICE_CAP)
+
+    var sliderRange by remember { mutableStateOf(resolvedMin()..resolvedMax()) }
+    var minText by remember { mutableStateOf(if (resolvedMin() > 0f) resolvedMin().toInt().toString() else "") }
+    var maxText by remember { mutableStateOf(if (resolvedMax() < MAX_PRICE_CAP) resolvedMax().toInt().toString() else "") }
+
+    LaunchedEffect(currentFilters) {
+        val min = resolvedMin()
+        val max = resolvedMax()
+        sliderRange = min..max
+        minText = if (min > 0f) min.toInt().toString() else ""
+        maxText = if (max < MAX_PRICE_CAP) max.toInt().toString() else ""
+    }
 
     fun emitChange(min: Float, max: Float) {
         val minVal = min.toDouble().takeIf { it > 0 }
@@ -295,37 +311,58 @@ private fun PriceRangeContent(
 
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
-        ) {
-            PriceTextField(
-                label = stringResource(PlpR.string.price_filter_min_label),
-                value = minText,
-                currencySymbol = currencySymbol,
-                modifier = Modifier.weight(1f),
-                onValueChange = { text ->
-                    minText = text
-                    val rawMin = text.toFloatOrNull() ?: 0f
-                    val clampedMin = rawMin.coerceIn(0f, sliderRange.endInclusive)
-                    sliderRange = clampedMin..sliderRange.endInclusive
-                    emitChange(clampedMin, sliderRange.endInclusive)
-                }
-            )
-            PriceTextField(
-                label = stringResource(PlpR.string.price_filter_max_label),
-                value = maxText,
-                currencySymbol = currencySymbol,
-                modifier = Modifier.weight(1f),
-                onValueChange = { text ->
-                    maxText = text
-                    val rawMax = text.toFloatOrNull() ?: MAX_PRICE_CAP
-                    val clampedMax = rawMax.coerceIn(sliderRange.start, MAX_PRICE_CAP)
-                    sliderRange = sliderRange.start..clampedMax
-                    emitChange(sliderRange.start, clampedMax)
-                }
-            )
-        }
+        PriceRangeInputRow(
+            minText = minText,
+            maxText = maxText,
+            currencySymbol = currencySymbol,
+            sliderRange = sliderRange,
+            onMinChange = { text, range ->
+                minText = text
+                sliderRange = range
+                emitChange(range.start, range.endInclusive)
+            },
+            onMaxChange = { text, range ->
+                maxText = text
+                sliderRange = range
+                emitChange(range.start, range.endInclusive)
+            }
+        )
+    }
+}
+
+@Composable
+private fun PriceRangeInputRow(
+    minText: String,
+    maxText: String,
+    currencySymbol: String,
+    sliderRange: ClosedFloatingPointRange<Float>,
+    onMinChange: (text: String, range: ClosedFloatingPointRange<Float>) -> Unit,
+    onMaxChange: (text: String, range: ClosedFloatingPointRange<Float>) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
+    ) {
+        PriceTextField(
+            label = stringResource(PlpR.string.price_filter_min_label),
+            value = minText,
+            currencySymbol = currencySymbol,
+            modifier = Modifier.weight(1f),
+            onValueChange = { text ->
+                val clamped = (text.toFloatOrNull() ?: 0f).coerceIn(0f, sliderRange.endInclusive)
+                onMinChange(text, clamped..sliderRange.endInclusive)
+            }
+        )
+        PriceTextField(
+            label = stringResource(PlpR.string.price_filter_max_label),
+            value = maxText,
+            currencySymbol = currencySymbol,
+            modifier = Modifier.weight(1f),
+            onValueChange = { text ->
+                val clamped = (text.toFloatOrNull() ?: MAX_PRICE_CAP).coerceIn(sliderRange.start, MAX_PRICE_CAP)
+                onMaxChange(text, sliderRange.start..clamped)
+            }
+        )
     }
 }
 
@@ -433,6 +470,8 @@ private fun RefineSheetMainPreview() {
             currentSort = ProductSortOption.RECOMMENDED,
             currentFilters = null,
             totalCount = 283,
+            previewCount = null,
+            onPreviewFilters = {},
             onApply = { _, _ -> },
             onDismiss = {}
         )
@@ -447,6 +486,8 @@ private fun RefineSheetWithFiltersPreview() {
             currentSort = ProductSortOption.LOWEST_PRICE,
             currentFilters = ProductListFilter(minPrice = 50.0, maxPrice = 500.0),
             totalCount = 128,
+            previewCount = null,
+            onPreviewFilters = {},
             onApply = { _, _ -> },
             onDismiss = {}
         )
