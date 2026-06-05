@@ -29,12 +29,12 @@ internal class GetProductUseCaseTest {
         val mockProduct = mockk<Product>()
 
         coEvery {
-            productRepository.getProduct(productId = "id")
+            productRepository.getProduct(handle = "handle", platform = "shopify")
         } returns RepositoryResult.Success(mockProduct)
 
         val expected = UseCaseResult.Success(mockProduct)
 
-        val result = subject(productId = "id")
+        val result = subject(handle = "handle")
 
         assertEquals(expected, result)
     }
@@ -44,12 +44,12 @@ internal class GetProductUseCaseTest {
         val mockError = mockk<ErrorResult>()
 
         coEvery {
-            productRepository.getProduct(productId = "id")
+            productRepository.getProduct(handle = "handle", platform = "shopify")
         } returns RepositoryResult.Error(mockError)
 
         val expected = UseCaseResult.Error(mockError)
 
-        val result = subject(productId = "id")
+        val result = subject(handle = "handle")
 
         assertEquals(expected, result)
     }

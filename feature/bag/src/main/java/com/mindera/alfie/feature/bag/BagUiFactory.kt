@@ -7,6 +7,7 @@ import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.feature.mappers.toPriceType
 import com.mindera.alfie.repository.bag.BagProduct
 import com.mindera.alfie.repository.product.model.Product
+import com.mindera.alfie.repository.product.model.Variant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
@@ -20,8 +21,9 @@ internal class BagUiFactory @Inject constructor() {
         onProductClick: ClickEventOneArg<String>
     ): ImmutableList<BagProductUi> = bagProducts.map { item ->
         val product = products.first { it.id == item.productId }
-        val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.defaultVariant
-        val productCard = product.copy(defaultVariant = selectedVariant).toProductCard(
+        val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.resolveDefaultVariant()
+        val productCard = product.toProductCard(
+            variant = selectedVariant,
             onRemoveClick = onRemoveClick,
             onProductClick = onProductClick
         )
@@ -33,23 +35,37 @@ internal class BagUiFactory @Inject constructor() {
     }.toImmutableList()
 
     private fun Product.toProductCard(
+        variant: Variant,
         onRemoveClick: ClickEventOneArg<BagProduct>,
         onProductClick: ClickEventOneArg<String>
     ) = ProductCardType.Horizontal(
-        brand = brand.name,
+        brand = brandName.orEmpty(),
         name = name,
-        price = priceRange.toPriceType(defaultVariant.price),
-        image = defaultVariant.media.toImageUI(),
-        color = defaultVariant.color?.name.orEmpty(),
-        size = defaultVariant.size?.value.orEmpty(),
+        price = priceRange.toPriceType(variant.price),
+        image = variant.media.firstOrNull().toImageUI(),
+        // TODO(ALFMOB-388): bag stores productId, not handle/slug. PDP requires handle now;
+        // bag domain migration is out of scope for ALFMOB-338.
+        color = variant.colorOption().orEmpty(),
+        size = variant.sizeOption().orEmpty(),
         onClick = { onProductClick(id) },
         onRemoveClick = {
             onRemoveClick(
                 BagProduct(
                     productId = id,
-                    variantSku = defaultVariant.sku
+                    variantSku = variant.sku
                 )
             )
         }
     )
+
+    private fun Product.resolveDefaultVariant(): Variant =
+        variants.firstOrNull { it.id == defaultVariantId }
+            ?: variants.firstOrNull { it.available }
+            ?: variants.first()
+
+    private fun Variant.colorOption(): String? =
+        options.firstOrNull { it.name.equals("color", ignoreCase = true) || it.name.equals("colour", ignoreCase = true) }?.value
+
+    private fun Variant.sizeOption(): String? =
+        options.firstOrNull { it.name.equals("size", ignoreCase = true) }?.value
 }

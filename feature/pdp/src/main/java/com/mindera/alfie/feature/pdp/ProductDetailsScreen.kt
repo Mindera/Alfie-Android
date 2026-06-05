@@ -445,7 +445,6 @@ private fun PdpScreenPreview() {
                     brand = "Givenchy",
                     name = "Seamless sculpt mid thigh short",
                     slug = "slug",
-                    shortDescription = "",
                     information = persistentListOf(),
                     variants = persistentListOf(),
                     isSelectionSoldOut = false,

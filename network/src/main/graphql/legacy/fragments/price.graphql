@@ -7,15 +7,6 @@ fragment PriceInfo on Price {
     }
 }
 
-fragment PriceRangeInfo on PriceRange {
-    high {
-        ...MoneyInfo
-    }
-    low {
-        ...MoneyInfo
-    }
-}
-
 fragment MoneyInfo on Money {
     currencyCode
     amount

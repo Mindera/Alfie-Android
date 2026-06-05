@@ -35,6 +35,7 @@ fragment ProductFragment on OmniProduct {
     slug
     brandName
     descriptionHtml
+    defaultVariantId
     primaryImage {
         ...ImageFragment
     }

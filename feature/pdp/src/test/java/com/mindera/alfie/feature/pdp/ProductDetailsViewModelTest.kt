@@ -18,6 +18,7 @@ import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
+import com.mindera.alfie.feature.pdp.model.ProductDetailsUI
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 import com.mindera.alfie.feature.pdp.model.ShareEvent
 import com.mindera.alfie.feature.uievent.UIEvent
@@ -27,6 +28,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -66,13 +68,16 @@ internal class ProductDetailsViewModelTest {
     @RelaxedMockK
     private lateinit var context: Context
 
+    private val productDetailsUI: ProductDetailsUI = mockk(relaxed = true)
+
     @BeforeEach
     fun setUp() {
         mockkStatic("com.mindera.alfie.feature.pdp.NavArgsGettersKt")
-        every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns productDetailsNavArgs(id = "123456")
+        every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns productDetailsNavArgs(handle = "test-handle")
 
-        coEvery { getProductUseCase(any()) } returns UseCaseResult.Success(product)
+        coEvery { getProductUseCase(any(), any()) } returns UseCaseResult.Success(product)
         coEvery { productDetailsUIFactory(any()) } returns productDetailsUI
+        every { productDetailsUI.copy(isWishlisted = any()) } returns productDetailsUI
     }
 
     @Test

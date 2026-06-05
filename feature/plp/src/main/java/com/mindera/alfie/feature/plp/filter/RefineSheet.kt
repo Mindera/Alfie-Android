@@ -33,6 +33,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import com.mindera.alfie.core.commons.string.currencySymbol
+import com.mindera.alfie.core.commons.string.formatMoney
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
@@ -253,7 +255,7 @@ private fun PriceRangeContent(
     currentFilters: ProductListFilter?,
     onFiltersChange: (ProductListFilter?) -> Unit
 ) {
-    val currencySymbol = formatCurrencySymbol(currentFilters?.currencyCode ?: "USD")
+    val currencySymbol = currencySymbol(currentFilters?.currencyCode ?: "USD")
     val initialMin = (currentFilters?.minPrice?.toFloat() ?: 0f).coerceIn(0f, MAX_PRICE_CAP)
     val initialMax = (currentFilters?.maxPrice?.toFloat() ?: MAX_PRICE_CAP).coerceIn(initialMin, MAX_PRICE_CAP)
 
@@ -420,16 +422,6 @@ private fun ProductListFilter.toPriceLabel(): String? {
         else -> null
     }
 }
-
-private fun formatCurrencySymbol(currencyCode: String): String = when (currencyCode.uppercase()) {
-    "USD" -> "$"
-    "GBP" -> "£"
-    "EUR" -> "€"
-    else -> "$"
-}
-
-private fun formatMoney(amount: Double, currencyCode: String): String =
-    "${formatCurrencySymbol(currencyCode)}${amount.toInt()}"
 
 // region Previews
 

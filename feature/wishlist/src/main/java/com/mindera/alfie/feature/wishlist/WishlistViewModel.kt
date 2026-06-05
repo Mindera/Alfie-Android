@@ -42,7 +42,9 @@ class WishlistViewModel @Inject constructor(
     }
 
     fun onNavigateToProductDetails(productId: String) {
-        navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(id = productId)))
+        // TODO(ALFMOB-388): wishlist storage exposes ID; PDP requires the BFF handle/slug.
+        // Tracked separately — wishlist domain migration is out of scope for ALFMOB-338.
+        navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(handle = productId)))
     }
 
     private suspend fun getWishlistList() {

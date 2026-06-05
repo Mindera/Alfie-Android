@@ -154,7 +154,7 @@ internal class ProductListViewModel @Inject constructor(
                         productListEntryUIFactory(
                             entry = entry,
                             onFavoriteClick = { onFavoriteClick(entry.id) },
-                            onProductClick = { navigateToProduct(entry.id) }
+                            onProductClick = { navigateToProduct(entry.slug) }
                         )
                     }
                 }
@@ -198,10 +198,10 @@ internal class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToProduct(id: String) {
+    private fun navigateToProduct(handle: String) {
         navigateTo(
             screen = Screen.ProductDetails(
-                args = productDetailsNavArgs(id = id)
+                args = productDetailsNavArgs(handle = handle)
             )
         )
     }

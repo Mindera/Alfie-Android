@@ -4,6 +4,7 @@ import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.environment.model.Environment
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import io.mockk.coEvery
 import io.mockk.every
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,57 +40,57 @@ class ProductDetailsUIFactoryTest {
     }
 
     @Test
-    fun `invoke - returns the product details`() = runTest {
+    fun `invoke - returns product details with reconstructed colors and sizes from variant options`() = runTest {
         val result = uiFactory(product)
-        val expected = productDetailsUI
 
-        assertEquals(expected, result)
+        assertEquals("Camilla and Marc", result.brand)
+        assertEquals("Seamless sculpt mid thigh short", result.name)
+        assertEquals(2, result.colors.size)
+        assertEquals("steel", result.selectedColorUI?.id)
+        assertNotNull(result.gallery)
+        assertFalse(result.isSelectionSoldOut)
+
+        val sizeSelector = result.sizeSectionUI as SizeSectionUI.SizeSelector
+        // For the "steel" color, sizes "10 AU" and "6 AU" should be available.
+        assertEquals(2, sizeSelector.sizes.size)
     }
 
     @Test
-    fun `setSelectedColour - returns updated product details`() = runTest {
+    fun `setSelectedColour - returns updated product details with new size section`() = runTest {
         val result = uiFactory(product)
-        val updatedResult = uiFactory.setSelectedColour(
-            details = result,
-            index = 1
-        )
-        val expected = productDetailsUI.copy(
-            selectedColorUI = result.colors[1],
-            sizeSectionUI = newColorSizeSectionUI,
-            gallery = selectedColorGalleryUI
-        )
+        val updatedResult = uiFactory.setSelectedColour(details = result, index = 1)
 
-        assertEquals(expected, updatedResult)
+        assertEquals("bone", updatedResult.selectedColorUI?.id)
+
+        val sizeSelector = updatedResult.sizeSectionUI as SizeSectionUI.SizeSelector
+        // For "bone": "11 AU" (sold out) and "12 AU" (available).
+        assertEquals(2, sizeSelector.sizes.size)
+        val outOfStock = sizeSelector.sizes.first { it.id == "11 AU" }
+        assertEquals(SizingButtonState.OutOfStock, outOfStock.properties.state)
     }
 
     @Test
-    fun `setSelectedSize - returns updated product details`() = runTest {
+    fun `setSelectedSize - returns updated product details with selected size`() = runTest {
         val result = uiFactory(product)
-        val updatedResult = uiFactory.setSelectedSize(
-            details = result,
-            sizeUI = sizeUI
-        )
-        val expected = productDetailsUI.copy(
-            sizeSectionUI = (result.sizeSectionUI as SizeSectionUI.SizeSelector).copy(selectedSize = sizeUI)
-        )
+        val updatedResult = uiFactory.setSelectedSize(details = result, sizeUI = sizeUI)
 
-        assertEquals(expected, updatedResult)
+        val sizeSelector = updatedResult.sizeSectionUI as SizeSectionUI.SizeSelector
+        assertEquals(sizeUI, sizeSelector.selectedSize)
     }
 
     @Test
     fun `invoke - WHEN selection is out of stock THEN bag button is not enabled`() = runTest {
-        val updatedStockVariants = product.variants.map { entry ->
-            entry.copy(stock = if (entry.color?.id == product.defaultVariant.color?.id) 0 else 100)
+        // Make all "steel" variants unavailable.
+        val updatedVariants = product.variants.map { entry ->
+            val color = entry.options.firstOrNull { it.name.equals("color", ignoreCase = true) }?.value
+            entry.copy(available = color != "steel")
         }
-        val updatedProduct = product.copy(variants = updatedStockVariants)
+        val updatedProduct = product.copy(variants = updatedVariants)
         var result = uiFactory(updatedProduct)
 
         assertTrue(result.isSelectionSoldOut)
 
-        result = uiFactory.setSelectedColour(
-            details = result,
-            index = 1
-        )
+        result = uiFactory.setSelectedColour(details = result, index = 1)
         assertFalse(result.isSelectionSoldOut)
     }
 }

@@ -58,7 +58,7 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val _wishlistIds = MutableStateFlow<List<String>>(emptyList())
 
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
-    private val productId = args.id
+    private val handle = args.handle
 
     init {
         collectWishlistIds()
@@ -82,7 +82,7 @@ internal class ProductDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = Loading
 
-            getProductUseCase(productId).doOnResult(
+            getProductUseCase(handle = handle).doOnResult(
                 onSuccess = {
                     val shopUI = uiFactory(it)
                     _state.value = Loaded(

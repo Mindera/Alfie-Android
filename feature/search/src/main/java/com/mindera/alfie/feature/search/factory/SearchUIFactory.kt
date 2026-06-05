@@ -55,7 +55,7 @@ internal class SearchUIFactory @Inject constructor(
             brand = brandName,
             name = name,
             price = price.toPriceType(),
-            onClick = { onProductClick(id) }
+            onClick = { onProductClick(slug) }
         )
     )
 

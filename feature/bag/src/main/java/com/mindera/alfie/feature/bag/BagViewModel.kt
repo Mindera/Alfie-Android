@@ -78,9 +78,11 @@ internal class BagViewModel @Inject constructor(
     }
 
     private fun openProduct(productId: String) {
+        // TODO(ALFMOB-388): bag storage exposes ID; PDP requires the BFF handle/slug.
+        // Tracked separately — bag domain migration is out of scope for ALFMOB-338.
         navigateTo(
             screen = Screen.ProductDetails(
-                args = productDetailsNavArgs(id = productId)
+                args = productDetailsNavArgs(handle = productId)
             )
         )
     }

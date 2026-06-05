@@ -73,8 +73,8 @@ class SearchUIFactoryTest {
             onClick()
         }
 
-        val expectedIds = searchSuggestions.products.map { it.id }
-        assertEquals(expectedIds, clickedIds)
+        val expectedSlugs = searchSuggestions.products.map { it.slug }
+        assertEquals(expectedSlugs, clickedIds)
     }
 
     @Test

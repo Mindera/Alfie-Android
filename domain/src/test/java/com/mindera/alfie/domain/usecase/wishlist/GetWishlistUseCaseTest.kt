@@ -46,8 +46,8 @@ class GetWishlistUseCaseTest {
         val mockProduct1 = mockk<Product>()
         val mockProduct2 = mockk<Product>()
         coEvery { wishlistRepository.getWishlist() } returns flowOf(listOf("id1", "id2"))
-        coEvery { productRepository.getProduct("id1") } returns RepositoryResult.Success(mockProduct1)
-        coEvery { productRepository.getProduct("id2") } returns RepositoryResult.Success(mockProduct2)
+        coEvery { productRepository.getProduct("id1", "shopify") } returns RepositoryResult.Success(mockProduct1)
+        coEvery { productRepository.getProduct("id2", "shopify") } returns RepositoryResult.Success(mockProduct2)
 
         val expected = UseCaseResult.Success(listOf(mockProduct1, mockProduct2))
 
@@ -61,8 +61,8 @@ class GetWishlistUseCaseTest {
     fun `invoke - returns partial success when some product fetches fail`() = runTest {
         val mockProduct1 = mockk<Product>()
         coEvery { wishlistRepository.getWishlist() } returns flowOf(listOf("id1", "id2"))
-        coEvery { productRepository.getProduct("id1") } returns RepositoryResult.Success(mockProduct1)
-        coEvery { productRepository.getProduct("id2") } returns RepositoryResult.Error(ErrorResult(type = ErrorType.GENERIC_ERROR))
+        coEvery { productRepository.getProduct("id1", "shopify") } returns RepositoryResult.Success(mockProduct1)
+        coEvery { productRepository.getProduct("id2", "shopify") } returns RepositoryResult.Error(ErrorResult(type = ErrorType.GENERIC_ERROR))
 
         val expected = UseCaseResult.Success(listOf(mockProduct1))
 
