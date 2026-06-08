@@ -3,9 +3,11 @@ package com.mindera.alfie.data.productlist.service
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.DefaultApolloException
 import com.mindera.alfie.core.test.setPrivatePropertyField
-import com.mindera.alfie.graphql.ProductListingQuery
+import com.mindera.alfie.graphql.bff.ProductListQuery
+import com.mindera.alfie.graphql.bff.type.ProductSortEnum
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,7 +23,7 @@ import kotlin.test.assertEquals
 class ProductListServiceImplTest {
 
     @RelaxedMockK
-    private lateinit var apolloCall: ApolloCall<ProductListingQuery.Data>
+    private lateinit var apolloCall: ApolloCall<ProductListQuery.Data>
 
     @RelaxedMockK
     private lateinit var apolloClient: ApolloClient
@@ -30,26 +32,23 @@ class ProductListServiceImplTest {
     private lateinit var service: ProductListServiceImpl
 
     @Test
-    fun testGetProductListSuccess() = runTest {
-        val expectedData = ProductListingQuery.Data(mockk())
+    fun `getProductList - WHEN response is success THEN returns success`() = runTest {
+        val expectedData = mockk<ProductListQuery.Data>()
         val expectedResult = Result.success(expectedData)
-        val productListingQuery = ProductListingQuery(
-            offset = 0,
-            limit = 15
-        )
-        val mockResponse = mockk<ApolloResponse<ProductListingQuery.Data>>()
+        val mockResponse = mockk<ApolloResponse<ProductListQuery.Data>>()
         mockResponse.setPrivatePropertyField("data", expectedData)
 
-        coEvery { apolloClient.query(productListingQuery) } returns apolloCall
+        coEvery { apolloClient.query(any<ProductListQuery>()) } returns apolloCall
         coEvery { apolloCall.execute() } returns mockResponse
         every { mockResponse.hasErrors() } returns false
         every { mockResponse.dataAssertNoErrors } returns expectedData
 
         val result = service.getProductList(
-            offset = 0,
-            limit = 15,
-            categoryId = null,
-            query = null
+            after = null,
+            collectionHandle = "women",
+            filters = Optional.absent(),
+            sort = ProductSortEnum.NEWEST,
+            limit = 15
         )
 
         assert(result.isSuccess)
@@ -57,24 +56,21 @@ class ProductListServiceImplTest {
     }
 
     @Test
-    fun testGetProductListError() = runTest {
+    fun `getProductList - WHEN response has errors THEN returns failure`() = runTest {
         val error = DefaultApolloException("Error message")
-        val productListingQuery = ProductListingQuery(
-            offset = 0,
-            limit = 15
-        )
-        val mockResponse = mockk<ApolloResponse<ProductListingQuery.Data>>()
+        val mockResponse = mockk<ApolloResponse<ProductListQuery.Data>>()
         mockResponse.setPrivatePropertyField("exception", error)
 
-        coEvery { apolloClient.query(productListingQuery) } returns apolloCall
+        coEvery { apolloClient.query(any<ProductListQuery>()) } returns apolloCall
         coEvery { apolloCall.execute() } returns mockResponse
         every { mockResponse.hasErrors() } returns true
 
         val result = service.getProductList(
-            offset = 0,
-            limit = 15,
-            categoryId = null,
-            query = null
+            after = null,
+            collectionHandle = "women",
+            filters = Optional.absent(),
+            sort = ProductSortEnum.NEWEST,
+            limit = 15
         )
 
         assert(result.isFailure)

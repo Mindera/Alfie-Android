@@ -22,12 +22,13 @@ internal class ProductListEntryUIFactory @Inject constructor(
         ProductListEntryUI(
             id = entry.id,
             productCardData = ProductCardType.Vertical(
-                brand = entry.brand.name,
+                brand = entry.brandName.orEmpty(),
                 name = entry.name,
-                price = entry.priceRange.toPriceType(default = entry.defaultVariant.price),
-                image = entry.defaultVariant.defaultMedia.toImageUI(),
+                price = entry.priceRange.toPriceType(),
+                image = entry.primaryImage.toImageUI(),
                 onClick = onProductClick,
-                onFavoriteClick = onFavoriteClick
+                onFavoriteClick = onFavoriteClick,
+                label = entry.tags.firstOrNull()
             )
         )
     }

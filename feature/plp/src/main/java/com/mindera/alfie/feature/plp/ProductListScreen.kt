@@ -5,21 +5,20 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -28,11 +27,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -48,19 +44,23 @@ import com.mindera.alfie.core.ui.extension.itemsIndexed
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
+import com.mindera.alfie.designsystem.component.button.Button
+import com.mindera.alfie.designsystem.component.button.ButtonSize
+import com.mindera.alfie.designsystem.component.button.ButtonType
+import com.mindera.alfie.designsystem.component.chip.Chip
 import com.mindera.alfie.designsystem.component.loading.LoadingType
 import com.mindera.alfie.designsystem.component.loading.LoadingWithLabel
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
-import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
-import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.feature.plp.model.ProductListEntryUI
 import com.mindera.alfie.feature.plp.model.ProductListEvent
 import com.mindera.alfie.feature.plp.model.ProductListUI
+import com.mindera.alfie.feature.plp.model.QuickFilterChipUI
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.ramcosta.composedestinations.annotation.Destination
@@ -85,13 +85,12 @@ internal fun ProductListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     topBarState.textTopBar(
-        title = state.title,
-        actions = persistentListOf(TopBarAction.Search(rememberSearchState()))
+        title = viewModel.collectionTitle,
+        actions = persistentListOf()
     )
     bottomBarState.hideBottomBar()
 
     LaunchedEffect(Unit) {
-        // Check if the layout mode was changed on back navigation
         if (state != ProductListUI.EMPTY) {
             viewModel.checkLayoutModePreference()
         }
@@ -132,6 +131,19 @@ private fun ProductListScreenContent(
                 )
             }
         }
+
+        if (state.showRefine) {
+            RefineSheet(
+                currentSort = state.selectedSort,
+                currentFilters = state.selectedFilters,
+                totalCount = state.resultCount,
+                onApply = { sort, filters ->
+                    onEvent(ProductListEvent.ApplyRefine(sort, filters))
+                    onEvent(ProductListEvent.DismissRefine)
+                },
+                onDismiss = { onEvent(ProductListEvent.DismissRefine) }
+            )
+        }
     }
 }
 
@@ -162,12 +174,24 @@ private fun ProductListGrid(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
             ) {
                 item(span = { GridItemSpan(columnCount) }) {
-                    ResultCounterSection(
+                    ToolbarSection(
                         resultCount = state.resultCount,
                         layoutMode = state.layoutMode,
                         onEvent = onEvent,
                         isLoading = state.isLoadingMetadata
                     )
+                }
+                // TODO: ALFMOB-337 – Add a horizontally-scrollable quick-filter chip row here once
+                //  the BFF exposes available filter facets (e.g. brand names, product types, sizes).
+                //  Each chip should toggle the corresponding filter on/off without opening the Refine
+                //  sheet. BFF schema currently has no facets in ProductListResponse.
+                if (state.availableFilters.isNotEmpty()) {
+                    item(span = { GridItemSpan(columnCount) }) {
+                        FilterChipsRow(
+                            filters = state.availableFilters,
+                            onToggle = { chipId -> onEvent(ProductListEvent.ToggleFilterChip(chipId)) }
+                        )
+                    }
                 }
                 itemsIndexed(
                     items = products,
@@ -217,7 +241,7 @@ private fun ProductListLoadingState(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
     ) {
         item(span = { GridItemSpan(columnCount) }) {
-            ResultCounterSection(
+            ToolbarSection(
                 resultCount = state.resultCount,
                 layoutMode = state.layoutMode,
                 onEvent = onEvent,
@@ -234,7 +258,7 @@ private fun ProductListLoadingState(
 }
 
 @Composable
-private fun ResultCounterSection(
+private fun ToolbarSection(
     resultCount: Int,
     layoutMode: ProductListLayoutMode,
     onEvent: ClickEventOneArg<ProductListEvent>,
@@ -246,58 +270,37 @@ private fun ResultCounterSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                start = Theme.spacing.spacing12,
-                top = Theme.spacing.spacing8,
-                bottom = Theme.spacing.spacing8
+                horizontal = Theme.spacing.spacing12,
+                vertical = Theme.spacing.spacing8
             )
     ) {
-        FiltersButton(
-            onClick = { onEvent(ProductListEvent.OpenFilters) },
-            isLoading = isLoading
+        LayoutModeToggle(
+            layoutMode = layoutMode,
+            onEvent = onEvent
         )
         ResultCounter(
             resultCount = resultCount,
             isLoading = isLoading
         )
-        LayoutModeToggle(
-            layoutMode = layoutMode,
-            onEvent = onEvent
+        RefineButton(
+            onClick = { onEvent(ProductListEvent.OpenFilters) },
+            isLoading = isLoading
         )
     }
 }
 
 @Composable
-private fun FiltersButton(
+private fun RefineButton(
     onClick: ClickEvent,
     isLoading: Boolean
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clip(shape = Theme.shape.extraSmall)
-            .heightIn(44.dp)
-            .clickable(
-                onClick = onClick,
-                enabled = isLoading.not(),
-                role = Role.Button
-            )
-    ) {
-        Icon(
-            modifier = Modifier
-                .size(Theme.iconSize.small)
-                .padding(start = Theme.spacing.spacing4),
-            painter = painterResource(id = RD.drawable.ic_action_filters),
-            contentDescription = null,
-            tint = Theme.color.primary.mono900
-        )
-        Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
-        Text(
-            modifier = Modifier.padding(end = Theme.spacing.spacing4),
-            text = stringResource(R.string.filters_button_label),
-            style = Theme.typography.paragraph,
-            color = Theme.color.primary.mono900
-        )
-    }
+    Button(
+        type = ButtonType.Underlined,
+        text = stringResource(R.string.filters_button_label),
+        onClick = onClick,
+        buttonSize = ButtonSize.Small,
+        isEnabled = isLoading.not()
+    )
 }
 
 @Composable
@@ -319,11 +322,31 @@ private fun ResultCounter(
 }
 
 @Composable
+private fun FilterChipsRow(
+    filters: List<QuickFilterChipUI>,
+    onToggle: (String) -> Unit
+) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = Theme.spacing.spacing12),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(filters, key = { it.id }) { chip ->
+            Chip(
+                label = chip.label,
+                isSelected = chip.isSelected,
+                onClickEvent = { onToggle(chip.id) }
+            )
+        }
+    }
+}
+
+@Composable
 private fun LayoutModeToggle(
     layoutMode: ProductListLayoutMode,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
-    Row(modifier = Modifier.padding(start = Theme.spacing.spacing4)) {
+    Row {
         LayoutModeButton(
             layoutMode = ProductListLayoutMode.GRID,
             selectedLayoutMode = layoutMode,

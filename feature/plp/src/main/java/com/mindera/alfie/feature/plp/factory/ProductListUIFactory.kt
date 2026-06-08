@@ -38,7 +38,6 @@ internal class ProductListUIFactory @Inject constructor(
         metadata: ProductListMetadata
     ): ProductListUI = withContext(dispatcher.default()) {
         productListUI.copy(
-            title = metadata.title,
             resultCount = metadata.totalResults,
             isLoadingMetadata = false
         )

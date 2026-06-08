@@ -4,14 +4,15 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.testing.TestPager
 import com.mindera.alfie.repository.productlist.ProductListRepository
+import com.mindera.alfie.repository.productlist.model.CursorPagination
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.ErrorResult
 import com.mindera.alfie.repository.result.RepositoryResult
-import com.mindera.alfie.repository.shared.model.Pagination
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
@@ -34,166 +35,90 @@ class ProductListPagingSourceTest {
     private lateinit var repository: ProductListRepository
 
     @Test
-    fun `correctly loads page with categoryId`() = runTest {
-        val pagination = mockk<Pagination>()
+    fun `correctly loads first page`() = runTest {
         val products = List(size = 15) { mockk<ProductListEntry>(relaxed = true) }
         val productList = ProductList(
             products = products,
-            pagination = pagination,
-            title = "Women"
+            pagination = CursorPagination(endCursor = null, hasNextPage = false, totalCount = 15)
         )
-
-        every { pagination.nextPage } returns null
-        every { pagination.previousPage } returns null
-        every { pagination.total } returns 15
         coEvery {
-            repository.getProductList(any(), any(), any(), any())
+            repository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Success(productList)
 
-        val pager = buildPager(
-            categoryId = "123564",
-            query = null,
-            metadataProvider = { }
-        )
-
+        val pager = buildPager(metadataProvider = { })
         val result = pager.refresh()
 
-        assertIs<PagingSource.LoadResult.Page<Int, ProductListEntry>>(result)
+        assertIs<PagingSource.LoadResult.Page<String, ProductListEntry>>(result)
         assertEquals(products, result.data)
+        assertNull(result.nextKey)
     }
 
     @Test
-    fun `correctly loads page with query`() = runTest {
-        val pagination = mockk<Pagination>()
-        val products = List(size = 15) { mockk<ProductListEntry>(relaxed = true) }
-        val productList = ProductList(
-            products = products,
-            pagination = pagination,
-            title = "Women"
-        )
-
-        every { pagination.nextPage } returns null
-        every { pagination.previousPage } returns null
-        every { pagination.total } returns 15
-        coEvery {
-            repository.getProductList(any(), any(), any(), any())
-        } returns RepositoryResult.Success(productList)
-
-        val pager = buildPager(
-            categoryId = null,
-            query = "something",
-            metadataProvider = { }
-        )
-
-        val result = pager.refresh()
-
-        assertIs<PagingSource.LoadResult.Page<Int, ProductListEntry>>(result)
-        assertEquals(products, result.data)
-    }
-
-    @Test
-    fun `correctly loads consecutive pages`() = runTest {
-        val pagination = mockk<Pagination>()
-
-        // Test first page load
-
+    fun `correctly loads consecutive pages with cursor`() = runTest {
         val firstProducts = List(size = 15) { mockk<ProductListEntry>(relaxed = true) }
-        val firstProductList = ProductList(
-            products = firstProducts,
-            pagination = pagination,
-            title = "Women"
-        )
-
-        every { pagination.nextPage } returns 15
-        every { pagination.previousPage } returns null
-        every { pagination.total } returns 20
         coEvery {
-            repository.getProductList(any(), any(), any(), any())
-        } returns RepositoryResult.Success(firstProductList)
-
-        val pager = buildPager(
-            categoryId = "123564",
-            query = null,
-            metadataProvider = { }
+            repository.getProductList(null, any(), any(), any(), any())
+        } returns RepositoryResult.Success(
+            ProductList(
+                products = firstProducts,
+                pagination = CursorPagination(endCursor = "cursor123", hasNextPage = true, totalCount = 20)
+            )
         )
-
-        val initialLoad = pager.refresh()
-
-        assertIs<PagingSource.LoadResult.Page<Int, ProductListEntry>>(initialLoad)
-        assertEquals(firstProducts, initialLoad.data)
-
-        // Test second page load
 
         val secondProducts = List(size = 5) { mockk<ProductListEntry>(relaxed = true) }
-        val secondProductList = ProductList(
-            products = secondProducts,
-            pagination = pagination,
-            title = "Women"
+        coEvery {
+            repository.getProductList("cursor123", any(), any(), any(), any())
+        } returns RepositoryResult.Success(
+            ProductList(
+                products = secondProducts,
+                pagination = CursorPagination(endCursor = null, hasNextPage = false, totalCount = 20)
+            )
         )
 
-        every { pagination.nextPage } returns null
-        every { pagination.previousPage } returns 0
-        every { pagination.total } returns 20
-        coEvery {
-            repository.getProductList(any(), any(), any(), any())
-        } returns RepositoryResult.Success(secondProductList)
+        val pager = buildPager(metadataProvider = { })
+        val initialLoad = pager.refresh()
+
+        assertIs<PagingSource.LoadResult.Page<String, ProductListEntry>>(initialLoad)
+        assertEquals(firstProducts, initialLoad.data)
+        assertEquals("cursor123", initialLoad.nextKey)
 
         val secondLoad = pager.append()
 
-        assertIs<PagingSource.LoadResult.Page<Int, ProductListEntry>>(secondLoad)
+        assertIs<PagingSource.LoadResult.Page<String, ProductListEntry>>(secondLoad)
         assertEquals(secondProducts, secondLoad.data)
+        assertNull(secondLoad.nextKey)
     }
 
     @Test
     fun `fails when request fails`() = runTest {
         val errorResult = mockk<ErrorResult>()
-
         coEvery {
-            repository.getProductList(any(), any(), any(), any())
+            repository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Error(errorResult)
 
-        val pager = buildPager(
-            categoryId = "123564",
-            query = null,
-            metadataProvider = { }
-        )
-
+        val pager = buildPager(metadataProvider = { })
         val result = pager.refresh()
 
-        assertIs<PagingSource.LoadResult.Error<Int, ProductListEntry>>(result)
+        assertIs<PagingSource.LoadResult.Error<String, ProductListEntry>>(result)
         assertEquals(errorResult, result.throwable)
         assertNull(pager.getLastLoadedPage())
     }
 
     @Test
     fun `metadataProvider is called when request succeeds`() = runTest {
-        val pagination = mockk<Pagination>()
         val products = List(size = 15) { mockk<ProductListEntry>(relaxed = true) }
         val productList = ProductList(
             products = products,
-            pagination = pagination,
-            title = "Women"
+            pagination = CursorPagination(endCursor = null, hasNextPage = false, totalCount = 15)
         )
-
         val metadataProvider: (ProductListMetadata) -> Unit = mockk(relaxed = true)
-        val expectedMetadata = ProductListMetadata(
-            title = "Women",
-            totalResults = 15
-        )
+        val expectedMetadata = ProductListMetadata(totalResults = 15)
 
-        every { pagination.nextPage } returns null
-        every { pagination.previousPage } returns null
-        every { pagination.total } returns 15
         coEvery {
-            repository.getProductList(any(), any(), any(), any())
+            repository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Success(productList)
 
-        val pager = buildPager(
-            categoryId = "123564",
-            query = null,
-            metadataProvider = metadataProvider
-        )
-
+        val pager = buildPager(metadataProvider = metadataProvider)
         pager.refresh()
 
         verify { metadataProvider(expectedMetadata) }
@@ -202,34 +127,29 @@ class ProductListPagingSourceTest {
     @Test
     fun `metadataProvider is not called when request fails`() = runTest {
         val errorResult = mockk<ErrorResult>()
-
         coEvery {
-            repository.getProductList(any(), any(), any(), any())
+            repository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Error(errorResult)
 
         val metadataProvider: (ProductListMetadata) -> Unit = mockk(relaxed = true)
-
-        val pager = buildPager(
-            categoryId = "123564",
-            query = null,
-            metadataProvider = metadataProvider
-        )
-
+        val pager = buildPager(metadataProvider = metadataProvider)
         pager.refresh()
 
         verify(exactly = 0) { metadataProvider(any()) }
     }
 
     private fun buildPager(
-        categoryId: String?,
-        query: String?,
+        collectionHandle: String = "women",
+        filters: ProductListFilter? = null,
+        sort: ProductSortOption = ProductSortOption.RECOMMENDED,
         metadataProvider: (ProductListMetadata) -> Unit
     ) = TestPager(
         config = config,
         pagingSource = ProductListPagingSource(
             productListRepository = repository,
-            categoryId = categoryId,
-            query = query,
+            collectionHandle = collectionHandle,
+            filters = filters,
+            sort = sort,
             metadataProvider = metadataProvider
         )
     )

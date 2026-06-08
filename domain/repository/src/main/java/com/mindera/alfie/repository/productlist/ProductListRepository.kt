@@ -1,22 +1,26 @@
 package com.mindera.alfie.repository.productlist
 
 import com.mindera.alfie.repository.productlist.model.ProductList
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.RepositoryResult
 
 interface ProductListRepository {
 
     /**
-     * @param offset starting position within the list
-     * @param limit number of results per page
-     * @param categoryId filter by category ID
-     * @param query filter by custom query
+     * @param after cursor for the next page; null for the first page
+     * @param collectionHandle BFF collection identifier (e.g. "women")
+     * @param filters optional product filters
+     * @param sort sort order, defaults to [ProductSortOption.RECOMMENDED]
+     * @param limit number of products per page
      */
     suspend fun getProductList(
-        offset: Int,
-        limit: Int,
-        categoryId: String?,
-        query: String?
+        after: String?,
+        collectionHandle: String,
+        filters: ProductListFilter?,
+        sort: ProductSortOption,
+        limit: Int
     ): RepositoryResult<ProductList>
 
     suspend fun updateProductListLayoutMode(layoutMode: ProductListLayoutMode): RepositoryResult<Unit>

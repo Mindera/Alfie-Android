@@ -57,7 +57,6 @@ class ProductListUIFactoryTest {
     @Test
     fun `invoke - WHEN metadata is provided THEN correctly maps the information`() = runTest {
         val metadata = ProductListMetadata(
-            title = "Women",
             totalResults = 15
         )
 
@@ -66,7 +65,6 @@ class ProductListUIFactoryTest {
             metadata = metadata
         )
 
-        assertEquals("Women", result.title)
         assertEquals(15, result.resultCount)
         assertFalse(result.isLoadingMetadata)
     }

@@ -3,7 +3,9 @@ package com.mindera.alfie.domain.usecase.productlist
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.mindera.alfie.repository.productlist.ProductListRepository
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.productlist.paging.ProductListPagingSource
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -18,8 +20,9 @@ class GetPaginatedProductListUseCase @Inject constructor(
     }
 
     operator fun invoke(
-        categoryId: String?,
-        query: String?,
+        collectionHandle: String,
+        filters: ProductListFilter?,
+        sort: ProductSortOption,
         metadataProvider: (ProductListMetadata) -> Unit,
         pageSize: Int = DEFAULT_PAGE_SIZE,
         prefetchFraction: Float = DEFAULT_PREFETCH_FRACTION
@@ -32,8 +35,9 @@ class GetPaginatedProductListUseCase @Inject constructor(
     ) {
         ProductListPagingSource(
             productListRepository = repository,
-            categoryId = categoryId,
-            query = query,
+            collectionHandle = collectionHandle,
+            filters = filters,
+            sort = sort,
             metadataProvider = metadataProvider
         )
     }.flow

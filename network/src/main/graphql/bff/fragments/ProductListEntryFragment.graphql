@@ -1,0 +1,20 @@
+fragment ProductListEntryFragment on OmniProduct {
+    id
+    slug
+    name
+    brandName
+    productType
+    inventoryTotal
+    tags
+    primaryImage {
+        ...ImageFragment
+    }
+    priceRange {
+        minVariantPrice {
+            ...MoneyFragment
+        }
+        maxVariantPrice {
+            ...MoneyFragment
+        }
+    }
+}

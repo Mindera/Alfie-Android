@@ -2,12 +2,12 @@ package com.mindera.alfie.domain.usecase.productlist
 
 import androidx.paging.testing.asSnapshot
 import com.mindera.alfie.repository.productlist.ProductListRepository
+import com.mindera.alfie.repository.productlist.model.CursorPagination
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.RepositoryResult
-import com.mindera.alfie.repository.shared.model.Pagination
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -30,22 +30,19 @@ class GetPaginatedProductListUseCaseTest {
     fun `invoke - returns a paging flow`() = runTest {
         val product = mockk<ProductListEntry>(relaxed = true)
         val products = List(size = 15) { product }
-        val pagination = mockk<Pagination>()
+        val pagination = CursorPagination(endCursor = null, hasNextPage = false, totalCount = 15)
         val productList = ProductList(
             pagination = pagination,
-            products = products,
-            title = "Women"
+            products = products
         )
-        every { pagination.nextPage } returns null
-        every { pagination.previousPage } returns null
-        every { pagination.total } returns 15
         coEvery {
-            productListRepository.getProductList(any(), any(), any(), any())
+            productListRepository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Success(productList)
 
         val result = useCase(
-            categoryId = "54684321",
-            query = null,
+            collectionHandle = "women",
+            filters = null,
+            sort = ProductSortOption.RECOMMENDED,
             metadataProvider = { assertEquals(15, it.totalResults) }
         ).asSnapshot()
 

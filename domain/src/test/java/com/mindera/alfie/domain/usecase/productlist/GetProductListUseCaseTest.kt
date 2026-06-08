@@ -3,6 +3,8 @@ package com.mindera.alfie.domain.usecase.productlist
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.ProductList
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
+import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.ErrorResult
 import com.mindera.alfie.repository.result.RepositoryResult
 import io.mockk.coEvery
@@ -30,14 +32,15 @@ class GetProductListUseCaseTest {
         val expected = UseCaseResult.Success(productList)
 
         coEvery {
-            productListRepository.getProductList(any(), any(), any(), any())
+            productListRepository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Success(productList)
 
         val result = useCase(
-            offset = 0,
-            limit = 15,
-            categoryId = "12323164",
-            query = null
+            after = null,
+            collectionHandle = "women",
+            filters = null,
+            sort = ProductSortOption.RECOMMENDED,
+            limit = 15
         )
 
         assertEquals(expected, result)
@@ -49,14 +52,15 @@ class GetProductListUseCaseTest {
         val expected = UseCaseResult.Error(errorResult)
 
         coEvery {
-            productListRepository.getProductList(any(), any(), any(), any())
+            productListRepository.getProductList(any(), any(), any(), any(), any())
         } returns RepositoryResult.Error(errorResult)
 
         val result = useCase(
-            offset = 0,
-            limit = 15,
-            categoryId = null,
-            query = null
+            after = null,
+            collectionHandle = "women",
+            filters = ProductListFilter(brandNames = listOf("Brand"), minPrice = null, maxPrice = null, productTypes = null),
+            sort = ProductSortOption.LOWEST_PRICE,
+            limit = 15
         )
 
         assertEquals(expected, result)
