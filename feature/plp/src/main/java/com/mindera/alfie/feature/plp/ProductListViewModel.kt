@@ -200,7 +200,9 @@ internal class ProductListViewModel @Inject constructor(
                 // filters again, so a stale (older) response can never overwrite a newer one.
                 .flatMapLatest { filters ->
                     flow {
-                        if (filters == _state.value.selectedFilters) {
+                        // Skip the request entirely if the sheet was dismissed within the debounce
+                        // window, or if the pending filters already match the applied ones.
+                        if (!_state.value.showRefine || filters == _state.value.selectedFilters) {
                             emit(null)
                             return@flow
                         }

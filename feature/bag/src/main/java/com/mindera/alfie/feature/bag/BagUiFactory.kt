@@ -23,6 +23,7 @@ internal class BagUiFactory @Inject constructor() {
         val product = products.first { it.slug == item.productId }
         val selectedVariant = product.variants.find { it.sku == item.variantSku } ?: product.resolveDefaultVariant()
         val productCard = product.toProductCard(
+            bagProduct = item,
             variant = selectedVariant,
             onRemoveClick = onRemoveClick,
             onProductClick = onProductClick
@@ -35,6 +36,7 @@ internal class BagUiFactory @Inject constructor() {
     }.toImmutableList()
 
     private fun Product.toProductCard(
+        bagProduct: BagProduct,
         variant: Variant?,
         onRemoveClick: ClickEventOneArg<BagProduct>,
         onProductClick: ClickEventOneArg<String>
@@ -46,14 +48,7 @@ internal class BagUiFactory @Inject constructor() {
         color = variant?.colorOption().orEmpty(),
         size = variant?.sizeOption().orEmpty(),
         onClick = { onProductClick(slug) },
-        onRemoveClick = {
-            onRemoveClick(
-                BagProduct(
-                    productId = slug,
-                    variantSku = variant?.sku.orEmpty()
-                )
-            )
-        }
+        onRemoveClick = { onRemoveClick(bagProduct) }
     )
 
     private fun Product.resolveDefaultVariant(): Variant? =
