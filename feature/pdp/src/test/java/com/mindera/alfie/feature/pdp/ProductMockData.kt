@@ -13,7 +13,7 @@ import com.mindera.alfie.repository.shared.model.Money
 internal const val BASE_URL = "https://www.alfie.com"
 
 private val price = Price(
-    amount = Money(currencyCode = "AUD", amount = 40000, amountFormatted = "$400.00"),
+    amount = Money(currencyCode = "AUD", amount = 400.0, amountFormatted = "$400.00"),
     was = null
 )
 

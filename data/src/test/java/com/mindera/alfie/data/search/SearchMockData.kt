@@ -110,7 +110,7 @@ internal val searchSuggestions = SearchSuggestions(
             slug = "product",
             price = Price(
                 amount = Money(
-                    amount = 100,
+                    amount = 1.0,
                     amountFormatted = "$100",
                     currencyCode = "AUS"
                 ),

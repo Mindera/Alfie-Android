@@ -38,6 +38,7 @@ import com.mindera.alfie.repository.productlist.model.ProductListMetadata
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -49,6 +50,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -187,26 +190,33 @@ internal class ProductListViewModel @Inject constructor(
         restartPager()
     }
 
-    @OptIn(FlowPreview::class)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private fun collectPreviewResultCount() {
         viewModelScope.launch {
             previewFiltersFlow
                 .distinctUntilChanged()
                 .debounce(PREVIEW_DEBOUNCE_MS)
-                .collect { filters ->
-                    if (filters == _state.value.selectedFilters) {
-                        _state.update { it.copy(previewResultCount = null) }
-                        return@collect
+                // flatMapLatest cancels an in-flight count request as soon as the user adjusts
+                // filters again, so a stale (older) response can never overwrite a newer one.
+                .flatMapLatest { filters ->
+                    flow {
+                        if (filters == _state.value.selectedFilters) {
+                            emit(null)
+                            return@flow
+                        }
+                        val result = getProductList(
+                            after = null,
+                            collectionHandle = COLLECTION_HANDLE,
+                            filters = filters,
+                            sort = _state.value.selectedSort,
+                            limit = PREVIEW_PAGE_SIZE
+                        )
+                        emit((result as? UseCaseResult.Success)?.data?.pagination?.totalCount)
                     }
-                    val result = getProductList(
-                        after = null,
-                        collectionHandle = COLLECTION_HANDLE,
-                        filters = filters,
-                        sort = _state.value.selectedSort,
-                        limit = PREVIEW_PAGE_SIZE
-                    )
-                    val count = (result as? UseCaseResult.Success)?.data?.pagination?.totalCount
-                    _state.update { it.copy(previewResultCount = count) }
+                }
+                .collect { count ->
+                    // Ignore results that arrive after the refine sheet was dismissed.
+                    _state.update { if (it.showRefine) it.copy(previewResultCount = count) else it }
                 }
         }
     }

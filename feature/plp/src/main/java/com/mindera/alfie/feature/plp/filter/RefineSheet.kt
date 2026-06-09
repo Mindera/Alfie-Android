@@ -443,18 +443,18 @@ private fun ProductListFilter.toPriceLabel(): String? {
     return when {
         hasMin && hasMax -> stringResource(
             PlpR.string.price_filter_range,
-            formatMoney(minPrice!!, currencyCode),
-            formatMoney(maxPrice!!, currencyCode)
+            formatMoney(minPrice!!, currencyCode, showFractionDigits = false),
+            formatMoney(maxPrice!!, currencyCode, showFractionDigits = false)
         )
         hasMin -> stringResource(
             PlpR.string.price_filter_range,
-            formatMoney(minPrice!!, currencyCode),
+            formatMoney(minPrice!!, currencyCode, showFractionDigits = false),
             "∞"
         )
         hasMax -> stringResource(
             PlpR.string.price_filter_range,
-            formatMoney(0.0, currencyCode),
-            formatMoney(maxPrice!!, currencyCode)
+            formatMoney(0.0, currencyCode, showFractionDigits = false),
+            formatMoney(maxPrice!!, currencyCode, showFractionDigits = false)
         )
         else -> null
     }

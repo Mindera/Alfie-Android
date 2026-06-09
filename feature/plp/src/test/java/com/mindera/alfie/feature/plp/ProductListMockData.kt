@@ -62,8 +62,8 @@ internal val productsVerticalUI = listOf(
             name = "Product name",
             brand = "Brand",
             price = PriceType.Range(
-                startPrice = "A$100.00",
-                endPrice = "A$200.00"
+                startPrice = "$100.00",
+                endPrice = "$200.00"
             ),
             image = ImageUI(
                 images = persistentListOf(
@@ -83,7 +83,7 @@ internal val productsVerticalUI = listOf(
         productCardData = ProductCardType.Vertical(
             name = "Product 2",
             brand = "Brand 2",
-            price = PriceType.Default(price = "A$100.00"),
+            price = PriceType.Default(price = "$100.00"),
             image = ImageUI(
                 images = persistentListOf(ImageSizeUI.Custom(url = "")),
                 alt = null

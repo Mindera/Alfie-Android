@@ -41,16 +41,16 @@ class WishlistUIFactory @Inject constructor() {
         return ProductCardType.Vertical(
             brand = product.brandName.orEmpty(),
             name = product.name,
-            price = product.priceRange.toPriceType(defaultVariant.price),
-            image = defaultVariant.media.firstOrNull().toImageUI(),
+            price = product.priceRange.toPriceType(defaultVariant?.price),
+            image = defaultVariant?.media?.firstOrNull().toImageUI(),
             onClick = onClick,
             onRemoveClick = onRemoveClick,
             addToBagClick = onAddToBagClick
         )
     }
 
-    private fun Product.resolveDefaultVariant(): Variant =
+    private fun Product.resolveDefaultVariant(): Variant? =
         variants.firstOrNull { it.id == defaultVariantId }
             ?: variants.firstOrNull { it.available }
-            ?: variants.first()
+            ?: variants.firstOrNull()
 }

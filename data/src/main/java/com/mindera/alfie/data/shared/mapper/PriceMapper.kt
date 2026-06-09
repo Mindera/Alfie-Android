@@ -12,6 +12,8 @@ internal fun PriceInfo.toDomain() = Price(
 
 private fun MoneyInfo.toDomain() = Money(
     currencyCode = currencyCode,
-    amount = amount,
+    amount = amount.toDouble() / MINOR_UNITS_PER_MAJOR,
     amountFormatted = amountFormatted
 )
+
+private const val MINOR_UNITS_PER_MAJOR = 100.0

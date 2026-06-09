@@ -35,31 +35,31 @@ internal class BagUiFactory @Inject constructor() {
     }.toImmutableList()
 
     private fun Product.toProductCard(
-        variant: Variant,
+        variant: Variant?,
         onRemoveClick: ClickEventOneArg<BagProduct>,
         onProductClick: ClickEventOneArg<String>
     ) = ProductCardType.Horizontal(
         brand = brandName.orEmpty(),
         name = name,
-        price = priceRange.toPriceType(variant.price),
-        image = variant.media.firstOrNull().toImageUI(),
-        color = variant.colorOption().orEmpty(),
-        size = variant.sizeOption().orEmpty(),
+        price = priceRange.toPriceType(variant?.price),
+        image = variant?.media?.firstOrNull().toImageUI(),
+        color = variant?.colorOption().orEmpty(),
+        size = variant?.sizeOption().orEmpty(),
         onClick = { onProductClick(slug) },
         onRemoveClick = {
             onRemoveClick(
                 BagProduct(
                     productId = slug,
-                    variantSku = variant.sku
+                    variantSku = variant?.sku.orEmpty()
                 )
             )
         }
     )
 
-    private fun Product.resolveDefaultVariant(): Variant =
+    private fun Product.resolveDefaultVariant(): Variant? =
         variants.firstOrNull { it.id == defaultVariantId }
             ?: variants.firstOrNull { it.available }
-            ?: variants.first()
+            ?: variants.firstOrNull()
 
     private fun Variant.colorOption(): String? =
         options.firstOrNull { it.name.equals("color", ignoreCase = true) || it.name.equals("colour", ignoreCase = true) }?.value

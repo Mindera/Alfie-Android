@@ -44,8 +44,8 @@ private fun ProductVariantFragment.toDomain(): Variant = Variant(
 
 private fun MoneyFragment.toDomain(): Money = Money(
     currencyCode = currencyCode,
-    amount = amount.toInt(),
-    amountFormatted = formatMoney(amount = amount.toDouble(), currencyCode = currencyCode)
+    amount = amount,
+    amountFormatted = formatMoney(amount = amount, currencyCode = currencyCode)
 )
 
 private fun ImageFragment.toDomain(): Media.Image = Media.Image(

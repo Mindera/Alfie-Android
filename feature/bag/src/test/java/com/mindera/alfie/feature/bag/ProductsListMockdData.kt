@@ -31,16 +31,16 @@ internal val products = listOf(
         defaultVariantId = "variant2",
         images = listOf(image1),
         priceRange = PriceRange(
-            low = Money(amount = 100, amountFormatted = "$100", currencyCode = "AUS"),
-            high = Money(amount = 200, amountFormatted = "$200", currencyCode = "AUS")
+            low = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
+            high = Money(amount = 200.0, amountFormatted = "$200", currencyCode = "AUS")
         ),
         variants = listOf(
             Variant(
                 id = "variant1Id",
                 sku = "variant1",
                 price = Price(
-                    amount = Money(amount = 100, amountFormatted = "$100", currencyCode = "AUS"),
-                    was = Money(amount = 200, amountFormatted = "$200", currencyCode = "AUS")
+                    amount = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
+                    was = Money(amount = 200.0, amountFormatted = "$200", currencyCode = "AUS")
                 ),
                 options = listOf(
                     VariantOption(name = "color", value = "blue"),
@@ -60,7 +60,7 @@ internal val products = listOf(
         defaultVariantId = null,
         images = emptyList(),
         priceRange = PriceRange(
-            low = Money(amount = 100, amountFormatted = "$100", currencyCode = "AUS"),
+            low = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
             high = null
         ),
         variants = listOf(
@@ -68,7 +68,7 @@ internal val products = listOf(
                 id = "variant11Id",
                 sku = "variant11",
                 price = Price(
-                    amount = Money(amount = 100, amountFormatted = "$100", currencyCode = "AUS"),
+                    amount = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
                     was = null
                 ),
                 options = listOf(

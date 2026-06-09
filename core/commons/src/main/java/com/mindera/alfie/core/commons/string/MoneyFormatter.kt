@@ -13,8 +13,20 @@ fun currencySymbol(currencyCode: String): String = when (currencyCode.uppercase(
 }
 
 /**
- * Formats a money amount as a display string using [currencySymbol] and a truncated integer part.
- * Example: `formatMoney(199.99, "USD") == "$199"`.
+ * Formats a money [amount] (in major currency units) as a display string by prefixing the
+ * [currencySymbol]. Example: `formatMoney(199.99, "USD") == "$199.99"`.
+ *
+ * Intentionally not locale-aware: the BFF is expected to own currency formatting; this is a
+ * client-side stand-in until that contract lands.
+ *
+ * @param showFractionDigits when `false`, the fractional part is dropped (e.g. `"$199"`),
+ * useful for compact contexts such as price-range slider labels.
  */
-fun formatMoney(amount: Double, currencyCode: String): String =
-    "${currencySymbol(currencyCode)}${amount.toInt()}"
+fun formatMoney(
+    amount: Double,
+    currencyCode: String,
+    showFractionDigits: Boolean = true
+): String {
+    val symbol = currencySymbol(currencyCode)
+    return if (showFractionDigits) "$symbol%.2f".format(amount) else "$symbol${amount.toInt()}"
+}
