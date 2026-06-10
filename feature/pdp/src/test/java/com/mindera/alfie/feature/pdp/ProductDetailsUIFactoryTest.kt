@@ -3,25 +3,37 @@ package com.mindera.alfie.feature.pdp
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.environment.model.Environment
-import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
-@ExtendWith(MockKExtension::class, CoroutineExtension::class)
+/**
+ * Runs under Robolectric because [ProductDetailsUIFactory.invoke] maps the product description via
+ * `stripHtml` -> `HtmlCompat.fromHtml` (android.text.Html), which requires the Android framework.
+ * JUnit4 here is executed on the JUnit5 Platform via the junit-vintage engine.
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
 class ProductDetailsUIFactoryTest {
 
     @RelaxedMockK
@@ -33,10 +45,17 @@ class ProductDetailsUIFactoryTest {
     @InjectMockKs
     private lateinit var uiFactory: ProductDetailsUIFactory
 
-    @BeforeEach
+    @Before
     fun setup() {
+        MockKAnnotations.init(this)
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         every { dispatcherProvider.default() } returns Dispatchers.Main
         coEvery { environmentManager.current() } returns Environment.Prod(graphQLUrl = "", webUrl = BASE_URL)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -92,5 +111,75 @@ class ProductDetailsUIFactoryTest {
 
         result = uiFactory.setSelectedColour(details = result, index = 1)
         assertFalse(result.isSelectionSoldOut)
+    }
+
+    @Test
+    fun `resolveDefaultVariant - WHEN defaultVariantId matches a variant THEN that variant's colour is selected`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = "v3",
+            variants = listOf(
+                variant(id = "v1", sku = "s1", color = "steel", size = "10 AU"),
+                variant(id = "v3", sku = "s3", color = "bone", size = "12 AU")
+            )
+        )
+
+        val result = uiFactory(testProduct)
+
+        assertEquals("bone", result.selectedColorUI?.id)
+    }
+
+    @Test
+    fun `resolveDefaultVariant - WHEN defaultVariantId is absent THEN falls back to first available variant`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = "missing",
+            variants = listOf(
+                variant(id = "a", sku = "sa", color = "red", size = "S", available = false),
+                variant(id = "b", sku = "sb", color = "blue", size = "M", available = true)
+            )
+        )
+
+        val result = uiFactory(testProduct)
+
+        assertEquals("blue", result.selectedColorUI?.id)
+    }
+
+    @Test
+    fun `resolveDefaultVariant - WHEN no variant is available THEN falls back to the first variant`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = "missing",
+            variants = listOf(
+                variant(id = "a", sku = "sa", color = "red", size = "S", available = false),
+                variant(id = "b", sku = "sb", color = "blue", size = "M", available = false)
+            )
+        )
+
+        val result = uiFactory(testProduct)
+
+        assertEquals("red", result.selectedColorUI?.id)
+    }
+
+    @Test
+    fun `resolveDefaultVariant - WHEN defaultVariantId is null THEN falls back to first available variant`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = null,
+            variants = listOf(
+                variant(id = "a", sku = "sa", color = "red", size = "S", available = false),
+                variant(id = "b", sku = "sb", color = "blue", size = "M", available = true)
+            )
+        )
+
+        val result = uiFactory(testProduct)
+
+        assertEquals("blue", result.selectedColorUI?.id)
+    }
+
+    @Test
+    fun `resolveDefaultVariant - WHEN variants are empty THEN does not crash and selects no colour`() = runTest {
+        val testProduct = product.copy(defaultVariantId = null, variants = emptyList())
+
+        val result = uiFactory(testProduct)
+
+        assertTrue(result.colors.isEmpty())
+        assertNull(result.selectedColorUI)
     }
 }

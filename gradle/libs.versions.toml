@@ -49,6 +49,7 @@ paging = "3.3.5"
 protobufLite = "3.24.3"
 protobufPlugin = "0.9.4"
 protobufProtoc = "21.0-rc-1"
+robolectric = "4.14.1"
 room = "2.6.1"
 timber = "5.0.1"
 turbine = "1.0.0"
@@ -110,6 +111,7 @@ junit5 = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref 
 junit5-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junit5" }
 junit5-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit5" }
 junit5-runner = { group = "de.mannodermaus.junit5", name = "android-test-runner", version.ref = "junit5-instrumentation" }
+junit5-vintage = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junit5" }
 kotlin-collectionsImmutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-collectionsImmutable" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
@@ -130,6 +132,7 @@ paging-testing = { group = "androidx.paging", name = "paging-testing", version.r
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
 protobuf-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobufLite" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobufProtoc" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 room = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "test-core-ktx" }

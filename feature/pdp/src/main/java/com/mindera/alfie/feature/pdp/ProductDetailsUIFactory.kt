@@ -1,5 +1,6 @@
 package com.mindera.alfie.feature.pdp
 
+import androidx.core.text.HtmlCompat
 import com.mindera.alfie.core.commons.color.ColorNameToHex
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.core.commons.string.StringResource
@@ -120,7 +121,12 @@ internal class ProductDetailsUIFactory @Inject constructor(
                 slug = details.slug,
                 price = variant?.price?.amount?.amountFormatted.orEmpty()
             ),
-            gallery = (variant?.media ?: emptyList<Media.Image>()).toGalleryUI()
+            // Fall back to the existing gallery when the selected colour has no media,
+            // mirroring galleryFor()'s "never blank" behaviour on initial load.
+            gallery = variant?.media
+                ?.takeIf { it.isNotEmpty() }
+                ?.toGalleryUI()
+                ?: details.gallery
         )
     }
 
@@ -296,15 +302,17 @@ internal class ProductDetailsUIFactory @Inject constructor(
     }
 }
 
-private val HTML_BLOCK_BREAK_REGEX = Regex("</(p|div|li|h[1-6])>|<br\\s*/?>", RegexOption.IGNORE_CASE)
-private val HTML_TAG_REGEX = Regex("<[^>]+>")
 private val MULTI_NEWLINE_REGEX = Regex("\n{3,}")
 
-private fun String?.stripHtml(): String {
+/**
+ * Converts an HTML description to display plain text: strips tags and decodes HTML entities
+ * (e.g. `&amp;` → `&`, `&pound;` → `£`) via [HtmlCompat], collapsing block elements to newlines.
+ */
+internal fun String?.stripHtml(): String {
     if (this.isNullOrBlank()) return ""
-    return HTML_BLOCK_BREAK_REGEX.replace(this, "\n")
-        .let { HTML_TAG_REGEX.replace(it, "") }
-        .replace("&nbsp;", " ")
+    return HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT)
+        .toString()
+        .replace('\u00A0', ' ') // normalise non-breaking spaces (from &nbsp;) to regular spaces
         .let { MULTI_NEWLINE_REGEX.replace(it, "\n\n") }
         .trim()
 }
