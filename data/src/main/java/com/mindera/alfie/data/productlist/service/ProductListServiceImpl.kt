@@ -3,6 +3,7 @@ package com.mindera.alfie.data.productlist.service
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.mindera.alfie.graphql.bff.ProductListQuery
+import com.mindera.alfie.graphql.bff.SearchProductsQuery
 import com.mindera.alfie.graphql.bff.type.ProductFilterInput
 import com.mindera.alfie.graphql.bff.type.ProductSortEnum
 import com.mindera.alfie.network.di.NewClient
@@ -26,6 +27,23 @@ internal class ProductListServiceImpl @Inject constructor(
         query(
             ProductListQuery(
                 collectionHandle = collectionHandle,
+                after = Optional.presentIfNotNull(after),
+                filters = filters,
+                sort = Optional.present(sort),
+                limit = Optional.present(limit)
+            )
+        ).unwrap()
+
+    override suspend fun searchProducts(
+        after: String?,
+        searchTerm: String,
+        filters: Optional<ProductFilterInput>,
+        sort: ProductSortEnum,
+        limit: Int
+    ): Result<SearchProductsQuery.Data> =
+        query(
+            SearchProductsQuery(
+                searchTerm = searchTerm,
                 after = Optional.presentIfNotNull(after),
                 filters = filters,
                 sort = Optional.present(sort),

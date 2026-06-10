@@ -5,6 +5,7 @@ import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import javax.inject.Inject
 
@@ -14,7 +15,7 @@ class GetProductListUseCase @Inject constructor(
 
     suspend operator fun invoke(
         after: String?,
-        collectionHandle: String,
+        source: ProductListQuerySource,
         filters: ProductListFilter?,
         sort: ProductSortOption,
         limit: Int
@@ -22,7 +23,7 @@ class GetProductListUseCase @Inject constructor(
         run(
             productListRepository.getProductList(
                 after = after,
-                collectionHandle = collectionHandle,
+                source = source,
                 filters = filters,
                 sort = sort,
                 limit = limit

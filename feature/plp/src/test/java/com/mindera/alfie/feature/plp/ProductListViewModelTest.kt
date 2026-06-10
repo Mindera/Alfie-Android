@@ -26,6 +26,7 @@ import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import io.mockk.coEvery
 import io.mockk.every
@@ -148,7 +149,29 @@ class ProductListViewModelTest {
         buildViewModel()
 
         @Suppress("UnusedFlow")
-        verify { getPaginatedProductListUseCase("women", any(), any(), any(), any()) }
+        verify { getPaginatedProductListUseCase(ProductListQuerySource.Collection("women"), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `init - WHEN type is Search THEN uses the search query source`() = runTest {
+        buildViewModel(type = ProductListType.Search("cream"))
+
+        @Suppress("UnusedFlow")
+        verify { getPaginatedProductListUseCase(ProductListQuerySource.Search("cream"), any(), any(), any(), any()) }
+    }
+
+    @Test
+    fun `searchQuery - WHEN type is Search THEN exposes the query`() = runTest {
+        val viewModel = buildViewModel(type = ProductListType.Search("cream"))
+
+        assertEquals("cream", viewModel.searchQuery)
+    }
+
+    @Test
+    fun `searchQuery - WHEN type is not Search THEN is null`() = runTest {
+        val viewModel = buildViewModel(type = ProductListType.Category.Slug("women"))
+
+        assertNull(viewModel.searchQuery)
     }
 
     @Test

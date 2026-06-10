@@ -9,6 +9,7 @@ import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.ErrorResult
 import com.mindera.alfie.repository.result.RepositoryResult
@@ -139,7 +140,7 @@ class ProductListPagingSourceTest {
     }
 
     private fun buildPager(
-        collectionHandle: String = "women",
+        source: ProductListQuerySource = ProductListQuerySource.Collection("women"),
         filters: ProductListFilter? = null,
         sort: ProductSortOption = ProductSortOption.RECOMMENDED,
         metadataProvider: (ProductListMetadata) -> Unit
@@ -147,7 +148,7 @@ class ProductListPagingSourceTest {
         config = config,
         pagingSource = ProductListPagingSource(
             productListRepository = repository,
-            collectionHandle = collectionHandle,
+            source = source,
             filters = filters,
             sort = sort,
             metadataProvider = metadataProvider

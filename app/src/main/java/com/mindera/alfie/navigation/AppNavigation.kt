@@ -175,9 +175,6 @@ private fun DefaultOverlayContent(
         onSearchAction = { handler ->
             searchState?.setOnSearchAction(handler)
         },
-        onUpdateSearchTerm = { handler ->
-            searchState?.setCustomOnSearchTermChange(handler)
-        },
         navController = getNavController(),
         directionProvider = directionProvider,
         modifier = Modifier.padding(paddingValues),

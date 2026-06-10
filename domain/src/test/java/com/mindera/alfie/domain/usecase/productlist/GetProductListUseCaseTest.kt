@@ -4,6 +4,7 @@ import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.ErrorResult
 import com.mindera.alfie.repository.result.RepositoryResult
@@ -37,7 +38,7 @@ class GetProductListUseCaseTest {
 
         val result = useCase(
             after = null,
-            collectionHandle = "women",
+            source = ProductListQuerySource.Collection("women"),
             filters = null,
             sort = ProductSortOption.RECOMMENDED,
             limit = 15
@@ -57,7 +58,7 @@ class GetProductListUseCaseTest {
 
         val result = useCase(
             after = null,
-            collectionHandle = "women",
+            source = ProductListQuerySource.Collection("women"),
             filters = ProductListFilter(brandNames = listOf("Brand"), minPrice = null, maxPrice = null, productTypes = null),
             sort = ProductSortOption.LOWEST_PRICE,
             limit = 15

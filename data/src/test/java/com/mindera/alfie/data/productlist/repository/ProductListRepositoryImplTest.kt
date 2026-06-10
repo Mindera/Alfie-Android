@@ -4,11 +4,14 @@ import com.mindera.alfie.data.datastore.UserPreferencesProto.ProductListLayoutMo
 import com.mindera.alfie.data.datastore.user.UserPreferencesDataSource
 import com.mindera.alfie.data.productlist.service.ProductListService
 import com.mindera.alfie.graphql.bff.ProductListQuery
+import com.mindera.alfie.graphql.bff.SearchProductsQuery
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.RepositoryResult
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -48,7 +51,7 @@ class ProductListRepositoryImplTest {
 
         val result = repository.getProductList(
             after = null,
-            collectionHandle = "women",
+            source = ProductListQuerySource.Collection("women"),
             filters = null,
             sort = ProductSortOption.RECOMMENDED,
             limit = 15
@@ -62,12 +65,39 @@ class ProductListRepositoryImplTest {
     }
 
     @Test
+    fun `getProductList - WHEN source is search THEN calls searchProducts and returns mapped data`() = runTest {
+        val mockData = mockk<SearchProductsQuery.Data>(relaxed = true)
+        val mockSearchProducts = mockk<SearchProductsQuery.SearchProducts>(relaxed = true)
+        val mockPageInfo = mockk<SearchProductsQuery.PageInfo>(relaxed = true)
+        every { mockData.searchProducts } returns mockSearchProducts
+        every { mockSearchProducts.products } returns emptyList()
+        every { mockSearchProducts.pageInfo } returns mockPageInfo
+        every { mockPageInfo.endCursor } returns "next-cursor"
+        every { mockPageInfo.hasNextPage } returns true
+        every { mockSearchProducts.totalCount } returns 7
+        coEvery { productListService.searchProducts(any(), any(), any(), any(), any()) } returns Result.success(mockData)
+
+        val result = repository.getProductList(
+            after = null,
+            source = ProductListQuerySource.Search("dress"),
+            filters = null,
+            sort = ProductSortOption.RECOMMENDED,
+            limit = 15
+        )
+
+        coVerify { productListService.searchProducts(after = null, searchTerm = "dress", filters = any(), sort = any(), limit = 15) }
+        assertIs<RepositoryResult.Success<ProductList>>(result)
+        assertEquals("next-cursor", result.data.pagination.endCursor)
+        assertEquals(7, result.data.pagination.totalCount)
+    }
+
+    @Test
     fun `getProductList - WHEN result is failure THEN return error`() = runTest {
         coEvery { productListService.getProductList(any(), any(), any(), any(), any()) } returns Result.failure(mockk())
 
         val result = repository.getProductList(
             after = null,
-            collectionHandle = "women",
+            source = ProductListQuerySource.Collection("women"),
             filters = null,
             sort = ProductSortOption.RECOMMENDED,
             limit = 15

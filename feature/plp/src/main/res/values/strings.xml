@@ -3,6 +3,10 @@
     <string name="filters_button_label">Refine</string>
     <string name="results_counter">%1$d results</string>
 
+    <!-- Search no-results -->
+    <string name="plp_search_no_results_title">No results found for \"%1$s\"</string>
+    <string name="plp_search_no_results_subtitle">Please check the spelling or try different words.</string>
+
     <!-- Refine sheet -->
     <string name="refine_title">Refine</string>
     <string name="refine_remove_all">Remove All</string>

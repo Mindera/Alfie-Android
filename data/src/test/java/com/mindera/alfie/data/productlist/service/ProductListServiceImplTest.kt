@@ -7,6 +7,7 @@ import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.exception.DefaultApolloException
 import com.mindera.alfie.core.test.setPrivatePropertyField
 import com.mindera.alfie.graphql.bff.ProductListQuery
+import com.mindera.alfie.graphql.bff.SearchProductsQuery
 import com.mindera.alfie.graphql.bff.type.ProductSortEnum
 import io.mockk.coEvery
 import io.mockk.every
@@ -74,5 +75,29 @@ class ProductListServiceImplTest {
         )
 
         assert(result.isFailure)
+    }
+
+    @Test
+    fun `searchProducts - WHEN response is success THEN returns success`() = runTest {
+        val expectedData = mockk<SearchProductsQuery.Data>()
+        val searchCall = mockk<ApolloCall<SearchProductsQuery.Data>>(relaxed = true)
+        val mockResponse = mockk<ApolloResponse<SearchProductsQuery.Data>>()
+        mockResponse.setPrivatePropertyField("data", expectedData)
+
+        coEvery { apolloClient.query(any<SearchProductsQuery>()) } returns searchCall
+        coEvery { searchCall.execute() } returns mockResponse
+        every { mockResponse.hasErrors() } returns false
+        every { mockResponse.dataAssertNoErrors } returns expectedData
+
+        val result = service.searchProducts(
+            after = null,
+            searchTerm = "dress",
+            filters = Optional.absent(),
+            sort = ProductSortEnum.NEWEST,
+            limit = 15
+        )
+
+        assert(result.isSuccess)
+        assertEquals(Result.success(expectedData), result)
     }
 }

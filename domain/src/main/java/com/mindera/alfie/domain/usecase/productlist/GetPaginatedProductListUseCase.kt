@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.productlist.paging.ProductListPagingSource
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class GetPaginatedProductListUseCase @Inject constructor(
     }
 
     operator fun invoke(
-        collectionHandle: String,
+        source: ProductListQuerySource,
         filters: ProductListFilter?,
         sort: ProductSortOption,
         metadataProvider: (ProductListMetadata) -> Unit,
@@ -35,7 +36,7 @@ class GetPaginatedProductListUseCase @Inject constructor(
     ) {
         ProductListPagingSource(
             productListRepository = repository,
-            collectionHandle = collectionHandle,
+            source = source,
             filters = filters,
             sort = sort,
             metadataProvider = metadataProvider
