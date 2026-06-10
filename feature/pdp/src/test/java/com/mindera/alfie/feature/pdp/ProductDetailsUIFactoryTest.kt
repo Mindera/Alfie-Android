@@ -182,4 +182,23 @@ class ProductDetailsUIFactoryTest {
         assertTrue(result.colors.isEmpty())
         assertNull(result.selectedColorUI)
     }
+
+    @Test
+    fun `setSelectedColour - WHEN the selected colour has no media THEN retains the existing gallery`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                variant(id = "v1", sku = "s1", color = "steel", size = "10 AU"),
+                variant(id = "v2", sku = "s2", color = "bone", size = "12 AU").copy(media = emptyList())
+            )
+        )
+        val details = uiFactory(testProduct)
+        val galleryBeforeSwitch = details.gallery
+
+        // index 1 = "bone", whose variant carries no media — gallery must not go blank.
+        val result = uiFactory.setSelectedColour(details = details, index = 1)
+
+        assertEquals("bone", result.selectedColorUI?.id)
+        assertEquals(galleryBeforeSwitch, result.gallery)
+    }
 }
