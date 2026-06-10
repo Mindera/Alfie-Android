@@ -8,6 +8,7 @@ import com.mindera.alfie.feature.mappers.toPriceType
 import com.mindera.alfie.repository.bag.BagProduct
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.product.model.Variant
+import com.mindera.alfie.repository.product.model.resolveDefaultVariant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
@@ -50,11 +51,6 @@ internal class BagUiFactory @Inject constructor() {
         onClick = { onProductClick(slug) },
         onRemoveClick = { onRemoveClick(bagProduct) }
     )
-
-    private fun Product.resolveDefaultVariant(): Variant? =
-        variants.firstOrNull { it.id == defaultVariantId }
-            ?: variants.firstOrNull { it.available }
-            ?: variants.firstOrNull()
 
     private fun Variant.colorOption(): String? =
         options.firstOrNull { it.name.equals("color", ignoreCase = true) || it.name.equals("colour", ignoreCase = true) }?.value

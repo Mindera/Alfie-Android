@@ -13,3 +13,8 @@ data class Product(
     val priceRange: PriceRange?,
     val variants: List<Variant>
 )
+
+fun Product.resolveDefaultVariant(): Variant? =
+    variants.firstOrNull { it.id == defaultVariantId }
+        ?: variants.firstOrNull { it.available }
+        ?: variants.firstOrNull()

@@ -24,6 +24,7 @@ import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.product.model.Variant
+import com.mindera.alfie.repository.product.model.resolveDefaultVariant
 import com.mindera.alfie.repository.shared.model.Media
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -166,11 +167,6 @@ internal class ProductDetailsUIFactory @Inject constructor(
         val defaultColor = defaultVariant?.colorValue() ?: return firstOrNull()
         return firstOrNull { it.id == defaultColor } ?: firstOrNull()
     }
-
-    private fun Product.resolveDefaultVariant(): Variant? =
-        variants.firstOrNull { it.id == defaultVariantId }
-            ?: variants.firstOrNull { it.available }
-            ?: variants.firstOrNull()
 
     private fun Product.galleryFor(selectedColorId: String?, defaultVariant: Variant?): GalleryUI {
         val variantImages = variants.firstOrNull { it.colorValue() == selectedColorId }?.media
