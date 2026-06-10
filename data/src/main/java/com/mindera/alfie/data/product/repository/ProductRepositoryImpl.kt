@@ -12,8 +12,11 @@ internal class ProductRepositoryImpl @Inject constructor(
     private val productService: ProductService
 ) : ProductRepository {
 
-    override suspend fun getProduct(productId: String): RepositoryResult<Product> =
-        productService.getProduct(productId = productId)
-            .mapCatching { data -> data.product?.productInfo?.toDomain() ?: throw NullPointerException("The product field in Data was null") }
+    override suspend fun getProduct(handle: String, platform: String): RepositoryResult<Product> =
+        productService.getProduct(handle = handle, platform = platform)
+            .mapCatching { data ->
+                data.productDetails?.productFragment?.toDomain()
+                    ?: error("productDetails was null for handle=$handle")
+            }
             .toRepositoryResult()
 }

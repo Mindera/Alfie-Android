@@ -1,7 +1,8 @@
 package com.mindera.alfie.feature.pdp
 
+import androidx.core.text.HtmlCompat
+import com.mindera.alfie.core.commons.color.ColorNameToHex
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
-import com.mindera.alfie.core.commons.extension.isNotNullOrBlank
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.environment.model.Environment
@@ -9,9 +10,6 @@ import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.MediaUI
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
-import com.mindera.alfie.core.ui.media.video.VideoPreviewImageUI
-import com.mindera.alfie.core.ui.media.video.VideoSourceUI
-import com.mindera.alfie.core.ui.media.video.VideoUI
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonProperties
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
 import com.mindera.alfie.designsystem.component.swatch.SwatchType
@@ -26,8 +24,8 @@ import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.product.model.Variant
+import com.mindera.alfie.repository.product.model.resolveDefaultVariant
 import com.mindera.alfie.repository.shared.model.Media
-import com.mindera.alfie.repository.shared.model.Size
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -45,12 +43,15 @@ internal class ProductDetailsUIFactory @Inject constructor(
         internal const val DELIVERY_RETURNS_URL = "return-options"
         internal const val PAYMENT_OPTIONS_URL = "payment-options"
 
+        private const val OPTION_NAME_COLOR = "color"
+        private const val OPTION_NAME_COLOUR = "colour"
+        private const val OPTION_NAME_SIZE = "size"
+
         val LOADING = ProductDetailsUI(
             id = "",
             brand = "",
             name = "",
             slug = "",
-            shortDescription = "",
             colors = persistentListOf(
                 ColorUI(
                     id = "",
@@ -75,27 +76,31 @@ internal class ProductDetailsUIFactory @Inject constructor(
 
     suspend operator fun invoke(product: Product): ProductDetailsUI = withContext(dispatcher.default()) {
         val environment = environmentManager.current()
+        val defaultVariant = product.resolveDefaultVariant()
         val colors = product.mapColors()
-        val selectedColor = colors.find { it.isSelected(product.defaultVariant) }
-        val description = product.longDescription.orEmpty()
+        val selectedColor = colors.findSelected(defaultVariant)
         val descriptionItem = InformationUI.Description(
             tabItem = TabItem(StringResource.fromId(R.string.product_details_information_description)),
-            content = description
+            content = product.descriptionHtml.stripHtml()
         )
         ProductDetailsUI(
             id = product.id,
-            brand = product.brand.name,
+            brand = product.brandName.orEmpty(),
             name = product.name,
             slug = product.slug,
-            shortDescription = product.shortDescription,
             information = persistentListOf(descriptionItem),
             variants = product.variants.toImmutableList(),
             colors = colors.toImmutableList(),
             selectedColorUI = selectedColor,
             isSelectionSoldOut = product.variants.isSoldOut(selectedColor?.id),
             sections = getSectionsList(environment = environment),
-            shareInfo = product.buildProductDetailsShareInfo(price = product.defaultVariant.price.amount.amountFormatted),
-            gallery = product.defaultVariant.color?.media?.toGalleryUI() ?: GalleryUI(emptyList<MediaUI>().toImmutableList()),
+            shareInfo = buildProductDetailsShareInfo(
+                brand = product.brandName.orEmpty(),
+                name = product.name,
+                slug = product.slug,
+                price = defaultVariant?.price?.amount?.amountFormatted.orEmpty()
+            ),
+            gallery = product.galleryFor(selectedColor?.id, defaultVariant),
             sizeSectionUI = product.variants.toSizeSectionUI(selectedColor)
         )
     }
@@ -105,13 +110,24 @@ internal class ProductDetailsUIFactory @Inject constructor(
         index: Int
     ) = withContext(dispatcher.default()) {
         val selectedColor = details.colors.getOrNull(index)
-        val variant = details.variants.first { it.color?.id == selectedColor?.id }
+        val variantsForColor = details.variants.filter { it.colorValue() == selectedColor?.id }
+        val variant = variantsForColor.firstOrNull { it.available } ?: variantsForColor.firstOrNull()
         details.copy(
             selectedColorUI = selectedColor,
             isSelectionSoldOut = details.variants.isSoldOut(colorId = selectedColor?.id),
             sizeSectionUI = details.variants.toSizeSectionUI(selectedColor),
-            shareInfo = details.buildProductDetailsShareInfo(variant.price.amount.amountFormatted),
-            gallery = variant.color?.media.orEmpty().toGalleryUI()
+            shareInfo = buildProductDetailsShareInfo(
+                brand = details.brand,
+                name = details.name,
+                slug = details.slug,
+                price = variant?.price?.amount?.amountFormatted.orEmpty()
+            ),
+            // Fall back to the existing gallery when the selected colour has no media,
+            // mirroring galleryFor()'s "never blank" behaviour on initial load.
+            gallery = variant?.media
+                ?.takeIf { it.isNotEmpty() }
+                ?.toGalleryUI()
+                ?: details.gallery
         )
     }
 
@@ -140,44 +156,62 @@ internal class ProductDetailsUIFactory @Inject constructor(
             ?: (details.sizeSectionUI as? SizeSectionUI.SizeModalPicker)?.selectedSize?.id
             ?: return@withContext null
 
-        val selectedVariant = details.variants.find {
-            it.color?.id == selectedColorId && it.size?.id == selectedSizeId
+        val selectedVariant = details.variants.firstOrNull {
+            it.colorValue() == selectedColorId && it.sizeValue() == selectedSizeId
         } ?: return@withContext null
 
         return@withContext selectedVariant.sku
     }
 
-    private fun ColorUI.isSelected(defaultVariant: Variant): Boolean = defaultVariant.color?.id == this.id
+    private fun List<ColorUI>.findSelected(defaultVariant: Variant?): ColorUI? {
+        val defaultColor = defaultVariant?.colorValue() ?: return firstOrNull()
+        return firstOrNull { it.id == defaultColor } ?: firstOrNull()
+    }
 
-    private fun List<Variant>.isSoldOut(colorId: String?) = filter { it.color?.id == colorId }.isSoldOut()
+    private fun Product.galleryFor(selectedColorId: String?, defaultVariant: Variant?): GalleryUI {
+        val variantImages = variants.firstOrNull { it.colorValue() == selectedColorId }?.media
+            ?: defaultVariant?.media
+            ?: emptyList()
+        val source = variantImages.ifEmpty { images }
+        return source.toGalleryUI()
+    }
 
-    private fun List<Variant>.isSoldOut() = all { it.stock < 1 }
+    private fun Variant.colorValue(): String? = options
+        .firstOrNull { it.name.equalsIgnoreCase(OPTION_NAME_COLOR) || it.name.equalsIgnoreCase(OPTION_NAME_COLOUR) }
+        ?.value
+
+    private fun Variant.sizeValue(): String? = options
+        .firstOrNull { it.name.equalsIgnoreCase(OPTION_NAME_SIZE) }
+        ?.value
+
+    private fun List<Variant>.isSoldOut(colorId: String?) =
+        filter { it.colorValue() == colorId }.isSoldOut()
+
+    private fun List<Variant>.isSoldOut() = isNotEmpty() && all { !it.available }
 
     private fun Product.mapColors(): List<ColorUI> = buildList {
-        variants.groupBy { it.color?.id }
+        variants.groupBy { it.colorValue() }
+            .filterKeys { !it.isNullOrBlank() }
             .onEachIndexed { index, entry ->
-                val isEnabled = entry.value.isSoldOut().not()
-                val color = entry.value.firstOrNull()?.color ?: return@onEachIndexed
-
-                val type = if (color.swatch?.url.isNotNullOrBlank()) {
-                    SwatchType.Image(
-                        url = color.swatch?.url.orEmpty(),
-                        isEnabled = isEnabled
-                    )
-                } else {
-                    SwatchType.PlainColor(
-                        color = Theme.color.black,
-                        isEnabled = isEnabled
-                    )
-                }
+                val colorName = entry.key ?: return@onEachIndexed
+                val isEnabled = !entry.value.isSoldOut()
+                val type = colorName.toSwatchType(isEnabled)
                 add(
                     ColorUI(
-                        id = color.id,
+                        id = colorName,
                         type = type,
                         index = index
                     )
                 )
             }
+    }
+
+    private fun String.toSwatchType(isEnabled: Boolean): SwatchType {
+        val hex = ColorNameToHex.lookup(this)
+        return SwatchType.PlainColor(
+            color = hex?.let { ComposeColor(it) } ?: Theme.color.black,
+            isEnabled = isEnabled
+        )
     }
 
     private fun buildShareText(
@@ -201,14 +235,8 @@ internal class ProductDetailsUIFactory @Inject constructor(
         )
     )
 
-    private fun List<Media?>.toGalleryUI(): GalleryUI = GalleryUI(
-        medias = map {
-            if (it is Media.Image) {
-                it.toImageUI()
-            } else {
-                (it as Media.Video).toVideoUI()
-            }
-        }.toImmutableList()
+    private fun List<Media.Image>.toGalleryUI(): GalleryUI = GalleryUI(
+        medias = map<Media.Image, MediaUI> { it.toImageUI() }.toImmutableList()
     )
 
     private fun Media.Image.toImageUI(): ImageUI = ImageUI(
@@ -220,20 +248,12 @@ internal class ProductDetailsUIFactory @Inject constructor(
         alt = alt
     )
 
-    private fun Media.Video.toVideoUI(): VideoUI = VideoUI(
-        previewImage = VideoPreviewImageUI(
-            url = previewImage?.url.orEmpty(),
-            alt = previewImage?.alt.orEmpty()
-        ),
-        source = VideoSourceUI(url = this.sources.firstOrNull()?.url.orEmpty())
-    )
-
     private fun List<Variant>.toSizeSectionUI(selectedColorUI: ColorUI?): SizeSectionUI {
-        val selectedVariantsForColor = this.filter { it.color?.id == selectedColorUI?.id }
-        val productStockCount = this.fold(0) { acc: Int, variant: Variant -> acc + variant.stock }
-        val isSingleSize = this.none { it.size != null }
+        val selectedVariantsForColor = this.filter { it.colorValue() == selectedColorUI?.id }
+        val productHasStock = this.any { it.available }
+        val isSingleSize = this.none { it.sizeValue() != null }
         return when {
-            productStockCount == 0 -> SizeSectionUI.NoSize
+            !productHasStock -> SizeSectionUI.NoSize
             isSingleSize -> SizeSectionUI.SingleSize
             selectedVariantsForColor.size == 1 -> SizeSectionUI.SizeOnly(sizeUI = selectedVariantsForColor.first().toSizeUI())
             selectedVariantsForColor.size <= SIZE_SELECTOR_THRESHOLD -> SizeSectionUI.SizeSelector(
@@ -244,33 +264,26 @@ internal class ProductDetailsUIFactory @Inject constructor(
     }
 
     private fun Variant.toSizeUI(): SizeUI {
-        val hasStock = stock != 0
+        val sizeValue = sizeValue()
         return SizeUI(
-            id = size?.id.orEmpty(),
-            properties = size?.toSizingButtonProperties(hasStock) ?: SizingButtonProperties.EMPTY
+            id = sizeValue.orEmpty(),
+            properties = if (sizeValue == null) {
+                SizingButtonProperties.EMPTY
+            } else {
+                SizingButtonProperties(
+                    text = sizeValue,
+                    state = if (available) SizingButtonState.Selectable else SizingButtonState.OutOfStock
+                )
+            }
         )
     }
 
-    private fun Size.toSizingButtonProperties(hasStock: Boolean): SizingButtonProperties = SizingButtonProperties(
-        text = value,
-        state = if (hasStock) SizingButtonState.Selectable else SizingButtonState.OutOfStock
-    )
-
-    private suspend fun Product.buildProductDetailsShareInfo(price: String): ProductDetailsShareInfo {
-        val environment = environmentManager.current()
-
-        return ProductDetailsShareInfo(
-            name = name,
-            content = buildShareText(
-                brand = brand.name,
-                name = name,
-                price = price,
-                url = "${environment.webUrl}/$slug"
-            )
-        )
-    }
-
-    private suspend fun ProductDetailsUI.buildProductDetailsShareInfo(price: String): ProductDetailsShareInfo {
+    private suspend fun buildProductDetailsShareInfo(
+        brand: String,
+        name: String,
+        slug: String,
+        price: String
+    ): ProductDetailsShareInfo {
         val environment = environmentManager.current()
 
         return ProductDetailsShareInfo(
@@ -284,3 +297,20 @@ internal class ProductDetailsUIFactory @Inject constructor(
         )
     }
 }
+
+private val MULTI_NEWLINE_REGEX = Regex("\n{3,}")
+
+/**
+ * Converts an HTML description to display plain text: strips tags and decodes HTML entities
+ * (e.g. `&amp;` → `&`, `&pound;` → `£`) via [HtmlCompat], collapsing block elements to newlines.
+ */
+internal fun String?.stripHtml(): String {
+    if (this.isNullOrBlank()) return ""
+    return HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT)
+        .toString()
+        .replace('\u00A0', ' ') // normalise non-breaking spaces (from &nbsp;) to regular spaces
+        .let { MULTI_NEWLINE_REGEX.replace(it, "\n\n") }
+        .trim()
+}
+
+private fun String.equalsIgnoreCase(other: String): Boolean = this.equals(other, ignoreCase = true)

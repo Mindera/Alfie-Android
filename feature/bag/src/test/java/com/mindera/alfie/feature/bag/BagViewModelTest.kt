@@ -46,7 +46,7 @@ internal class BagViewModelTest {
         }
         coEvery { getProductUseCase(any()) } answers {
             val productId = firstArg<String>()
-            val product = products.find { it.id == productId }
+            val product = products.find { it.slug == productId }
             if (product != null) UseCaseResult.Success(product) else UseCaseResult.Error(mockk())
         }
 

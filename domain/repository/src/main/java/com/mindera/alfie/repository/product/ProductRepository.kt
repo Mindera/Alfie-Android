@@ -5,5 +5,5 @@ import com.mindera.alfie.repository.result.RepositoryResult
 
 interface ProductRepository {
 
-    suspend fun getProduct(productId: String): RepositoryResult<Product>
+    suspend fun getProduct(handle: String, platform: String): RepositoryResult<Product>
 }

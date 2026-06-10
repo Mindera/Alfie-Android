@@ -42,7 +42,7 @@ class WishlistViewModel @Inject constructor(
     }
 
     fun onNavigateToProductDetails(productId: String) {
-        navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(id = productId)))
+        navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(handle = productId)))
     }
 
     private suspend fun getWishlistList() {
@@ -52,8 +52,8 @@ class WishlistViewModel @Inject constructor(
                     val wishlist = wishlistUiFactory(
                         products = result.data,
                         onRemoveClick = ::onRemoveClicked,
-                        onAddToBagClick = { onNavigateToProductDetails(it.id) },
-                        onProductClick = { onNavigateToProductDetails(it.id) }
+                        onAddToBagClick = { onNavigateToProductDetails(it.slug) },
+                        onProductClick = { onNavigateToProductDetails(it.slug) }
                     )
                     _state.value = WishlistUiState.Data.Loaded(wishlist)
                 }
@@ -64,7 +64,7 @@ class WishlistViewModel @Inject constructor(
 
     private fun onRemoveClicked(product: Product) {
         viewModelScope.launch {
-            removeFromWishlist(product.id)
+            removeFromWishlist(product.slug)
         }
     }
 }

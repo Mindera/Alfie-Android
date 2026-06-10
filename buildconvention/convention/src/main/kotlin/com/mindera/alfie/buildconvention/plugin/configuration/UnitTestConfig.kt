@@ -5,11 +5,14 @@ import com.mindera.alfie.buildconvention.dependency.TestDependency.COROUTINES_TE
 import com.mindera.alfie.buildconvention.dependency.TestDependency.FIXTURE
 import com.mindera.alfie.buildconvention.dependency.TestDependency.JUNIT5
 import com.mindera.alfie.buildconvention.dependency.TestDependency.JUNIT5_ENGINE
+import com.mindera.alfie.buildconvention.dependency.TestDependency.JUNIT4
 import com.mindera.alfie.buildconvention.dependency.TestDependency.JUNIT5_PARAMS
 import com.mindera.alfie.buildconvention.dependency.TestDependency.JUNIT5_RUNNER
+import com.mindera.alfie.buildconvention.dependency.TestDependency.JUNIT5_VINTAGE
 import com.mindera.alfie.buildconvention.dependency.TestDependency.KOTLIN_JUNIT5
 import com.mindera.alfie.buildconvention.dependency.TestDependency.MOCKK
 import com.mindera.alfie.buildconvention.dependency.TestDependency.MOCKK_ANDROID
+import com.mindera.alfie.buildconvention.dependency.TestDependency.ROBOLECTRIC
 import com.mindera.alfie.buildconvention.dependency.TestDependency.TURBINE
 import com.mindera.alfie.buildconvention.extension.androidTestImplementation
 import com.mindera.alfie.buildconvention.extension.androidTestRuntimeOnly
@@ -38,6 +41,11 @@ internal fun Project.configureUnitTest(commonExtension: CommonExtension<*, *, *,
             testImplementation(libs.lib(TURBINE))
             testImplementation(libs.lib(FIXTURE))
             testImplementation(project(ProjectModule.coreTest))
+            // Robolectric ships only a JUnit4 runner; junit-vintage-engine lets the JUnit5 Platform
+            // discover and run those JUnit4 (@RunWith) tests. Without vintage they are silently skipped.
+            testImplementation(libs.lib(ROBOLECTRIC))
+            testImplementation(libs.lib(JUNIT4))
+            testRuntimeOnly(libs.lib(JUNIT5_VINTAGE))
             androidTestImplementation(libs.lib(JUNIT5))
             androidTestRuntimeOnly(libs.lib(JUNIT5_RUNNER))
             androidTestImplementation(libs.lib(JUNIT5_PARAMS))

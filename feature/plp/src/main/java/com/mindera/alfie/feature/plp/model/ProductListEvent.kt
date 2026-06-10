@@ -12,6 +12,8 @@ internal sealed interface ProductListEvent {
 
     data object DismissRefine : ProductListEvent
 
+    data class PreviewRefine(val filters: ProductListFilter?) : ProductListEvent
+
     data class ChangeLayoutMode(val layoutMode: ProductListLayoutMode) : ProductListEvent
 
     data class ApplyRefine(

@@ -3,6 +3,7 @@ package com.mindera.alfie.domain.usecase.wishlist
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.domain.UseCaseInteractor
 import com.mindera.alfie.domain.UseCaseResult
+import com.mindera.alfie.repository.product.Platforms
 import com.mindera.alfie.repository.product.ProductRepository
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.result.RepositoryResult
@@ -28,7 +29,7 @@ class GetWishlistUseCase @Inject constructor(
             .mapLatest { ids ->
                 coroutineScope {
                     val results = ids
-                        .map { id -> async(dispatcherProvider.io()) { productRepository.getProduct(id) } }
+                        .map { slug -> async(dispatcherProvider.io()) { productRepository.getProduct(handle = slug, platform = Platforms.SHOPIFY) } }
                         .awaitAll()
 
                     UseCaseResult.Success(

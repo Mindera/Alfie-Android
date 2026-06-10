@@ -6,5 +6,6 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 @Stable
 internal data class ProductListEntryUI(
     val id: String,
+    val slug: String,
     val productCardData: ProductCardType
 )

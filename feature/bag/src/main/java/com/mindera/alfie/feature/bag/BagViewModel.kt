@@ -77,10 +77,10 @@ internal class BagViewModel @Inject constructor(
         }
     }
 
-    private fun openProduct(productId: String) {
+    private fun openProduct(handle: String) {
         navigateTo(
             screen = Screen.ProductDetails(
-                args = productDetailsNavArgs(id = productId)
+                args = productDetailsNavArgs(handle = handle)
             )
         )
     }

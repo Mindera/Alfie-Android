@@ -35,7 +35,7 @@ class SearchSuggestionsTest {
                     price = Price(
                         amount = Money(
                             currencyCode = "AUD",
-                            amount = 40000,
+                            amount = 40000.0,
                             amountFormatted = "$400.00"
                         ),
                         was = null
@@ -64,7 +64,7 @@ class SearchSuggestionsTest {
                     price = Price(
                         amount = Money(
                             currencyCode = "AUD",
-                            amount = 40000,
+                            amount = 40000.0,
                             amountFormatted = "$400.00"
                         ),
                         was = null
@@ -93,7 +93,7 @@ class SearchSuggestionsTest {
                     price = Price(
                         amount = Money(
                             currencyCode = "AUD",
-                            amount = 40000,
+                            amount = 40000.0,
                             amountFormatted = "$400.00"
                         ),
                         was = null

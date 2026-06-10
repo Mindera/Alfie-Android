@@ -134,8 +134,8 @@ internal class SearchViewModel @Inject constructor(
                         val searchUI = searchUIFactory(
                             searchTerm = searchTerm,
                             searchSuggestions = suggestions,
-                            onProductClick = { productId ->
-                                navigateTo(Screen.ProductDetails(productDetailsNavArgs(id = productId)))
+                            onProductClick = { handle ->
+                                navigateTo(Screen.ProductDetails(productDetailsNavArgs(handle = handle)))
                             }
                         )
                         _state.value = SearchUIState.Loaded(searchUI)

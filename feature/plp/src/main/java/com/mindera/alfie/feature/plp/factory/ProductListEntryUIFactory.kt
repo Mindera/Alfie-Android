@@ -21,6 +21,7 @@ internal class ProductListEntryUIFactory @Inject constructor(
     ): ProductListEntryUI = withContext(dispatcher.default()) {
         ProductListEntryUI(
             id = entry.id,
+            slug = entry.slug,
             productCardData = ProductCardType.Vertical(
                 brand = entry.brandName.orEmpty(),
                 name = entry.name,

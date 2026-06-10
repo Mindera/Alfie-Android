@@ -11,7 +11,6 @@ internal data class ProductDetailsUI(
     val brand: String,
     val name: String,
     val slug: String,
-    val shortDescription: String,
     val colors: ImmutableList<ColorUI>,
     val information: ImmutableList<InformationUI>,
     val variants: ImmutableList<Variant>,

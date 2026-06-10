@@ -1,8 +1,8 @@
 package com.mindera.alfie.data.product.service
 
-import com.mindera.alfie.graphql.ProductQuery
+import com.mindera.alfie.graphql.bff.GetProductDetailsQuery
 
 internal interface ProductService {
 
-    suspend fun getProduct(productId: String): Result<ProductQuery.Data>
+    suspend fun getProduct(handle: String, platform: String): Result<GetProductDetailsQuery.Data>
 }

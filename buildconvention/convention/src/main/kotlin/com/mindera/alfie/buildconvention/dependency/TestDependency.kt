@@ -12,4 +12,7 @@ internal object TestDependency {
     const val COROUTINES_TEST = "coroutines.test"
     const val TURBINE = "turbine"
     const val FIXTURE = "fixture"
+    const val ROBOLECTRIC = "robolectric"
+    const val JUNIT4 = "junit"
+    const val JUNIT5_VINTAGE = "junit5-vintage"
 }

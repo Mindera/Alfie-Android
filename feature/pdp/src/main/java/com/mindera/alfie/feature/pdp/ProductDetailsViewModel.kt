@@ -58,7 +58,7 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val _wishlistIds = MutableStateFlow<List<String>>(emptyList())
 
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
-    private val productId = args.id
+    private val handle = args.handle
 
     init {
         collectWishlistIds()
@@ -82,12 +82,12 @@ internal class ProductDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = Loading
 
-            getProductUseCase(productId).doOnResult(
+            getProductUseCase(handle = handle).doOnResult(
                 onSuccess = {
                     val shopUI = uiFactory(it)
                     _state.value = Loaded(
                         details = shopUI.copy(
-                            isWishlisted = _wishlistIds.value.contains(shopUI.id)
+                            isWishlisted = _wishlistIds.value.contains(shopUI.slug)
                         )
                     )
                 },
@@ -119,7 +119,7 @@ internal class ProductDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             val value = (_state.value as? Loaded) ?: return@launch
             val selectedVariantSku = uiFactory.getSelectedVariantSku(value.details)
-            selectedVariantSku?.let { addToBagUseCase(value.details.id, it) }
+            selectedVariantSku?.let { addToBagUseCase(value.details.slug, it) }
         }
     }
 
@@ -152,7 +152,7 @@ internal class ProductDetailsViewModel @Inject constructor(
                         is Loaded -> {
                             state.copy(
                                 details = state.details.copy(
-                                    isWishlisted = wishlistIds.contains(state.details.id)
+                                    isWishlisted = wishlistIds.contains(state.details.slug)
                                 )
                             )
                         }

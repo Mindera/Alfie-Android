@@ -62,7 +62,7 @@ internal val searchSuggestionsData = SearchSuggestionsQuery.Data(
                         amount = PriceInfo.Amount(
                             __typename = "Amount",
                             moneyInfo = MoneyInfo(
-                                amount = 100,
+                                amount = 10000,
                                 amountFormatted = "$100",
                                 currencyCode = "AUS"
                             )
@@ -110,7 +110,7 @@ internal val searchSuggestions = SearchSuggestions(
             slug = "product",
             price = Price(
                 amount = Money(
-                    amount = 100,
+                    amount = 100.0,
                     amountFormatted = "$100",
                     currencyCode = "AUS"
                 ),

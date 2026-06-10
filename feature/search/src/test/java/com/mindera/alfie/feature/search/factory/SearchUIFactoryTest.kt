@@ -73,8 +73,8 @@ class SearchUIFactoryTest {
             onClick()
         }
 
-        val expectedIds = searchSuggestions.products.map { it.id }
-        assertEquals(expectedIds, clickedIds)
+        val expectedSlugs = searchSuggestions.products.map { it.slug }
+        assertEquals(expectedSlugs, clickedIds)
     }
 
     @Test
@@ -134,7 +134,7 @@ class SearchUIFactoryTest {
                 slug = "product",
                 price = Price(
                     amount = Money(
-                        amount = 100,
+                        amount = 100.0,
                         amountFormatted = "$100",
                         currencyCode = "AUS"
                     ),

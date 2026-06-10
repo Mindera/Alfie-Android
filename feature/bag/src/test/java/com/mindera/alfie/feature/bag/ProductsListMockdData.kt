@@ -5,283 +5,107 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.bag.models.BagProductUi
 import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.repository.bag.BagProduct
-import com.mindera.alfie.repository.product.model.Color
 import com.mindera.alfie.repository.product.model.Price
 import com.mindera.alfie.repository.product.model.PriceRange
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.product.model.Variant
-import com.mindera.alfie.repository.shared.model.Brand
+import com.mindera.alfie.repository.product.model.VariantOption
 import com.mindera.alfie.repository.shared.model.Media
 import com.mindera.alfie.repository.shared.model.Money
-import com.mindera.alfie.repository.shared.model.Size
 import kotlinx.collections.immutable.persistentListOf
+
+private val image1 = Media.Image(
+    url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg",
+    alt = "patterson mini skirt"
+)
+
+private val variant1Image = Media.Image(url = "", alt = "Media")
 
 internal val products = listOf(
     Product(
         id = "123456",
         name = "Product name",
-        shortDescription = "Short description",
         slug = "123456-product",
-        styleNumber = "123456789",
-        labels = listOf("Label"),
-        brand = Brand(
-            id = "123",
-            name = "Brand",
-            slug = "brand"
-        ),
+        brandName = "Brand",
+        descriptionHtml = "",
+        defaultVariantId = "variant2",
+        images = listOf(image1),
         priceRange = PriceRange(
-            low = Money(
-                amount = 100,
-                amountFormatted = "$100",
-                currencyCode = "AUS"
-            ),
-            high = Money(
-                amount = 200,
-                amountFormatted = "$200",
-                currencyCode = "AUS"
-            )
+            low = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
+            high = Money(amount = 200.0, amountFormatted = "$200", currencyCode = "AUS")
         ),
-        colors = listOf(
-            Color(
-                id = "111",
-                name = "blue",
-                swatch = Media.Image(
-                    url = "",
-                    alt = "Blue"
-                ),
-                media = listOf(
-                    Media.Image(
-                        alt = "patterson mini skirt",
-                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                    ),
-                    Media.Image(
-                        alt = "patterson mini skirt",
-                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                    )
-                )
-            )
-        ),
-        longDescription = "",
-        attributes = listOf(),
         variants = listOf(
             Variant(
+                id = "variant1Id",
+                sku = "variant1",
                 price = Price(
-                    amount = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
-                    was = Money(
-                        amount = 200,
-                        amountFormatted = "$200",
-                        currencyCode = "AUS"
-                    )
+                    amount = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
+                    was = Money(amount = 200.0, amountFormatted = "$200", currencyCode = "AUS")
                 ),
-                color = Color(
-                    id = "111",
-                    name = "blue",
-                    swatch = Media.Image(
-                        url = "",
-                        alt = "Blue"
-                    ),
-                    media = listOf(
-                        Media.Image(
-                            alt = "patterson mini skirt",
-                            url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                        ),
-                        Media.Image(
-                            alt = "patterson mini skirt",
-                            url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                        )
-                    )
+                options = listOf(
+                    VariantOption(name = "color", value = "blue"),
+                    VariantOption(name = "size", value = "M")
                 ),
-                size = Size(
-                    id = "789",
-                    value = "M",
-                    description = "Medium",
-                    scale = "Scale",
-                    sizeGuide = null
-                ),
-                media = Media.Image(
-                    url = "",
-                    alt = "Media"
-                ),
-                stock = 100,
-                attributes = listOf(),
-                sku = "variant1"
+                media = listOf(variant1Image),
+                available = true
             )
-        ),
-        defaultVariant = Variant(
-            price = Price(
-                amount = Money(
-                    amount = 100,
-                    amountFormatted = "$100",
-                    currencyCode = "AUS"
-                ),
-                was = Money(
-                    amount = 200,
-                    amountFormatted = "$200",
-                    currencyCode = "AUS"
-                )
-            ),
-            size = Size(
-                id = "789",
-                value = "M",
-                description = "Medium",
-                scale = "Scale",
-                sizeGuide = null
-            ),
-            color = Color(
-                id = "111",
-                name = "blue",
-                swatch = Media.Image(
-                    url = "",
-                    alt = "Blue"
-                ),
-                media = listOf(
-                    Media.Image(
-                        alt = "patterson mini skirt",
-                        url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                    ),
-                    Media.Image(
-                        alt = "patterson mini skirt",
-                        url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                    )
-                )
-            ),
-            media = Media.Image(
-                url = "",
-                alt = "Media"
-            ),
-            stock = 100,
-            attributes = listOf(),
-            sku = "variant2"
         )
     ),
     Product(
         id = "654321",
         name = "Product 2",
-        shortDescription = "Short description",
         slug = "654321-product",
-        styleNumber = "987654321",
-        labels = emptyList(),
-        brand = Brand(
-            id = "123",
-            name = "Brand",
-            slug = "brand"
-        ),
+        brandName = "Brand",
+        descriptionHtml = "",
+        defaultVariantId = null,
+        images = emptyList(),
         priceRange = PriceRange(
-            low = Money(
-                amount = 100,
-                amountFormatted = "$100",
-                currencyCode = "AUS"
-            ),
+            low = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
             high = null
         ),
-        colors = emptyList(),
-        longDescription = "",
-        attributes = listOf(),
         variants = listOf(
             Variant(
+                id = "variant11Id",
+                sku = "variant11",
                 price = Price(
-                    amount = Money(
-                        amount = 100,
-                        amountFormatted = "$100",
-                        currencyCode = "AUS"
-                    ),
+                    amount = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
                     was = null
                 ),
-                color = Color(
-                    id = "111",
-                    name = "blue",
-                    swatch = Media.Image(
-                        url = "",
-                        alt = "Blue"
-                    ),
-                    media = listOf(
-                        Media.Image(
-                            alt = "patterson mini skirt",
-                            url = "https://www.alfie.com/productimages/thumb/1/2666503_22841458_13891526.jpg"
-                        ),
-                        Media.Image(
-                            alt = "patterson mini skirt",
-                            url = "https://www.alfie.com/productimages/thumb/2/2666503_22841458_13891527.jpg"
-                        )
-                    )
+                options = listOf(
+                    VariantOption(name = "color", value = "blue"),
+                    VariantOption(name = "size", value = "M")
                 ),
-                size = Size(
-                    id = "789",
-                    value = "M",
-                    description = "Medium",
-                    scale = "Scale",
-                    sizeGuide = null
-                ),
-                media = Media.Image(
-                    url = "",
-                    alt = "Media"
-                ),
-                stock = 100,
-                attributes = listOf(),
-                sku = "variant11"
+                media = listOf(variant1Image),
+                available = true
             )
-        ),
-        defaultVariant = Variant(
-            price = Price(
-                amount = Money(
-                    amount = 100,
-                    amountFormatted = "$100",
-                    currencyCode = "AUS"
-                ),
-                was = null
-            ),
-            color = null,
-            size = null,
-            media = Media.Image(
-                url = "",
-                alt = null
-            ),
-            stock = 1,
-            attributes = listOf(),
-            sku = "variant12"
         )
     )
 )
 
 internal val bagProducts = listOf(
-    BagProduct(productId = "123456", variantSku = "variant1"),
-    BagProduct(productId = "654321", variantSku = "variant11")
+    BagProduct(productId = "123456-product", variantSku = "variant1"),
+    BagProduct(productId = "654321-product", variantSku = "variant11")
 )
 
 internal val bagProductUi = persistentListOf(
     BagProductUi(
-        id = "123456",
+        id = "123456-product",
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product name",
-            price = PriceType.Range(
-                startPrice = "$100",
-                endPrice = "$200"
-            ),
-            image = Media.Image(
-                url = "",
-                alt = "Media"
-            ).toImageUI(),
+            price = PriceType.Range(startPrice = "$100", endPrice = "$200"),
+            image = variant1Image.toImageUI(),
             color = "blue",
             size = "M"
         )
     ),
     BagProductUi(
-        id = "654321",
+        id = "654321-product",
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product 2",
-            price = PriceType.Default(
-                price = "$100"
-            ),
-            image = Media.Image(
-                url = "",
-                alt = "Media"
-            ).toImageUI(),
+            price = PriceType.Default(price = "$100"),
+            image = variant1Image.toImageUI(),
             color = "blue",
             size = "M"
         )

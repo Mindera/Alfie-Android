@@ -1,9 +1,9 @@
 package com.mindera.alfie.core.navigation.arguments
 
 fun productDetailsNavArgs(
-    id: String
-): ProductDetailsNavArgs = ProductDetailsNavArgs(id = id)
+    handle: String
+): ProductDetailsNavArgs = ProductDetailsNavArgs(handle = handle)
 
 data class ProductDetailsNavArgs(
-    val id: String
+    val handle: String
 )

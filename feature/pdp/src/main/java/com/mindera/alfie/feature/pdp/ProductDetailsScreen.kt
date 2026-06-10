@@ -279,7 +279,7 @@ private fun ProductDetailsGallery(
         isFullscreen = isFullscreen,
         onClick = { isFullscreen = true },
         onDismissFullscreen = { isFullscreen = false },
-        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.id)) }
+        onFavoriteClick = { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.slug)) }
     )
 }
 
@@ -445,7 +445,6 @@ private fun PdpScreenPreview() {
                     brand = "Givenchy",
                     name = "Seamless sculpt mid thigh short",
                     slug = "slug",
-                    shortDescription = "",
                     information = persistentListOf(),
                     variants = persistentListOf(),
                     isSelectionSoldOut = false,

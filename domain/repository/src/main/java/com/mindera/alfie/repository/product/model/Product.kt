@@ -1,20 +1,20 @@
 package com.mindera.alfie.repository.product.model
 
-import com.mindera.alfie.repository.shared.model.Attribute
-import com.mindera.alfie.repository.shared.model.Brand
+import com.mindera.alfie.repository.shared.model.Media
 
 data class Product(
     val id: String,
-    val attributes: List<Attribute>,
-    val brand: Brand,
-    val defaultVariant: Variant,
-    val labels: List<String>,
-    val longDescription: String?,
     val name: String,
-    val priceRange: PriceRange?,
-    val shortDescription: String,
     val slug: String,
-    val styleNumber: String,
-    val variants: List<Variant>,
-    val colors: List<Color>
+    val brandName: String?,
+    val descriptionHtml: String?,
+    val defaultVariantId: String?,
+    val images: List<Media.Image>,
+    val priceRange: PriceRange?,
+    val variants: List<Variant>
 )
+
+fun Product.resolveDefaultVariant(): Variant? =
+    variants.firstOrNull { it.id == defaultVariantId }
+        ?: variants.firstOrNull { it.available }
+        ?: variants.firstOrNull()
