@@ -14,7 +14,10 @@ import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 internal fun ProductListType.toQuerySource(collectionHandle: String): ProductListQuerySource =
     when (this) {
         is ProductListType.Search -> ProductListQuerySource.Search(term = query)
-        else -> ProductListQuerySource.Collection(handle = collectionHandle)
+        is ProductListType.Category.Slug,
+        is ProductListType.Category.Id,
+        is ProductListType.Brand.Slug,
+        is ProductListType.Brand.Id -> ProductListQuerySource.Collection(handle = collectionHandle)
     }
 
 /**

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +52,7 @@ import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalMaterialNavigationApi::class,
@@ -71,6 +73,7 @@ fun AppNavigation(
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
     val context = LocalContext.current
+    val snackbarScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         deeplinkHandler.deeplinkResult.collect { result ->
@@ -107,10 +110,14 @@ fun AppNavigation(
                 }
 
                 is DeeplinkResult.ShowError -> {
-                    snackbarHostState.showSnackbar(
-                        type = SnackbarType.Error,
-                        message = context.getString(result.messageRes)
-                    )
+                    // Launched separately so awaiting the snackbar's display duration does not
+                    // block the collector from processing subsequent deeplink results.
+                    snackbarScope.launch {
+                        snackbarHostState.showSnackbar(
+                            type = SnackbarType.Error,
+                            message = context.getString(result.messageRes)
+                        )
+                    }
                 }
             }
         }
