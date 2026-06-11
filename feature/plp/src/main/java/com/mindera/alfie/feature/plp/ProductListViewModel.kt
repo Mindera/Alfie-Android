@@ -99,10 +99,6 @@ internal class ProductListViewModel @Inject constructor(
 
     /**
      * Display title derived from nav args.
-     *
-     * Note: this title may not match the products shown, because the underlying collection
-     * handle is hardcoded to [COLLECTION_HANDLE] until the BFF exposes a navigation query
-     * to resolve a handle from category slug/id, brand, or search query.
      */
     val collectionTitle: String = navArgs.type.displayTitle
 
