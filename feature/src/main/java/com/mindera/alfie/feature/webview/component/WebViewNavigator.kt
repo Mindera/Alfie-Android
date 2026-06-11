@@ -65,6 +65,7 @@ internal class WebViewNavigator(
             is DeeplinkResult.NavigateTo -> result.direction.route.startsWith("web_view").not()
             is DeeplinkResult.NavigateClearingStack -> result.direction.route.startsWith("web_view").not()
             is DeeplinkResult.Unresolved -> false
+            is DeeplinkResult.ShowError -> false
         }
     }
 

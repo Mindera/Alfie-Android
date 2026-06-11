@@ -5,6 +5,7 @@ import com.mindera.alfie.data.datastore.user.UserPreferencesDataSource
 import com.mindera.alfie.data.productlist.service.ProductListService
 import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.graphql.bff.SearchProductsQuery
+import com.mindera.alfie.graphql.bff.fragment.ProductListResponseFragment
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
@@ -40,13 +41,15 @@ class ProductListRepositoryImplTest {
     fun `getProductList - WHEN result is success THEN return success with mapped data`() = runTest {
         val mockData = mockk<ProductListQuery.Data>(relaxed = true)
         val mockProductList = mockk<ProductListQuery.ProductList>(relaxed = true)
-        val mockPageInfo = mockk<ProductListQuery.PageInfo>(relaxed = true)
+        val mockFragment = mockk<ProductListResponseFragment>(relaxed = true)
+        val mockPageInfo = mockk<ProductListResponseFragment.PageInfo>(relaxed = true)
         every { mockData.productList } returns mockProductList
-        every { mockProductList.products } returns emptyList()
-        every { mockProductList.pageInfo } returns mockPageInfo
+        every { mockProductList.productListResponseFragment } returns mockFragment
+        every { mockFragment.products } returns emptyList()
+        every { mockFragment.pageInfo } returns mockPageInfo
         every { mockPageInfo.endCursor } returns "next-cursor"
         every { mockPageInfo.hasNextPage } returns true
-        every { mockProductList.totalCount } returns 42
+        every { mockFragment.totalCount } returns 42
         coEvery { productListService.getProductList(any(), any(), any(), any(), any()) } returns Result.success(mockData)
 
         val result = repository.getProductList(
@@ -68,13 +71,15 @@ class ProductListRepositoryImplTest {
     fun `getProductList - WHEN source is search THEN calls searchProducts and returns mapped data`() = runTest {
         val mockData = mockk<SearchProductsQuery.Data>(relaxed = true)
         val mockSearchProducts = mockk<SearchProductsQuery.SearchProducts>(relaxed = true)
-        val mockPageInfo = mockk<SearchProductsQuery.PageInfo>(relaxed = true)
+        val mockFragment = mockk<ProductListResponseFragment>(relaxed = true)
+        val mockPageInfo = mockk<ProductListResponseFragment.PageInfo>(relaxed = true)
         every { mockData.searchProducts } returns mockSearchProducts
-        every { mockSearchProducts.products } returns emptyList()
-        every { mockSearchProducts.pageInfo } returns mockPageInfo
+        every { mockSearchProducts.productListResponseFragment } returns mockFragment
+        every { mockFragment.products } returns emptyList()
+        every { mockFragment.pageInfo } returns mockPageInfo
         every { mockPageInfo.endCursor } returns "next-cursor"
         every { mockPageInfo.hasNextPage } returns true
-        every { mockSearchProducts.totalCount } returns 7
+        every { mockFragment.totalCount } returns 7
         coEvery { productListService.searchProducts(any(), any(), any(), any(), any()) } returns Result.success(mockData)
 
         val result = repository.getProductList(

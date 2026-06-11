@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,7 @@ import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.bottombar.rememberBottomBarState
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHost
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.designsystem.component.snackbar.rememberSnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.topbar.TopBar
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
@@ -68,6 +70,7 @@ fun AppNavigation(
     val snackbarHostState = rememberSnackbarCustomHostState()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         deeplinkHandler.deeplinkResult.collect { result ->
@@ -100,6 +103,13 @@ fun AppNavigation(
                 is DeeplinkResult.Unresolved -> {
                     navController.navigate(
                         direction = WebViewScreenDestination(webViewNavArgs(url = result.url))
+                    )
+                }
+
+                is DeeplinkResult.ShowError -> {
+                    snackbarHostState.showSnackbar(
+                        type = SnackbarType.Error,
+                        message = context.getString(result.messageRes)
                     )
                 }
             }

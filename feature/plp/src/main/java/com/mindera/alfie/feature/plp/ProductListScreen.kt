@@ -8,13 +8,10 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -32,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -58,6 +54,8 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
+import com.mindera.alfie.designsystem.component.state.StateMessage
+import com.mindera.alfie.designsystem.component.state.StateMessageAction
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.plp.filter.RefineSheet
@@ -127,9 +125,22 @@ private fun ProductListScreenContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            isError -> { /* TODO Error */ }
-            isEmpty && searchQuery != null -> SearchNoResults(query = searchQuery)
-            isEmpty -> { /* TODO Empty */ }
+            isError -> StateMessage(
+                title = stringResource(id = R.string.plp_error_title),
+                subtitle = stringResource(id = R.string.plp_error_subtitle),
+                action = StateMessageAction(
+                    label = stringResource(id = R.string.plp_error_retry),
+                    onClick = { products.retry() }
+                )
+            )
+            isEmpty && searchQuery != null -> StateMessage(
+                title = stringResource(id = R.string.plp_search_no_results_title, searchQuery),
+                subtitle = stringResource(id = R.string.plp_search_no_results_subtitle)
+            )
+            isEmpty -> StateMessage(
+                title = stringResource(id = R.string.plp_empty_title),
+                subtitle = stringResource(id = R.string.plp_empty_subtitle)
+            )
             else -> {
                 ProductListGrid(
                     state = state,
@@ -151,35 +162,6 @@ private fun ProductListScreenContent(
                     onEvent(ProductListEvent.DismissRefine)
                 },
                 onDismiss = { onEvent(ProductListEvent.DismissRefine) }
-            )
-        }
-    }
-}
-
-@Composable
-private fun SearchNoResults(query: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = Theme.spacing.spacing32)
-        ) {
-            Text(
-                text = stringResource(id = R.string.plp_search_no_results_title, query),
-                style = Theme.typography.paragraphBold,
-                color = Theme.color.primary.mono900,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
-            Text(
-                text = stringResource(id = R.string.plp_search_no_results_subtitle),
-                style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono500,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
             )
         }
     }

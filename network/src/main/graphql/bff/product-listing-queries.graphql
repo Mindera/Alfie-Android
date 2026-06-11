@@ -14,14 +14,7 @@ query ProductListQuery(
         limit: $limit,
         platform: $platform
     ) {
-        pageInfo {
-            endCursor
-            hasNextPage
-        }
-        totalCount
-        products {
-            ...ProductListEntryFragment
-        }
+        ...ProductListResponseFragment
     }
 }
 
@@ -41,13 +34,6 @@ query SearchProductsQuery(
         limit: $limit,
         platform: $platform
     ) {
-        pageInfo {
-            endCursor
-            hasNextPage
-        }
-        totalCount
-        products {
-            ...ProductListEntryFragment
-        }
+        ...ProductListResponseFragment
     }
 }

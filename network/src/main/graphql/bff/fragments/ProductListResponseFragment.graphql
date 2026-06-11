@@ -1,0 +1,10 @@
+fragment ProductListResponseFragment on ProductListResponse {
+    pageInfo {
+        endCursor
+        hasNextPage
+    }
+    totalCount
+    products {
+        ...ProductListEntryFragment
+    }
+}

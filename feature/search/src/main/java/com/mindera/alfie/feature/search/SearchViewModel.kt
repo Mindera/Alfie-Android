@@ -49,8 +49,9 @@ internal class SearchViewModel @Inject constructor(
     }
 
     private fun handleOnSearchAction(searchTerm: String) {
-        if (searchTerm.trim().isNotEmpty()) {
-            navigateToQuery(searchTerm = searchTerm)
+        val trimmedTerm = searchTerm.trim()
+        if (trimmedTerm.isNotEmpty()) {
+            navigateToQuery(searchTerm = trimmedTerm)
         }
     }
 

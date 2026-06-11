@@ -12,7 +12,6 @@ import androidx.paging.map
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
@@ -105,25 +104,13 @@ internal class ProductListViewModel @Inject constructor(
      * handle is hardcoded to [COLLECTION_HANDLE] until the BFF exposes a navigation query
      * to resolve a handle from category slug/id, brand, or search query.
      */
-    val collectionTitle: String = when (val type = navArgs.type) {
-        is ProductListType.Category.Slug -> type.slug
-        is ProductListType.Category.Id -> type.id
-        is ProductListType.Brand.Slug -> type.slug
-        is ProductListType.Brand.Id -> type.id
-        is ProductListType.Search -> type.query
-    }
+    val collectionTitle: String = navArgs.type.displayTitle
 
-    /**
-     * The BFF query backing this list. Search threads the term straight through to
-     * `searchProducts`; every other type currently falls back to [COLLECTION_HANDLE].
-     */
-    private val querySource: ProductListQuerySource = when (val type = navArgs.type) {
-        is ProductListType.Search -> ProductListQuerySource.Search(term = type.query)
-        else -> ProductListQuerySource.Collection(handle = COLLECTION_HANDLE)
-    }
+    /** The BFF query backing this list (see [toQuerySource]). */
+    private val querySource: ProductListQuerySource = navArgs.type.toQuerySource(COLLECTION_HANDLE)
 
     /** Non-null only in search mode; drives the search-specific no-results copy. */
-    val searchQuery: String? = (navArgs.type as? ProductListType.Search)?.query
+    val searchQuery: String? = (querySource as? ProductListQuerySource.Search)?.term
 
     private var pagerJob: Job? = null
 

@@ -35,7 +35,7 @@ internal class ProductListRepositoryImpl @Inject constructor(
                     filters = filters.toGraphQL(),
                     sort = sort.toGraphQL(),
                     limit = limit
-                ).mapCatching { data -> data.productList.toDomain() }
+                ).mapCatching { data -> data.productList.productListResponseFragment.toDomain() }
 
             is ProductListQuerySource.Search ->
                 productListService.searchProducts(
@@ -44,7 +44,7 @@ internal class ProductListRepositoryImpl @Inject constructor(
                     filters = filters.toGraphQL(),
                     sort = sort.toGraphQL(),
                     limit = limit
-                ).mapCatching { data -> data.searchProducts.toDomain() }
+                ).mapCatching { data -> data.searchProducts.productListResponseFragment.toDomain() }
         }.toRepositoryResult()
 
     override suspend fun updateProductListLayoutMode(layoutMode: ProductListLayoutMode): RepositoryResult<Unit> = runCatching {
