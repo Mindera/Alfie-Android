@@ -5,6 +5,7 @@ import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.CursorPagination
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.RepositoryResult
 import io.mockk.coEvery
@@ -40,7 +41,7 @@ class GetPaginatedProductListUseCaseTest {
         } returns RepositoryResult.Success(productList)
 
         val result = useCase(
-            collectionHandle = "women",
+            source = ProductListQuerySource.Collection("women"),
             filters = null,
             sort = ProductSortOption.RECOMMENDED,
             metadataProvider = { assertEquals(15, it.totalResults) }

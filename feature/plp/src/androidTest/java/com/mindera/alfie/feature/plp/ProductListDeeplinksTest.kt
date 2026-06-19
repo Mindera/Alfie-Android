@@ -1,6 +1,9 @@
 package com.mindera.alfie.feature.plp
 
+import com.mindera.alfie.core.deeplink.DeeplinkResult
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class ProductListDeeplinksTest {
@@ -77,5 +80,27 @@ class ProductListDeeplinksTest {
         val result = productListDeeplinks.interpreters[2].specs.any { it.resolve(url) != null }
 
         assertTrue(result)
+    }
+
+    @Test
+    fun testSearchDeeplinkWithBlankQueryReturnsShowError() = runBlocking {
+        val url = "https://www.alfie.com/search?q=%20"
+        val interpreter = productListDeeplinks.interpreters[2]
+        val instance = interpreter.specs.firstNotNullOf { it.resolve(url) }
+
+        val result = interpreter.handle(instance)
+
+        assertIs<DeeplinkResult.ShowError>(result)
+    }
+
+    @Test
+    fun testSearchDeeplinkWithQueryNavigates() = runBlocking {
+        val url = "https://www.alfie.com/search?q=something"
+        val interpreter = productListDeeplinks.interpreters[2]
+        val instance = interpreter.specs.firstNotNullOf { it.resolve(url) }
+
+        val result = interpreter.handle(instance)
+
+        assertIs<DeeplinkResult.NavigateTo>(result)
     }
 }

@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.bottombar.rememberBottomBarState
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHost
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.designsystem.component.snackbar.rememberSnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.topbar.TopBar
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
@@ -49,6 +52,7 @@ import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalMaterialNavigationApi::class,
@@ -68,6 +72,8 @@ fun AppNavigation(
     val snackbarHostState = rememberSnackbarCustomHostState()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
+    val context = LocalContext.current
+    val snackbarScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         deeplinkHandler.deeplinkResult.collect { result ->
@@ -101,6 +107,17 @@ fun AppNavigation(
                     navController.navigate(
                         direction = WebViewScreenDestination(webViewNavArgs(url = result.url))
                     )
+                }
+
+                is DeeplinkResult.ShowError -> {
+                    // Launched separately so awaiting the snackbar's display duration does not
+                    // block the collector from processing subsequent deeplink results.
+                    snackbarScope.launch {
+                        snackbarHostState.showSnackbar(
+                            type = SnackbarType.Error,
+                            message = context.getString(result.messageRes)
+                        )
+                    }
                 }
             }
         }
@@ -174,9 +191,6 @@ private fun DefaultOverlayContent(
         isOpen = isSearchOpen,
         onSearchAction = { handler ->
             searchState?.setOnSearchAction(handler)
-        },
-        onUpdateSearchTerm = { handler ->
-            searchState?.setCustomOnSearchTermChange(handler)
         },
         navController = getNavController(),
         directionProvider = directionProvider,

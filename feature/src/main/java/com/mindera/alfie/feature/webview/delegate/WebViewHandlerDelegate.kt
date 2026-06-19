@@ -58,6 +58,8 @@ class WebViewHandlerDelegate @Inject internal constructor(
                 }
 
                 is DeeplinkResult.Unresolved -> Timber.d("No destination for result: $result")
+
+                is DeeplinkResult.ShowError -> Timber.d("Unactionable result in web view: $result")
             }
         }
     }
@@ -77,6 +79,7 @@ class WebViewHandlerDelegate @Inject internal constructor(
                                 is DeeplinkResult.NavigateTo -> result.direction.route.startsWith("web_view").not()
                                 is DeeplinkResult.NavigateClearingStack -> result.direction.route.startsWith("web_view").not()
                                 is DeeplinkResult.Unresolved -> false
+                                is DeeplinkResult.ShowError -> false
                             }
                         }
                         ?.let {

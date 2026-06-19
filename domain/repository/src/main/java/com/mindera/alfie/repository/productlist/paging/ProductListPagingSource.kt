@@ -6,12 +6,13 @@ import com.mindera.alfie.repository.productlist.ProductListRepository
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.repository.result.fold
 
 class ProductListPagingSource(
     private val productListRepository: ProductListRepository,
-    private val collectionHandle: String,
+    private val source: ProductListQuerySource,
     private val filters: ProductListFilter?,
     private val sort: ProductSortOption,
     private val metadataProvider: (ProductListMetadata) -> Unit
@@ -21,7 +22,7 @@ class ProductListPagingSource(
         val after = params.key
         val response = productListRepository.getProductList(
             after = after,
-            collectionHandle = collectionHandle,
+            source = source,
             filters = filters,
             sort = sort,
             limit = params.loadSize

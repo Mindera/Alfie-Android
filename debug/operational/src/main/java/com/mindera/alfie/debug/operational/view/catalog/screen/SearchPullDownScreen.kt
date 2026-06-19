@@ -72,7 +72,6 @@ internal fun SearchPullDownScreen(
             customOverlay = { padding, appContent ->
                 SearchOverlay(
                     onSearchAction = { /* Do nothing here */ },
-                    onUpdateSearchTerm = { /* Do nothing here */ },
                     isOpen = onPullDownToRefresh,
                     onDismiss = {
                         onPullDownToRefresh = false

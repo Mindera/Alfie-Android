@@ -22,6 +22,7 @@ import com.mindera.alfie.repository.productlist.model.CursorPagination
 import com.mindera.alfie.repository.productlist.model.ProductList
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -123,7 +124,7 @@ class ProductListPreviewCountTest {
     fun `WHEN filters change THEN count is emitted only after the debounce`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         coEvery {
-            getProductListUseCase(after = null, collectionHandle = "women", filters = previewFilters, sort = any(), limit = 1)
+            getProductListUseCase(after = null, source = ProductListQuerySource.Collection("women"), filters = previewFilters, sort = any(), limit = 1)
         } returns UseCaseResult.Success(
             ProductList(products = emptyList(), pagination = CursorPagination(endCursor = null, hasNextPage = false, totalCount = 42))
         )
@@ -160,8 +161,8 @@ class ProductListPreviewCountTest {
         advanceUntilIdle()
 
         assertEquals(7, viewModel.state.value.previewResultCount)
-        coVerify(exactly = 1) { getProductListUseCase(null, "women", previewFilters, any(), 1) }
-        coVerify(exactly = 0) { getProductListUseCase(null, "women", firstFilters, any(), 1) }
+        coVerify(exactly = 1) { getProductListUseCase(null, ProductListQuerySource.Collection("women"), previewFilters, any(), 1) }
+        coVerify(exactly = 0) { getProductListUseCase(null, ProductListQuerySource.Collection("women"), firstFilters, any(), 1) }
     }
 
     @Test

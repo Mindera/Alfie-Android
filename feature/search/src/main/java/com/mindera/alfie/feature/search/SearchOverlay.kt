@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,10 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
@@ -26,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,51 +37,27 @@ import androidx.navigation.NavController
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
-import com.mindera.alfie.core.ui.extension.highlightTerm
-import com.mindera.alfie.core.ui.media.image.ImageSizeUI
-import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.core.ui.test.SEARCH_CLEAR_RECENT_SEARCH
 import com.mindera.alfie.core.ui.test.SEARCH_EMPTY_SCREEN
-import com.mindera.alfie.core.ui.test.SEARCH_NO_RESULTS_SCREEN
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_REMOVE_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_TITLE
-import com.mindera.alfie.designsystem.component.button.Button
-import com.mindera.alfie.designsystem.component.button.ButtonSize
-import com.mindera.alfie.designsystem.component.button.ButtonType
-import com.mindera.alfie.designsystem.component.loading.Loading
-import com.mindera.alfie.designsystem.component.loading.LoadingType
 import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
-import com.mindera.alfie.designsystem.component.price.PriceType
-import com.mindera.alfie.designsystem.component.productcard.ProductCard
-import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.theme.Theme
-import com.mindera.alfie.feature.search.model.BrandSuggestionUI
-import com.mindera.alfie.feature.search.model.KeywordSuggestionUI
-import com.mindera.alfie.feature.search.model.ProductSuggestionUI
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
 import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch
-import com.mindera.alfie.feature.search.model.SearchEvent.OnOpenSearchScreen
 import com.mindera.alfie.feature.search.model.SearchEvent.OnRecentSearchClick
-import com.mindera.alfie.feature.search.model.SearchUI
-import com.mindera.alfie.feature.search.model.SearchUIState
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handle
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.search.model.RecentSearch
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import com.mindera.alfie.designsystem.R as RD
-
-private const val PRODUCTS_COLUMN_COUNT = 2
 
 @Composable
 fun SearchOverlay(
     isOpen: Boolean,
     onSearchAction: ((String) -> Unit) -> Unit,
-    onUpdateSearchTerm: ((String) -> Unit) -> Unit,
     navController: NavController,
     directionProvider: DirectionProvider,
     modifier: Modifier = Modifier,
@@ -95,20 +65,10 @@ fun SearchOverlay(
     content: @Composable () -> Unit
 ) {
     val viewModel = viewModel<SearchViewModel>()
-    val state by viewModel.state.collectAsStateWithLifecycle()
     val recentSearches by viewModel.recentSearches.collectAsStateWithLifecycle()
 
-    onUpdateSearchTerm { term ->
-        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(term))
-    }
     onSearchAction { term ->
         viewModel.handleEvent(SearchEvent.OnSearchAction(term))
-    }
-
-    LaunchedEffect(isOpen) {
-        if (isOpen) {
-            viewModel.handleEvent(OnOpenSearchScreen)
-        }
     }
 
     viewModel.handleUIEvents { uiEvent ->
@@ -131,7 +91,6 @@ fun SearchOverlay(
         onDismiss = onDismiss,
         overlayContent = {
             ContentOverlaySearch(
-                state = state,
                 onSearchEvent = viewModel::handleEvent,
                 recentSearches = recentSearches
             )
@@ -143,150 +102,6 @@ fun SearchOverlay(
 
 @Composable
 private fun ContentOverlaySearch(
-    state: SearchUIState,
-    onSearchEvent: ClickEventOneArg<SearchEvent>,
-    recentSearches: List<RecentSearch>
-) {
-    when (state) {
-        is SearchUIState.Empty -> SearchNoContent(
-            onSearchEvent = onSearchEvent,
-            recentSearches = recentSearches
-        )
-
-        is SearchUIState.Error -> SearchError(
-            searchTerm = state.searchTerm,
-            onSearchEvent = onSearchEvent
-        )
-        is SearchUIState.Loaded -> SearchContent(
-            searchUI = state.searchUI,
-            onSearchEvent = onSearchEvent
-        )
-        is SearchUIState.Loading -> Loading(
-            type = LoadingType.Dark,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@Composable
-private fun SearchContent(
-    searchUI: SearchUI,
-    onSearchEvent: ClickEventOneArg<SearchEvent>
-) {
-    val hasKeywords = searchUI.keywords.isNotEmpty()
-    val hasBrands = searchUI.brands.isNotEmpty()
-    val hasProducts = searchUI.products.isNotEmpty()
-
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(PRODUCTS_COLUMN_COUNT),
-        contentPadding = PaddingValues(
-            horizontal = Theme.spacing.spacing16,
-            vertical = Theme.spacing.spacing8
-        ),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
-    ) {
-        if (hasKeywords) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                SuggestionsSectionTitle(title = stringResource(id = R.string.search_suggestions_keyword_title))
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                SuggestionsSectionList(
-                    suggestions = searchUI.keywords.map { it.value }.toImmutableList(),
-                    searchTerm = searchUI.searchTerm,
-                    onSuggestionClick = { onSearchEvent(SearchEvent.OnKeywordSuggestionClick(searchUI.keywords[it])) }
-                )
-            }
-            if (hasBrands || hasProducts) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
-                }
-            }
-        }
-        if (hasBrands) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                SuggestionsSectionTitle(title = stringResource(id = R.string.search_suggestions_brand_title))
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                SuggestionsSectionList(
-                    suggestions = searchUI.brands.map { it.name }.toImmutableList(),
-                    searchTerm = searchUI.searchTerm,
-                    onSuggestionClick = { onSearchEvent(SearchEvent.OnBrandSuggestionClick(searchUI.brands[it])) }
-                )
-            }
-            if (hasProducts) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
-                }
-            }
-        }
-        if (hasProducts) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                SuggestionsSectionTitle(title = stringResource(id = R.string.search_suggestions_product_title))
-            }
-            items(searchUI.products) { suggestion ->
-                ProductCard(
-                    productCardType = suggestion.productCardData,
-                    modifier = Modifier.padding(vertical = Theme.spacing.spacing6)
-                )
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Row(horizontalArrangement = Arrangement.Center) {
-                    Button(
-                        type = ButtonType.Secondary,
-                        buttonSize = ButtonSize.Medium,
-                        text = stringResource(id = R.string.search_suggestions_more_products_cta),
-                        onClick = { onSearchEvent(SearchEvent.OnMoreProductsClick) },
-                        modifier = Modifier.padding(top = Theme.spacing.spacing12)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SuggestionsSectionTitle(title: String) {
-    Text(
-        text = title,
-        style = Theme.typography.paragraphLarge,
-        modifier = Modifier.padding(
-            top = Theme.spacing.spacing8,
-            bottom = Theme.spacing.spacing12
-        )
-    )
-}
-
-@Composable
-private fun SuggestionsSectionList(
-    suggestions: ImmutableList<String>,
-    searchTerm: String,
-    onSuggestionClick: ClickEventOneArg<Int>
-) {
-    Column(
-        modifier = Modifier.padding(horizontal = Theme.spacing.spacing8),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)
-    ) {
-        suggestions.forEachIndexed { index, suggestion ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onSuggestionClick(index) }
-            ) {
-                Text(
-                    text = suggestion.highlightTerm(searchTerm),
-                    style = Theme.typography.paragraph,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Theme.spacing.spacing4)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchNoContent(
     onSearchEvent: ClickEventOneArg<SearchEvent>,
     recentSearches: List<RecentSearch>
 ) {
@@ -360,41 +175,6 @@ private fun RecentSearchesPanel(
                     modifier = Modifier.animateItem()
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun SearchError(
-    searchTerm: String,
-    onSearchEvent: ClickEventOneArg<SearchEvent>
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag(SEARCH_NO_RESULTS_SCREEN)
-    ) {
-        Column(
-            modifier = Modifier.padding(
-                horizontal = Theme.spacing.spacing16,
-                vertical = Theme.spacing.spacing12
-            )
-        ) {
-            Text(
-                text = stringResource(id = R.string.no_results_text1, searchTerm),
-                style = Theme.typography.paragraph
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing32))
-            Text(
-                text = stringResource(id = R.string.no_results_text2),
-                style = Theme.typography.paragraph
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing32))
-            Text(
-                text = stringResource(id = R.string.no_results_cta),
-                style = Theme.typography.paragraphUnderlined,
-                modifier = Modifier.clickable { onSearchEvent(SearchEvent.OnViewAllBrandsClick) }
-            )
         }
     }
 }
@@ -479,21 +259,8 @@ private fun RecentSearchItem(
 
 @Preview(showBackground = true, backgroundColor = 0xffffff)
 @Composable
-private fun ContentOverlaySearchNoContentPreview() {
-    val state = SearchUIState.Empty
+private fun ContentOverlaySearchEmptyPreview() {
     ContentOverlaySearch(
-        state = state,
-        onSearchEvent = {},
-        recentSearches = emptyList()
-    )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xffffff)
-@Composable
-private fun ContentOverlaySearchNoResultsPreview() {
-    val state = SearchUIState.Error("polo")
-    ContentOverlaySearch(
-        state = state,
         onSearchEvent = {},
         recentSearches = emptyList()
     )
@@ -502,9 +269,7 @@ private fun ContentOverlaySearchNoResultsPreview() {
 @Preview(showBackground = true, backgroundColor = 0xffffff)
 @Composable
 private fun ContentOverlayRecentSearchesPreview() {
-    val state = SearchUIState.Empty
     ContentOverlaySearch(
-        state = state,
         onSearchEvent = {},
         recentSearches = listOf(
             RecentSearch.Query(searchTerm = "Recent #1"),
@@ -514,47 +279,4 @@ private fun ContentOverlayRecentSearchesPreview() {
             RecentSearch.Query(searchTerm = "A very long search string that will probably overflow")
         )
     )
-}
-
-@Preview(showBackground = true, backgroundColor = 0xffffff)
-@Composable
-private fun ContentOverlaySearchSuggestionsPreview() {
-    val searchUI = SearchUI(
-        searchTerm = "Polo",
-        keywords = listOf(
-            KeywordSuggestionUI("Polo Ralph Lauren Men"),
-            KeywordSuggestionUI("Polo Ralph Lauren Women"),
-            KeywordSuggestionUI("Polo Ralph Lauren"),
-            KeywordSuggestionUI("Bear Polo")
-        ),
-        brands = listOf(
-            BrandSuggestionUI(
-                name = "Polo Ralph Lauren",
-                slug = "polo-ralph-lauren"
-            )
-        ),
-        products = List(size = 8) {
-            ProductSuggestionUI(
-                id = "$it",
-                slug = "polo",
-                productCardData = ProductCardType.Vertical(
-                    image = ImageUI(
-                        images = persistentListOf(ImageSizeUI.Large("https://images.pexels.com/photos/2297720/pexels-photo-2297720.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")),
-                        alt = null
-                    ),
-                    brand = "POLO RALPH LAUREN",
-                    name = "MENS CUSTOM FIT BUTTON DOWN OXFORD SHIRT",
-                    price = PriceType.Default("$100")
-                )
-            )
-        }
-    )
-    val state = SearchUIState.Loaded(searchUI)
-    Theme {
-        ContentOverlaySearch(
-            state = state,
-            onSearchEvent = { },
-            recentSearches = emptyList()
-        )
-    }
 }

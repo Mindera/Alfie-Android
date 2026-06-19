@@ -49,8 +49,6 @@ class SearchState internal constructor(
     var searchTextType by searchTextType
         private set
 
-    private var onSearchTermChangeCustomListener: ClickEventOneArg<String>? = null
-
     private var onSearchActionListener: ClickEventOneArg<String>? = null
 
     fun invertSearchOpenState() {
@@ -69,7 +67,6 @@ class SearchState internal constructor(
     fun updateSearchTerm(searchText: String) {
         searchTerm = searchText
         onSearchTermChange(searchText)
-        onSearchTermChangeCustomListener?.invoke(searchText)
     }
 
     fun onSearchAction() {
@@ -77,10 +74,6 @@ class SearchState internal constructor(
             isSearchOpen = false
         }
         onSearchActionListener?.invoke(searchTerm)
-    }
-
-    fun setCustomOnSearchTermChange(listener: ClickEventOneArg<String>) {
-        onSearchTermChangeCustomListener = listener
     }
 
     fun setOnSearchAction(listener: ClickEventOneArg<String>) {

@@ -1,9 +1,9 @@
 package com.mindera.alfie.data.productlist.mapper
 
-import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.graphql.bff.fragment.ImageFragment
 import com.mindera.alfie.graphql.bff.fragment.MoneyFragment
 import com.mindera.alfie.graphql.bff.fragment.ProductListEntryFragment
+import com.mindera.alfie.graphql.bff.fragment.ProductListResponseFragment
 import com.mindera.alfie.repository.productlist.model.CursorPagination
 import com.mindera.alfie.repository.productlist.model.ProductListPriceRange
 import com.mindera.alfie.repository.shared.model.Media
@@ -64,17 +64,17 @@ class ProductListMapperTest {
         endCursor: String? = "cursor123",
         hasNextPage: Boolean = false,
         totalCount: Int = fragments.size
-    ): ProductListQuery.ProductList {
+    ): ProductListResponseFragment {
         val products = fragments.map { frag ->
-            mockk<ProductListQuery.Product>().also { p ->
+            mockk<ProductListResponseFragment.Product>().also { p ->
                 every { p.productListEntryFragment } returns frag
             }
         }
-        val pageInfo = mockk<ProductListQuery.PageInfo>().also {
+        val pageInfo = mockk<ProductListResponseFragment.PageInfo>().also {
             every { it.endCursor } returns endCursor
             every { it.hasNextPage } returns hasNextPage
         }
-        return mockk<ProductListQuery.ProductList>().also {
+        return mockk<ProductListResponseFragment>().also {
             every { it.products } returns products
             every { it.pageInfo } returns pageInfo
             every { it.totalCount } returns totalCount

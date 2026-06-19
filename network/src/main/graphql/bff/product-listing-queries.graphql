@@ -14,13 +14,26 @@ query ProductListQuery(
         limit: $limit,
         platform: $platform
     ) {
-        pageInfo {
-            endCursor
-            hasNextPage
-        }
-        totalCount
-        products {
-            ...ProductListEntryFragment
-        }
+        ...ProductListResponseFragment
+    }
+}
+
+query SearchProductsQuery(
+    $searchTerm: String!,
+    $after: String,
+    $filters: ProductFilterInput,
+    $sort: ProductSortEnum! = NEWEST,
+    $limit: Int! = 25,
+    $platform: String
+) {
+    searchProducts(
+        searchTerm: $searchTerm,
+        after: $after,
+        filters: $filters,
+        sort: $sort,
+        limit: $limit,
+        platform: $platform
+    ) {
+        ...ProductListResponseFragment
     }
 }

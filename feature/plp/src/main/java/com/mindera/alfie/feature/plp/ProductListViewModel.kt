@@ -12,7 +12,6 @@ import androidx.paging.map
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
-import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
@@ -35,6 +34,7 @@ import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.mindera.alfie.repository.productlist.model.ProductListMetadata
+import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -80,12 +80,12 @@ internal class ProductListViewModel @Inject constructor(
         private const val PREVIEW_DEBOUNCE_MS = 300L
         private const val PREVIEW_PAGE_SIZE = 1
 
-        // BFF doesn't yet expose a navigation/category lookup, so the collection handle is
-        // hardcoded to "women" as a placeholder. Nav args are intentionally ignored when
-        // selecting products until the BFF supports resolving a handle from category slug/id,
-        // brand, or search query. The displayed title still uses nav args (see collectionTitle),
-        // which means the title may not match the products shown — this is a known trade-off
-        // until the BFF integration is complete.
+        // Search is backed directly by the BFF `searchProducts` query (the search term comes
+        // straight from the nav args). For Category/Brand, the BFF does not yet expose a
+        // navigation/category lookup, so the collection handle falls back to "women" as a
+        // placeholder until the BFF can resolve a handle from category slug/id or brand. The
+        // displayed title still uses nav args (see collectionTitle), so for non-search lists the
+        // title may not match the products shown — a known trade-off until that BFF work lands.
         private const val COLLECTION_HANDLE = "women"
 
         private val initialPagerLoadState = LoadStates(
@@ -99,18 +99,14 @@ internal class ProductListViewModel @Inject constructor(
 
     /**
      * Display title derived from nav args.
-     *
-     * Note: this title may not match the products shown, because the underlying collection
-     * handle is hardcoded to [COLLECTION_HANDLE] until the BFF exposes a navigation query
-     * to resolve a handle from category slug/id, brand, or search query.
      */
-    val collectionTitle: String = when (val type = navArgs.type) {
-        is ProductListType.Category.Slug -> type.slug
-        is ProductListType.Category.Id -> type.id
-        is ProductListType.Brand.Slug -> type.slug
-        is ProductListType.Brand.Id -> type.id
-        is ProductListType.Search -> type.query
-    }
+    val collectionTitle: String = navArgs.type.displayTitle
+
+    /** The BFF query backing this list (see [toQuerySource]). */
+    private val querySource: ProductListQuerySource = navArgs.type.toQuerySource(COLLECTION_HANDLE)
+
+    /** Non-null only in search mode; drives the search-specific no-results copy. */
+    val searchQuery: String? = (querySource as? ProductListQuerySource.Search)?.term
 
     private var pagerJob: Job? = null
 
@@ -163,7 +159,7 @@ internal class ProductListViewModel @Inject constructor(
         pagerJob = viewModelScope.launch {
             val currentState = _state.value
             val pagerFlow = getPaginatedProductList(
-                collectionHandle = COLLECTION_HANDLE,
+                source = querySource,
                 filters = currentState.selectedFilters,
                 sort = currentState.selectedSort,
                 pageSize = PAGE_SIZE,
@@ -208,7 +204,7 @@ internal class ProductListViewModel @Inject constructor(
                         }
                         val result = getProductList(
                             after = null,
-                            collectionHandle = COLLECTION_HANDLE,
+                            source = querySource,
                             filters = filters,
                             sort = _state.value.selectedSort,
                             limit = PREVIEW_PAGE_SIZE

@@ -54,6 +54,8 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
+import com.mindera.alfie.designsystem.component.state.StateMessage
+import com.mindera.alfie.designsystem.component.state.StateMessageAction
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.plp.filter.RefineSheet
@@ -106,6 +108,7 @@ internal fun ProductListScreen(
     ProductListScreenContent(
         state = state,
         products = products,
+        searchQuery = viewModel.searchQuery,
         onEvent = viewModel::handleEvent
     )
 }
@@ -114,6 +117,7 @@ internal fun ProductListScreen(
 private fun ProductListScreenContent(
     state: ProductListUI,
     products: LazyPagingItems<ProductListEntryUI>,
+    searchQuery: String?,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
     val isError = products.loadState.refresh is LoadState.Error
@@ -121,8 +125,22 @@ private fun ProductListScreenContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         when {
-            isError -> { /* TODO Error */ }
-            isEmpty -> { /* TODO Empty */ }
+            isError -> StateMessage(
+                title = stringResource(id = R.string.plp_error_title),
+                subtitle = stringResource(id = R.string.plp_error_subtitle),
+                action = StateMessageAction(
+                    label = stringResource(id = R.string.plp_error_retry),
+                    onClick = { products.retry() }
+                )
+            )
+            isEmpty && searchQuery != null -> StateMessage(
+                title = stringResource(id = R.string.plp_search_no_results_title, searchQuery),
+                subtitle = stringResource(id = R.string.plp_search_no_results_subtitle)
+            )
+            isEmpty -> StateMessage(
+                title = stringResource(id = R.string.plp_empty_title),
+                subtitle = stringResource(id = R.string.plp_empty_subtitle)
+            )
             else -> {
                 ProductListGrid(
                     state = state,

@@ -143,12 +143,14 @@ internal class ProductListDeeplinks @Inject constructor() : DeeplinkGroup {
             )
 
             override suspend fun handle(instance: DeeplinkInstance): DeeplinkResult {
-                val query = instance.queryArguments[SEARCH_QUERY_PARAMETER]
-                val type = ProductListType.Search(query.orEmpty())
+                val query = instance.queryArguments[SEARCH_QUERY_PARAMETER]?.trim().orEmpty()
+                if (query.isEmpty()) {
+                    return DeeplinkResult.ShowError(messageRes = R.string.plp_search_empty_query_error)
+                }
 
                 return DeeplinkResult.NavigateTo(
                     direction = ProductListScreenDestination(
-                        productListNavArgs(type = type)
+                        productListNavArgs(type = ProductListType.Search(query))
                     )
                 )
             }
