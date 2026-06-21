@@ -30,6 +30,5 @@ dependencies {
     // (com.mindera.alfie.graphql.bff.*) against a locally-running BFF. Apollo runtime + OkHttp
     // come transitively from :network's `api(libs.apollo)`.
     androidTestImplementation(project(ProjectModule.network))
-    androidTestImplementation(libs.apollo)
     androidTestImplementation(libs.test.runner)
 }

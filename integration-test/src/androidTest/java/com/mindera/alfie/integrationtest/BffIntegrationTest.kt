@@ -15,8 +15,11 @@ import java.util.concurrent.TimeUnit
  * Base for integration tests that hit a **locally-running BFF** with a real [ApolloClient].
  *
  * These are instrumented tests ([connectedDebugAndroidTest]); from an emulator the host's
- * `localhost` is reached via [BFF_URL] (`10.0.2.2`). Cleartext to `10.0.2.2` is permitted by
- * `app/src/main/res/xml/network_security_config.xml`.
+ * `localhost` is reached via [BFF_URL] (`10.0.2.2`). This module's own androidTest manifest
+ * (`src/androidTest/AndroidManifest.xml`) grants `INTERNET` and references
+ * `src/androidTest/res/xml/network_security_config.xml`, which permits cleartext to `10.0.2.2`
+ * for the test APK — the app's network-security config is not packaged into a standalone library
+ * test APK.
  *
  * Each test is gated on BFF reachability ([assumeBffReachable]); when no BFF is up the test is
  * **skipped, not failed**, so the suite stays green on devices/CI without a backend. See the

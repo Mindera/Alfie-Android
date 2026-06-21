@@ -102,7 +102,7 @@ To run them locally:
    npm run start   # NestJS, serves /graphql on http://localhost:3000
    ```
 
-2. **Start an emulator** (the tests reach the host BFF via `http://10.0.2.2:3000/graphql`; cleartext to `10.0.2.2` is already allowed in `network_security_config.xml`).
+2. **Start an emulator** (the tests reach the host BFF via `http://10.0.2.2:3000/graphql`). The `:integration-test` module's own androidTest manifest grants `INTERNET` and references `integration-test/src/androidTest/res/xml/network_security_config.xml` to allow cleartext to `10.0.2.2` — the app's network-security config is not packaged into this standalone library test APK.
 
 3. **Run the suite:**
 
