@@ -124,7 +124,7 @@ class ProductListPreviewCountTest {
     fun `WHEN filters change THEN count is emitted only after the debounce`() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         coEvery {
-            getProductListUseCase(after = null, source = ProductListQuerySource.Collection("women"), filters = previewFilters, sort = any(), limit = 1)
+            getProductListUseCase(after = null, source = ProductListQuerySource.Collection("frontpage"), filters = previewFilters, sort = any(), limit = 1)
         } returns UseCaseResult.Success(
             ProductList(products = emptyList(), pagination = CursorPagination(endCursor = null, hasNextPage = false, totalCount = 42))
         )
@@ -161,8 +161,8 @@ class ProductListPreviewCountTest {
         advanceUntilIdle()
 
         assertEquals(7, viewModel.state.value.previewResultCount)
-        coVerify(exactly = 1) { getProductListUseCase(null, ProductListQuerySource.Collection("women"), previewFilters, any(), 1) }
-        coVerify(exactly = 0) { getProductListUseCase(null, ProductListQuerySource.Collection("women"), firstFilters, any(), 1) }
+        coVerify(exactly = 1) { getProductListUseCase(null, ProductListQuerySource.Collection("frontpage"), previewFilters, any(), 1) }
+        coVerify(exactly = 0) { getProductListUseCase(null, ProductListQuerySource.Collection("frontpage"), firstFilters, any(), 1) }
     }
 
     @Test

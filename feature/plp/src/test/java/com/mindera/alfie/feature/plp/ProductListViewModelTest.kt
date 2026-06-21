@@ -145,11 +145,11 @@ class ProductListViewModelTest {
     }
 
     @Test
-    fun `init - THEN uses hardcoded women collection handle`() = runTest {
+    fun `init - THEN uses hardcoded frontpage collection handle`() = runTest {
         buildViewModel()
 
         @Suppress("UnusedFlow")
-        verify { getPaginatedProductListUseCase(ProductListQuerySource.Collection("women"), any(), any(), any(), any()) }
+        verify { getPaginatedProductListUseCase(ProductListQuerySource.Collection("frontpage"), any(), any(), any(), any()) }
     }
 
     @Test
