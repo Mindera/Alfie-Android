@@ -82,11 +82,11 @@ internal class ProductListViewModel @Inject constructor(
 
         // Search is backed directly by the BFF `searchProducts` query (the search term comes
         // straight from the nav args). For Category/Brand, the BFF does not yet expose a
-        // navigation/category lookup, so the collection handle falls back to "women" as a
+        // navigation/category lookup, so the collection handle falls back to "frontpage" as a
         // placeholder until the BFF can resolve a handle from category slug/id or brand. The
         // displayed title still uses nav args (see collectionTitle), so for non-search lists the
         // title may not match the products shown — a known trade-off until that BFF work lands.
-        private const val COLLECTION_HANDLE = "women"
+        private const val COLLECTION_HANDLE = "frontpage"
 
         private val initialPagerLoadState = LoadStates(
             refresh = LoadState.Loading,
