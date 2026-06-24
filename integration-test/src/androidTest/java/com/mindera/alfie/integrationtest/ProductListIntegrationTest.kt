@@ -48,7 +48,7 @@ internal class ProductListIntegrationTest : BffIntegrationTest() {
             .productList.productListResponseFragment
 
         val prices = response.products.map {
-            it.productListEntryFragment.priceRange.minVariantPrice.moneyFragment.amount
+            it.productListEntryFragment.priceRange.minVariantPrice.moneyFragment.amount.toBigDecimal()
         }
         assertEquals(prices.sorted(), prices, "PRICE_ASC should return non-decreasing min prices")
     }
