@@ -1,0 +1,12 @@
+{
+  "edges": [
+    { "file": "screen-size.large-(l).tokens.json",  "token": "typography-font-family-brand" },
+    { "file": "screen-size.medium-(m).tokens.json", "token": "typography-font-family-brand" },
+    { "file": "screen-size.small-(s).tokens.json",  "token": "typography-font-family-brand" },
+    { "file": "screen-size.wide-(xl).tokens.json",  "token": "typography-font-family-brand" },
+    { "file": "system.ios.tokens.json",             "token": "typography-font-family-system-brand" },
+    { "file": "system.android.tokens.json",         "token": "typography-font-family-system-brand" },
+    { "file": "system.web.tokens.json",             "token": "typography-font-family-system-brand" }
+  ],
+  "upstream_issue": "Figma plugin: Design Token Exporter — file when reproducible"
+}

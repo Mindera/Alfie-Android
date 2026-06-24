@@ -1,0 +1,99 @@
+{
+  "screen-size-screen-min-width": {
+    "$type": "dimension",
+    "$value": {
+      "value": 600,
+      "unit": "px"
+    }
+  },
+  "screen-size-screen-max-width": {
+    "$type": "dimension",
+    "$value": {
+      "value": 1365,
+      "unit": "px"
+    }
+  },
+  "screen-size-screen-min-height": {
+    "$type": "dimension",
+    "$value": {
+      "value": 768,
+      "unit": "px"
+    }
+  },
+  "screen-size-columns": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-4}"
+  },
+  "screen-size-margin": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-24}"
+  },
+  "screen-size-gutter": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-16}"
+  },
+  "typography-font-family-brand": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-brand}"
+  },
+  "typography-font-family-primary": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-primary-web}"
+  },
+  "typography-font-size-root-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-s}"
+  },
+  "typography-font-size-font-size-xs": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-12}"
+  },
+  "typography-font-size-font-size-s": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-16}"
+  },
+  "typography-font-size-font-size-m": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-20}"
+  },
+  "typography-font-size-font-size-l": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-24}"
+  },
+  "typography-font-size-font-size-xl": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-32}"
+  },
+  "typography-font-size-font-size-xxl": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-40}"
+  },
+  "typography-font-size-font-size-xxxl": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-48}"
+  },
+  "typography-line-height-line-height-xxs": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-16}"
+  },
+  "typography-line-height-line-height-xs": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-16}"
+  },
+  "typography-line-height-line-height-s": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-20}"
+  },
+  "typography-line-height-line-height-m": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-24}"
+  },
+  "typography-line-height-line-height-l": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-32}"
+  },
+  "typography-line-height-line-height-xl": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-40}"
+  }
+}

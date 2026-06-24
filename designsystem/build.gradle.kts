@@ -1,6 +1,7 @@
 import com.mindera.alfie.buildconvention.AppConfig
 import com.mindera.alfie.buildconvention.extension.implementation
 import com.mindera.alfie.buildconvention.module.ProjectModule
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -23,6 +24,10 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.zoomable)
     implementation(libs.window)
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude("**/tokens/Colors.kt", "**/tokens/Typography.kt", "**/tokens/Spacing.kt", "**/tokens/Sizing.kt")
 }
 
 tasks.withType<KotlinCompile>().all {

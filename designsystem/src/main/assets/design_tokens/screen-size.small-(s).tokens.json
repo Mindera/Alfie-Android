@@ -1,0 +1,90 @@
+{
+  "screen-size-screen-min-width": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-screen-min-width}"
+  },
+  "screen-size-screen-max-width": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-screen-max-width}"
+  },
+  "screen-size-screen-min-height": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-screen-min-height}"
+  },
+  "screen-size-columns": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-columns}"
+  },
+  "screen-size-margin": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-margin}"
+  },
+  "screen-size-gutter": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-gutter}"
+  },
+  "typography-font-family-brand": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-system-brand}"
+  },
+  "typography-font-family-primary": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-system-primary}"
+  },
+  "typography-font-size-root-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-root-font-size}"
+  },
+  "typography-font-size-font-size-xs": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-xs}"
+  },
+  "typography-font-size-font-size-s": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-s}"
+  },
+  "typography-font-size-font-size-m": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-m}"
+  },
+  "typography-font-size-font-size-l": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-l}"
+  },
+  "typography-font-size-font-size-xl": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-xl}"
+  },
+  "typography-font-size-font-size-xxl": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-xxl}"
+  },
+  "typography-font-size-font-size-xxxl": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-xxxl}"
+  },
+  "typography-line-height-line-height-xxs": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-xxs}"
+  },
+  "typography-line-height-line-height-xs": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-xs}"
+  },
+  "typography-line-height-line-height-s": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-s}"
+  },
+  "typography-line-height-line-height-m": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-m}"
+  },
+  "typography-line-height-line-height-l": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-l}"
+  },
+  "typography-line-height-line-height-xl": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-xl}"
+  }
+}
