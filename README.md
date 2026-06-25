@@ -84,6 +84,40 @@ Apollo Kotlin generates Kotlin code automatically on build. Generated classes la
 
 > ⚠️ Never commit hard-coded local IPs or cleartext exceptions targeting non-localhost addresses.
 
+## Integration tests (local BFF)
+
+The `:integration-test` module runs **instrumented** tests with a real `ApolloClient` against a
+**locally-running BFF**, covering `productList`, `productDetails`, and `searchProducts`. They are
+not part of `testDebugUnitTest` — they run only via `connectedDebugAndroidTest` on an
+emulator/device, and **skip themselves** (JUnit5 `assumeTrue`) when no BFF is reachable, so they
+never break a run without a backend.
+
+To run them locally:
+
+1. **Start the BFF** on port `3000` (see [New BFF — Alfie-BFF (port 3000)](#new-bff--alfie-bff-port-3000) above):
+
+   ```bash
+   cd ../Alfie-BFF
+   npm ci
+   npm run start   # NestJS, serves /graphql on http://localhost:3000
+   ```
+
+2. **Start an emulator** (the tests reach the host BFF via `http://10.0.2.2:3000/graphql`). The `:integration-test` module's own androidTest manifest grants `INTERNET` and references `integration-test/src/androidTest/res/xml/network_security_config.xml` to allow cleartext to `10.0.2.2` — the app's network-security config is not packaged into this standalone library test APK.
+
+3. **Run the suite:**
+
+   ```bash
+   ./gradlew :integration-test:connectedDebugAndroidTest
+   ```
+
+   Reports: `integration-test/build/reports/androidTests/connected/`.
+
+Notes:
+- Tests are **data-driven** — they read a real product/handle/search term from `productList`
+  (collection handle `frontpage`) rather than hard-coding fixtures, so they tolerate changing BFF data.
+- Real device: point the tests at your machine's IP instead of `10.0.2.2` (override `BffIntegrationTest.BFF_URL`) and allow cleartext to that IP, per [Real device setup](#real-device-setup).
+- Automating the BFF boot/teardown + a CI job is tracked separately in **ALFMOB-409**.
+
 ## Features
 
 ----

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The instrumented test APK for a standalone library has neither of these by default
+         (unlike :app's main manifest): INTERNET to open sockets, and a cleartext allowance for
+         the local BFF reached via the emulator's host alias (10.0.2.2). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application android:networkSecurityConfig="@xml/network_security_config" />
+</manifest>
