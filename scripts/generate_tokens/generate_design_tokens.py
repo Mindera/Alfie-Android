@@ -696,7 +696,6 @@ def emit_sizing(sizing, reg, walk):
         "import androidx.compose.runtime.Immutable\n",
         "import androidx.compose.ui.graphics.Shape\n",
         "import androidx.compose.ui.unit.Dp\n",
-        "import androidx.compose.ui.unit.dp\n",
     ]
 
     icons = {n: e for n, e in sizing.items() if n.startswith("icons-icon-")}
