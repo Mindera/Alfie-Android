@@ -1,88 +1,112 @@
 // GENERATED — do not edit. Produced by scripts/generate_tokens/generate_design_tokens.py
 // Source: designsystem/src/main/assets/design_tokens (Mindera/Alfie-Mobile-Design-Tokens). Re-run on token changes.
-@file:Suppress("MagicNumber", "LongMethod", "ObjectPropertyNaming")
+@file:Suppress("MagicNumber", "LongMethod")
 package com.mindera.alfie.designsystem.tokens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-object Colors {
-    internal object Primitives {
-        object Neutrals {
-            val n0 = Color(0xFFFFFFFF)
-            val n100 = Color(0xFFF7F7F7)
-            val n200 = Color(0xFFE9E9E9)
-            val n300 = Color(0xFFCDCDCD)
-            val n400 = Color(0xFFA1A1A1)
-            val n500 = Color(0xFF767676)
-            val n600 = Color(0xFF4A4A4A)
-            val n700 = Color(0xFF2B2B2B)
-            val n800 = Color(0xFF111111)
-            val n900 = Color(0xFF06080A)
-        }
-        object SemanticError {
-            val e100 = Color(0xFFFEF2F1)
-            val e200 = Color(0xFFF9DEDC)
-            val e300 = Color(0xFFEA9B9E)
-            val e400 = Color(0xFFEB676D)
-            val e500 = Color(0xFFE03E40)
-            val e600 = Color(0xFFB22525)
-            val e700 = Color(0xFF952525)
-            val e800 = Color(0xFF770500)
-        }
-        object SemanticSuccess {
-            val s100 = Color(0xFFEDF7E7)
-            val s200 = Color(0xFFD4EAC3)
-            val s300 = Color(0xFFA3CF82)
-            val s400 = Color(0xFF84C553)
-            val s500 = Color(0xFF60A62B)
-            val s600 = Color(0xFF48911F)
-            val s700 = Color(0xFF368316)
-            val s800 = Color(0xFF006201)
-        }
-        object Transparent {
-            val transparent = Color(0x00FFFFFF)
-        }
-    }
+@Immutable
+interface Colors {
+    val surface: ColorSurface
+    val content: ColorContent
+    val border: ColorBorder
+    val button: ColorButton
+    val link: ColorLink
+}
 
-    object Border {
-        val soft = Primitives.Neutrals.n200
+@Immutable
+interface ColorSurface {
+    val backgroundDestructive: Color
+    val backgroundInvertedPrimary: Color
+    val backgroundNegative: Color
+    val backgroundPositive: Color
+    val backgroundPrimary: Color
+    val backgroundPrimaryActive: Color
+    val backgroundTerciary: Color
+    val foregroundInvertedPrimary: Color
+    val foregroundPrimary: Color
+}
+
+@Immutable
+interface ColorContent {
+    val contentInvertedPrimary: Color
+    val contentInvertedPrimarydisabled: Color
+    val contentNegative: Color
+    val contentPositive: Color
+    val contentPrimary: Color
+    val contentPrimaryActive: Color
+    val contentPrimaryDisabled: Color
+    val contentTerciary: Color
+}
+
+@Immutable
+interface ColorBorder {
+    val soft: Color
+}
+
+@Immutable
+interface ColorButton {
+    val destructiveBackgroundDestructiveDefault: Color
+    val destructiveStrokeDestructiveDefault: Color
+    val primaryBackgroundPrimaryDefault: Color
+    val secondaryBackgroundSecondaryDefault: Color
+    val secondaryBackgroundSecondaryDisabled: Color
+    val terciaryBackgroundTerciaryDefault: Color
+    val terciaryBackgroundTerciaryDisabled: Color
+    val terciaryStrokeTerciaryDefault: Color
+    val terciaryStrokeTerciaryDisabled: Color
+}
+
+@Immutable
+interface ColorLink {
+    val linkPrimaryDefault: Color
+    val linkPrimaryDisabled: Color
+    val linkPrimaryInvertedDefault: Color
+    val linkPrimaryInvertedDisabled: Color
+}
+
+@Immutable
+class DefaultColors(private val primitive: Primitives) : Colors {
+    override val surface = object : ColorSurface {
+        override val backgroundDestructive = primitive.colors.semanticError600
+        override val backgroundInvertedPrimary = primitive.colors.neutrals800
+        override val backgroundNegative = primitive.colors.semanticError500
+        override val backgroundPositive = primitive.colors.semanticSuccess600
+        override val backgroundPrimary = primitive.colors.neutrals0
+        override val backgroundPrimaryActive = primitive.colors.neutrals800
+        override val backgroundTerciary = primitive.colors.neutrals300
+        override val foregroundInvertedPrimary = primitive.colors.neutrals700
+        override val foregroundPrimary = primitive.colors.neutrals100
     }
-    object Button {
-        val destructiveBackgroundDestructiveDefault = Primitives.SemanticError.e600
-        val destructiveStrokeDestructiveDefault = Primitives.SemanticError.e600
-        val primaryBackgroundPrimaryDefault = Primitives.Neutrals.n800
-        val secondaryBackgroundSecondaryDefault = Primitives.Transparent.transparent
-        val secondaryBackgroundSecondaryDisabled = Primitives.Transparent.transparent
-        val terciaryBackgroundTerciaryDefault = Primitives.Transparent.transparent
-        val terciaryBackgroundTerciaryDisabled = Primitives.Transparent.transparent
-        val terciaryStrokeTerciaryDefault = Primitives.Transparent.transparent
-        val terciaryStrokeTerciaryDisabled = Primitives.Transparent.transparent
+    override val content = object : ColorContent {
+        override val contentInvertedPrimary = primitive.colors.neutrals0
+        override val contentInvertedPrimarydisabled = primitive.colors.neutrals500
+        override val contentNegative = primitive.colors.semanticError500
+        override val contentPositive = primitive.colors.semanticSuccess400
+        override val contentPrimary = primitive.colors.neutrals800
+        override val contentPrimaryActive = primitive.colors.neutrals0
+        override val contentPrimaryDisabled = primitive.colors.neutrals400
+        override val contentTerciary = primitive.colors.neutrals500
     }
-    object Content {
-        val contentInvertedPrimary = Primitives.Neutrals.n0
-        val contentInvertedPrimarydisabled = Primitives.Neutrals.n500
-        val contentNegative = Primitives.SemanticError.e500
-        val contentPositive = Primitives.SemanticSuccess.s400
-        val contentPrimary = Primitives.Neutrals.n800
-        val contentPrimaryActive = Primitives.Neutrals.n0
-        val contentPrimaryDisabled = Primitives.Neutrals.n400
-        val contentTerciary = Primitives.Neutrals.n500
+    override val border = object : ColorBorder {
+        override val soft = primitive.colors.neutrals200
     }
-    object Link {
-        val linkPrimaryDefault = Primitives.Neutrals.n800
-        val linkPrimaryDisabled = Primitives.Neutrals.n400
-        val linkPrimaryInvertedDefault = Primitives.Neutrals.n0
-        val linkPrimaryInvertedDisabled = Primitives.Neutrals.n500
+    override val button = object : ColorButton {
+        override val destructiveBackgroundDestructiveDefault = surface.backgroundDestructive
+        override val destructiveStrokeDestructiveDefault = surface.backgroundDestructive
+        override val primaryBackgroundPrimaryDefault = surface.backgroundInvertedPrimary
+        override val secondaryBackgroundSecondaryDefault = primitive.colors.transparent
+        override val secondaryBackgroundSecondaryDisabled = primitive.colors.transparent
+        override val terciaryBackgroundTerciaryDefault = primitive.colors.transparent
+        override val terciaryBackgroundTerciaryDisabled = primitive.colors.transparent
+        override val terciaryStrokeTerciaryDefault = primitive.colors.transparent
+        override val terciaryStrokeTerciaryDisabled = primitive.colors.transparent
     }
-    object Surface {
-        val backgroundDestructive = Primitives.SemanticError.e600
-        val backgroundInvertedPrimary = Primitives.Neutrals.n800
-        val backgroundNegative = Primitives.SemanticError.e500
-        val backgroundPositive = Primitives.SemanticSuccess.s600
-        val backgroundPrimary = Primitives.Neutrals.n0
-        val backgroundPrimaryActive = Primitives.Neutrals.n800
-        val backgroundTerciary = Primitives.Neutrals.n300
-        val foregroundInvertedPrimary = Primitives.Neutrals.n700
-        val foregroundPrimary = Primitives.Neutrals.n100
+    override val link = object : ColorLink {
+        override val linkPrimaryDefault = content.contentPrimary
+        override val linkPrimaryDisabled = content.contentPrimaryDisabled
+        override val linkPrimaryInvertedDefault = content.contentInvertedPrimary
+        override val linkPrimaryInvertedDisabled = content.contentInvertedPrimarydisabled
     }
 }

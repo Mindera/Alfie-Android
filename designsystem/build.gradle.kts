@@ -27,7 +27,7 @@ dependencies {
 }
 
 tasks.withType<Detekt>().configureEach {
-    exclude("**/tokens/Colors.kt", "**/tokens/Typography.kt", "**/tokens/Spacing.kt", "**/tokens/Sizing.kt")
+    exclude("**/tokens/Primitives.kt", "**/tokens/Colors.kt", "**/tokens/Sizing.kt", "**/tokens/TypographyTokens.kt", "**/tokens/Typography.kt")
 }
 
 tasks.withType<KotlinCompile>().all {

@@ -3,7 +3,6 @@ package com.mindera.alfie.feature.startup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -12,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.designsystem.component.loading.LogoLoading
+import com.mindera.alfie.designsystem.theme.Theme
 @Composable
 fun StartUp(
     appContent: @Composable (startDestination: Screen) -> Unit
@@ -23,7 +23,7 @@ fun StartUp(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(Theme.color.white),
             contentAlignment = Alignment.Center
         ) {
             LogoLoading()

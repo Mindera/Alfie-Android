@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
-Design-token code generator: reads W3C DTCG JSON from
+Design-token code generator (interface-based): reads W3C DTCG JSON from
 designsystem/src/main/assets/design_tokens/ and emits type-safe Kotlin
-into designsystem/src/main/java/com/mindera/alfie/designsystem/tokens/.
+@Immutable interfaces + concrete instances into .../tokens/.
+
+Architecture:
+  LightPrimitives (raw literals) → DefaultColors / DefaultSizing /
+  DefaultTypographyTokens (refs only) → DefaultTypography (TextStyles)
+  All wired through NewTheme + LocalTheme CompositionLocal.
 
 Run: python3 scripts/generate_tokens/generate_design_tokens.py
 Re-run whenever design-token JSON files are updated.
@@ -10,25 +15,16 @@ Re-run whenever design-token JSON files are updated.
 import json
 import re
 import sys
-import warnings
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Paths (relative to repo root, resolved from this script's location)
+# Paths
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 TOKENS_DIR = REPO_ROOT / "designsystem" / "src" / "main" / "assets" / "design_tokens"
 OUT_DIR = (
-    REPO_ROOT
-    / "designsystem"
-    / "src"
-    / "main"
-    / "java"
-    / "com"
-    / "mindera"
-    / "alfie"
-    / "designsystem"
-    / "tokens"
+    REPO_ROOT / "designsystem" / "src" / "main" / "java"
+    / "com" / "mindera" / "alfie" / "designsystem" / "tokens"
 )
 
 PACKAGE = "com.mindera.alfie.designsystem.tokens"
@@ -41,317 +37,61 @@ GEN_HEADER = (
 
 DOC_PREFIX = "~~doc-"
 REF_RE = re.compile(r"^\{(.+)\}$")
-MAX_DEPTH = 10  # chains through strikethrough/bold indirections can reach 7 levels
 
 # ---------------------------------------------------------------------------
 # Loading
 # ---------------------------------------------------------------------------
 
-def _load(path: Path) -> dict:
+def _load(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def _collect_files(manifest: dict) -> list[str]:
-    files: list[str] = []
-    seen: set[str] = set()
-
-    def _add(name: str) -> None:
-        if name not in seen:
-            seen.add(name)
-            files.append(name)
-
-    collections = manifest.get("collections", {})
-    for coll_name, coll in collections.items():
-        if coll_name == ".documentation":
-            continue
-        modes = coll.get("modes", {})
-        for mode_name, file_list in modes.items():
-            for f in file_list:
-                _add(f)
-
-    for file_list in manifest.get("styles", {}).values():
-        for f in file_list:
-            _add(f)
-
-    return files
-
-
-# Android + Small-screen priority: load these last so their values win
-_PRIORITY_ORDER = [
-    ".primitives.alfie-theme.tokens.json",
-    "theme.alfie-theme.tokens.json",
-    "typography.alfie-theme.tokens.json",
-    "sizing.alfie-theme.tokens.json",
-    # platform/screen-size non-priority loaded before priority ones
-]
-_ANDROID_FILES = {"system.android.tokens.json"}
-_SMALL_FILES = {"screen-size.small-(s).tokens.json"}
-_STYLES_FILE = "typography.styles.tokens.json"
-
-
-def load_token_map(tokens_dir: Path) -> tuple[dict[str, dict], dict[str, dict]]:
-    """Return (token_map, primitives_map).
-
-    token_map: flat {token_name: {$type, $value, _file}}, Android/Small last-wins.
-    primitives_map: same but only from .primitives.alfie-theme.tokens.json (concrete values).
-    """
-    manifest = _load(tokens_dir / "manifest.json")
-    all_files = _collect_files(manifest)
-
-    def sort_key(f: str) -> int:
-        if f in _SMALL_FILES:
-            return 4
-        if f in _ANDROID_FILES:
-            return 3
-        if f == _STYLES_FILE:
-            return 5
-        if f.startswith("screen-size.") or f.startswith("system."):
-            return 2  # other platform/screen files — low priority
-        return 1  # primitives, theme, typography.alfie-theme, sizing
-
-    ordered = sorted(all_files, key=sort_key)
-    token_map: dict[str, dict] = {}
-    primitives_map: dict[str, dict] = {}
-    PRIMITIVES_FILE = ".primitives.alfie-theme.tokens.json"
-
-    for fname in ordered:
-        path = tokens_dir / fname
-        if not path.exists():
-            raise FileNotFoundError(f"manifest references missing file: {fname}")
-        raw = _load(path)
-        for name, obj in raw.items():
-            if name.startswith(DOC_PREFIX) or name.startswith("$"):
-                continue
-            if isinstance(obj, dict) and "$value" in obj:
-                entry = {"$type": obj.get("$type"), "$value": obj["$value"], "_file": fname}
-                token_map[name] = entry
-                if fname == PRIMITIVES_FILE:
-                    primitives_map[name] = entry
-
-    return token_map, primitives_map
+def _load_tokens(path):
+    """Load a token file, returning only non-doc entries that have a $value."""
+    raw = _load(path)
+    return {
+        name: obj
+        for name, obj in raw.items()
+        if not name.startswith(DOC_PREFIX)
+        and not name.startswith("$")
+        and isinstance(obj, dict)
+        and "$value" in obj
+    }
 
 
 # ---------------------------------------------------------------------------
-# Ref extraction & resolution
+# Value conversion helpers
 # ---------------------------------------------------------------------------
 
-def _extract_refs(value) -> list[str]:
-    refs: list[str] = []
-
-    def walk(v):
-        if isinstance(v, str):
-            m = REF_RE.match(v)
-            if m:
-                refs.append(m.group(1))
-        elif isinstance(v, list):
-            for item in v:
-                walk(item)
-        elif isinstance(v, dict):
-            for k, child in v.items():
-                walk(child)
-
-    walk(value)
-    return refs
-
-
-def _resolve_value(value, token_map: dict, primitives_map: dict,
-                   cycle_allow_set: set, broken_allow_set: set,
-                   token_name: str, file_name: str, _chain=None):
-    """Recursively resolve {ref} aliases in value. Returns the concrete value."""
-    if _chain is None:
-        _chain = frozenset()
-
-    if isinstance(value, str):
-        m = REF_RE.match(value)
-        if m:
-            target = m.group(1)
-            if target not in token_map:
-                if target in broken_allow_set:
-                    return None  # allowlisted broken ref
-                raise RuntimeError(
-                    f"Broken reference: {file_name}::{token_name} → {{{target}}} (missing, not allow-listed)"
-                )
-            target_entry = token_map[target]
-            fkey = f"{target_entry['_file']}::{target}"
-            if fkey in cycle_allow_set or target in _chain:
-                # Cycle — resolve from the primitives-only map (pre-override values)
-                warnings.warn(f"Allow-listed cycle involving '{target}', resolving from primitives", stacklevel=3)
-                prim = primitives_map.get(target)
-                if prim is not None and not (isinstance(prim["$value"], str) and REF_RE.match(prim["$value"])):
-                    return prim["$value"]
-                # primitives entry also a ref — resolve it without cycling
-                return _resolve_value(
-                    prim["$value"] if prim else None, token_map, primitives_map,
-                    cycle_allow_set, broken_allow_set, target, ".primitives", _chain | {target}
-                ) if prim else None
-            new_chain = _chain | {target}
-            if len(new_chain) > MAX_DEPTH:
-                raise RuntimeError(f"Max alias depth ({MAX_DEPTH}) exceeded resolving '{token_name}' in {file_name}")
-            return _resolve_value(
-                target_entry["$value"], token_map, primitives_map,
-                cycle_allow_set, broken_allow_set, target, target_entry["_file"], new_chain
-            )
-        return value
-
-    if isinstance(value, list):
-        return [
-            _resolve_value(item, token_map, primitives_map, cycle_allow_set, broken_allow_set, token_name, file_name, _chain)
-            for item in value
-        ]
-
-    if isinstance(value, dict):
-        return {
-            k: _resolve_value(v, token_map, primitives_map, cycle_allow_set, broken_allow_set, token_name, file_name, _chain)
-            for k, v in value.items()
-        }
-
-    return value
-
-
-def resolve_all(token_map: dict, primitives_map: dict, cycle_allow_set: set, broken_allow_set: set) -> dict[str, dict]:
-    """Return token_map with all $values fully resolved."""
-    resolved: dict[str, dict] = {}
-    errors: list[str] = []
-
-    for name, entry in token_map.items():
-        try:
-            val = _resolve_value(
-                entry["$value"], token_map, primitives_map,
-                cycle_allow_set, broken_allow_set, name, entry["_file"]
-            )
-            resolved[name] = {**entry, "$value": val}
-        except RuntimeError as exc:
-            errors.append(str(exc))
-
-    if errors:
-        print("\n✗ Resolution failed with errors:", file=sys.stderr)
-        for e in errors:
-            print(f"    {e}", file=sys.stderr)
-        sys.exit(1)
-
-    return resolved
-
-
-# ---------------------------------------------------------------------------
-# Validation (port of validate.ts)
-# ---------------------------------------------------------------------------
-
-def validate(token_map: dict, cycle_allow_set: set, broken_allow_set: set) -> None:
-    by_name: dict[str, list[tuple[str, str]]] = {}
-    for name, entry in token_map.items():
-        by_name.setdefault(name, []).append((entry["_file"], name))
-
-    cycle_nodes: set[str] = set()
-    broken_refs: list[dict] = []
-    broken_ref_set: set[str] = set()
-
-    for start_name, start_entry in token_map.items():
-        refs = _extract_refs(start_entry["$value"])
-        if not refs:
-            continue
-        start_key = f"{start_entry['_file']}::{start_name}"
-        visited: set[str] = set()
-        queue = [(start_entry["_file"], start_name)]
-        found_cycle = False
-
-        while queue and not found_cycle:
-            cur_file, cur_name = queue.pop(0)
-            cur_entry = token_map.get(cur_name)
-            if cur_entry is None:
-                continue
-            for ref in _extract_refs(cur_entry["$value"]):
-                if ref not in token_map:
-                    key = f"{cur_file}::{cur_name}::{ref}"
-                    if key not in broken_ref_set:
-                        broken_ref_set.add(key)
-                        broken_refs.append({"file": cur_file, "token": cur_name, "missing": ref})
-                    continue
-                t_entry = token_map[ref]
-                t_key = f"{t_entry['_file']}::{ref}"
-                if t_key == start_key:
-                    found_cycle = True
-                    break
-                if t_key not in visited:
-                    visited.add(t_key)
-                    queue.append((t_entry["_file"], ref))
-            if found_cycle:
-                break
-
-        if found_cycle:
-            cycle_nodes.add(start_key)
-
-    errors: list[str] = []
-
-    for cn in cycle_nodes:
-        if cn not in cycle_allow_set:
-            errors.append(f"unexpected cycle: {cn}")
-    # Note: stale cycle allowlist entries are expected here because we only load
-    # Android/Small-screen tokens, not all platform/screen-size variants.
-
-    seen_missing: set[str] = set()
-    for br in broken_refs:
-        seen_missing.add(br["missing"])
-        if br["missing"] not in broken_allow_set:
-            errors.append(f"broken reference: {br['file']}::{br['token']} → {{{br['missing']}}} (missing, not allow-listed)")
-    for allowed in broken_allow_set:
-        if allowed not in seen_missing:
-            errors.append(f"stale broken-ref allow-list entry: {allowed} (no broken refs to this target)")
-
-    matched_cycles = len(cycle_nodes & cycle_allow_set)
-    if matched_cycles > 0:
-        print(f"⚠ {matched_cycles} allow-listed cycle(s) (Figma plugin re-export artifact)")
-    if broken_refs and not errors:
-        print(f"⚠ {len(broken_refs)} allow-listed broken reference(s)")
-
-    if errors:
-        print(f"\n✗ Validation failed with {len(errors)} error(s):", file=sys.stderr)
-        for e in errors:
-            print(f"    {e}", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"✓ Validation passed: {len(token_map)} tokens, {matched_cycles} allow-listed cycle(s), {len(broken_refs)} allow-listed broken ref(s).")
-
-
-# ---------------------------------------------------------------------------
-# Value conversion
-# ---------------------------------------------------------------------------
-
-def _to8(f: float) -> int:
+def _to8(f):
     return max(0, min(255, round(f * 255)))
 
 
-def color_to_kotlin(value: dict) -> str:
+def color_to_kotlin(value):
     """Convert resolved color dict → Color(0xAARRGGBB)."""
     comps = value["components"]
     alpha = value.get("alpha", 1.0)
-    r, g, b = comps[0], comps[1], comps[2]
     aa = _to8(alpha)
-    rr = _to8(r)
-    gg = _to8(g)
-    bb = _to8(b)
+    rr = _to8(comps[0])
+    gg = _to8(comps[1])
+    bb = _to8(comps[2])
     return f"Color(0x{aa:02X}{rr:02X}{gg:02X}{bb:02X})"
 
 
-def dim_to_dp(value) -> str:
-    """Resolved dimension → Dp literal."""
-    if isinstance(value, dict):
-        v = value["value"]
-    else:
-        v = float(value)
+def dim_to_dp(value):
+    """Resolved dimension value → N.dp literal."""
+    v = value["value"] if isinstance(value, dict) else float(value)
     iv = int(v)
     return f"{iv}.dp" if iv == v else f"{v}.dp"
 
 
-def dim_to_sp(value) -> str:
-    """Resolved dimension → Sp literal."""
-    if isinstance(value, dict):
-        v = value["value"]
-    else:
-        v = float(value)
+def dim_to_sp(value):
+    """Resolved dimension value → N.sp literal."""
+    v = value["value"] if isinstance(value, dict) else float(value)
     iv = int(v)
     if v < 0:
-        return f"({v}).sp" if iv != v else f"({iv}).sp"
+        return f"({iv}).sp" if iv == v else f"({v}).sp"
     return f"{iv}.sp" if iv == v else f"{v}.sp"
 
 
@@ -363,380 +103,696 @@ FONT_WEIGHT_MAP = {
 }
 
 
-def font_weight_to_kotlin(weight_str: str) -> str:
-    return FONT_WEIGHT_MAP.get(weight_str, "FontWeight.Normal")
+def font_weight_to_kotlin(w):
+    return FONT_WEIGHT_MAP.get(w, "FontWeight.Normal")
 
 
 # ---------------------------------------------------------------------------
 # Name helpers
 # ---------------------------------------------------------------------------
 
-def _to_camel(segment: str) -> str:
-    """Convert hyphenated segment to camelCase, e.g. 'x-small' → 'xSmall'."""
-    parts = segment.split("-")
+def _to_camel(s):
+    """'x-small' → 'xSmall'"""
+    parts = s.split("-")
     return parts[0] + "".join(p.capitalize() for p in parts[1:])
 
 
-def _to_pascal(s: str) -> str:
-    """Capitalize the first letter of a camelCase string → PascalCase."""
+def _to_pascal(s):
     return s[0].upper() + s[1:] if s else s
 
 
-def semantic_color_group_and_member(name: str) -> tuple[str, str]:
-    """Split semantic color token name into (group, member) for nested Kotlin."""
-    parts = name.split("-", 1)
-    group = _to_camel(parts[0])
-    member = _to_camel(parts[1]) if len(parts) > 1 else "value"
-    return group, member
-
-
-def primitive_color_group_and_member(name: str) -> tuple[str, str]:
-    """
-    'colours-neutrals-900' → ('neutrals', 'n900')
-    'colours-semantic-error-800' → ('semanticError', 'e800')
-    'colours-transparent-transparent' → ('transparent', 'transparent')
-    """
-    # strip 'colours-' prefix
+def prim_color_member(name):
+    """'colours-neutrals-900' → 'neutrals900', 'colours-transparent-transparent' → 'transparent'"""
     rest = name[len("colours-"):]
-    parts = rest.split("-")
-    if len(parts) == 2:
-        group = _to_camel(parts[0])
-        member = parts[0][0] + parts[1]  # e.g. 'n900', 't0'
-    elif len(parts) == 3:
-        group = _to_camel(f"{parts[0]}-{parts[1]}")
-        member = parts[1][0] + parts[2]  # e.g. 'e800'
-    else:
-        group = _to_camel("-".join(parts[:-1]))
-        member = parts[-1]
-    # handle 'transparent-transparent'
-    if parts[-1] == parts[0]:
-        member = parts[-1]
-    return group, member
-
-
-def typography_group_and_member(style_name: str) -> tuple[str, str]:
-    """
-    'display-large' → ('display', 'large')
-    'heading-x-small' → ('heading', 'xSmall')
-    'body-medium-strikethrough' → ('body', 'mediumStrikethrough')
-    'label-small-bold' → ('label', 'smallBold')
-    """
-    parts = style_name.split("-", 1)
-    group = parts[0]
-    member = _to_camel(parts[1]) if len(parts) > 1 else "default"
-    return group, member
-
-
-def spacing_member(name: str) -> str:
-    """'spacing-spacing-16' → 'spacing16'"""
-    # drop 'spacing-spacing-' prefix
-    suffix = name.replace("spacing-spacing-", "")
-    return f"spacing{suffix}"
-
-
-def icon_member(name: str) -> str:
-    """'icons-icon-small' → 'small'"""
-    return name.replace("icons-icon-", "")
-
-
-def radius_member(name: str) -> str:
-    """'radius-soft' → 'soft', 'radius-rounded' → 'rounded'"""
-    return name.replace("radius-", "")
-
-
-def interactive_member(name: str) -> str:
-    """'interactive-small-padding-top-bottom' → 'smallPaddingTopBottom'"""
-    rest = name.replace("interactive-", "")
+    if rest == "transparent-transparent":
+        return "transparent"
     return _to_camel(rest)
 
 
+def prim_spacing_member(name):
+    """'spacing-spacing-16' → 'spacing16'"""
+    return "spacing" + name.split("-")[-1]
+
+
+def prim_font_family_member(name):
+    """'typography-font-family-primary-android' → 'primaryAndroid'"""
+    rest = name[len("typography-font-family-"):]
+    return _to_camel(rest)
+
+
+def prim_font_size_member(name):
+    """'typography-font-size-font-size-16' → 'fontSize16'"""
+    rest = name[len("typography-font-size-"):]
+    return _to_camel(rest)
+
+
+def prim_line_height_member(name):
+    """'typography-line-height-line-height-16' → 'lineHeight16'"""
+    rest = name[len("typography-line-height-"):]
+    return _to_camel(rest)
+
+
+def prim_kerning_member(name):
+    """'typography-kerning-tight' → 'tight'"""
+    return name[len("typography-kerning-"):]
+
+
+def sizing_nav(name):
+    """Return navPath (group.member) for a sizing token."""
+    if name.startswith("icons-icon-"):
+        member = name[len("icons-icon-"):]
+        return f"icon.{member}"
+    if name.startswith("radius-"):
+        member = name[len("radius-"):]
+        return f"radius.{member}"
+    if name.startswith("interactive-"):
+        member = _to_camel(name[len("interactive-"):])
+        return f"interactive.{member}"
+    return name
+
+
+def theme_color_nav(name):
+    """'surface-background-primary' → 'surface.backgroundPrimary'"""
+    parts = name.split("-", 1)
+    group = parts[0]
+    member = _to_camel(parts[1]) if len(parts) > 1 else "value"
+    return f"{group}.{member}"
+
+
+def typo_field_nav(name):
+    """
+    'display-large-font-size' → 'displayLarge.fontSize'
+    'body-medium-strikethrough-font-family' → 'bodyMediumStrikethrough.fontFamily'
+    """
+    for suffix, field in [
+        ("-font-family", "fontFamily"),
+        ("-font-weight", "fontWeight"),
+        ("-font-size", "fontSize"),
+        ("-line-height", "lineHeight"),
+        ("-kerning", "kerning"),
+    ]:
+        if name.endswith(suffix):
+            style_part = name[:-len(suffix)]
+            return f"{_to_camel(style_part)}.{field}"
+    return name
+
+
 # ---------------------------------------------------------------------------
-# Kotlin emitters
+# EMITTED_REGISTRY and WALK map
 # ---------------------------------------------------------------------------
 
-def find_primitive_ref(token_name: str, token_map: dict):
-    """Walk raw token_map ref chain from token_name; return first colours-* name found, or None."""
-    visited = set()
-    current = token_name
-    while True:
-        if current in visited:
-            return None
-        visited.add(current)
-        entry = token_map.get(current)
-        if entry is None:
-            return None
-        val = entry["$value"]
-        if not isinstance(val, str):
-            return None
+def build_emitted_registry(primitives, theme_colors, sizing, typo_tokens):
+    """Build EMITTED_REGISTRY: token_name → ('layer', 'navPath')"""
+    reg = {}
+
+    for name in primitives:
+        if name.startswith("colours-"):
+            reg[name] = ("primitive", f"colors.{prim_color_member(name)}")
+        elif name.startswith("spacing-spacing-"):
+            reg[name] = ("primitive", f"spacing.{prim_spacing_member(name)}")
+        elif name.startswith("typography-font-family-"):
+            reg[name] = ("primitive", f"typography.fontFamily.{prim_font_family_member(name)}")
+        elif name.startswith("typography-font-size-"):
+            reg[name] = ("primitive", f"typography.fontSize.{prim_font_size_member(name)}")
+        elif name.startswith("typography-line-height-"):
+            reg[name] = ("primitive", f"typography.lineHeight.{prim_line_height_member(name)}")
+        elif name.startswith("typography-kerning-"):
+            reg[name] = ("primitive", f"typography.kerning.{prim_kerning_member(name)}")
+        elif name == "border-border-weight-default":
+            reg[name] = ("primitive", "border.weightDefault")
+
+    for name in theme_colors:
+        reg[name] = ("themeColor", theme_color_nav(name))
+
+    for name in sizing:
+        reg[name] = ("themeSizing", sizing_nav(name))
+
+    for name in typo_tokens:
+        reg[name] = ("typoToken", typo_field_nav(name))
+
+    return reg
+
+
+def build_walk_map(tokens_dir):
+    """Load screen-size.small-(s) + system.android → WALK map (android values win on collision)."""
+    walk = {}
+    walk.update(_load_tokens(tokens_dir / "screen-size.small-(s).tokens.json"))
+    walk.update(_load_tokens(tokens_dir / "system.android.tokens.json"))
+    return walk
+
+
+# ---------------------------------------------------------------------------
+# Reference resolution
+# ---------------------------------------------------------------------------
+
+def resolve_ref(target, reg, walk, visited=None):
+    """Resolve target → (layer, navPath).
+
+    Stops at the first emitted token (preserving chains).
+    Walks through the WALK map for screen-size/android aliases.
+    Returns ('primitive'|'themeColor'|'themeSizing'|'typoToken', navPath).
+    """
+    if visited is None:
+        visited = frozenset()
+
+    if target in reg:
+        return reg[target]
+
+    if target in visited:
+        raise RuntimeError(f"Cycle during resolution involving '{target}'")
+
+    if target not in walk:
+        raise RuntimeError(
+            f"Cannot resolve '{target}': not in emitted registry and not in WALK map"
+        )
+
+    entry = walk[target]
+    val = entry["$value"]
+    if isinstance(val, str):
         m = REF_RE.match(val)
-        if not m:
-            return None
-        target = m.group(1)
-        if target.startswith("colours-"):
-            return target
-        current = target
+        if m:
+            return resolve_ref(m.group(1), reg, walk, visited | {target})
+
+    raise RuntimeError(
+        f"Walk entry '{target}' has a non-ref or unexpected raw value: {val!r}"
+    )
 
 
-def emit_colors(resolved: dict[str, dict], token_map: dict) -> str:
-    """Emit Colors.kt with internal primitives + public semantics."""
-    # Collect primitive colors
-    primitives: dict[str, dict] = {
-        name: e for name, e in resolved.items()
-        if name.startswith("colours-") and e.get("$type") == "color"
-    }
-    # Collect semantic colors (surface, content, link, button, border)
-    semantic_prefixes = ("surface-", "content-", "link-", "button-", "border-")
-    semantics: dict[str, dict] = {
-        name: e for name, e in resolved.items()
-        if any(name.startswith(p) for p in semantic_prefixes) and e.get("$type") == "color"
-    }
-
-    lines = [
-        GEN_HEADER,
-        "@file:Suppress(\"MagicNumber\", \"LongMethod\", \"ObjectPropertyNaming\")\n",
-        f"package {PACKAGE}\n",
-        "\nimport androidx.compose.ui.graphics.Color\n",
-    ]
-
-    lines.append("\nobject Colors {\n")
-
-    # --- internal Primitives nested inside Colors ---
-    lines.append("    internal object Primitives {\n")
-
-    # Group primitives by group name
-    prim_groups: dict[str, list[tuple[str, str, str]]] = {}  # group → [(member, kotlin_val, original_name)]
-    for name, entry in sorted(primitives.items()):
-        val = entry["$value"]
-        if not isinstance(val, dict) or "components" not in val:
-            continue
-        group, member = primitive_color_group_and_member(name)
-        prim_groups.setdefault(group, []).append((member, color_to_kotlin(val), name))
-
-    for group, members in sorted(prim_groups.items()):
-        lines.append(f"        object {_to_pascal(group)} {{\n")
-        for member, kotlin_val, orig in sorted(members):
-            lines.append(f"            val {member} = {kotlin_val}\n")
-        lines.append("        }\n")
-
-    lines.append("    }\n\n")
-
-    # --- public semantic objects ---
-    sem_groups: dict[str, list[tuple[str, str]]] = {}
-    for name, entry in sorted(semantics.items()):
-        val = entry["$value"]
-        if not isinstance(val, dict) or "components" not in val:
-            continue
-        group, member = semantic_color_group_and_member(name)
-        prim_name = find_primitive_ref(name, token_map)
-        if prim_name is not None:
-            prim_group, prim_member = primitive_color_group_and_member(prim_name)
-            kotlin_val = f"Primitives.{_to_pascal(prim_group)}.{prim_member}"
-        else:
-            kotlin_val = color_to_kotlin(val)
-        sem_groups.setdefault(group, []).append((member, kotlin_val))
-
-    for group, members in sorted(sem_groups.items()):
-        lines.append(f"    object {_to_pascal(group)} {{\n")
-        for member, kotlin_val in sorted(members):
-            lines.append(f"        val {member} = {kotlin_val}\n")
-        lines.append("    }\n")
-
-    lines.append("}\n")
-
-    return "".join(lines)
+def to_expr(layer, nav, context):
+    """Turn a resolve_ref result into a Kotlin expression."""
+    if layer == "primitive":
+        return f"primitive.{nav}"
+    if layer == "themeColor":
+        return nav  # self-access inside DefaultColors
+    if layer == "themeSizing":
+        return nav  # self-access inside DefaultSizing (shouldn't appear cross-layer)
+    if layer == "typoToken":
+        if context == "DefaultTypographyTokens":
+            return nav  # self-access
+        if context == "DefaultTypography":
+            return f"tokens.{nav}"
+        return nav
+    return nav
 
 
-def emit_typography(resolved: dict[str, dict], styles_raw: dict) -> str:
-    """Emit Typography.kt with 15 TextStyle entries."""
+# ---------------------------------------------------------------------------
+# Primitive raw value resolver (for LightPrimitives raw literals)
+# ---------------------------------------------------------------------------
+
+def resolve_prim_raw(name, primitives):
+    """Follow any one-hop internal ref within primitives to get the raw value.
+
+    Font sizes / line heights in the primitives file alias spacing tokens.
+    Since Dp ≠ sp, we follow the ref and emit the numeric value as raw sp.
+    """
+    entry = primitives[name]
+    val = entry["$value"]
+    if isinstance(val, str):
+        m = REF_RE.match(val)
+        if m:
+            target = m.group(1)
+            if target in primitives:
+                return resolve_prim_raw(target, primitives)
+            raise RuntimeError(
+                f"Primitive '{name}' refs '{target}' which is not in primitives"
+            )
+    return val
+
+
+# ---------------------------------------------------------------------------
+# Emitter: Primitives.kt
+# ---------------------------------------------------------------------------
+
+def emit_primitives(primitives):
     lines = [
         GEN_HEADER,
         "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
         f"package {PACKAGE}\n",
-        "import androidx.compose.ui.text.PlatformTextStyle\n",
-        "import androidx.compose.ui.text.TextStyle\n",
-        "import androidx.compose.ui.text.font.FontWeight\n",
+        "\nimport androidx.compose.runtime.Immutable\n",
+        "import androidx.compose.ui.graphics.Color\n",
+        "import androidx.compose.ui.text.font.FontFamily\n",
+        "import androidx.compose.ui.unit.Dp\n",
+        "import androidx.compose.ui.unit.TextUnit\n",
+        "import androidx.compose.ui.unit.dp\n",
         "import androidx.compose.ui.unit.sp\n",
     ]
 
-    # Map resolved font-family names to FontFamilies.kt vals (same package — no import needed).
-    FONT_FAMILY_KT = {
-        "Libre Baskerville": "FontFamilyBrand",
+    color_names = sorted(
+        (n for n in primitives if n.startswith("colours-")),
+    )
+    spacing_names = sorted(
+        (n for n in primitives if n.startswith("spacing-spacing-")),
+        key=lambda x: float(x.split("-")[-1]),
+    )
+    ff_names = sorted(n for n in primitives if n.startswith("typography-font-family-"))
+    fs_names = sorted(
+        (n for n in primitives if n.startswith("typography-font-size-font-size-")),
+        key=lambda x: float(x.split("-")[-1]),
+    )
+    lh_names = sorted(
+        (n for n in primitives if n.startswith("typography-line-height-line-height-")),
+        key=lambda x: float(x.split("-")[-1]),
+    )
+    k_names = sorted(n for n in primitives if n.startswith("typography-kerning-"))
+
+    # ---- Interfaces ----
+
+    lines.append("\n@Immutable\ninterface Primitives {\n")
+    lines.append("    val colors: PrimitiveColors\n")
+    lines.append("    val spacing: PrimitiveSpacing\n")
+    lines.append("    val typography: PrimitiveTypography\n")
+    lines.append("    val border: PrimitiveBorder\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveColors {\n")
+    for n in color_names:
+        lines.append(f"    val {prim_color_member(n)}: Color\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveSpacing {\n")
+    for n in spacing_names:
+        lines.append(f"    val {prim_spacing_member(n)}: Dp\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveFontFamilies {\n")
+    for n in ff_names:
+        lines.append(f"    val {prim_font_family_member(n)}: FontFamily\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveFontSizes {\n")
+    for n in fs_names:
+        lines.append(f"    val {prim_font_size_member(n)}: TextUnit\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveLineHeights {\n")
+    for n in lh_names:
+        lines.append(f"    val {prim_line_height_member(n)}: TextUnit\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveKernings {\n")
+    for n in k_names:
+        lines.append(f"    val {prim_kerning_member(n)}: TextUnit\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveTypography {\n")
+    lines.append("    val fontFamily: PrimitiveFontFamilies\n")
+    lines.append("    val fontSize: PrimitiveFontSizes\n")
+    lines.append("    val lineHeight: PrimitiveLineHeights\n")
+    lines.append("    val kerning: PrimitiveKernings\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface PrimitiveBorder {\n")
+    lines.append("    val weightDefault: Dp\n")
+    lines.append("}\n")
+
+    # ---- LightPrimitives ----
+
+    lines.append("\n@Immutable\nobject LightPrimitives : Primitives {\n")
+
+    lines.append("    override val colors = object : PrimitiveColors {\n")
+    for n in color_names:
+        val = resolve_prim_raw(n, primitives)
+        lines.append(f"        override val {prim_color_member(n)} = {color_to_kotlin(val)}\n")
+    lines.append("    }\n")
+
+    lines.append("    override val spacing = object : PrimitiveSpacing {\n")
+    for n in spacing_names:
+        val = resolve_prim_raw(n, primitives)
+        lines.append(f"        override val {prim_spacing_member(n)} = {dim_to_dp(val)}\n")
+    lines.append("    }\n")
+
+    FF_TODOS = {
+        "typography-font-family-brand": "Libre Baskerville",
+        "typography-font-family-primary-android": "Roboto",
+        "typography-font-family-primary-ios": "SF Pro",
+        "typography-font-family-primary-web": "Inter",
     }
 
-    STYLE_NAMES = [
-        "display-large", "display-medium", "display-small",
-        "heading-large", "heading-medium", "heading-small", "heading-x-small",
-        "body-large", "body-medium", "body-medium-strikethrough", "body-small",
-        "link-medium", "link-small",
-        "label-small", "label-small-bold",
+    lines.append("    override val typography = object : PrimitiveTypography {\n")
+
+    lines.append("        override val fontFamily = object : PrimitiveFontFamilies {\n")
+    for n in ff_names:
+        todo = FF_TODOS.get(n, "")
+        comment = f' // TODO(fonts): "{todo}"' if todo else ""
+        lines.append(
+            f"            override val {prim_font_family_member(n)}: FontFamily"
+            f" = FontFamily.Default{comment}\n"
+        )
+    lines.append("        }\n")
+
+    lines.append("        override val fontSize = object : PrimitiveFontSizes {\n")
+    for n in fs_names:
+        val = resolve_prim_raw(n, primitives)
+        lines.append(f"            override val {prim_font_size_member(n)} = {dim_to_sp(val)}\n")
+    lines.append("        }\n")
+
+    lines.append("        override val lineHeight = object : PrimitiveLineHeights {\n")
+    for n in lh_names:
+        val = resolve_prim_raw(n, primitives)
+        lines.append(f"            override val {prim_line_height_member(n)} = {dim_to_sp(val)}\n")
+    lines.append("        }\n")
+
+    lines.append("        override val kerning = object : PrimitiveKernings {\n")
+    for n in k_names:
+        val = resolve_prim_raw(n, primitives)
+        lines.append(f"            override val {prim_kerning_member(n)} = {dim_to_sp(val)}\n")
+    lines.append("        }\n")
+
+    lines.append("    }\n")  # end typography
+
+    lines.append("    override val border = object : PrimitiveBorder {\n")
+    lines.append("        override val weightDefault = 1.dp\n")
+    lines.append("    }\n")
+
+    lines.append("}\n")
+    return "".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Emitter: Colors.kt
+# ---------------------------------------------------------------------------
+
+# Groups emitted in topological order so self-references within DefaultColors
+# are always to already-initialized properties.
+_COLOR_GROUP_ORDER = ["surface", "content", "border", "button", "link"]
+
+
+def emit_colors(theme_colors, reg, walk):
+    lines = [
+        GEN_HEADER,
+        "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
+        f"package {PACKAGE}\n",
+        "\nimport androidx.compose.runtime.Immutable\n",
+        "import androidx.compose.ui.graphics.Color\n",
     ]
 
-    # group → [(member, TextStyle_args)]
-    groups: dict[str, list[tuple[str, str]]] = {}
-    warned_cycles: set[str] = set()
+    # Group tokens
+    groups = {}
+    for name in theme_colors:
+        nav = theme_color_nav(name)
+        group = nav.split(".")[0]
+        member = nav.split(".")[1]
+        groups.setdefault(group, []).append((member, name))
 
-    for style_name in STYLE_NAMES:
-        raw = styles_raw.get(style_name)
-        if raw is None:
-            print(f"  WARNING: typography style '{style_name}' not found in typography.styles.tokens.json", file=sys.stderr)
-            continue
+    ordered_groups = [g for g in _COLOR_GROUP_ORDER if g in groups]
+    for g in sorted(groups):
+        if g not in ordered_groups:
+            ordered_groups.append(g)
 
-        val = raw["$value"]
-        inline_weight = val.get("fontWeight", "Regular")
+    # ---- Interfaces ----
+    lines.append("\n@Immutable\ninterface Colors {\n")
+    for g in ordered_groups:
+        lines.append(f"    val {g}: Color{_to_pascal(g)}\n")
+    lines.append("}\n")
 
-        # Resolve each composite field from resolved token_map
-        def resolve_field(field_ref: str, as_sp: bool = False) -> str:
-            if not isinstance(field_ref, str):
-                # inline value (some doc tokens have inline objects)
-                if isinstance(field_ref, dict):
-                    return dim_to_sp(field_ref) if as_sp else dim_to_dp(field_ref)
-                return str(field_ref)
-            m = REF_RE.match(field_ref)
-            if not m:
-                return f'"{field_ref}"'
-            ref_name = m.group(1)
-            entry = resolved.get(ref_name)
-            if entry is None:
-                return "null  // broken ref"
-            resolved_val = entry["$value"]
-            if as_sp:
-                return dim_to_sp(resolved_val)
-            if isinstance(resolved_val, str):
-                return f'"{resolved_val}"'  # fontFamily
-            return dim_to_dp(resolved_val)
+    for g in ordered_groups:
+        lines.append(f"\n@Immutable\ninterface Color{_to_pascal(g)} {{\n")
+        for member, _ in sorted(groups[g], key=lambda x: x[0]):
+            lines.append(f"    val {member}: Color\n")
+        lines.append("}\n")
 
-        font_family_ref = val.get("fontFamily", "")
-        font_size_ref = val.get("fontSize", "")
-        line_height_ref = val.get("lineHeight", "")
-        letter_spacing_ref = val.get("letterSpacing", "")
+    # ---- DefaultColors ----
+    lines.append("\n@Immutable\nclass DefaultColors(private val primitive: Primitives) : Colors {\n")
 
-        # Resolve font family → FontFamilies.kt val name
-        ff_resolved = ""
-        if isinstance(font_family_ref, str):
-            m = REF_RE.match(font_family_ref)
-            if m:
-                ref_name = m.group(1)
-                entry = resolved.get(ref_name)
-                if entry:
-                    ff_resolved = entry["$value"]
-                    if not isinstance(ff_resolved, str) or REF_RE.match(ff_resolved):
-                        ff_resolved = ""
-
-        ff_kt = FONT_FAMILY_KT.get(ff_resolved, "FontFamilySystem")
-
-        font_size_kt = resolve_field(font_size_ref, as_sp=True)
-        line_height_kt = resolve_field(line_height_ref, as_sp=True)
-        letter_spacing_kt = resolve_field(letter_spacing_ref, as_sp=True)
-        weight_kt = font_weight_to_kotlin(inline_weight)
-
-        style_args = (
-            f"            TextStyle(\n"
-            f"                platformStyle = PlatformTextStyle(includeFontPadding = false),\n"
-            f"                fontFamily = {ff_kt},\n"
-            f"                fontWeight = {weight_kt},\n"
-            f"                fontSize = {font_size_kt},\n"
-            f"                lineHeight = {line_height_kt},\n"
-            f"                letterSpacing = {letter_spacing_kt},\n"
-            f"            )"
-        )
-
-        group, member = typography_group_and_member(style_name)
-        groups.setdefault(group, []).append((member, style_args))
-
-    group_order = ["display", "heading", "body", "link", "label"]
-    lines.append("\nobject Typography {\n")
-
-    for g in group_order:
-        members = groups.get(g, [])
-        if not members:
-            continue
-        lines.append(f"    object {_to_pascal(g)} {{\n")
-        for member, style_args in members:
-            lines.append(f"        val {member}: TextStyle =\n")
-            lines.append(f"{style_args}\n")
+    for g in ordered_groups:
+        lines.append(f"    override val {g} = object : Color{_to_pascal(g)} {{\n")
+        for member, token_name in sorted(groups[g], key=lambda x: x[0]):
+            raw_val = theme_colors[token_name]["$value"]
+            if isinstance(raw_val, str):
+                m = REF_RE.match(raw_val)
+                if m:
+                    layer, nav = resolve_ref(m.group(1), reg, walk)
+                    expr = to_expr(layer, nav, "DefaultColors")
+                else:
+                    expr = f'"{raw_val}"'
+            else:
+                expr = color_to_kotlin(raw_val)
+            lines.append(f"        override val {member} = {expr}\n")
         lines.append("    }\n")
 
     lines.append("}\n")
     return "".join(lines)
 
 
-def emit_spacing(resolved: dict[str, dict]) -> str:
-    """Emit GeneratedSpacing.kt."""
-    spacings = {
-        name: e for name, e in resolved.items()
-        if name.startswith("spacing-spacing-") and e.get("$type") == "dimension"
-    }
+# ---------------------------------------------------------------------------
+# Emitter: Sizing.kt
+# ---------------------------------------------------------------------------
 
+def emit_sizing(sizing, reg, walk):
     lines = [
         GEN_HEADER,
-        "@file:Suppress(\"MagicNumber\")\n",
+        "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
         f"package {PACKAGE}\n",
-        "\nimport androidx.compose.ui.unit.dp\n",
-        "\nobject Spacing {\n",
+        "\nimport androidx.compose.foundation.shape.CircleShape\n",
+        "import androidx.compose.foundation.shape.RoundedCornerShape\n",
+        "import androidx.compose.runtime.Immutable\n",
+        "import androidx.compose.ui.graphics.Shape\n",
+        "import androidx.compose.ui.unit.Dp\n",
+        "import androidx.compose.ui.unit.dp\n",
     ]
 
-    def sort_key(name: str) -> float:
-        try:
-            return float(name.split("-")[-1])
-        except ValueError:
-            return 9999.0
+    icons = {n: e for n, e in sizing.items() if n.startswith("icons-icon-")}
+    radii = {n: e for n, e in sizing.items() if n.startswith("radius-")}
+    interactive = {n: e for n, e in sizing.items() if n.startswith("interactive-")}
 
-    for name in sorted(spacings, key=sort_key):
-        entry = spacings[name]
-        val = entry["$value"]
-        member = spacing_member(name)
-        lines.append(f"    val {member} = {dim_to_dp(val)}\n")
+    # ---- Interfaces ----
+    lines.append("\n@Immutable\ninterface Sizing {\n")
+    lines.append("    val icon: SizingIcon\n")
+    lines.append("    val radius: SizingRadius\n")
+    lines.append("    val interactive: SizingInteractive\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface SizingIcon {\n")
+    for n in sorted(icons):
+        lines.append(f"    val {n[len('icons-icon-'):]}: Dp\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface SizingRadius {\n")
+    for n in sorted(radii):
+        lines.append(f"    val {n[len('radius-'):]}: Shape\n")
+    lines.append("}\n")
+
+    lines.append("\n@Immutable\ninterface SizingInteractive {\n")
+    for n in sorted(interactive):
+        lines.append(f"    val {_to_camel(n[len('interactive-'):])}: Dp\n")
+    lines.append("}\n")
+
+    # ---- DefaultSizing ----
+    lines.append("\n@Immutable\nclass DefaultSizing(private val primitive: Primitives) : Sizing {\n")
+
+    lines.append("    override val icon = object : SizingIcon {\n")
+    for n in sorted(icons):
+        member = n[len("icons-icon-"):]
+        raw = icons[n]["$value"]
+        m = REF_RE.match(raw) if isinstance(raw, str) else None
+        if m:
+            layer, nav = resolve_ref(m.group(1), reg, walk)
+            expr = to_expr(layer, nav, "DefaultSizing")
+        else:
+            expr = dim_to_dp(raw)
+        lines.append(f"        override val {member} = {expr}\n")
+    lines.append("    }\n")
+
+    lines.append("    override val radius = object : SizingRadius {\n")
+    for n in sorted(radii):
+        member = n[len("radius-"):]
+        raw = radii[n]["$value"]
+        if isinstance(raw, dict):
+            v_num = raw["value"]
+            if v_num >= 1000:
+                lines.append(f"        override val {member} = CircleShape\n")
+            else:
+                lines.append(f"        override val {member} = RoundedCornerShape({dim_to_dp(raw)})\n")
+        elif isinstance(raw, str):
+            m = REF_RE.match(raw)
+            if m:
+                layer, nav = resolve_ref(m.group(1), reg, walk)
+                expr = to_expr(layer, nav, "DefaultSizing")
+                lines.append(f"        override val {member} = RoundedCornerShape({expr})\n")
+    lines.append("    }\n")
+
+    lines.append("    override val interactive = object : SizingInteractive {\n")
+    for n in sorted(interactive):
+        member = _to_camel(n[len("interactive-"):])
+        raw = interactive[n]["$value"]
+        m = REF_RE.match(raw) if isinstance(raw, str) else None
+        if m:
+            layer, nav = resolve_ref(m.group(1), reg, walk)
+            expr = to_expr(layer, nav, "DefaultSizing")
+        else:
+            expr = dim_to_dp(raw)
+        lines.append(f"        override val {member} = {expr}\n")
+    lines.append("    }\n")
 
     lines.append("}\n")
     return "".join(lines)
 
 
-def emit_sizing(resolved: dict[str, dict]) -> str:
-    """Emit GeneratedSizing.kt with icon sizes, radii, interactive paddings."""
-    icons = {n: e for n, e in resolved.items() if n.startswith("icons-icon-") and e.get("$type") == "dimension"}
-    radii = {n: e for n, e in resolved.items() if n.startswith("radius-") and e.get("$type") == "dimension"}
-    interactive = {n: e for n, e in resolved.items() if n.startswith("interactive-") and e.get("$type") == "dimension"}
+# ---------------------------------------------------------------------------
+# Emitter: TypographyTokens.kt
+# ---------------------------------------------------------------------------
 
+# Topologically ordered: styles that ref siblings come after their dependencies.
+_STYLE_ORDER = [
+    "display-large", "display-medium", "display-small",
+    "heading-large", "heading-medium", "heading-small", "heading-x-small",
+    "body-large", "body-medium", "body-small",
+    "label-small",
+    # refs bodyMedium / bodySmall / labelSmall:
+    "body-medium-strikethrough",
+    "link-medium",
+    "link-small",
+    "label-small-bold",
+]
+
+_TYPO_FIELDS = [
+    ("-font-family", "fontFamily"),
+    ("-font-size", "fontSize"),
+    ("-line-height", "lineHeight"),
+    ("-kerning", "kerning"),
+]
+
+
+def emit_typography_tokens(typo_tokens, reg, walk):
     lines = [
         GEN_HEADER,
-        "@file:Suppress(\"MagicNumber\")\n",
+        "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
         f"package {PACKAGE}\n",
-        "\nimport androidx.compose.foundation.shape.CircleShape\n",
-        "import androidx.compose.foundation.shape.RoundedCornerShape\n",
-        "import androidx.compose.ui.unit.dp\n",
-        "\nobject Sizing {\n",
+        "\nimport androidx.compose.runtime.Immutable\n",
+        "import androidx.compose.ui.text.font.FontFamily\n",
+        "import androidx.compose.ui.unit.TextUnit\n",
     ]
 
-    # Icons
-    lines.append("    object Icon {\n")
-    for name in sorted(icons):
-        entry = icons[name]
-        val = entry["$value"]
-        member = icon_member(name)
-        lines.append(f"        val {member} = {dim_to_dp(val)}\n")
-    lines.append("    }\n\n")
+    # ---- StyleTokens interface ----
+    lines.append("\n@Immutable\ninterface StyleTokens {\n")
+    lines.append("    val fontFamily: FontFamily\n")
+    lines.append("    val fontSize: TextUnit\n")
+    lines.append("    val lineHeight: TextUnit\n")
+    lines.append("    val kerning: TextUnit\n")
+    lines.append("}\n")
 
-    # Radii — emit as both Dp and RoundedCornerShape
-    lines.append("    object Radius {\n")
-    for name in sorted(radii):
-        entry = radii[name]
-        val = entry["$value"]
-        member = radius_member(name)
-        v_num = val["value"] if isinstance(val, dict) else val
-        if v_num >= 1000:
-            lines.append(f"        val {member} = CircleShape\n")
-        else:
-            lines.append(f"        val {member}Dp = {dim_to_dp(val)}\n")
-            lines.append(f"        val {member} = RoundedCornerShape({dim_to_dp(val)})\n")
-    lines.append("    }\n")
+    # ---- TypographyTokens interface ----
+    lines.append("\n@Immutable\ninterface TypographyTokens {\n")
+    for style_name in _STYLE_ORDER:
+        lines.append(f"    val {_to_camel(style_name)}: StyleTokens\n")
+    lines.append("}\n")
 
-    if interactive:
-        lines.append("\n    object Interactive {\n")
-        for name in sorted(interactive):
-            entry = interactive[name]
-            val = entry["$value"]
-            member = interactive_member(name)
-            lines.append(f"        val {member} = {dim_to_dp(val)}\n")
+    # ---- DefaultTypographyTokens ----
+    lines.append(
+        "\n@Immutable\nclass DefaultTypographyTokens(private val primitive: Primitives)"
+        " : TypographyTokens {\n"
+    )
+
+    for style_name in _STYLE_ORDER:
+        style_member = _to_camel(style_name)
+        lines.append(f"    override val {style_member} = object : StyleTokens {{\n")
+
+        for suffix, kt_field in _TYPO_FIELDS:
+            token_name = style_name + suffix
+            if token_name not in typo_tokens:
+                print(f"  WARNING: missing token '{token_name}'", file=sys.stderr)
+                continue
+
+            raw_val = typo_tokens[token_name]["$value"]
+            if isinstance(raw_val, str):
+                m = REF_RE.match(raw_val)
+                if m:
+                    try:
+                        layer, nav = resolve_ref(m.group(1), reg, walk)
+                        expr = to_expr(layer, nav, "DefaultTypographyTokens")
+                    except RuntimeError as exc:
+                        print(f"  WARNING: {exc}", file=sys.stderr)
+                        expr = "FontFamily.Default  // unresolved"
+                else:
+                    expr = f'"{raw_val}"'
+            else:
+                expr = dim_to_sp(raw_val)
+            lines.append(f"        override val {kt_field} = {expr}\n")
+
+        lines.append("    }\n")
+
+    lines.append("}\n")
+    return "".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Emitter: Typography.kt
+# ---------------------------------------------------------------------------
+
+_TYPOGRAPHY_STYLE_NAMES = [
+    "display-large", "display-medium", "display-small",
+    "heading-large", "heading-medium", "heading-small", "heading-x-small",
+    "body-large", "body-medium", "body-medium-strikethrough", "body-small",
+    "link-medium", "link-small",
+    "label-small", "label-small-bold",
+]
+
+_TYPOGRAPHY_GROUP_ORDER = ["display", "heading", "body", "link", "label"]
+
+
+def emit_typography(styles_raw, reg, walk):
+    lines = [
+        GEN_HEADER,
+        "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
+        f"package {PACKAGE}\n",
+        "\nimport androidx.compose.runtime.Immutable\n",
+        "import androidx.compose.ui.text.PlatformTextStyle\n",
+        "import androidx.compose.ui.text.TextStyle\n",
+        "import androidx.compose.ui.text.font.FontWeight\n",
+    ]
+
+    # Group styles
+    style_groups = {}
+    for style_name in _TYPOGRAPHY_STYLE_NAMES:
+        parts = style_name.split("-", 1)
+        group = parts[0]
+        member = _to_camel(parts[1]) if len(parts) > 1 else "default"
+        style_groups.setdefault(group, []).append((member, style_name))
+
+    # ---- Interfaces ----
+    lines.append("\n@Immutable\ninterface Typography {\n")
+    for g in _TYPOGRAPHY_GROUP_ORDER:
+        if g in style_groups:
+            lines.append(f"    val {g}: Typography{_to_pascal(g)}\n")
+    lines.append("}\n")
+
+    for g in _TYPOGRAPHY_GROUP_ORDER:
+        if g not in style_groups:
+            continue
+        lines.append(f"\n@Immutable\ninterface Typography{_to_pascal(g)} {{\n")
+        for member, _ in style_groups[g]:
+            lines.append(f"    val {member}: TextStyle\n")
+        lines.append("}\n")
+
+    # ---- DefaultTypography ----
+    lines.append(
+        "\n@Immutable\nclass DefaultTypography(private val tokens: TypographyTokens) : Typography {\n"
+    )
+
+    for g in _TYPOGRAPHY_GROUP_ORDER:
+        if g not in style_groups:
+            continue
+        lines.append(f"    override val {g} = object : Typography{_to_pascal(g)} {{\n")
+
+        for member, style_name in style_groups[g]:
+            token_member = _to_camel(style_name)  # e.g. 'bodyMediumStrikethrough'
+            raw = styles_raw.get(style_name)
+            if raw is None:
+                print(f"  WARNING: style '{style_name}' not found in styles file", file=sys.stderr)
+                continue
+            weight_str = raw["$value"].get("fontWeight", "Regular")
+            weight_kt = font_weight_to_kotlin(weight_str)
+
+            lines.append(f"        override val {member}: TextStyle =\n")
+            lines.append(f"            TextStyle(\n")
+            lines.append(f"                platformStyle = PlatformTextStyle(includeFontPadding = false),\n")
+            lines.append(f"                fontFamily = tokens.{token_member}.fontFamily,\n")
+            lines.append(f"                fontWeight = {weight_kt},\n")
+            lines.append(f"                fontSize = tokens.{token_member}.fontSize,\n")
+            lines.append(f"                lineHeight = tokens.{token_member}.lineHeight,\n")
+            lines.append(f"                letterSpacing = tokens.{token_member}.kerning,\n")
+            lines.append(f"            )\n")
+
         lines.append("    }\n")
 
     lines.append("}\n")
@@ -747,56 +803,56 @@ def emit_sizing(resolved: dict[str, dict]) -> str:
 # Main
 # ---------------------------------------------------------------------------
 
-def main() -> None:
+def main():
     tokens_dir = TOKENS_DIR
-
     if not tokens_dir.exists():
         print(f"✗ Tokens directory not found: {tokens_dir}", file=sys.stderr)
         sys.exit(1)
 
     print(f"Loading tokens from {tokens_dir} …")
 
-    # Load allowlists
-    cycle_allow_raw = _load(tokens_dir / ".cycle-allowlist.json")
-    cycle_allow_set = {f"{e['file']}::{e['token']}" for e in cycle_allow_raw["edges"]}
+    primitives = _load_tokens(tokens_dir / ".primitives.alfie-theme.tokens.json")
+    theme_colors = _load_tokens(tokens_dir / "theme.alfie-theme.tokens.json")
+    sizing = _load_tokens(tokens_dir / "sizing.alfie-theme.tokens.json")
+    typo_tokens = _load_tokens(tokens_dir / "typography.alfie-theme.tokens.json")
 
-    broken_allow_raw = _load(tokens_dir / ".broken-ref-allowlist.json")
-    broken_allow_set = set(broken_allow_raw["missingTargets"])
-
-    token_map, primitives_map = load_token_map(tokens_dir)
-    print(f"  Loaded {len(token_map)} tokens")
-
-    print("Validating references …")
-    validate(token_map, cycle_allow_set, broken_allow_set)
-
-    print("Resolving aliases …")
-    resolved = resolve_all(token_map, primitives_map, cycle_allow_set, broken_allow_set)
-    print(f"  Resolved {len(resolved)} tokens")
-
-    # Load raw typography styles for composite fontWeight (inline string)
     styles_raw_full = _load(tokens_dir / "typography.styles.tokens.json")
     styles_raw = {
-        name: obj for name, obj in styles_raw_full.items()
-        if not name.startswith(DOC_PREFIX)
+        n: obj
+        for n, obj in styles_raw_full.items()
+        if not n.startswith(DOC_PREFIX)
     }
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    print(
+        f"  Loaded {len(primitives)} primitive, {len(theme_colors)} theme-color, "
+        f"{len(sizing)} sizing, {len(typo_tokens)} typo tokens, {len(styles_raw)} styles"
+    )
 
+    reg = build_emitted_registry(primitives, theme_colors, sizing, typo_tokens)
+    walk = build_walk_map(tokens_dir)
+    print(f"  Registry: {len(reg)} entries  |  WALK map: {len(walk)} entries")
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     print("Emitting Kotlin …")
 
-    (OUT_DIR / "Colors.kt").write_text(emit_colors(resolved, token_map), encoding="utf-8")
+    (OUT_DIR / "Primitives.kt").write_text(emit_primitives(primitives), encoding="utf-8")
+    print("  ✓ Primitives.kt")
+
+    (OUT_DIR / "Colors.kt").write_text(emit_colors(theme_colors, reg, walk), encoding="utf-8")
     print("  ✓ Colors.kt")
 
+    (OUT_DIR / "Sizing.kt").write_text(emit_sizing(sizing, reg, walk), encoding="utf-8")
+    print("  ✓ Sizing.kt")
+
+    (OUT_DIR / "TypographyTokens.kt").write_text(
+        emit_typography_tokens(typo_tokens, reg, walk), encoding="utf-8"
+    )
+    print("  ✓ TypographyTokens.kt")
+
     (OUT_DIR / "Typography.kt").write_text(
-        emit_typography(resolved, styles_raw), encoding="utf-8"
+        emit_typography(styles_raw, reg, walk), encoding="utf-8"
     )
     print("  ✓ Typography.kt")
-
-    (OUT_DIR / "Spacing.kt").write_text(emit_spacing(resolved), encoding="utf-8")
-    print("  ✓ Spacing.kt")
-
-    (OUT_DIR / "Sizing.kt").write_text(emit_sizing(resolved), encoding="utf-8")
-    print("  ✓ Sizing.kt")
 
     print(f"\n✓ Done. Output → {OUT_DIR}")
 

@@ -1,20 +1,23 @@
 package com.mindera.alfie.designsystem.tokens
 
-/**
- * New design-token facade backed by generated token objects.
- *
- * Usage: NewTheme.color.surface.backgroundPrimary, NewTheme.typography.display.large, etc.
- *
- * Migrated call sites should import this object; legacy code continues using Theme.*
- * until migration is complete (at which point NewTheme is renamed to Theme).
- */
-object NewTheme {
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 
-    val color: Colors = Colors
-
-    val typography: Typography = Typography
-
-    val spacing: Spacing = Spacing
-
-    val sizing: Sizing = Sizing
+@Immutable
+class NewTheme(
+    val primitive: Primitives = LightPrimitives,
+    val color: Colors = DefaultColors(primitive),
+    val sizing: Sizing = DefaultSizing(primitive),
+    val typographyTokens: TypographyTokens = DefaultTypographyTokens(primitive),
+    val typography: Typography = DefaultTypography(typographyTokens),
+) {
+    val spacing: PrimitiveSpacing get() = primitive.spacing
 }
+
+val LocalTheme = staticCompositionLocalOf { NewTheme() }
+
+@Composable
+fun ProvideNewTheme(theme: NewTheme = NewTheme(), content: @Composable () -> Unit) =
+    CompositionLocalProvider(LocalTheme provides theme, content = content)

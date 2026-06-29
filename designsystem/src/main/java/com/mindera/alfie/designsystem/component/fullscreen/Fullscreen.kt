@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,7 +73,7 @@ private fun CloseButton(onDismissFullscreen: ClickEvent) {
         ),
         onClick = onDismissFullscreen,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.background.copy(alpha = Theme.alpha.alpha70),
+            containerColor = Theme.color.white.copy(alpha = Theme.alpha.alpha70),
             contentColor = Theme.color.primary.mono900
         )
     ) {
