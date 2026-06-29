@@ -14,6 +14,7 @@ Re-run whenever design-token JSON files are updated.
 """
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -26,8 +27,14 @@ OUT_DIR = (
     REPO_ROOT / "designsystem" / "src" / "main" / "java"
     / "com" / "mindera" / "alfie" / "designsystem" / "tokens"
 )
+# Source font folders (one per family, named like the JSON font family with
+# spaces → underscores; each holds a static/ subfolder of weight-specific TTFs).
+FONT_SRC_DIR = REPO_ROOT / "designsystem" / "src" / "main" / "assets" / "font"
+# Generator-owned Android font resources (imported, renamed copies).
+RES_FONT_DIR = REPO_ROOT / "designsystem" / "src" / "main" / "res" / "font"
 
 PACKAGE = "com.mindera.alfie.designsystem.tokens"
+R_PACKAGE = "com.mindera.alfie.designsystem"
 GEN_HEADER = (
     "// GENERATED — do not edit. "
     "Produced by scripts/generate_tokens/generate_design_tokens.py\n"
@@ -105,6 +112,134 @@ FONT_WEIGHT_MAP = {
 
 def font_weight_to_kotlin(w):
     return FONT_WEIGHT_MAP.get(w, "FontWeight.Normal")
+
+
+# Numeric rank per named weight — orders Font(...) entries and matches the
+# weight suffix used in the static TTF filenames (e.g. Roboto-Medium.ttf).
+_WEIGHT_RANK = {
+    "Thin": 100, "ExtraLight": 200, "Light": 300, "Regular": 400,
+    "Medium": 500, "SemiBold": 600, "Bold": 700, "ExtraBold": 800, "Black": 900,
+}
+
+# Standard weight set imported for every referenced family (when the static
+# TTF exists), so the FontFamily is robust to any weight a caller requests —
+# not just the weights the current TextStyles happen to use. Weights actually
+# referenced by typography are always required (see prepare_fonts).
+_STANDARD_WEIGHTS = ["Regular", "Medium", "SemiBold", "Bold"]
+
+
+# ---------------------------------------------------------------------------
+# Font discovery & import (assets/font → res/font + FontFamily code)
+# ---------------------------------------------------------------------------
+
+def discover_typography_fonts(styles_raw, typo_tokens, reg, walk, primitives, nav_to_prim):
+    """Scan every typography style's font reference (resolved to a primitive
+    font family) and record which weights each family is used at.
+
+    Returns {prim_token: {font_name, folder, member, weights:set}}.
+    """
+    usage = {}
+    for style_name, style_obj in styles_raw.items():
+        ff_token = f"{style_name}-font-family"
+        if ff_token not in typo_tokens:
+            continue
+        raw = typo_tokens[ff_token]["$value"]
+        if not isinstance(raw, str):
+            continue
+        m = REF_RE.match(raw)
+        if not m:
+            continue
+        layer, nav = resolve_ref(m.group(1), reg, walk)
+        if layer != "primitive":
+            continue
+        prim_token = nav_to_prim.get(nav)
+        if prim_token is None:
+            continue
+        font_name = primitives[prim_token]["$value"]
+        if not isinstance(font_name, str):
+            continue
+        weight_str = style_obj.get("$value", {}).get("fontWeight", "Regular")
+        info = usage.setdefault(prim_token, {
+            "font_name": font_name,
+            "folder": font_name.replace(" ", "_"),
+            "member": nav.split(".")[-1],
+            "weights": set(),
+        })
+        info["weights"].add(weight_str)
+    return usage
+
+
+def prepare_fonts(usage):
+    """Validate that every referenced font folder + weight TTF exists, then
+    copy the static TTFs into res/font with Android-safe names.
+
+    Exits (listing every missing font) if any asset is absent.
+    Returns {prim_token: [(res_name, weight_str), ...]}.
+    """
+    missing = []
+    plan = {}
+    for prim_token, info in sorted(usage.items()):
+        folder = info["folder"]
+        fdir = FONT_SRC_DIR / folder
+        static_dir = fdir / "static"
+        if not fdir.is_dir():
+            missing.append(
+                f"'{info['font_name']}': missing font folder "
+                f"(expected assets/font/{folder}/)"
+            )
+            continue
+        base = folder.replace("_", "")        # e.g. LibreBaskerville
+        slug = folder.lower()                 # e.g. libre_baskerville
+        required = info["weights"]            # weights the typography styles reference
+        # Standard set + any extra required weight; import each only if its TTF
+        # exists. Required weights MUST exist (else error); standard-only weights
+        # are added opportunistically and skipped silently when absent.
+        wanted = list(_STANDARD_WEIGHTS)
+        for w in required:
+            if w not in wanted:
+                wanted.append(w)
+        files = []
+        for weight_str in sorted(wanted, key=lambda w: _WEIGHT_RANK.get(w, 999)):
+            src = static_dir / f"{base}-{weight_str}.ttf"
+            if not src.exists():
+                if weight_str in required:
+                    missing.append(
+                        f"'{info['font_name']}' [{weight_str}]: missing font file "
+                        f"(expected assets/font/{folder}/static/{base}-{weight_str}.ttf)"
+                    )
+                continue
+            files.append((src, f"{slug}_{weight_str.lower()}", weight_str))
+        plan[prim_token] = files
+
+    if missing:
+        print("\n✗ Font generation failed — missing font assets:", file=sys.stderr)
+        for m in sorted(set(missing)):
+            print(f"    {m}", file=sys.stderr)
+        print(
+            "\n  Add the missing font folder(s) under designsystem/src/main/assets/font/ "
+            "(each named exactly like the JSON font family with spaces → underscores, "
+            "containing a static/ subfolder of TTFs) and re-run.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    # res/font is generator-owned: wipe and repopulate so removed weights don't linger.
+    if RES_FONT_DIR.exists():
+        shutil.rmtree(RES_FONT_DIR)
+    RES_FONT_DIR.mkdir(parents=True, exist_ok=True)
+
+    result = {}
+    copied = 0
+    for prim_token, files in plan.items():
+        out = []
+        for src, res_name, weight_str in files:
+            shutil.copyfile(src, RES_FONT_DIR / f"{res_name}.ttf")
+            copied += 1
+            out.append((res_name, weight_str))
+        result[prim_token] = out
+
+    print(f"  Imported {copied} font file(s) → {RES_FONT_DIR}")
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -323,19 +458,28 @@ def resolve_prim_raw(name, primitives):
 # Emitter: Primitives.kt
 # ---------------------------------------------------------------------------
 
-def emit_primitives(primitives):
+def emit_primitives(primitives, font_import):
+    imports = [
+        "androidx.compose.runtime.Immutable",
+        "androidx.compose.ui.graphics.Color",
+        "androidx.compose.ui.text.font.FontFamily",
+        "androidx.compose.ui.unit.Dp",
+        "androidx.compose.ui.unit.TextUnit",
+        "androidx.compose.ui.unit.dp",
+        "androidx.compose.ui.unit.sp",
+    ]
+    if any(font_import.values()):
+        imports.append("androidx.compose.ui.text.font.Font")
+        imports.append("androidx.compose.ui.text.font.FontWeight")
+        imports.append(f"{R_PACKAGE}.R")
+    imports.sort()
+
     lines = [
         GEN_HEADER,
         "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
-        f"package {PACKAGE}\n",
-        "\nimport androidx.compose.runtime.Immutable\n",
-        "import androidx.compose.ui.graphics.Color\n",
-        "import androidx.compose.ui.text.font.FontFamily\n",
-        "import androidx.compose.ui.unit.Dp\n",
-        "import androidx.compose.ui.unit.TextUnit\n",
-        "import androidx.compose.ui.unit.dp\n",
-        "import androidx.compose.ui.unit.sp\n",
+        f"package {PACKAGE}\n\n",
     ]
+    lines += [f"import {imp}\n" for imp in imports]
 
     color_names = sorted(
         (n for n in primitives if n.startswith("colours-")),
@@ -421,23 +565,27 @@ def emit_primitives(primitives):
         lines.append(f"        override val {prim_spacing_member(n)} = {dim_to_dp(val)}\n")
     lines.append("    }\n")
 
-    FF_TODOS = {
-        "typography-font-family-brand": "Libre Baskerville",
-        "typography-font-family-primary-android": "Roboto",
-        "typography-font-family-primary-ios": "SF Pro",
-        "typography-font-family-primary-web": "Inter",
-    }
-
     lines.append("    override val typography = object : PrimitiveTypography {\n")
 
     lines.append("        override val fontFamily = object : PrimitiveFontFamilies {\n")
     for n in ff_names:
-        todo = FF_TODOS.get(n, "")
-        comment = f' // TODO(fonts): "{todo}"' if todo else ""
-        lines.append(
-            f"            override val {prim_font_family_member(n)}: FontFamily"
-            f" = FontFamily.Default{comment}\n"
-        )
+        member = prim_font_family_member(n)
+        fonts = font_import.get(n)
+        if fonts:
+            font_lines = "".join(
+                f"                Font(R.font.{res_name}, {font_weight_to_kotlin(w)}),\n"
+                for res_name, w in fonts
+            )
+            lines.append(
+                f"            override val {member}: FontFamily = FontFamily(\n"
+                f"{font_lines}"
+                f"            )\n"
+            )
+        else:
+            lines.append(
+                f"            override val {member}: FontFamily = FontFamily.Default"
+                f" // not bundled on Android profile\n"
+            )
     lines.append("        }\n")
 
     lines.append("        override val fontSize = object : PrimitiveFontSizes {\n")
@@ -832,10 +980,25 @@ def main():
     walk = build_walk_map(tokens_dir)
     print(f"  Registry: {len(reg)} entries  |  WALK map: {len(walk)} entries")
 
+    nav_to_prim = {nav: name for name, (layer, nav) in reg.items() if layer == "primitive"}
+
+    print("Resolving & importing typography fonts …")
+    font_usage = discover_typography_fonts(
+        styles_raw, typo_tokens, reg, walk, primitives, nav_to_prim
+    )
+    font_import = prepare_fonts(font_usage)
+    for prim_token, info in sorted(font_usage.items(), key=lambda kv: kv[1]["member"]):
+        imported = [w for _, w in font_import.get(prim_token, [])]
+        used = sorted(info["weights"], key=lambda w: _WEIGHT_RANK.get(w, 999))
+        print(
+            f"  {info['member']}: {info['font_name']} "
+            f"— imported [{', '.join(imported)}] (used: {', '.join(used)})"
+        )
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     print("Emitting Kotlin …")
 
-    (OUT_DIR / "Primitives.kt").write_text(emit_primitives(primitives), encoding="utf-8")
+    (OUT_DIR / "Primitives.kt").write_text(emit_primitives(primitives, font_import), encoding="utf-8")
     print("  ✓ Primitives.kt")
 
     (OUT_DIR / "Colors.kt").write_text(emit_colors(theme_colors, reg, walk), encoding="utf-8")

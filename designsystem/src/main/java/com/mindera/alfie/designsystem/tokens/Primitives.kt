@@ -5,11 +5,14 @@ package com.mindera.alfie.designsystem.tokens
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mindera.alfie.designsystem.R
 
 @Immutable
 interface Primitives {
@@ -182,10 +185,20 @@ object LightPrimitives : Primitives {
     }
     override val typography = object : PrimitiveTypography {
         override val fontFamily = object : PrimitiveFontFamilies {
-            override val brand: FontFamily = FontFamily.Default // TODO(fonts): "Libre Baskerville"
-            override val primaryAndroid: FontFamily = FontFamily.Default // TODO(fonts): "Roboto"
-            override val primaryIos: FontFamily = FontFamily.Default // TODO(fonts): "SF Pro"
-            override val primaryWeb: FontFamily = FontFamily.Default // TODO(fonts): "Inter"
+            override val brand: FontFamily = FontFamily(
+                Font(R.font.libre_baskerville_regular, FontWeight.Normal),
+                Font(R.font.libre_baskerville_medium, FontWeight.W500),
+                Font(R.font.libre_baskerville_semibold, FontWeight.W600),
+                Font(R.font.libre_baskerville_bold, FontWeight.Bold),
+            )
+            override val primaryAndroid: FontFamily = FontFamily(
+                Font(R.font.roboto_regular, FontWeight.Normal),
+                Font(R.font.roboto_medium, FontWeight.W500),
+                Font(R.font.roboto_semibold, FontWeight.W600),
+                Font(R.font.roboto_bold, FontWeight.Bold),
+            )
+            override val primaryIos: FontFamily = FontFamily.Default // not bundled on Android profile
+            override val primaryWeb: FontFamily = FontFamily.Default // not bundled on Android profile
         }
         override val fontSize = object : PrimitiveFontSizes {
             override val fontSize12 = 12.sp
