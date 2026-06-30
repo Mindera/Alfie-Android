@@ -13,6 +13,7 @@ import com.mindera.alfie.designsystem.theme.elevation.Elevation
 import com.mindera.alfie.designsystem.theme.scale.Scale
 import com.mindera.alfie.designsystem.theme.shape.Shape
 import com.mindera.alfie.designsystem.theme.typography.Typographies
+import com.mindera.alfie.designsystem.tokens.ProvideNewTheme
 
 private val alfieColorScheme = lightColorScheme(
     background = Theme.color.white,
@@ -20,10 +21,12 @@ private val alfieColorScheme = lightColorScheme(
 
 @Composable
 fun Theme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = alfieColorScheme,
-        content = content
-    )
+    ProvideNewTheme {
+        MaterialTheme(
+            colorScheme = alfieColorScheme,
+            content = content
+        )
+    }
 }
 
 object Theme {

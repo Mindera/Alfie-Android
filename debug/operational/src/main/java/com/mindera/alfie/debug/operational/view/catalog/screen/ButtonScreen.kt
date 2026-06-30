@@ -28,6 +28,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize.Large
 import com.mindera.alfie.designsystem.component.button.ButtonSize.Medium
 import com.mindera.alfie.designsystem.component.button.ButtonSize.Small
 import com.mindera.alfie.designsystem.component.button.ButtonType
+import com.mindera.alfie.designsystem.component.button.ButtonType.Destructive
 import com.mindera.alfie.designsystem.component.button.ButtonType.Primary
 import com.mindera.alfie.designsystem.component.button.ButtonType.Secondary
 import com.mindera.alfie.designsystem.component.button.ButtonType.Tertiary
@@ -150,6 +151,15 @@ fun ButtonScreen(topBarState: TopBarState) {
         item {
             ShowButtonOptions(
                 type = Tertiary,
+                buttonSize = buttonSize,
+                isEnabled = isEnabled,
+                isLoading = isLoading
+            )
+        }
+
+        item {
+            ShowButtonOptions(
+                type = Destructive,
                 buttonSize = buttonSize,
                 isEnabled = isEnabled,
                 isLoading = isLoading
