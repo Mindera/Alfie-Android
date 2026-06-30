@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.R as RD
 
@@ -110,7 +111,7 @@ private fun SectionHeader(
             }
 
             Icon(
-                painter = painterResource(id = RD.drawable.ic_action_chevron_down),
+                painter = painterResource(id = AlfieIcons.ChevronDown),
                 modifier = Modifier
                     .size(Theme.iconSize.small)
                     .rotate(rotation),

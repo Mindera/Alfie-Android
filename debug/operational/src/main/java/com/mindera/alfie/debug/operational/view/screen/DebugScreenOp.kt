@@ -34,6 +34,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.Direction
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @RootNavGraph(start = true)
 @Destination
@@ -166,7 +167,7 @@ private fun NavigationItem(
             style = Theme.typography.paragraph
         )
         Icon(
-            painter = painterResource(id = RD.drawable.ic_action_chevron_right),
+            painter = painterResource(id = AlfieIcons.ChevronRight),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.small)
         )

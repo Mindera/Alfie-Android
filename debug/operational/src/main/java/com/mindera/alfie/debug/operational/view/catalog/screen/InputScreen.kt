@@ -30,6 +30,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable
@@ -177,7 +178,7 @@ private fun InputItem(
     val label = if (showLabel) "Label" else null
     val trailingIconData = if (showTrailingIcon) {
         TextFieldIconData(
-            icon = RD.drawable.ic_action_chevron_down,
+            icon = AlfieIcons.ChevronDown,
             iconContentDescription = null,
             onIconClickEvent = {}
         )
@@ -185,9 +186,9 @@ private fun InputItem(
         null
     }
     val supportIcon = when (type) {
-        TextFieldType.Error -> RD.drawable.ic_informational_warning
-        TextFieldType.Default -> RD.drawable.ic_informational_info
-        TextFieldType.Success -> RD.drawable.ic_informational_checkmark
+        TextFieldType.Error -> AlfieIcons.AlertFill
+        TextFieldType.Default -> AlfieIcons.LegacyInfo
+        TextFieldType.Success -> AlfieIcons.Check
     }
     val supportText = if (isHintLongText) {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +

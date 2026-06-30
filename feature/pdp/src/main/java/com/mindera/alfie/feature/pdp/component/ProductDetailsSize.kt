@@ -37,6 +37,7 @@ import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import kotlinx.collections.immutable.toImmutableList
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private val MIN_SIZE_MODAL_PICKER_BOX_HEIGHT = 44.dp
 
@@ -97,7 +98,7 @@ private fun SizeModalPicker(
         )
 
         Icon(
-            painter = painterResource(id = RD.drawable.ic_action_chevron_down),
+            painter = painterResource(id = AlfieIcons.ChevronDown),
             modifier = Modifier.size(Theme.iconSize.small),
             tint = color,
             contentDescription = null

@@ -23,6 +23,7 @@ import com.mindera.alfie.designsystem.component.image.ratio.DimensionConstraint.
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio
 import com.mindera.alfie.designsystem.component.image.ratio.aspectRatio
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun Image(
@@ -34,7 +35,7 @@ fun Image(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Crop,
     alpha: Float = DefaultAlpha,
-    @DrawableRes failure: Int = R.drawable.ic_informational_image
+    @DrawableRes failure: Int = AlfieIcons.LegacyImage
 ) {
     BoxWithConstraints(
         modifier = modifier then Modifier.aspectRatio(
@@ -70,7 +71,7 @@ fun Image(
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Crop,
     alpha: Float = DefaultAlpha,
-    @DrawableRes failure: Int = R.drawable.ic_informational_image
+    @DrawableRes failure: Int = AlfieIcons.LegacyImage
 ) {
     GlideImage(
         model = url,

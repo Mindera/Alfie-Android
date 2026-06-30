@@ -53,6 +53,7 @@ import com.mindera.alfie.feature.uievent.handle
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.search.model.RecentSearch
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun SearchOverlay(
@@ -128,7 +129,7 @@ private fun SearchEmpty() {
                 .testTag(SEARCH_EMPTY_SCREEN)
         ) {
             Icon(
-                painter = painterResource(id = RD.drawable.ic_action_search_dark),
+                painter = painterResource(id = AlfieIcons.Search),
                 contentDescription = null,
                 tint = Theme.color.black,
                 modifier = Modifier.size(Theme.iconSize.large)
@@ -248,7 +249,7 @@ private fun RecentSearchItem(
                 onClick = { onSearchEvent(OnDeleteRecentSearch(recentSearch)) }
             ) {
                 Icon(
-                    painter = painterResource(id = RD.drawable.ic_action_close_dark),
+                    painter = painterResource(id = AlfieIcons.Close),
                     modifier = Modifier.size(Theme.iconSize.small),
                     contentDescription = null
                 )

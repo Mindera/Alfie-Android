@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun GalleryIndicator(
@@ -36,7 +37,7 @@ internal fun GalleryIndicator(
         verticalAlignment = Alignment.CenterVertically
     ) {
         GalleryIndicatorButton(
-            icon = R.drawable.ic_action_chevron_left,
+            icon = AlfieIcons.ChevronLeft,
             contentDescription = R.string.gallery_controls_left_content_description,
             onClick = onLeftClick
         )
@@ -47,7 +48,7 @@ internal fun GalleryIndicator(
             modifier = Modifier.padding(horizontal = Theme.spacing.spacing8)
         )
         GalleryIndicatorButton(
-            icon = R.drawable.ic_action_chevron_right,
+            icon = AlfieIcons.ChevronRight,
             contentDescription = R.string.gallery_controls_right_content_description,
             onClick = onRightClick
         )

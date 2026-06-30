@@ -56,6 +56,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val PAGE_COUNT_OFFSET = 2
 private const val TAB_ANIMATION_DURATION = 250
@@ -308,7 +309,7 @@ private fun PagerContent(
 private fun ScrollableTabPagerPreview() {
     Theme {
         val items = persistentListOf(
-            TabItem(StringResource.fromText("Shop All Women's Sale"), R.drawable.ic_action_gift),
+            TabItem(StringResource.fromText("Shop All Women's Sale"), AlfieIcons.Gift),
             TabItem(StringResource.fromText("Shop All Men's Sale")),
             TabItem(StringResource.fromText("Shop All Kid's Sale"))
         )

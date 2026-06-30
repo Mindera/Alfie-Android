@@ -34,6 +34,7 @@ import com.mindera.alfie.feature.home.model.HomeUIState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.toImmutableList
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val SCREEN_CONTENT_HEIGHT = 100
 
@@ -91,7 +92,7 @@ private fun HomeLoaded() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                painter = painterResource(R.drawable.ic_action_house),
+                painter = painterResource(AlfieIcons.Home),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.xxLarge)
             )

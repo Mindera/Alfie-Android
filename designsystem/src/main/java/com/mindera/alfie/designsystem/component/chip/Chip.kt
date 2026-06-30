@@ -24,6 +24,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
 import androidx.compose.material3.FilterChip as MaterialChip
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val MAXIMUM_COUNTER_VALUE = 99
 private val CHIP_HEIGHT_REGULAR = 32.dp
@@ -69,7 +70,7 @@ fun Chip(
                     onClick = onDismiss,
                     content = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_action_close_dark),
+                            painter = painterResource(id = AlfieIcons.Close),
                             contentDescription = null
                         )
                     }

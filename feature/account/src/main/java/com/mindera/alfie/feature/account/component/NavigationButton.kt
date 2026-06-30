@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.account.model.NavigationButtonUI
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun NavigationButton(
@@ -56,7 +57,7 @@ internal fun NavigationButton(
                             .padding(end = horizontalPadding)
                             .size(Theme.iconSize.small)
                             .testTag(ACCOUNT_ACTION_ICON),
-                        painter = painterResource(id = R.drawable.ic_action_chevron_right),
+                        painter = painterResource(id = AlfieIcons.ChevronRight),
                         contentDescription = null
                     )
                 }

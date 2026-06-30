@@ -46,6 +46,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.feature.plp.R as PlpR
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 /** Placeholder upper price cap; replace with BFF-supplied max when filter metadata is available. */
 private const val MAX_PRICE_CAP = 10_000f
@@ -203,7 +204,7 @@ private fun FilterCategoryRow(
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
             Icon(
-                painter = painterResource(R.drawable.ic_action_chevron_right),
+                painter = painterResource(AlfieIcons.ChevronRight),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.small),
                 tint = Theme.color.primary.mono900
@@ -229,7 +230,7 @@ private fun DisabledFilterCategoryRow(label: String) {
             modifier = Modifier.weight(1f)
         )
         Icon(
-            painter = painterResource(R.drawable.ic_action_chevron_right),
+            painter = painterResource(AlfieIcons.ChevronRight),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.small),
             tint = Theme.color.primary.mono900

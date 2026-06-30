@@ -11,6 +11,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.HOME_SETTINGS_BUTTON
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun DebugTopBarAction(
@@ -23,7 +24,7 @@ internal fun DebugTopBarAction(
         onClick = onClick
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_settings),
+            painter = painterResource(id = AlfieIcons.Settings),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

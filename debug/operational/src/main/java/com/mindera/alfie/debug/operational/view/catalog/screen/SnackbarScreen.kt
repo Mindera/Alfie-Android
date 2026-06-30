@@ -42,6 +42,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable
@@ -91,7 +92,7 @@ fun SnackbarScreen(
             startChecked = false
         ) {
             visuals = visuals.copy(
-                icon = if (it) RD.drawable.ic_informational_checkmark else null
+                icon = if (it) AlfieIcons.Check else null
             )
         }
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

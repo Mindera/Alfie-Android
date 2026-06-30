@@ -23,6 +23,7 @@ import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.ui.EntryHeadlineContent
 import kotlinx.collections.immutable.ImmutableList
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 internal fun LazyListScope.categoryItems(
     entries: ImmutableList<CategoryEntryUI>,
@@ -51,7 +52,7 @@ internal fun LazyListScope.categoryItems(
                     )
                 }
                 Icon(
-                    painter = painterResource(id = RD.drawable.ic_action_chevron_right),
+                    painter = painterResource(id = AlfieIcons.ChevronRight),
                     contentDescription = null,
                     modifier = Modifier.size(Theme.iconSize.small)
                 )

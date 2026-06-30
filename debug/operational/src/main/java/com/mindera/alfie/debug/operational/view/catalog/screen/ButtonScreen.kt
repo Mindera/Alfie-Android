@@ -42,6 +42,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val COLUMN_COUNT = 2
 
@@ -198,7 +199,7 @@ private fun ShowButtonOptions(
                 onClick = { },
                 text = "Icon Left",
                 buttonSize = buttonSize,
-                iconButton = IconButton(iconResource = RD.drawable.ic_action_arrow_left, position = Left),
+                iconButton = IconButton(iconResource = AlfieIcons.Back, position = Left),
                 isEnabled = isEnabled,
                 isLoading = isLoading
             )
@@ -209,7 +210,7 @@ private fun ShowButtonOptions(
                 onClick = { },
                 text = "Icon Right",
                 buttonSize = buttonSize,
-                iconButton = IconButton(iconResource = RD.drawable.ic_action_arrow_right, position = Right),
+                iconButton = IconButton(iconResource = AlfieIcons.Forward, position = Right),
                 isEnabled = isEnabled,
                 isLoading = isLoading
             )

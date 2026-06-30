@@ -37,6 +37,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun SortBySelector(
@@ -128,15 +129,15 @@ private fun SortBySelectorPreview() {
     val items = persistentListOf(
         SortByItem(
             text = "Most Popular",
-            icon = R.drawable.ic_action_heart_outline
+            icon = AlfieIcons.Wishlist
         ),
         SortByItem(
             text = "Price - High to Low",
-            icon = R.drawable.ic_informational_sale
+            icon = AlfieIcons.LegacySale
         ),
         SortByItem(
             text = "Price - Low to High",
-            icon = R.drawable.ic_informational_sale
+            icon = AlfieIcons.LegacySale
         )
     )
 

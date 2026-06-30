@@ -12,6 +12,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.HOME_SEARCH_BUTTON
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun SearchTopBarAction(
@@ -26,7 +27,7 @@ internal fun SearchTopBarAction(
             .testTag(HOME_SEARCH_BUTTON)
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_search_dark),
+            painter = painterResource(id = AlfieIcons.Search),
             contentDescription = contentDescription,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

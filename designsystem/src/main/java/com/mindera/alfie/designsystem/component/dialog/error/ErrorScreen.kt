@@ -21,6 +21,7 @@ import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun ErrorScreen(
@@ -35,7 +36,7 @@ fun ErrorScreen(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
                 modifier = Modifier.size(Theme.iconSize.xLarge),
-                painter = painterResource(id = R.drawable.ic_informational_warning),
+                painter = painterResource(id = AlfieIcons.AlertFill),
                 contentDescription = null
             )
             Spacer(modifier = Modifier.size(Theme.spacing.spacing16))

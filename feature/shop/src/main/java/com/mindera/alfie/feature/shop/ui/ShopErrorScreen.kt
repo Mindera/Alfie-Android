@@ -23,6 +23,7 @@ import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.designsystem.R as RD
 import com.mindera.alfie.feature.R as FeatureR
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun ShopErrorScreen(
@@ -37,7 +38,7 @@ internal fun ShopErrorScreen(
     ) {
         Icon(
             modifier = Modifier.size(Theme.iconSize.xLarge),
-            painter = painterResource(id = RD.drawable.ic_informational_warning),
+            painter = painterResource(id = AlfieIcons.AlertFill),
             contentDescription = null
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))

@@ -11,6 +11,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.SHARE_BUTTON
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun ShareTopBarAction(
@@ -23,7 +24,7 @@ fun ShareTopBarAction(
         onClick = onClick
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_share_outline),
+            painter = painterResource(id = AlfieIcons.Share),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

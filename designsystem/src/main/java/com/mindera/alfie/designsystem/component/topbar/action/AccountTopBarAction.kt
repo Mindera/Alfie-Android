@@ -11,6 +11,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.HOME_ACCOUNT_BUTTON
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun AccountTopBarAction(
@@ -23,7 +24,7 @@ internal fun AccountTopBarAction(
         onClick = onClick
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_user),
+            painter = painterResource(id = AlfieIcons.Account),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

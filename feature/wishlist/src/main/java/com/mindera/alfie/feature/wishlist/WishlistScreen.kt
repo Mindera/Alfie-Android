@@ -38,6 +38,7 @@ import com.mindera.alfie.feature.wishlist.models.WishlistProductUi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination(navArgsDelegate = WishlistNavArgs::class)
 @Composable
@@ -121,7 +122,7 @@ private fun EmptyBagScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_action_heart_outline),
+                painter = painterResource(AlfieIcons.Wishlist),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.xxLarge)
             )

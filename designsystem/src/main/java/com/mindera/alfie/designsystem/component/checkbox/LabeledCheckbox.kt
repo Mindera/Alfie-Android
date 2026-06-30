@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun LabeledCheckbox(
@@ -77,7 +78,7 @@ fun LabeledCheckbox(
         ) {
             if (isChecked) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_informational_checkmark),
+                    painter = painterResource(id = AlfieIcons.Check),
                     contentDescription = null,
                     tint = Theme.color.primary.mono050,
                     modifier = Modifier.size(Theme.iconSize.small)

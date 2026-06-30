@@ -23,6 +23,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun Fullscreen(
@@ -78,7 +79,7 @@ private fun CloseButton(onDismissFullscreen: ClickEvent) {
         )
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_close_dark),
+            painter = painterResource(id = AlfieIcons.Close),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

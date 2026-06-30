@@ -48,6 +48,7 @@ import com.mindera.alfie.designsystem.component.button.IconPosition.Right
 import com.mindera.alfie.designsystem.component.loading.Loading
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private val BORDER_THICKNESS = 1.dp
 
@@ -293,14 +294,14 @@ private fun ButtonPreview() {
             onClick = {},
             isEnabled = true,
             text = "Primary",
-            iconButton = IconButton(iconResource = R.drawable.ic_action_star, position = Left)
+            iconButton = IconButton(iconResource = AlfieIcons.Star, position = Left)
         )
         Button(
             type = Primary,
             onClick = {},
             isEnabled = false,
             text = "Primary",
-            iconButton = IconButton(iconResource = R.drawable.ic_action_arrow_right, position = Right)
+            iconButton = IconButton(iconResource = AlfieIcons.Forward, position = Right)
         )
         Button(
             type = Primary,

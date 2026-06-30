@@ -37,6 +37,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable
@@ -110,7 +111,7 @@ private fun EmptyBagScreen() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                painter = painterResource(RD.drawable.ic_action_bag),
+                painter = painterResource(AlfieIcons.Bag),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.xxLarge)
             )

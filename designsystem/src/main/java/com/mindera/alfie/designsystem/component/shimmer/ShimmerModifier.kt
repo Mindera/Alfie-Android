@@ -47,6 +47,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.delay
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val ALPHA_DURATION = 1000
 private const val BACKGROUND_DURATION = 500
@@ -275,7 +276,7 @@ private fun PreviewShimmerModifier() {
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Image(
-            painter = painterResource(id = R.drawable.ic_action_heart_fill),
+            painter = painterResource(id = AlfieIcons.WishlistFill),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)

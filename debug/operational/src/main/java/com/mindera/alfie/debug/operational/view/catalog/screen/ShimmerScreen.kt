@@ -36,6 +36,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val SHIMMER_TIME = 8000L
 
@@ -125,7 +126,7 @@ fun ShimmerScreen(topBarState: TopBarState) {
                 type = ButtonType.Primary,
                 text = "Add To Bag",
                 isShimmering = isShimmering,
-                iconButton = IconButton(iconResource = RD.drawable.ic_action_bag, position = IconPosition.Right),
+                iconButton = IconButton(iconResource = AlfieIcons.Bag, position = IconPosition.Right),
                 buttonSize = ButtonSize.Medium,
                 onClick = {}
             )
@@ -134,7 +135,7 @@ fun ShimmerScreen(topBarState: TopBarState) {
                 type = ButtonType.Secondary,
                 text = "Find in Store",
                 isShimmering = isShimmering,
-                iconButton = IconButton(iconResource = RD.drawable.ic_informational_store, position = IconPosition.Right),
+                iconButton = IconButton(iconResource = AlfieIcons.LegacyStore, position = IconPosition.Right),
                 buttonSize = ButtonSize.Medium,
                 onClick = {}
             )

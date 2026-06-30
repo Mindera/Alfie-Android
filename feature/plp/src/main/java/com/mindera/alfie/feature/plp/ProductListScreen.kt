@@ -69,6 +69,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val NUM_LOADING_ITEMS = 16
 
@@ -387,8 +388,8 @@ private fun LayoutModeButton(
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
     val icon = when (layoutMode) {
-        ProductListLayoutMode.GRID -> RD.drawable.ic_informational_grid
-        ProductListLayoutMode.COLUMN -> RD.drawable.ic_informational_column
+        ProductListLayoutMode.GRID -> AlfieIcons.Grid2
+        ProductListLayoutMode.COLUMN -> AlfieIcons.Grid1
     }
     val (isEnabled, color) = if (layoutMode == selectedLayoutMode) {
         false to Theme.color.primary.mono900

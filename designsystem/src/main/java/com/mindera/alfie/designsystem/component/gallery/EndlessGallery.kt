@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.ScrollGesturePropagation.ContentEdge
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val PAGES_COUNT = 1500
 private const val PAGES_COUNT_MINIMUM = 1
@@ -203,7 +204,7 @@ private fun NonZoomablePager(
             onClick = onFavoriteClick
         ) {
             val iconRes =
-                if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
+                if (isWishlisted) AlfieIcons.WishlistFill else AlfieIcons.Wishlist
 
             Icon(
                 painter = painterResource(id = iconRes),

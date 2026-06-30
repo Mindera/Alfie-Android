@@ -49,6 +49,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.launch
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val MIN_HEIGHT_PERCENTAGE = 0.4F
 
@@ -146,7 +147,7 @@ private fun SheetTopBar(
         ) {
             Icon(
                 modifier = Modifier.size(Theme.iconSize.large),
-                painter = painterResource(id = R.drawable.ic_modal_action_close),
+                painter = painterResource(id = AlfieIcons.Close),
                 contentDescription = null
             )
         }

@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable
@@ -43,19 +44,19 @@ fun SortByScreen(
         val items = persistentListOf(
             SortByItem(
                 text = "Most Popular",
-                icon = R.drawable.ic_action_heart_outline
+                icon = AlfieIcons.Wishlist
             ),
             SortByItem(
                 text = "Price - High to Low",
-                icon = R.drawable.ic_informational_sale
+                icon = AlfieIcons.LegacySale
             ),
             SortByItem(
                 text = "Price - Low to High",
-                icon = R.drawable.ic_informational_sale
+                icon = AlfieIcons.LegacySale
             ),
             SortByItem(
                 text = "New-in",
-                icon = R.drawable.ic_informational_store
+                icon = AlfieIcons.LegacyStore
             ),
             SortByItem(text = "A-Z"),
             SortByItem(text = "Z-A")

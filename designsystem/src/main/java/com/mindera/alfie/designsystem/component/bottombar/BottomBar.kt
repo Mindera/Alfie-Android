@@ -61,6 +61,7 @@ import com.mindera.alfie.designsystem.component.badge.IconBadge
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private val BOTTOM_BAR_HEIGHT = 63.dp
 
@@ -260,25 +261,25 @@ private fun BottomBarPreview() {
             items = persistentListOf(
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_action_house
+                    override val icon: Int = AlfieIcons.Home
                     override val label: StringResource = StringResource.fromText("Home")
                     override val testTag: String = ""
                 },
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_informational_store
+                    override val icon: Int = AlfieIcons.LegacyStore
                     override val label: StringResource = StringResource.fromText("Shop")
                     override val testTag: String = ""
                 },
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_action_heart_outline
+                    override val icon: Int = AlfieIcons.Wishlist
                     override val label: StringResource = StringResource.fromText("Wishlist")
                     override val testTag: String = ""
                 },
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_action_bag
+                    override val icon: Int = AlfieIcons.Bag
                     override val label: StringResource = StringResource.fromText("Bag")
                     override val testTag: String = ""
                 }

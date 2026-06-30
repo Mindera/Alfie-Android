@@ -18,6 +18,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.mindera.alfie.designsystem.R as RD
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable
@@ -41,7 +42,7 @@ fun TagScreen(topBarState: TopBarState) {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Tag(
             text = "Text Tag with Icon",
-            icon = RD.drawable.ic_action_star
+            icon = AlfieIcons.Star
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Tag(
@@ -51,7 +52,7 @@ fun TagScreen(topBarState: TopBarState) {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Tag(
             text = "Dismissible Text Tag With Icon",
-            icon = RD.drawable.ic_action_star,
+            icon = AlfieIcons.Star,
             isDismissible = true
         )
     }
