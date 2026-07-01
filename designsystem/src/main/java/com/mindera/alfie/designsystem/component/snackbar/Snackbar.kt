@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 
 private val HEIGHT_SINGLE_LINE = 22.dp
@@ -112,7 +112,7 @@ internal fun Snackbar(
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_action_close_dark),
+                    painter = painterResource(id = AlfieIcons.Close),
                     contentDescription = null,
                     tint = type.contentColor,
                     modifier = Modifier.size(24.dp)
@@ -134,7 +134,7 @@ private fun SnackbarPreview() {
         Snackbar(
             type = SnackbarType.Info,
             message = longMessage,
-            icon = R.drawable.ic_informational_checkmark,
+            icon = AlfieIcons.Check,
             actionLabel = "Undo",
             withDismissAction = true
         )
@@ -142,7 +142,7 @@ private fun SnackbarPreview() {
         Snackbar(
             type = SnackbarType.Info,
             message = longMessage,
-            icon = R.drawable.ic_informational_checkmark,
+            icon = AlfieIcons.Check,
             actionLabel = "Undo",
             singleLine = false
         )
@@ -174,14 +174,14 @@ private fun SnackbarPreview() {
         Snackbar(
             type = SnackbarType.Success,
             message = shortMessage,
-            icon = R.drawable.ic_informational_checkmark,
+            icon = AlfieIcons.Check,
             actionLabel = "Undo"
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Snackbar(
             type = SnackbarType.Error,
             message = shortMessage,
-            icon = R.drawable.ic_informational_checkmark,
+            icon = AlfieIcons.Check,
             actionLabel = "Undo"
         )
     }

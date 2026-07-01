@@ -14,11 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.sortby.SortByItem
 import com.mindera.alfie.designsystem.component.sortby.SortBySelector
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
@@ -43,19 +43,19 @@ fun SortByScreen(
         val items = persistentListOf(
             SortByItem(
                 text = "Most Popular",
-                icon = R.drawable.ic_action_heart_outline
+                icon = AlfieIcons.Wishlist
             ),
             SortByItem(
                 text = "Price - High to Low",
-                icon = R.drawable.ic_informational_sale
+                icon = AlfieIcons.LegacySale
             ),
             SortByItem(
                 text = "Price - Low to High",
-                icon = R.drawable.ic_informational_sale
+                icon = AlfieIcons.LegacySale
             ),
             SortByItem(
                 text = "New-in",
-                icon = R.drawable.ic_informational_store
+                icon = AlfieIcons.LegacyStore
             ),
             SortByItem(text = "A-Z"),
             SortByItem(text = "Z-A")

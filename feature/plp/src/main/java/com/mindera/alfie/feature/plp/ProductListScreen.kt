@@ -57,6 +57,7 @@ import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.state.StateMessage
 import com.mindera.alfie.designsystem.component.state.StateMessageAction
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.feature.plp.model.ProductListEntryUI
@@ -68,7 +69,6 @@ import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
-import com.mindera.alfie.designsystem.R as RD
 
 private const val NUM_LOADING_ITEMS = 16
 
@@ -387,8 +387,8 @@ private fun LayoutModeButton(
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
     val icon = when (layoutMode) {
-        ProductListLayoutMode.GRID -> RD.drawable.ic_informational_grid
-        ProductListLayoutMode.COLUMN -> RD.drawable.ic_informational_column
+        ProductListLayoutMode.GRID -> AlfieIcons.Grid2
+        ProductListLayoutMode.COLUMN -> AlfieIcons.Grid1
     }
     val (isEnabled, color) = if (layoutMode == selectedLayoutMode) {
         false to Theme.color.primary.mono900

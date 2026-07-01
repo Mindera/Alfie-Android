@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.Dp
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.ACCOUNT_ACTION_ICON
 import com.mindera.alfie.core.ui.test.ACCOUNT_SECTION_ICON
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.account.model.NavigationButtonUI
 
@@ -56,7 +56,7 @@ internal fun NavigationButton(
                             .padding(end = horizontalPadding)
                             .size(Theme.iconSize.small)
                             .testTag(ACCOUNT_ACTION_ICON),
-                        painter = painterResource(id = R.drawable.ic_action_chevron_right),
+                        painter = painterResource(id = AlfieIcons.ChevronRight),
                         contentDescription = null
                     )
                 }

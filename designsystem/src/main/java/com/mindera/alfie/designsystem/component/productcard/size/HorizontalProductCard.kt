@@ -29,6 +29,7 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.PRICE_PLACEHOLDER_WIDTH
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.persistentListOf
 
@@ -144,7 +145,7 @@ internal fun HorizontalProductCard(
                 onClick = productCard.onRemoveClick
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_action_close_dark),
+                    painter = painterResource(id = AlfieIcons.Close),
                     contentDescription = null,
                     modifier = Modifier.size(Theme.iconSize.small)
                 )

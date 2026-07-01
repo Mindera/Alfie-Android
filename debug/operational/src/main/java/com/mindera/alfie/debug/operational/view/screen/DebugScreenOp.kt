@@ -28,12 +28,12 @@ import com.mindera.alfie.debug.operational.R
 import com.mindera.alfie.debug.operational.view.screen.model.DebugScreenEvent
 import com.mindera.alfie.debug.operational.view.screen.model.DebugScreenOpUI
 import com.mindera.alfie.designsystem.component.switch.Switch
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.spec.Direction
-import com.mindera.alfie.designsystem.R as RD
 
 @RootNavGraph(start = true)
 @Destination
@@ -166,7 +166,7 @@ private fun NavigationItem(
             style = Theme.typography.paragraph
         )
         Icon(
-            painter = painterResource(id = RD.drawable.ic_action_chevron_right),
+            painter = painterResource(id = AlfieIcons.ChevronRight),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.small)
         )

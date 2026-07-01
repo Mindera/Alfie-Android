@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.mindera.alfie.core.ui.event.ClickEvent
-import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 
 @Composable
@@ -17,7 +17,7 @@ fun WishlistTopBarAction(onClick: ClickEvent) {
         onClick = onClick
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_heart_outline),
+            painter = painterResource(id = AlfieIcons.Wishlist),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

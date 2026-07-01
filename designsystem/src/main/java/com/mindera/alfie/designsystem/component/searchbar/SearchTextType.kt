@@ -4,8 +4,8 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
-import com.mindera.alfie.designsystem.R as RD
 
 enum class SearchTextType(
     val textStyle: TextStyle,
@@ -24,8 +24,8 @@ enum class SearchTextType(
     Light(
         textStyle = Theme.typography.paragraph,
         textColor = Theme.color.primary.mono900,
-        searchIcon = RD.drawable.ic_action_search_dark,
-        clearIcon = RD.drawable.ic_action_close_dark,
+        searchIcon = AlfieIcons.Search,
+        clearIcon = AlfieIcons.Close,
         cursorColor = Theme.color.black,
         unselectedBorderColor = Theme.color.primary.mono900,
         selectedBorderColor = Theme.color.primary.mono900,
@@ -38,8 +38,8 @@ enum class SearchTextType(
     Dark(
         textStyle = Theme.typography.paragraph,
         textColor = Theme.color.primary.mono300,
-        searchIcon = RD.drawable.ic_action_search_light,
-        clearIcon = RD.drawable.ic_action_close_light,
+        searchIcon = AlfieIcons.Search,
+        clearIcon = AlfieIcons.Close,
         cursorColor = Theme.color.primary.mono200,
         unselectedBorderColor = Color.Transparent,
         selectedBorderColor = Theme.color.primary.mono300,
@@ -52,8 +52,8 @@ enum class SearchTextType(
     Soft(
         textStyle = Theme.typography.paragraph,
         textColor = Theme.color.primary.mono900,
-        searchIcon = RD.drawable.ic_action_search_dark,
-        clearIcon = RD.drawable.ic_action_close_dark,
+        searchIcon = AlfieIcons.Search,
+        clearIcon = AlfieIcons.Close,
         cursorColor = Theme.color.black,
         unselectedBorderColor = Color.Transparent,
         selectedBorderColor = Theme.color.primary.mono200,
@@ -66,8 +66,8 @@ enum class SearchTextType(
     SoftLarge(
         textStyle = Theme.typography.paragraph,
         textColor = Theme.color.primary.mono500,
-        searchIcon = RD.drawable.ic_action_search_dark,
-        clearIcon = RD.drawable.ic_action_close_dark,
+        searchIcon = AlfieIcons.Search,
+        clearIcon = AlfieIcons.Close,
         cursorColor = Theme.color.black,
         unselectedBorderColor = Color.Transparent,
         selectedBorderColor = Theme.color.primary.mono200,

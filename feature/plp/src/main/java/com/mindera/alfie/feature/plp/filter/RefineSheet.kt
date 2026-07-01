@@ -36,12 +36,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.currencySymbol
 import com.mindera.alfie.core.commons.string.formatMoney
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
@@ -203,7 +203,7 @@ private fun FilterCategoryRow(
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
             Icon(
-                painter = painterResource(R.drawable.ic_action_chevron_right),
+                painter = painterResource(AlfieIcons.ChevronRight),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.small),
                 tint = Theme.color.primary.mono900
@@ -229,7 +229,7 @@ private fun DisabledFilterCategoryRow(label: String) {
             modifier = Modifier.weight(1f)
         )
         Icon(
-            painter = painterResource(R.drawable.ic_action_chevron_right),
+            painter = painterResource(AlfieIcons.ChevronRight),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.small),
             tint = Theme.color.primary.mono900

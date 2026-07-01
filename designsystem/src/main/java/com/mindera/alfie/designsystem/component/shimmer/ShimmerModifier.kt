@@ -41,10 +41,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.delay
 
@@ -275,7 +275,7 @@ private fun PreviewShimmerModifier() {
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Image(
-            painter = painterResource(id = R.drawable.ic_action_heart_fill),
+            painter = painterResource(id = AlfieIcons.WishlistFill),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)

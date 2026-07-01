@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.event.ClickEventTwoArg
-import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -128,15 +128,15 @@ private fun SortBySelectorPreview() {
     val items = persistentListOf(
         SortByItem(
             text = "Most Popular",
-            icon = R.drawable.ic_action_heart_outline
+            icon = AlfieIcons.Wishlist
         ),
         SortByItem(
             text = "Price - High to Low",
-            icon = R.drawable.ic_informational_sale
+            icon = AlfieIcons.LegacySale
         ),
         SortByItem(
             text = "Price - Low to High",
-            icon = R.drawable.ic_informational_sale
+            icon = AlfieIcons.LegacySale
         )
     )
 

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,8 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.mindera.alfie.core.ui.event.ClickEvent
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.standard
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 
 @Composable
@@ -74,12 +73,12 @@ private fun CloseButton(onDismissFullscreen: ClickEvent) {
         ),
         onClick = onDismissFullscreen,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.background.copy(alpha = Theme.alpha.alpha70),
+            containerColor = Theme.color.white.copy(alpha = Theme.alpha.alpha70),
             contentColor = Theme.color.primary.mono900
         )
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_action_close_dark),
+            painter = painterResource(id = AlfieIcons.Close),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.medium)
         )

@@ -22,11 +22,11 @@ import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonProperties
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.pdp.R
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import kotlinx.collections.immutable.ImmutableList
-import com.mindera.alfie.designsystem.R as RD
 
 @Composable
 internal fun ProductDetailsSizeModalPicker(
@@ -91,7 +91,7 @@ private fun SizePickerItem(
                     {
                         Icon(
                             modifier = Modifier.size(Theme.iconSize.small),
-                            painter = painterResource(id = RD.drawable.ic_informational_checkmark),
+                            painter = painterResource(id = AlfieIcons.Check),
                             contentDescription = null,
                             tint = Theme.color.primary.mono900
                         )

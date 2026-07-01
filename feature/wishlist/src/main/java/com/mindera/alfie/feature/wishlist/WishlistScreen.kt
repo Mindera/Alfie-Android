@@ -30,6 +30,7 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.theme.dimen.Spacing.spacing10
 import com.mindera.alfie.designsystem.theme.dimen.Spacing.spacing16
@@ -121,7 +122,7 @@ private fun EmptyBagScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_action_heart_outline),
+                painter = painterResource(AlfieIcons.Wishlist),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.xxLarge)
             )

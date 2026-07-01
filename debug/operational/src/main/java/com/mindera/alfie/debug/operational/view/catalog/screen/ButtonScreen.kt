@@ -28,6 +28,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize.Large
 import com.mindera.alfie.designsystem.component.button.ButtonSize.Medium
 import com.mindera.alfie.designsystem.component.button.ButtonSize.Small
 import com.mindera.alfie.designsystem.component.button.ButtonType
+import com.mindera.alfie.designsystem.component.button.ButtonType.Destructive
 import com.mindera.alfie.designsystem.component.button.ButtonType.Primary
 import com.mindera.alfie.designsystem.component.button.ButtonType.Secondary
 import com.mindera.alfie.designsystem.component.button.ButtonType.Tertiary
@@ -39,9 +40,9 @@ import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
 import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
-import com.mindera.alfie.designsystem.R as RD
 
 private const val COLUMN_COUNT = 2
 
@@ -157,6 +158,15 @@ fun ButtonScreen(topBarState: TopBarState) {
 
         item {
             ShowButtonOptions(
+                type = Destructive,
+                buttonSize = buttonSize,
+                isEnabled = isEnabled,
+                isLoading = isLoading
+            )
+        }
+
+        item {
+            ShowButtonOptions(
                 type = Underlined,
                 buttonSize = buttonSize,
                 isEnabled = isEnabled,
@@ -198,7 +208,7 @@ private fun ShowButtonOptions(
                 onClick = { },
                 text = "Icon Left",
                 buttonSize = buttonSize,
-                iconButton = IconButton(iconResource = RD.drawable.ic_action_arrow_left, position = Left),
+                iconButton = IconButton(iconResource = AlfieIcons.Back, position = Left),
                 isEnabled = isEnabled,
                 isLoading = isLoading
             )
@@ -209,7 +219,7 @@ private fun ShowButtonOptions(
                 onClick = { },
                 text = "Icon Right",
                 buttonSize = buttonSize,
-                iconButton = IconButton(iconResource = RD.drawable.ic_action_arrow_right, position = Right),
+                iconButton = IconButton(iconResource = AlfieIcons.Forward, position = Right),
                 isEnabled = isEnabled,
                 isLoading = isLoading
             )

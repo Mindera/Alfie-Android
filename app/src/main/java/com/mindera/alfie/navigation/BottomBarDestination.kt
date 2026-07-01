@@ -14,6 +14,7 @@ import com.mindera.alfie.core.ui.test.WISHLIST_TAB
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarItem
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarItemState
 import com.mindera.alfie.designsystem.component.bottombar.rememberBottomBarItemState
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.feature.bag.destinations.BagScreenDestination
 import com.mindera.alfie.feature.home.destinations.HomeScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopCategoryScreenDestination
@@ -24,7 +25,6 @@ import com.ramcosta.composedestinations.spec.Direction
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import com.mindera.alfie.designsystem.R as RD
 
 @Stable
 data class BottomBarDestination(
@@ -54,7 +54,7 @@ fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDest
         BottomBarDestination(
             direction = HomeScreenDestination(),
             state = rememberBottomBarItemState(),
-            icon = RD.drawable.ic_action_house,
+            icon = AlfieIcons.Home,
             label = StringResource.fromId(id = R.string.bottom_bar_home),
             testTag = HOME_TAB,
             shouldSelect = { HomeScreenDestination == it },
@@ -63,7 +63,7 @@ fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDest
         BottomBarDestination(
             direction = ShopScreenDestination(shopNavArgs()),
             state = rememberBottomBarItemState(),
-            icon = RD.drawable.ic_informational_store,
+            icon = AlfieIcons.LegacyStore,
             label = StringResource.fromId(id = R.string.bottom_bar_shop),
             testTag = SHOP_TAB,
             shouldSelect = { ShopScreenDestination == it || ShopCategoryScreenDestination == it },
@@ -72,7 +72,7 @@ fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDest
         BottomBarDestination(
             direction = BagScreenDestination(),
             state = rememberBottomBarItemState(),
-            icon = RD.drawable.ic_action_bag,
+            icon = AlfieIcons.Bag,
             label = StringResource.fromId(id = R.string.bottom_bar_bag),
             testTag = BAG_TAB,
             shouldSelect = { BagScreenDestination == it },
@@ -84,7 +84,7 @@ fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDest
         destinations.add(2, BottomBarDestination(
             direction = WishlistScreenDestination(wishlistNavArgs(launchFromTop = true)),
             state = rememberBottomBarItemState(),
-            icon = RD.drawable.ic_action_heart_outline,
+            icon = AlfieIcons.Wishlist,
             label = StringResource.fromId(id = R.string.bottom_bar_wishlist),
             testTag = WISHLIST_TAB,
             shouldSelect = { WishlistScreenDestination == it },

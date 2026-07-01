@@ -2,8 +2,8 @@ package com.mindera.alfie.debug.operational.view.screen.model
 
 import androidx.annotation.DrawableRes
 import com.mindera.alfie.core.commons.string.StringResource
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.ramcosta.composedestinations.spec.Direction
-import com.mindera.alfie.designsystem.R as RD
 
 internal sealed interface DebugScreenOpUI {
 
@@ -28,6 +28,6 @@ internal sealed interface DebugScreenOpUI {
     data class EventItem(
         val title: StringResource,
         val event: DebugScreenEvent,
-        @DrawableRes val icon: Int = RD.drawable.ic_action_chevron_right
+        @DrawableRes val icon: Int = AlfieIcons.ChevronRight
     ) : DebugScreenOpUI
 }

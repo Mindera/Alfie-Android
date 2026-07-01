@@ -38,6 +38,7 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.PRICE_PLACEHOLDER_WIDTH
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.persistentListOf
 
@@ -121,7 +122,7 @@ private fun ProductImage(
                     onClick = productCard.onFavoriteClick
                 ) {
                     val iconRes =
-                        if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
+                        if (isWishlisted) AlfieIcons.WishlistFill else AlfieIcons.Wishlist
                     Icon(
                         painter = painterResource(iconRes),
                         contentDescription = null,

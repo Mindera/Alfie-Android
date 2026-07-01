@@ -23,7 +23,7 @@ import androidx.compose.ui.res.painterResource
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.MediaUI
-import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.ScrollGesturePropagation.ContentEdge
@@ -203,7 +203,7 @@ private fun NonZoomablePager(
             onClick = onFavoriteClick
         ) {
             val iconRes =
-                if (isWishlisted) R.drawable.ic_action_heart_fill else R.drawable.ic_action_heart_outline
+                if (isWishlisted) AlfieIcons.WishlistFill else AlfieIcons.Wishlist
 
             Icon(
                 painter = painterResource(id = iconRes),

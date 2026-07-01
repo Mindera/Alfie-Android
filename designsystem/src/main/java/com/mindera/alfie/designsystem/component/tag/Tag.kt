@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 
 private val MIN_TAG_HEIGHT = 32.dp
@@ -104,7 +104,7 @@ fun Tag(
                                 end = Theme.spacing.spacing12
                             )
                             .size(TAG_CLOSE_ICON_SIZE),
-                        painter = painterResource(id = R.drawable.ic_action_close_dark),
+                        painter = painterResource(id = AlfieIcons.Close),
                         contentDescription = null,
                         tint = Theme.color.black
                     )
@@ -122,7 +122,7 @@ private fun TagPreview() {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Tag(
             text = "This is a tag",
-            icon = R.drawable.ic_action_star
+            icon = AlfieIcons.Star
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Tag(
@@ -132,7 +132,7 @@ private fun TagPreview() {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Tag(
             text = "This is a tag",
-            icon = R.drawable.ic_action_star,
+            icon = AlfieIcons.Star,
             isDismissible = true
         )
     }

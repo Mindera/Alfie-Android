@@ -63,6 +63,7 @@ import com.mindera.alfie.designsystem.component.swatch.SwatchType
 import com.mindera.alfie.designsystem.component.tab.FixedTabPager
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
@@ -82,7 +83,6 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import com.mindera.alfie.designsystem.R as RD
 import com.mindera.alfie.feature.R as FeatureR
 
 @Destination(navArgsDelegate = ProductDetailsNavArgs::class)
@@ -240,7 +240,7 @@ private fun ProductDetailsScreenError(
         modifier = Modifier.fillMaxSize()
     ) {
         Icon(
-            painter = painterResource(id = RD.drawable.ic_informational_warning),
+            painter = painterResource(id = AlfieIcons.AlertFill),
             contentDescription = null,
             tint = Theme.color.black,
             modifier = Modifier.size(Theme.iconSize.large)
@@ -358,7 +358,7 @@ private fun ProductDetailsSections(
                 trailingContent = {
                     Icon(
                         modifier = Modifier.size(Theme.iconSize.small),
-                        painter = painterResource(id = RD.drawable.ic_action_chevron_right),
+                        painter = painterResource(id = AlfieIcons.ChevronRight),
                         contentDescription = null,
                         tint = Theme.color.primary.mono700
                     )

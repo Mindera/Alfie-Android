@@ -28,12 +28,12 @@ import com.mindera.alfie.designsystem.component.segmented.SegmentedItem
 import com.mindera.alfie.designsystem.component.segmented.SegmentedPage
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import com.mindera.alfie.designsystem.R as RD
 
 private val backgroundColors = persistentListOf(
     Theme.color.secondary.green300,
@@ -51,7 +51,7 @@ fun SegmentedControlScreen(topBarState: TopBarState) {
         SegmentedItem(label = StringResource.fromText("Brands")),
         SegmentedItem(label = StringResource.fromText("Services"))
     )
-    val iconSegments = segments.map { it.copy(icon = RD.drawable.ic_action_gift) }.toImmutableList()
+    val iconSegments = segments.map { it.copy(icon = AlfieIcons.Gift) }.toImmutableList()
 
     Column(
         modifier = Modifier

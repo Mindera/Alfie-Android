@@ -27,12 +27,12 @@ import com.mindera.alfie.designsystem.component.tab.FixedTabPager
 import com.mindera.alfie.designsystem.component.tab.TabItem
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import com.mindera.alfie.designsystem.R as RD
 
 @Destination
 @Composable
@@ -81,7 +81,7 @@ fun FixedTabScreen(topBarState: TopBarState) {
             title = "2 icon tabs fixed width with standard padding",
             items = fixedItems
                 .subList(0, 2)
-                .map { it.copy(icon = RD.drawable.ic_action_gift) }
+                .map { it.copy(icon = AlfieIcons.Gift) }
                 .toImmutableList(),
             isCompact = true
         )

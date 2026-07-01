@@ -54,10 +54,10 @@ import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventTwoArg
 import com.mindera.alfie.core.ui.util.stringResource
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.component.badge.IconBadge
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -260,25 +260,25 @@ private fun BottomBarPreview() {
             items = persistentListOf(
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_action_house
+                    override val icon: Int = AlfieIcons.Home
                     override val label: StringResource = StringResource.fromText("Home")
                     override val testTag: String = ""
                 },
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_informational_store
+                    override val icon: Int = AlfieIcons.LegacyStore
                     override val label: StringResource = StringResource.fromText("Shop")
                     override val testTag: String = ""
                 },
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_action_heart_outline
+                    override val icon: Int = AlfieIcons.Wishlist
                     override val label: StringResource = StringResource.fromText("Wishlist")
                     override val testTag: String = ""
                 },
                 object : BottomBarItem {
                     override val state: BottomBarItemState = rememberBottomBarItemState()
-                    override val icon: Int = R.drawable.ic_action_bag
+                    override val icon: Int = AlfieIcons.Bag
                     override val label: StringResource = StringResource.fromText("Bag")
                     override val testTag: String = ""
                 }

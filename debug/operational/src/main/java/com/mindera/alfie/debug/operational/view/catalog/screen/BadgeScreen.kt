@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.commons.string.StringResource
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.badge.BadgeType
 import com.mindera.alfie.designsystem.component.badge.IconBadge
 import com.mindera.alfie.designsystem.component.bottombar.BottomBar
@@ -45,6 +44,7 @@ import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
@@ -240,7 +240,7 @@ private fun bottomBarItems(
         override val state: BottomBarItemState = rememberBottomBarItemState().apply {
             updateSelectedState(selectedIndex == 0)
         }
-        override val icon: Int = R.drawable.ic_action_house
+        override val icon: Int = AlfieIcons.Home
         override val label: StringResource = StringResource.fromText("Home")
         override val testTag: String = ""
     },
@@ -249,7 +249,7 @@ private fun bottomBarItems(
             updateSelectedState(selectedIndex == 1)
             updateBadge(BadgeType.Highlight)
         }
-        override val icon: Int = R.drawable.ic_informational_store
+        override val icon: Int = AlfieIcons.LegacyStore
         override val label: StringResource = StringResource.fromText("Shop")
         override val testTag: String = ""
     },
@@ -258,7 +258,7 @@ private fun bottomBarItems(
             updateSelectedState(selectedIndex == 2)
             updateBadge(BadgeType.Highlight)
         }
-        override val icon: Int = R.drawable.ic_action_heart_outline
+        override val icon: Int = AlfieIcons.Wishlist
         override val label: StringResource = StringResource.fromText("Wishlist")
         override val testTag: String = ""
     },
@@ -267,7 +267,7 @@ private fun bottomBarItems(
             updateSelectedState(selectedIndex == 3)
             updateBadge(BadgeType.Counter(bagCount))
         }
-        override val icon: Int = R.drawable.ic_action_bag
+        override val icon: Int = AlfieIcons.Bag
         override val label: StringResource = StringResource.fromText("Bag")
         override val testTag: String = ""
     }

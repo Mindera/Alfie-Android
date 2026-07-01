@@ -49,9 +49,9 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastForEachIndexed
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.ui.util.stringResource
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -308,7 +308,7 @@ private fun PagerContent(
 private fun ScrollableTabPagerPreview() {
     Theme {
         val items = persistentListOf(
-            TabItem(StringResource.fromText("Shop All Women's Sale"), R.drawable.ic_action_gift),
+            TabItem(StringResource.fromText("Shop All Women's Sale"), AlfieIcons.Gift),
             TabItem(StringResource.fromText("Shop All Men's Sale")),
             TabItem(StringResource.fromText("Shop All Kid's Sale"))
         )
