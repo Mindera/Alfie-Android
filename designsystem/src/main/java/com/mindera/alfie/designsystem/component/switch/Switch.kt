@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.animation.animateAlignmentAsState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val DISABLED_ALPHA = .25f
 
@@ -34,15 +35,16 @@ fun Switch(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val c = LocalTheme.current.primitive.colors
     val interactionSource = remember { MutableInteractionSource() }
 
     val trackAnimatedColor = animateColorAsState(
-        targetValue = if (checked) Theme.color.secondary.green050 else Theme.color.primary.mono200,
+        targetValue = if (checked) c.semanticSuccess100 else c.neutrals200,
         label = "Track Color Animation"
     )
 
     val borderAnimatedColor = animateColorAsState(
-        targetValue = if (checked) Theme.color.secondary.green600 else Theme.color.primary.mono050,
+        targetValue = if (checked) c.semanticSuccess600 else c.neutrals100,
         label = "Border Color Animation"
     )
 
@@ -88,7 +90,7 @@ fun Switch(
                 .padding(Theme.spacing.spacing4)
                 .size(24.dp)
                 .background(
-                    color = Theme.color.primary.mono700,
+                    color = c.neutrals600,
                     shape = CircleShape
                 )
                 .indication(

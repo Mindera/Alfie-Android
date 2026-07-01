@@ -16,7 +16,7 @@ fun VerticalDivider(
 ) {
     VerticalDivider(
         modifier = modifier,
-        color = dividerType.color,
+        color = dividerType.color(),
         thickness = dividerType.thickness
     )
 }

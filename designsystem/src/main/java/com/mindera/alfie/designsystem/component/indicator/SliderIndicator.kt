@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.commons.extension.orZero
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val SLIDER_WIDTH = 90.dp
 private val SLIDER_HEIGHT = 4.dp
@@ -104,6 +105,7 @@ fun SliderIndicator(
     itemCount: Int,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     Canvas(
         modifier = modifier
             .width(SLIDER_WIDTH)
@@ -119,7 +121,7 @@ fun SliderIndicator(
         // Draw background line
         drawSliderLine(
             thickness = height,
-            color = Theme.color.primary.mono200,
+            color = c.neutrals200,
             startOffSet = 0F,
             endOffset = width
         )
@@ -127,7 +129,7 @@ fun SliderIndicator(
         // Draw thumb indicating scroll progress
         drawSliderLine(
             thickness = height,
-            color = Theme.color.primary.mono700,
+            color = c.neutrals600,
             startOffSet = barStart,
             endOffset = barEnd
         )
@@ -142,6 +144,7 @@ private fun SliderCanvas(
     maxScroll: Int,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     Canvas(
         modifier = modifier
             .width(SLIDER_WIDTH)
@@ -164,7 +167,7 @@ private fun SliderCanvas(
         // Draw background line
         drawSliderLine(
             thickness = height,
-            color = Theme.color.primary.mono200,
+            color = c.neutrals200,
             startOffSet = 0F,
             endOffset = width
         )
@@ -172,7 +175,7 @@ private fun SliderCanvas(
         // Draw thumb indicating scroll progress
         drawSliderLine(
             thickness = height,
-            color = Theme.color.primary.mono700,
+            color = c.neutrals600,
             startOffSet = barStart,
             endOffset = barEnd
         )
@@ -195,6 +198,7 @@ private fun DrawScope.drawSliderLine(
 @Preview(showBackground = true)
 @Composable
 private fun LazySliderIndicatorPreview() {
+    val c = LocalTheme.current.primitive.colors
     Theme {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             val state = rememberLazyListState()
@@ -203,7 +207,7 @@ private fun LazySliderIndicatorPreview() {
                     Box(
                         modifier = Modifier
                             .size(50.dp)
-                            .border(width = 3.dp, color = Theme.color.primary.mono900)
+                            .border(width = 3.dp, color = c.neutrals800)
                     )
                 }
             }
@@ -216,6 +220,7 @@ private fun LazySliderIndicatorPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun ScrollSliderIndicatorPreview() {
+    val c = LocalTheme.current.primitive.colors
     Theme {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             val state = rememberScrollState()
@@ -224,7 +229,7 @@ private fun ScrollSliderIndicatorPreview() {
                     Box(
                         modifier = Modifier
                             .size(50.dp)
-                            .border(width = 3.dp, color = Theme.color.primary.mono900)
+                            .border(width = 3.dp, color = c.neutrals800)
                     )
                 }
             }
@@ -238,6 +243,7 @@ private fun ScrollSliderIndicatorPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun PagedSliderIndicatorPreview() {
+    val c = LocalTheme.current.primitive.colors
     Theme {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             val itemCount = 3
@@ -247,7 +253,7 @@ private fun PagedSliderIndicatorPreview() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(100.dp)
-                        .border(width = 3.dp, color = Theme.color.primary.mono900)
+                        .border(width = 3.dp, color = c.neutrals800)
                 )
             }
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

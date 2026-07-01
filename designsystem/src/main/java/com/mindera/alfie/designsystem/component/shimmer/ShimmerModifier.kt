@@ -61,11 +61,12 @@ fun Modifier.shimmer(
     xScale: Float = Theme.scale.scale100,
     yScale: Float = Theme.scale.scale100
 ): Modifier {
+    val resolvedColors = colors.resolvedColors()
     val contentAlphaState by contentAlpha(isShimmering)
-    val contentBackgroundState by contentBackground(isShimmering, colors.colors.first())
+    val contentBackgroundState by contentBackground(isShimmering, resolvedColors.first())
 
     return if (isShimmering) {
-        val shimmerBrush = rememberShimmerBrush(colors = colors.colors)
+        val shimmerBrush = rememberShimmerBrush(colors = resolvedColors)
 
         this then Modifier
             .defaultMinSize(minWidth, minHeight)
@@ -112,8 +113,9 @@ fun Modifier.shimmer(
     colors: ShimmerColors = ShimmerColors.Light,
     cornerRadius: Dp = Dp.Unspecified
 ): Modifier {
+    val resolvedColors = colors.resolvedColors()
     val contentAlphaState by contentAlpha(isShimmering)
-    val contentBackgroundState by contentBackground(isShimmering, colors.colors.first())
+    val contentBackgroundState by contentBackground(isShimmering, resolvedColors.first())
 
     val density = LocalDensity.current
     val marginHeightPx = remember { with(density) { lineMargin.toPx() } }
@@ -126,7 +128,7 @@ fun Modifier.shimmer(
     val cornerRadiusPx = remember { with(density) { cornerRadius.toPx() } }
 
     return if (isShimmering) {
-        val shimmerBrush = rememberShimmerBrush(colors = colors.colors)
+        val shimmerBrush = rememberShimmerBrush(colors = resolvedColors)
 
         this then Modifier
             .height(drawingHeight)

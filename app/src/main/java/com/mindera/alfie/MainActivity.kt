@@ -18,6 +18,7 @@ import com.mindera.alfie.core.ui.system.rememberSystemUiController
 import com.mindera.alfie.debug.runner.DebugComposeRunner
 import com.mindera.alfie.debug.runner.LocalDebugComposeRunner
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.startup.StartUp
 import com.mindera.alfie.navigation.AppNavigation
 import com.mindera.alfie.navigation.NavGraphs
@@ -50,11 +51,12 @@ class MainActivity : ComponentActivity() {
             Theme {
                 val systemUiController = rememberSystemUiController()
                 val wishlistToggle = viewModel.wishlistToggle.collectAsStateWithLifecycle()
+                val c = LocalTheme.current.primitive.colors
                 systemUiController.setSystemUiColors(
                     componentActivity = this,
-                    statusBarLight = Theme.color.white,
-                    statusBarDark = Theme.color.black,
-                    navigationLight = Theme.color.black
+                    statusBarLight = c.neutrals0,
+                    statusBarDark = c.neutrals900,
+                    navigationLight = c.neutrals900
                 )
 
                 CompositionLocalProvider(

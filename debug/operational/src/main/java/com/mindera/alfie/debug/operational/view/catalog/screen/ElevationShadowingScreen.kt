@@ -23,6 +23,7 @@ import com.mindera.alfie.designsystem.component.shadow.ShadowType
 import com.mindera.alfie.designsystem.component.shadow.shadow
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -94,11 +95,12 @@ private fun ShadowRow(
 
 @Composable
 private fun ShadowItem(shadowType: ShadowType, label: String) {
+    val c = LocalTheme.current.primitive.colors
     val colors = CardColors(
-        containerColor = Theme.color.white,
-        contentColor = Theme.color.black,
-        disabledContainerColor = Theme.color.white,
-        disabledContentColor = Theme.color.black
+        containerColor = c.neutrals0,
+        contentColor = c.neutrals900,
+        disabledContainerColor = c.neutrals0,
+        disabledContentColor = c.neutrals900
     )
     Card(
         shape = Theme.shape.small,

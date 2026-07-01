@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -49,6 +50,7 @@ import com.mindera.alfie.core.ui.test.SEGMENTED_CONTROL
 import com.mindera.alfie.core.ui.test.SEGMENTED_OPTION
 import com.mindera.alfie.core.ui.util.stringResource
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -70,13 +72,14 @@ fun SegmentedControl(
 ) {
     require(segments.size in MIN_SEGMENTS..MAX_SEGMENTS)
 
+    val c = LocalTheme.current.primitive.colors
     BoxWithConstraints(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxWidth()
             .heightIn(40.dp)
             .clip(Theme.shape.small)
-            .background(color = Theme.color.primary.mono100)
+            .background(color = c.neutrals100)
             .selectableGroup()
             .testTag(SEGMENTED_CONTROL)
     ) {
@@ -105,7 +108,8 @@ fun SegmentedControl(
                 .drawBehind {
                     drawIndicator(
                         topLeft = indicatorTopLeft,
-                        bottomRight = indicatorBottomRight
+                        bottomRight = indicatorBottomRight,
+                        indicatorColor = c.neutrals0
                     )
                 }
         ) {
@@ -137,8 +141,9 @@ fun SegmentedControlItem(
     onItemPosition: (topLeft: Offset, bottomRight: Offset) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     val contentColor by animateColorAsState(
-        targetValue = if (isSelected) Theme.color.black else Theme.color.primary.mono500,
+        targetValue = if (isSelected) c.neutrals900 else c.neutrals500,
         label = "SegmentedControlContentColorAnimation"
     )
 
@@ -187,10 +192,11 @@ fun SegmentedControlItem(
 
 private fun DrawScope.drawIndicator(
     topLeft: Offset,
-    bottomRight: Offset
+    bottomRight: Offset,
+    indicatorColor: Color
 ) {
     drawRoundRect(
-        color = Theme.color.white,
+        color = indicatorColor,
         topLeft = topLeft,
         size = Size(
             width = bottomRight.x - topLeft.x,

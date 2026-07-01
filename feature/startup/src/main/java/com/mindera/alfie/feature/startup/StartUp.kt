@@ -11,19 +11,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.designsystem.component.loading.LogoLoading
-import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+
 @Composable
 fun StartUp(
     appContent: @Composable (startDestination: Screen) -> Unit
 ) {
     val viewModel: StartUpViewModel = hiltViewModel()
     val startDestination by viewModel.startDestination.collectAsStateWithLifecycle()
+    val c = LocalTheme.current.primitive.colors
 
     if (startDestination == null) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Theme.color.white),
+                .background(c.neutrals0),
             contentAlignment = Alignment.Center
         ) {
             LogoLoading()

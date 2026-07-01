@@ -59,6 +59,7 @@ import com.mindera.alfie.designsystem.component.state.StateMessageAction
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.plp.filter.RefineSheet
 import com.mindera.alfie.feature.plp.model.ProductListEntryUI
 import com.mindera.alfie.feature.plp.model.ProductListEvent
@@ -328,6 +329,7 @@ private fun ResultCounter(
     resultCount: Int,
     isLoading: Boolean
 ) {
+    val c = LocalTheme.current.primitive.colors
     AnimatedVisibility(
         visible = isLoading.not(),
         enter = fadeIn(standard()),
@@ -336,7 +338,7 @@ private fun ResultCounter(
         Text(
             text = stringResource(id = R.string.results_counter, resultCount),
             style = Theme.typography.tiny,
-            color = Theme.color.primary.mono500
+            color = c.neutrals500
         )
     }
 }
@@ -386,14 +388,15 @@ private fun LayoutModeButton(
     selectedLayoutMode: ProductListLayoutMode,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
+    val c = LocalTheme.current.primitive.colors
     val icon = when (layoutMode) {
         ProductListLayoutMode.GRID -> AlfieIcons.Grid2
         ProductListLayoutMode.COLUMN -> AlfieIcons.Grid1
     }
     val (isEnabled, color) = if (layoutMode == selectedLayoutMode) {
-        false to Theme.color.primary.mono900
+        false to c.neutrals800
     } else {
-        true to Theme.color.primary.mono200
+        true to c.neutrals200
     }
 
     IconButton(

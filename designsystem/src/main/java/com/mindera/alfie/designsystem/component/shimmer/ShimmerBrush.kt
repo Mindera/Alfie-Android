@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.PI
@@ -150,11 +150,12 @@ private fun rotateGradient(size: Size): Pair<Offset, Offset> {
 @Composable
 @Preview
 private fun PreviewShimmerBrush() {
+    val c = LocalTheme.current.primitive.colors
     val shimmerBrush = rememberShimmerBrush(
         colors = persistentListOf(
-            Theme.color.primary.mono600,
-            Theme.color.primary.mono900,
-            Theme.color.primary.mono600
+            c.neutrals600,
+            c.neutrals800,
+            c.neutrals600
         )
     )
     Box(

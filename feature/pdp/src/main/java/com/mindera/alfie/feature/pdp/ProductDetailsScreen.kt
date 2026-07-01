@@ -65,6 +65,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.pdp.component.ProductDetailsColorPicker
@@ -234,6 +235,7 @@ private fun ProductDetailsScreenError(
     errorType: ApiErrorType,
     onRetry: () -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -242,7 +244,7 @@ private fun ProductDetailsScreenError(
         Icon(
             painter = painterResource(id = AlfieIcons.AlertFill),
             contentDescription = null,
-            tint = Theme.color.black,
+            tint = c.neutrals900,
             modifier = Modifier.size(Theme.iconSize.large)
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -318,6 +320,7 @@ private fun ProductDetailsLayer(
 
 @Composable
 private fun ProductDetailsName(state: ProductDetailsUIState.Data) {
+    val c = LocalTheme.current.primitive.colors
     val isLoading = state is ProductDetailsUIState.Data.Loading
 
     Text(
@@ -329,7 +332,7 @@ private fun ProductDetailsName(state: ProductDetailsUIState.Data) {
             ),
         text = state.details.name,
         style = Theme.typography.paragraphLarge,
-        color = Theme.color.black
+        color = c.neutrals900
     )
 }
 
@@ -338,6 +341,7 @@ private fun ProductDetailsSections(
     state: ProductDetailsUIState.Data,
     onEvent: ClickEventOneArg<ProductDetailsEvent>
 ) {
+    val c = LocalTheme.current.primitive.colors
     val isLoading = state is ProductDetailsUIState.Data.Loading
     val sections = state.details.sections
 
@@ -352,7 +356,7 @@ private fun ProductDetailsSections(
                         modifier = modifier,
                         text = if (isLoading) "" else stringResource(resource = section.title),
                         style = Theme.typography.paragraph,
-                        color = Theme.color.primary.mono700
+                        color = c.neutrals600
                     )
                 },
                 trailingContent = {
@@ -360,7 +364,7 @@ private fun ProductDetailsSections(
                         modifier = Modifier.size(Theme.iconSize.small),
                         painter = painterResource(id = AlfieIcons.ChevronRight),
                         contentDescription = null,
-                        tint = Theme.color.primary.mono700
+                        tint = c.neutrals600
                     )
                 },
                 modifier = Modifier

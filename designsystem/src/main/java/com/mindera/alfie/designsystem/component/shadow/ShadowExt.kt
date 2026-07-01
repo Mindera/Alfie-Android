@@ -1,5 +1,6 @@
 package com.mindera.alfie.designsystem.component.shadow
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -8,16 +9,28 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
-fun Modifier.shadow(shadowType: ShadowType, cornersRadius: Dp = 0.dp): Modifier =
-    this.elevation(
-        color = shadowType.color,
+@Composable
+fun Modifier.shadow(shadowType: ShadowType, cornersRadius: Dp = 0.dp): Modifier {
+    val c = LocalTheme.current.primitive.colors
+    val shadowColor = when (shadowType) {
+        ShadowType.Elevation1,
+        ShadowType.Elevation2,
+        ShadowType.Elevation3,
+        ShadowType.Elevation4,
+        ShadowType.Elevation5 -> c.neutrals900
+        else -> c.neutrals800
+    }
+    return this.elevation(
+        color = shadowColor,
         alpha = shadowType.alpha,
         cornersRadius = cornersRadius,
         shadowBlurRadius = shadowType.shadowBlurRadius,
         offsetX = shadowType.offsetX,
         offsetY = shadowType.offsetY
     )
+}
 
 fun Modifier.elevation(
     color: Color = Color.Black,

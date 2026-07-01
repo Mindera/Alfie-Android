@@ -58,11 +58,12 @@ internal fun Snackbar(
         messageMaxLines = remember { DOUBLE_LINE }
     }
 
+    val colors = type.colorSpec()
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .background(
-                color = type.backgroundColor,
+                color = colors.backgroundColor,
                 shape = Theme.shape.small
             )
     ) {
@@ -72,7 +73,7 @@ internal fun Snackbar(
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = type.contentColor,
+                tint = colors.contentColor,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
@@ -81,7 +82,7 @@ internal fun Snackbar(
         Text(
             text = message,
             style = Theme.typography.paragraph,
-            color = type.contentColor,
+            color = colors.contentColor,
             overflow = TextOverflow.Ellipsis,
             maxLines = messageMaxLines,
             modifier = Modifier
@@ -95,7 +96,7 @@ internal fun Snackbar(
             Text(
                 text = it,
                 style = Theme.typography.paragraphBold,
-                color = type.contentColor,
+                color = colors.contentColor,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(Theme.spacing.spacing8)
@@ -114,7 +115,7 @@ internal fun Snackbar(
                 Icon(
                     painter = painterResource(id = AlfieIcons.Close),
                     contentDescription = null,
-                    tint = type.contentColor,
+                    tint = colors.contentColor,
                     modifier = Modifier.size(24.dp)
                 )
             }

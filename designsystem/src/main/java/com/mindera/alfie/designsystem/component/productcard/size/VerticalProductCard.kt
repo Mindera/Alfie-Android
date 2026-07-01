@@ -40,6 +40,7 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -87,6 +88,7 @@ private fun ProductImage(
     isLoading: Boolean,
     isWishlisted: Boolean
 ) {
+    val c = LocalTheme.current.primitive.colors
     Box {
         Image(
             imageUI = productCard.image,
@@ -101,11 +103,11 @@ private fun ProductImage(
                 Text(
                     text = label,
                     style = Theme.typography.tinyBold,
-                    color = Theme.color.white,
+                    color = c.neutrals0,
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .background(
-                            color = Theme.color.primary.mono900,
+                            color = c.neutrals800,
                             shape = Theme.shape.none
                         )
                         .padding(
@@ -139,12 +141,13 @@ private fun ProductDescription(
     productCard: ProductCardType.Vertical,
     isLoading: Boolean
 ) {
+    val c = LocalTheme.current.primitive.colors
     Row(verticalAlignment = Alignment.Bottom) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = productCard.brand,
                 style = Theme.typography.tiny,
-                color = Theme.color.primary.mono500,
+                color = c.neutrals500,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -159,7 +162,7 @@ private fun ProductDescription(
             Text(
                 text = productCard.name,
                 style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono900,
+                color = c.neutrals800,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

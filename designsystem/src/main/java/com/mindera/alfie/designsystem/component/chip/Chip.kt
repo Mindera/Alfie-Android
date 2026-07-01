@@ -24,6 +24,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import androidx.compose.material3.FilterChip as MaterialChip
 
 private const val MAXIMUM_COUNTER_VALUE = 99
@@ -87,38 +88,44 @@ fun Chip(
     )
 }
 
+@Composable
 private fun getTextColor(
     isEnabled: Boolean
 ): Color {
+    val c = LocalTheme.current.primitive.colors
     return if (isEnabled) {
-        Theme.color.primary.mono900
+        c.neutrals800
     } else {
-        Theme.color.primary.mono300
+        c.neutrals300
     }
 }
 
 @Composable
-private fun chipColors() = FilterChipDefaults.filterChipColors().copy(
-    containerColor = Color.Transparent,
-    labelColor = Theme.color.primary.mono700,
-    disabledContainerColor = Theme.color.primary.mono050,
-    disabledLabelColor = Theme.color.primary.mono300,
-    selectedContainerColor = Color.Transparent,
-    selectedLabelColor = Theme.color.primary.mono900
-)
+private fun chipColors(): androidx.compose.material3.SelectableChipColors {
+    val c = LocalTheme.current.primitive.colors
+    return FilterChipDefaults.filterChipColors().copy(
+        containerColor = Color.Transparent,
+        labelColor = c.neutrals600,
+        disabledContainerColor = c.neutrals100,
+        disabledLabelColor = c.neutrals300,
+        selectedContainerColor = Color.Transparent,
+        selectedLabelColor = c.neutrals800
+    )
+}
 
 @Composable
 private fun chipBorder(isEnabled: Boolean, isSelected: Boolean): BorderStroke {
+    val c = LocalTheme.current.primitive.colors
     val (border, color) = if (isSelected && isEnabled) {
-        Pair(2.dp, Theme.color.primary.mono900)
+        Pair(2.dp, c.neutrals800)
     } else if (isEnabled.not() && isSelected.not()) {
-        Pair(0.dp, Theme.color.primary.mono050)
+        Pair(0.dp, c.neutrals100)
     } else {
         val defaultChipBorder = FilterChipDefaults.filterChipBorder(
             enabled = isEnabled,
             selected = isSelected
         )
-        Pair(defaultChipBorder.width, Theme.color.primary.mono900)
+        Pair(defaultChipBorder.width, c.neutrals800)
     }
 
     val animatedBorder by animateDpAsState(

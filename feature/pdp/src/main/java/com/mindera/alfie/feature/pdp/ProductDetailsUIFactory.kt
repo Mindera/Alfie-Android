@@ -14,7 +14,6 @@ import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonPropert
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
 import com.mindera.alfie.designsystem.component.swatch.SwatchType
 import com.mindera.alfie.designsystem.component.tab.TabItem
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.pdp.model.ColorUI
 import com.mindera.alfie.feature.pdp.model.InformationUI
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
@@ -209,7 +208,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
     private fun String.toSwatchType(isEnabled: Boolean): SwatchType {
         val hex = ColorNameToHex.lookup(this)
         return SwatchType.PlainColor(
-            color = hex?.let { ComposeColor(it) } ?: Theme.color.black,
+            color = hex?.let { ComposeColor(it) } ?: ComposeColor.Black,
             isEnabled = isEnabled
         )
     }

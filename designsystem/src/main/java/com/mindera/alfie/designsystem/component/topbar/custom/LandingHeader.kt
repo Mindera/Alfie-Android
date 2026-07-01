@@ -48,6 +48,7 @@ import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,11 +103,12 @@ private fun TopBarScope.LandingHeaderContent(
 private fun GreetingTopBar(
     greetingType: Greeting
 ) {
+    val c = LocalTheme.current.primitive.colors
     Column(modifier = Modifier.testTag(HOME_TITLE_HEADER)) {
         Text(
             text = stringResource(id = R.string.top_bar_greeting, greetingType.userName),
             style = Theme.typography.heading2,
-            color = Theme.color.black,
+            color = c.neutrals900,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -114,7 +116,7 @@ private fun GreetingTopBar(
             Text(
                 text = it,
                 style = Theme.typography.small,
-                color = Theme.color.primary.mono500
+                color = c.neutrals500
             )
         }
     }

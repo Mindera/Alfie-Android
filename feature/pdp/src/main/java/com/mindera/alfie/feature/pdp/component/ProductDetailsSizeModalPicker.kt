@@ -24,6 +24,7 @@ import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonPropert
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.pdp.R
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import kotlinx.collections.immutable.ImmutableList
@@ -63,8 +64,9 @@ private fun SizePickerItem(
     selectedSize: SizeUI?,
     onClick: ClickEventOneArg<SizeUI>
 ) {
+    val c = LocalTheme.current.primitive.colors
     val hasStock = sizeUI.properties.state == SizingButtonState.Selectable
-    val textColor = if (hasStock) Theme.color.primary.mono900 else Theme.color.primary.mono300
+    val textColor = if (hasStock) c.neutrals800 else c.neutrals300
 
     Column(Modifier.fillMaxWidth()) {
         ListItem(
@@ -93,7 +95,7 @@ private fun SizePickerItem(
                             modifier = Modifier.size(Theme.iconSize.small),
                             painter = painterResource(id = AlfieIcons.Check),
                             contentDescription = null,
-                            tint = Theme.color.primary.mono900
+                            tint = c.neutrals800
                         )
                     }
                 }

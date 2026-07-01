@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.Dp
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 private var spacings = listOf(
@@ -77,6 +78,7 @@ fun SpacingScreen(topBarState: TopBarState) {
 
 @Composable
 private fun SpacingItem(spacing: Dp, name: String) {
+    val c = LocalTheme.current.primitive.colors
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing.spacing12),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -86,7 +88,7 @@ private fun SpacingItem(spacing: Dp, name: String) {
                 .padding(horizontal = Theme.spacing.spacing2)
                 .fillMaxWidth()
                 .height(spacing)
-                .background(Theme.color.secondary.green300)
+                .background(c.semanticSuccess300)
         )
         Text(
             text = name,

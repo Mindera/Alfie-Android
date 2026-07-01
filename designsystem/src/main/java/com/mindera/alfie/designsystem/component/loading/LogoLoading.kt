@@ -15,6 +15,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -23,6 +24,7 @@ fun LogoLoading(
     iconSize: Dp? = null,
     label: String? = null
 ) {
+    val c = LocalTheme.current.primitive.colors
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -45,7 +47,7 @@ fun LogoLoading(
             Text(
                 text = it,
                 style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono900
+                color = c.neutrals800
             )
         }
     }

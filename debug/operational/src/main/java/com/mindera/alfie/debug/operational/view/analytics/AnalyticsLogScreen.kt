@@ -34,6 +34,7 @@ import com.mindera.alfie.debug.operational.view.analytics.model.AnalyticsLogUI
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Composable
@@ -117,6 +118,7 @@ private fun Dropdown(
     var dropdownExpanded by remember { mutableStateOf(false) }
     var dropdownValue by remember { mutableStateOf(keys.firstOrNull().orEmpty()) }
 
+    val c = LocalTheme.current.primitive.colors
     ExposedDropdownMenuBox(
         expanded = dropdownExpanded,
         onExpandedChange = { dropdownExpanded = !dropdownExpanded }
@@ -128,8 +130,8 @@ private fun Dropdown(
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Theme.color.primary.mono050,
-                focusedContainerColor = Theme.color.primary.mono050
+                unfocusedContainerColor = c.neutrals100,
+                focusedContainerColor = c.neutrals100
             ),
             label = {
                 Text(
@@ -163,17 +165,18 @@ private fun Dropdown(
 
 @Composable
 private fun Event(analyticsLogData: AnalyticsLogData) {
+    val c = LocalTheme.current.primitive.colors
     Column {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             text = analyticsLogData.tracker,
             style = Theme.typography.tiny,
-            color = Theme.color.primary.mono400
+            color = c.neutrals400
         )
         Text(
             text = analyticsLogData.timestamp,
             style = Theme.typography.tinyItalic,
-            color = Theme.color.primary.mono500
+            color = c.neutrals500
         )
         Text(
             text = analyticsLogData.event,
@@ -183,7 +186,7 @@ private fun Event(analyticsLogData: AnalyticsLogData) {
             Text(
                 text = "$key: $value",
                 style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono500
+                color = c.neutrals500
             )
         }
         Spacer(modifier = Modifier.height(Theme.spacing.spacing8))

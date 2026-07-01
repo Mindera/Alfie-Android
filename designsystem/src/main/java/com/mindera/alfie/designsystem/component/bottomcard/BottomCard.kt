@@ -31,6 +31,7 @@ import com.mindera.alfie.designsystem.component.image.ratio.aspectRatio
 import com.mindera.alfie.designsystem.component.swipe.SwipeAnchor
 import com.mindera.alfie.designsystem.component.swipe.SwipeAnchored
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.coroutines.launch
 
 private const val VELOCITY_THRESHOLD = 125
@@ -45,6 +46,7 @@ fun BottomCard(
     peekHeight: Dp = Dp.Unspecified,
     bottomStickyLayer: @Composable BottomCardScope.() -> Unit = {}
 ) {
+    val c = LocalTheme.current.primitive.colors
     val scope = remember { BottomCardScopeInstance() }
     val density = LocalDensity.current
     val coroutineScope = rememberCoroutineScope()
@@ -102,7 +104,7 @@ fun BottomCard(
                 }
             }
         }
-        Box(modifier = Modifier.background(Theme.color.white)) {
+        Box(modifier = Modifier.background(c.neutrals0)) {
             bottomStickyLayer(scope)
         }
     }

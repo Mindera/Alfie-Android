@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val MIN_TAG_HEIGHT = 32.dp
 private val TAG_ELEVATION = 8.dp
@@ -48,6 +49,7 @@ fun Tag(
     iconContentDescription: String? = null,
     isDismissible: Boolean = false
 ) {
+    val c = LocalTheme.current.primitive.colors
     var isVisible by remember { mutableStateOf(true) }
 
     AnimatedVisibility(
@@ -62,7 +64,7 @@ fun Tag(
                 .wrapContentWidth(),
             shadowElevation = TAG_ELEVATION,
             shape = Theme.shape.tiny,
-            color = Theme.color.primary.mono100
+            color = c.neutrals100
         ) {
             Row(
                 modifier = Modifier.height(intrinsicSize = IntrinsicSize.Max),
@@ -70,7 +72,7 @@ fun Tag(
             ) {
                 VerticalDivider(
                     modifier = Modifier.fillMaxHeight(),
-                    color = Theme.color.primary.mono800,
+                    color = c.neutrals700,
                     thickness = TAG_DIVIDER_THICKNESS
                 )
                 if (icon != null) {
@@ -93,7 +95,7 @@ fun Tag(
                         horizontal = Theme.spacing.spacing12
                     ),
                     style = Theme.typography.paragraph,
-                    color = Theme.color.black
+                    color = c.neutrals900
                 )
                 if (isDismissible) {
                     Icon(
@@ -106,7 +108,7 @@ fun Tag(
                             .size(TAG_CLOSE_ICON_SIZE),
                         painter = painterResource(id = AlfieIcons.Close),
                         contentDescription = null,
-                        tint = Theme.color.black
+                        tint = c.neutrals900
                     )
                 }
             }

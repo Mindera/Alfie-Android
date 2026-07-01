@@ -33,6 +33,7 @@ import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val ICON_ANIMATION_TIME = 300
 private const val ROTATION_ANGLE = -180f
@@ -79,6 +80,7 @@ private fun SectionHeader(
     isEnabled: Boolean,
     onClick: ClickEvent
 ) {
+    val c = LocalTheme.current.primitive.colors
     val rotation by animateFloatAsState(
         targetValue = if (isExpanded) ROTATION_ANGLE else 0F,
         animationSpec = tween(ICON_ANIMATION_TIME),
@@ -105,7 +107,7 @@ private fun SectionHeader(
                 Text(
                     text = title,
                     style = Theme.typography.paragraph,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             }
 
@@ -142,6 +144,7 @@ private fun SectionContent(
 @Composable
 private fun AccordionPreview() {
     Theme {
+        val c = LocalTheme.current.primitive.colors
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -153,7 +156,7 @@ private fun AccordionPreview() {
                         "tortor cursus nam quisque ut. Blandit ut netus consequat ridiculus mi. Lacus a fermentum nec nisl " +
                         "consectetur molestie. Mauris mi cursus quis risus aliquam vivamus blandit. Maecenas dui odio odio aliquet.",
                     style = Theme.typography.small,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             }
             Accordion(

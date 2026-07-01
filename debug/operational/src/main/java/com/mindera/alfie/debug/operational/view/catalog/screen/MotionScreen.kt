@@ -53,6 +53,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlin.math.roundToInt
 
@@ -60,6 +61,7 @@ import kotlin.math.roundToInt
 @Destination
 @Composable
 fun MotionScreen(topBarState: TopBarState) {
+    val c = LocalTheme.current.primitive.colors
     topBarState.logoTopBar(showNavigationIcon = true)
 
     var transitionToggle by remember { mutableStateOf(false) }
@@ -126,8 +128,8 @@ fun MotionScreen(topBarState: TopBarState) {
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded) },
                     colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Theme.color.primary.mono050,
-                        focusedContainerColor = Theme.color.primary.mono050
+                        unfocusedContainerColor = c.neutrals100,
+                        focusedContainerColor = c.neutrals100
                     ),
                     label = {
                         Text(
@@ -185,8 +187,9 @@ fun MotionScreen(topBarState: TopBarState) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val colors = LocalTheme.current.primitive.colors
                     Circle(
-                        color = Theme.color.secondary.blue300,
+                        color = colors.semanticSuccess100,
                         modifier = Modifier
                             .scale(scale = scaleState)
                             .offset { offsetCircle1State },
@@ -195,7 +198,7 @@ fun MotionScreen(topBarState: TopBarState) {
                         }
                     )
                     Circle(
-                        color = Theme.color.secondary.blue500,
+                        color = colors.semanticSuccess300,
                         modifier = Modifier
                             .scale(scale = scaleState)
                             .offset { offsetCircle2State },
@@ -204,7 +207,7 @@ fun MotionScreen(topBarState: TopBarState) {
                         }
                     )
                     Circle(
-                        color = Theme.color.secondary.blue700,
+                        color = colors.semanticSuccess500,
                         modifier = Modifier
                             .scale(scale = scaleState)
                             .offset { offsetCircle3State },

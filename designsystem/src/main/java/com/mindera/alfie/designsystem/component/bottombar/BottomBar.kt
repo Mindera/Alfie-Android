@@ -59,6 +59,7 @@ import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.component.badge.IconBadge
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -109,9 +110,10 @@ private fun BottomBarContainer(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     Surface(
-        color = Theme.color.white,
-        contentColor = Theme.color.primary.mono900,
+        color = c.neutrals0,
+        contentColor = c.neutrals800,
         shadowElevation = Theme.elevation.elevation3,
         modifier = modifier
     ) {
@@ -119,7 +121,7 @@ private fun BottomBarContainer(
             contentAlignment = Alignment.Center,
             modifier = Modifier.drawBehind {
                 drawLine(
-                    color = Theme.color.primary.mono200,
+                    color = c.neutrals200,
                     start = Offset(0f, 0f),
                     end = Offset(size.width, 0f),
                     strokeWidth = 1.dp.toPx()
@@ -171,7 +173,8 @@ private fun BottomBarItem(
             },
         contentAlignment = Alignment.Center
     ) {
-        val color = if (state.isSelected) Theme.color.primary.mono900 else Theme.color.primary.mono500
+        val c = LocalTheme.current.primitive.colors
+        val color = if (state.isSelected) c.neutrals800 else c.neutrals500
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             IconBadge(badge = state.badge) {
                 Icon(
@@ -197,6 +200,7 @@ private fun BottomBarIndicator(
     endPosition: Offset,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     val animation = tween<Offset>(
         durationMillis = 500,
         easing = EaseOutCubic
@@ -218,7 +222,7 @@ private fun BottomBarIndicator(
             .height(2.dp)
     ) {
         drawIndicator(
-            color = Theme.color.primary.mono900,
+            color = c.neutrals800,
             startOffset = startOffset,
             endOffset = endOffset
         )

@@ -43,6 +43,7 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.productcard.size.VerticalProductCardSize
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -58,6 +59,7 @@ fun ProductCarousel(
     isSliderEnabled: Boolean = true,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start
 ) {
+    val c = LocalTheme.current.primitive.colors
     val contentDescription = stringResource(id = R.string.product_carousel_content_description, items.size)
     Column(
         modifier = modifier
@@ -103,7 +105,7 @@ fun ProductCarousel(
                 ) {
                     Text(
                         text = actionText.toString(context),
-                        color = Theme.color.primary.mono900,
+                        color = c.neutrals800,
                         style = Theme.typography.smallBoldUnderline
                     )
                 }

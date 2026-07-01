@@ -28,10 +28,10 @@ import com.mindera.alfie.designsystem.component.badge.BadgeType.Counter
 import com.mindera.alfie.designsystem.component.badge.BadgeType.Highlight
 import com.mindera.alfie.designsystem.component.badge.BadgeType.None
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.designsystem.R as RD
 
 private const val COUNTER_THRESHOLD = 99
-private val BADGE_COLOR = Theme.color.secondary.red700
 
 @Composable
 fun IconBadge(
@@ -58,10 +58,12 @@ private fun Highlight(
     isVisible: Boolean,
     content: @Composable () -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
+    val badgeColor = c.semanticError700
     BadgedBox(
         badge = {
             AnimatedVisibility(isVisible = isVisible) {
-                Badge(containerColor = BADGE_COLOR)
+                Badge(containerColor = badgeColor)
             }
         }
     ) {
@@ -74,6 +76,8 @@ private fun Counter(
     count: Int,
     content: @Composable () -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
+    val badgeColor = c.semanticError700
     val limitText = stringResource(id = RD.string.badge_count_limit)
     val countText = if (count > COUNTER_THRESHOLD) limitText else count.toString()
     BadgedBox(
@@ -83,12 +87,12 @@ private fun Counter(
                     modifier = Modifier
                         .border(
                             width = 1.dp,
-                            color = Theme.color.white,
+                            color = c.neutrals0,
                             shape = CircleShape
                         )
                         .padding(1.dp)
                 ) {
-                    Badge(containerColor = BADGE_COLOR) {
+                    Badge(containerColor = badgeColor) {
                         AnimatedContent(
                             targetState = countText,
                             label = "countText"

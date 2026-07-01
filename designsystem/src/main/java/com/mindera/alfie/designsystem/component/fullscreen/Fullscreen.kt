@@ -23,6 +23,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun Fullscreen(
@@ -64,6 +65,7 @@ fun Fullscreen(
 
 @Composable
 private fun CloseButton(onDismissFullscreen: ClickEvent) {
+    val c = LocalTheme.current.primitive.colors
     IconButton(
         modifier = Modifier.padding(
             top = Theme.spacing.spacing12,
@@ -73,8 +75,8 @@ private fun CloseButton(onDismissFullscreen: ClickEvent) {
         ),
         onClick = onDismissFullscreen,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = Theme.color.white.copy(alpha = Theme.alpha.alpha70),
-            contentColor = Theme.color.primary.mono900
+            containerColor = c.neutrals0.copy(alpha = Theme.alpha.alpha70),
+            contentColor = c.neutrals800
         )
     ) {
         Icon(

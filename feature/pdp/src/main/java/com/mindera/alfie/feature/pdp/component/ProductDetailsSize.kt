@@ -31,6 +31,7 @@ import com.mindera.alfie.designsystem.component.sizingbutton.INVALID_INDEX
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonGroup
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.pdp.R
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
@@ -70,15 +71,16 @@ private fun SizeModalPicker(
     sizeModalPicker: SizeSectionUI.SizeModalPicker,
     onSizeSelected: ClickEventOneArg<SizeUI>
 ) {
+    val c = LocalTheme.current.primitive.colors
     val title = sizeModalPicker.selectedSize?.properties?.text ?: stringResource(id = R.string.product_details_size_field_placeholder_text)
     var showModal by remember { mutableStateOf(false) }
-    val color = if (sizeModalPicker.selectedSize != null) Theme.color.primary.mono900 else Theme.color.primary.mono500
+    val color = if (sizeModalPicker.selectedSize != null) c.neutrals800 else c.neutrals500
 
     Row(
         modifier = Modifier
             .border(
                 width = 2.dp,
-                color = Theme.color.primary.mono100,
+                color = c.neutrals100,
                 shape = Theme.shape.extraSmall
             )
             .padding(horizontal = Theme.spacing.spacing16)
@@ -139,21 +141,23 @@ private fun SizeSelector(
 
 @Composable
 private fun SingleSize() {
+    val c = LocalTheme.current.primitive.colors
     val text = getSizeText(customText = stringResource(id = R.string.product_details_one_size_label))
 
     Text(
         text = text,
-        color = Theme.color.primary.mono900
+        color = c.neutrals800
     )
 }
 
 @Composable
 private fun SizeOnly(sizeOnly: SizeSectionUI.SizeOnly) {
+    val c = LocalTheme.current.primitive.colors
     val text = getSizeText(customText = sizeOnly.sizeUI.properties.text)
 
     Text(
         text = text,
-        color = Theme.color.primary.mono900
+        color = c.neutrals800
     )
 }
 
