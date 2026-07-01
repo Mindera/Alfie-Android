@@ -17,12 +17,11 @@ import androidx.compose.ui.unit.Dp
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.ACCOUNT_ACTION_ICON
 import com.mindera.alfie.core.ui.test.ACCOUNT_SECTION_ICON
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.account.model.NavigationButtonUI
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun NavigationButton(

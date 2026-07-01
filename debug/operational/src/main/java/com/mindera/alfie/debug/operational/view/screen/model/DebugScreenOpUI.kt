@@ -2,9 +2,8 @@ package com.mindera.alfie.debug.operational.view.screen.model
 
 import androidx.annotation.DrawableRes
 import com.mindera.alfie.core.commons.string.StringResource
-import com.ramcosta.composedestinations.spec.Direction
-import com.mindera.alfie.designsystem.R as RD
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.ramcosta.composedestinations.spec.Direction
 
 internal sealed interface DebugScreenOpUI {
 

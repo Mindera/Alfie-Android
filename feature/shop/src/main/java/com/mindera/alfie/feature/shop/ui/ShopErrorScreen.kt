@@ -17,13 +17,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.shop.R
-import com.mindera.alfie.designsystem.R as RD
 import com.mindera.alfie.feature.R as FeatureR
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 internal fun ShopErrorScreen(

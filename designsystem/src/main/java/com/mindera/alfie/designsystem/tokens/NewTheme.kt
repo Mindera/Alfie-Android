@@ -11,13 +11,14 @@ class NewTheme(
     val color: Colors = DefaultColors(primitive),
     val sizing: Sizing = DefaultSizing(primitive),
     val typographyTokens: TypographyTokens = DefaultTypographyTokens(primitive),
-    val typography: Typography = DefaultTypography(typographyTokens),
+    val typography: Typography = DefaultTypography(typographyTokens)
 ) {
     val spacing: PrimitiveSpacing get() = primitive.spacing
 }
 
 val LocalTheme = staticCompositionLocalOf { NewTheme() }
 
+@Suppress("ComposableFunctionName")
 @Composable
 fun ProvideNewTheme(theme: NewTheme = NewTheme(), content: @Composable () -> Unit) =
     CompositionLocalProvider(LocalTheme provides theme, content = content)

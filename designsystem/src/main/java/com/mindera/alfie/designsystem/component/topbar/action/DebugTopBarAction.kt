@@ -9,9 +9,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.HOME_SETTINGS_BUTTON
-import com.mindera.alfie.designsystem.R
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.designsystem.theme.Theme
 
 @Composable
 internal fun DebugTopBarAction(

@@ -20,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.debug.runner.LocalDebugComposeRunner
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
@@ -28,13 +27,13 @@ import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeader
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.home.model.HomeUI
 import com.mindera.alfie.feature.home.model.HomeUIState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.toImmutableList
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val SCREEN_CONTENT_HEIGHT = 100
 

@@ -32,11 +32,10 @@ import com.mindera.alfie.designsystem.component.button.IconPosition
 import com.mindera.alfie.designsystem.component.image.ratio.aspectRatio
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
-import com.mindera.alfie.designsystem.R as RD
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val SHIMMER_TIME = 8000L
 

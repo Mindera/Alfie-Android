@@ -23,13 +23,12 @@ import androidx.compose.ui.res.painterResource
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.MediaUI
-import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.launch
 import net.engawapg.lib.zoomable.ScrollGesturePropagation.ContentEdge
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val PAGES_COUNT = 1500
 private const val PAGES_COUNT_MINIMUM = 1

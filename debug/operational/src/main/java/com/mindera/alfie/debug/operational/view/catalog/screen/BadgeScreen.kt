@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.commons.string.StringResource
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.badge.BadgeType
 import com.mindera.alfie.designsystem.component.badge.IconBadge
 import com.mindera.alfie.designsystem.component.bottombar.BottomBar
@@ -45,10 +44,10 @@ import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable

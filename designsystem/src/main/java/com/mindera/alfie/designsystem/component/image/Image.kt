@@ -17,7 +17,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.core.ui.media.image.pickImageUrlBySize
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.image.ratio.DimensionConstraint
 import com.mindera.alfie.designsystem.component.image.ratio.DimensionConstraint.ParentWidth
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio

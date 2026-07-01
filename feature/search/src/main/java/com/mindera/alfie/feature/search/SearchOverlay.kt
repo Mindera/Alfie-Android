@@ -43,6 +43,7 @@ import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_REMOVE_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_TITLE
 import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
@@ -52,8 +53,6 @@ import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handle
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.search.model.RecentSearch
-import com.mindera.alfie.designsystem.R as RD
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Composable
 fun SearchOverlay(

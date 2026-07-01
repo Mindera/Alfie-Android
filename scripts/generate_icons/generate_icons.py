@@ -73,11 +73,9 @@ def collect_icons():
 
 
 def emit(icons):
-    max_name_len = max(len(name) for name, _ in icons)
     lines = [HEADER]
     for name, res in icons:
-        padding = " " * (max_name_len - len(name))
-        lines.append(f"    val {name}{padding} = R.drawable.{res}")
+        lines.append(f"    val {name} = R.drawable.{res}")
     lines.append(FOOTER)
     return "\n".join(lines)
 

@@ -20,10 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.mindera.alfie.core.ui.event.ClickEvent
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.standard
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.designsystem.theme.Theme
 
 @Composable
 fun Fullscreen(

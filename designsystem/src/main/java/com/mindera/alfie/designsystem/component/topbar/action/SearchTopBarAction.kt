@@ -10,9 +10,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.HOME_SEARCH_BUTTON
-import com.mindera.alfie.designsystem.R
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.designsystem.theme.Theme
 
 @Composable
 internal fun SearchTopBarAction(

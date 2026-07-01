@@ -36,17 +36,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.currencySymbol
 import com.mindera.alfie.core.commons.string.formatMoney
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.feature.plp.R as PlpR
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 /** Placeholder upper price cap; replace with BFF-supplied max when filter metadata is available. */
 private const val MAX_PRICE_CAP = 10_000f

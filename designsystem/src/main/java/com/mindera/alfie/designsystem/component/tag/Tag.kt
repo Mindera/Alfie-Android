@@ -30,9 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.designsystem.R
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.designsystem.theme.Theme
 
 private val MIN_TAG_HEIGHT = 32.dp
 private val TAG_ELEVATION = 8.dp

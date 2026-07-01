@@ -14,6 +14,7 @@ import com.mindera.alfie.core.ui.test.WISHLIST_TAB
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarItem
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarItemState
 import com.mindera.alfie.designsystem.component.bottombar.rememberBottomBarItemState
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.feature.bag.destinations.BagScreenDestination
 import com.mindera.alfie.feature.home.destinations.HomeScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopCategoryScreenDestination
@@ -24,8 +25,6 @@ import com.ramcosta.composedestinations.spec.Direction
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import com.mindera.alfie.designsystem.R as RD
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Stable
 data class BottomBarDestination(

@@ -4,9 +4,8 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import com.mindera.alfie.designsystem.theme.Theme
-import com.mindera.alfie.designsystem.R as RD
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.designsystem.theme.Theme
 
 enum class SearchTextType(
     val textStyle: TextStyle,

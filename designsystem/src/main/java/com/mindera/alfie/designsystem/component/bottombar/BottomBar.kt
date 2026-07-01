@@ -54,14 +54,13 @@ import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventTwoArg
 import com.mindera.alfie.core.ui.util.stringResource
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.component.badge.IconBadge
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private val BOTTOM_BAR_HEIGHT = 63.dp
 

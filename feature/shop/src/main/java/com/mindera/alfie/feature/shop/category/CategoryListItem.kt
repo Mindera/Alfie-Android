@@ -18,12 +18,11 @@ import com.mindera.alfie.core.ui.test.CATEGORY_ITEM
 import com.mindera.alfie.core.ui.util.stringResource
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.ui.EntryHeadlineContent
 import kotlinx.collections.immutable.ImmutableList
-import com.mindera.alfie.designsystem.R as RD
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 internal fun LazyListScope.categoryItems(
     entries: ImmutableList<CategoryEntryUI>,

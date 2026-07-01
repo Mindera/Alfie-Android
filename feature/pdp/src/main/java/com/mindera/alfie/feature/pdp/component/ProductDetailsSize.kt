@@ -29,6 +29,7 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.component.sizingbutton.INVALID_INDEX
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonGroup
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.pdp.R
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
@@ -36,8 +37,6 @@ import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import kotlinx.collections.immutable.toImmutableList
-import com.mindera.alfie.designsystem.R as RD
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private val MIN_SIZE_MODAL_PICKER_BOX_HEIGHT = 44.dp
 

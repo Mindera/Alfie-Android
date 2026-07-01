@@ -25,9 +25,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.mindera.alfie.designsystem.R
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.designsystem.theme.Theme
 
 private val HEIGHT_SINGLE_LINE = 22.dp
 private val HEIGHT_DOUBLE_LINE = 44.dp

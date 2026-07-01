@@ -49,14 +49,13 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastForEachIndexed
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.ui.util.stringResource
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val PAGE_COUNT_OFFSET = 2
 private const val TAB_ANIMATION_DURATION = 250

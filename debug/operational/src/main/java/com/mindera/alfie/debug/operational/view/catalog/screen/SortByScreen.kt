@@ -14,15 +14,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.sortby.SortByItem
 import com.mindera.alfie.designsystem.component.sortby.SortBySelector
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 @Destination
 @Composable

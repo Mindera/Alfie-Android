@@ -22,9 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import androidx.compose.material3.FilterChip as MaterialChip
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 private const val MAXIMUM_COUNTER_VALUE = 99
 private val CHIP_HEIGHT_REGULAR = 32.dp

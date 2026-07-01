@@ -16,7 +16,7 @@ import com.mindera.alfie.designsystem.theme.typography.Typographies
 import com.mindera.alfie.designsystem.tokens.ProvideNewTheme
 
 private val alfieColorScheme = lightColorScheme(
-    background = Theme.color.white,
+    background = Theme.color.white
 )
 
 @Composable

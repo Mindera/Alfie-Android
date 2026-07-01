@@ -33,7 +33,6 @@ import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
-import com.mindera.alfie.designsystem.R as RD
 
 private const val ICON_ANIMATION_TIME = 300
 private const val ROTATION_ANGLE = -180f

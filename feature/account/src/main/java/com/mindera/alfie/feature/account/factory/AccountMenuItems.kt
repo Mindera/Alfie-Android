@@ -8,11 +8,10 @@ import com.mindera.alfie.core.ui.test.ACCOUNT_MY_ORDERS_SECTION
 import com.mindera.alfie.core.ui.test.ACCOUNT_SIGN_OUT_SECTION
 import com.mindera.alfie.core.ui.test.ACCOUNT_WALLET_SECTION
 import com.mindera.alfie.core.ui.test.ACCOUNT_WISHLIST_SECTION
+import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.feature.account.R
 import com.mindera.alfie.feature.account.model.NavigationButtonUI
 import com.mindera.alfie.feature.uievent.UIEvent
-import com.mindera.alfie.designsystem.R as RD
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 
 // TODO Remove this value when all options are implemented
 private val noActionImplemented = object : UIEvent.Custom {}
