@@ -3,6 +3,7 @@ package com.mindera.alfie.designsystem.tokens
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 
 @Immutable
@@ -20,5 +21,7 @@ val LocalTheme = staticCompositionLocalOf { NewTheme() }
 
 @Suppress("ComposableFunctionName")
 @Composable
-fun ProvideNewTheme(theme: NewTheme = NewTheme(), content: @Composable () -> Unit) =
-    CompositionLocalProvider(LocalTheme provides theme, content = content)
+fun ProvideNewTheme(content: @Composable () -> Unit) {
+    val providedTheme = remember { NewTheme() }
+    CompositionLocalProvider(LocalTheme provides providedTheme, content = content)
+}
