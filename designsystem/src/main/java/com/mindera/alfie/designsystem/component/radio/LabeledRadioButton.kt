@@ -35,7 +35,7 @@ fun LabeledRadioButton(
     horizontalPadding: Dp = Theme.spacing.spacing16
 ) {
     val c = LocalTheme.current.primitive.colors
-    val radioColor = if (isEnabled && isSelected) c.neutrals100 else c.neutrals100
+    val radioColor = if (isEnabled && isSelected) c.neutrals0 else c.neutrals100
     val borderColor = if (isEnabled) c.neutrals800 else c.neutrals400
 
     Row(
