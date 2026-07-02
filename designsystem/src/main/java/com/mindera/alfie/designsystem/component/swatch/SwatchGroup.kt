@@ -31,6 +31,7 @@ import com.mindera.alfie.designsystem.component.image.Image
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.theme.shape.Shape.full
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val SWATCH_SHAPE = full
 private const val NORMAL_ALPHA = 1F
@@ -70,6 +71,7 @@ private fun Swatch(
     isSelected: Boolean,
     onClick: ClickEvent
 ) {
+    val c = LocalTheme.current.primitive.colors
     val borderSize = swatchSize.borderWidth
     val alpha = if (swatchType.isEnabled) NORMAL_ALPHA else DISABLED_ALPHA
     val modifier = when {
@@ -77,13 +79,13 @@ private fun Swatch(
             .size(swatchSize.externalSize)
             .border(
                 width = borderSize,
-                color = Theme.color.primary.mono900,
+                color = c.neutrals800,
                 shape = SWATCH_SHAPE
             )
             .padding(borderSize)
             .border(
                 width = borderSize,
-                color = Theme.color.white,
+                color = c.neutrals0,
                 shape = SWATCH_SHAPE
             )
             .alpha(alpha)
@@ -149,13 +151,14 @@ private fun SwatchContent(
 
 @Composable
 private fun DrawDisabledLine(swatchSize: SwatchSize) {
+    val c = LocalTheme.current.primitive.colors
     Canvas(modifier = Modifier.fillMaxSize()) {
         val canvasWidth = size.width
         val canvasHeight = size.height
         drawLine(
             start = Offset(x = 0f, y = canvasHeight),
             end = Offset(x = canvasWidth, y = 0f),
-            color = Theme.color.white,
+            color = c.neutrals0,
             strokeWidth = swatchSize.borderWidth.toPx()
         )
     }

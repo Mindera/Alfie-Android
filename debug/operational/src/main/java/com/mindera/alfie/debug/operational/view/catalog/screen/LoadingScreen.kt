@@ -29,6 +29,7 @@ import com.mindera.alfie.designsystem.component.loading.LogoLoading
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -128,14 +129,15 @@ private fun LoadingItem(
     type: LoadingType,
     hasLabel: Boolean
 ) {
+    val c = LocalTheme.current.primitive.colors
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             modifier = Modifier
                 .size(100.dp)
-                .background(Theme.color.primary.mono300)
+                .background(c.neutrals300)
                 .border(
                     width = 1.dp,
-                    color = Theme.color.primary.mono900
+                    color = c.neutrals800
                 ),
             contentAlignment = Alignment.Center
         ) {

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun LabeledCheckbox(
@@ -37,16 +38,17 @@ fun LabeledCheckbox(
     isEnabled: Boolean = true,
     horizontalPadding: Dp = Theme.spacing.spacing16
 ) {
+    val c = LocalTheme.current.primitive.colors
     val checkboxColor by animateColorAsState(
         targetValue = when {
-            isEnabled && isChecked.not() -> Theme.color.primary.mono100
-            isEnabled && isChecked -> Theme.color.primary.mono900
-            isEnabled.not() && isChecked -> Theme.color.primary.mono400
-            else -> Theme.color.primary.mono100
+            isEnabled && isChecked.not() -> c.neutrals100
+            isEnabled && isChecked -> c.neutrals800
+            isEnabled.not() && isChecked -> c.neutrals400
+            else -> c.neutrals100
         },
         label = "CheckboxColor"
     )
-    val borderColor = if (isEnabled) Theme.color.primary.mono900 else Theme.color.primary.mono400
+    val borderColor = if (isEnabled) c.neutrals800 else c.neutrals400
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -79,7 +81,7 @@ fun LabeledCheckbox(
                 Icon(
                     painter = painterResource(id = AlfieIcons.Check),
                     contentDescription = null,
-                    tint = Theme.color.primary.mono050,
+                    tint = c.neutrals100,
                     modifier = Modifier.size(Theme.iconSize.small)
                 )
             }

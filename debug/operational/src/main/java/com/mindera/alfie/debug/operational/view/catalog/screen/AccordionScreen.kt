@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -29,6 +30,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 fun AccordionScreen(
     topBarState: TopBarState
 ) {
+    val c = LocalTheme.current.primitive.colors
     topBarState.logoTopBar(showNavigationIcon = true)
 
     var isEnabled by remember { mutableStateOf(true) }
@@ -52,7 +54,7 @@ fun AccordionScreen(
                 Text(
                     text = "Blandit ut netus consequat ridiculus mi.",
                     style = Theme.typography.small,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             }
         )
@@ -64,7 +66,7 @@ fun AccordionScreen(
                 Text(
                     text = "Blandit ut netus consequat ridiculus mi.",
                     style = Theme.typography.small,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             }
         )
@@ -84,7 +86,7 @@ fun AccordionScreen(
                         "tortor cursus nam quisque ut. Blandit ut netus consequat ridiculus mi. Lacus a fermentum nec nisl " +
                         "consectetur molestie. Mauris mi cursus quis risus aliquam vivamus blandit. Maecenas dui odio odio aliquet.",
                     style = Theme.typography.small,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             },
             isLarge = true
@@ -99,7 +101,7 @@ fun AccordionScreen(
                         "tortor cursus nam quisque ut. Blandit ut netus consequat ridiculus mi. Lacus a fermentum nec nisl " +
                         "consectetur molestie. Mauris mi cursus quis risus aliquam vivamus blandit. Maecenas dui odio odio aliquet.",
                     style = Theme.typography.small,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             },
             isLarge = true

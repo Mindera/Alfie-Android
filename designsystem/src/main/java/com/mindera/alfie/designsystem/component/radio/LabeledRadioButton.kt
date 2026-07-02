@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun LabeledRadioButton(
@@ -33,8 +34,9 @@ fun LabeledRadioButton(
     isEnabled: Boolean = true,
     horizontalPadding: Dp = Theme.spacing.spacing16
 ) {
-    val radioColor = if (isEnabled && isSelected) Theme.color.primary.mono050 else Theme.color.primary.mono100
-    val borderColor = if (isEnabled) Theme.color.primary.mono900 else Theme.color.primary.mono400
+    val c = LocalTheme.current.primitive.colors
+    val radioColor = if (isEnabled && isSelected) c.neutrals0 else c.neutrals100
+    val borderColor = if (isEnabled) c.neutrals800 else c.neutrals400
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

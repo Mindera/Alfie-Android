@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun SearchBarWithCancelButton(
@@ -26,6 +27,7 @@ fun SearchBarWithCancelButton(
     searchFieldHorizontalPadding: Dp = Theme.spacing.spacing16,
     cancelButtonEndPadding: Dp = Theme.spacing.spacing16
 ) {
+    val c = LocalTheme.current.primitive.colors
     val state = rememberSearchState(
         onSearchTermChange = onTermChange,
         placeholderText = placeholderText,
@@ -55,7 +57,7 @@ fun SearchBarWithCancelButton(
                 Text(
                     text = stringResource(R.string.search_cancel),
                     style = Theme.typography.small,
-                    color = Theme.color.primary.mono900
+                    color = c.neutrals800
                 )
             }
         }

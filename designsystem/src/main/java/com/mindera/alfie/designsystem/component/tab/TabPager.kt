@@ -53,6 +53,7 @@ import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -71,6 +72,7 @@ fun ScrollableTabPager(
     isLight: Boolean = true,
     content: @Composable (Int) -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     val pagerState = rememberPagerState(pageCount = { items.size })
     var tabSizes by remember { mutableStateOf(List(items.size) { Size.Zero }) }
 
@@ -78,7 +80,7 @@ fun ScrollableTabPager(
         ScrollableTabRow(
             modifier = Modifier.fillMaxWidth(),
             selectedTabIndex = pagerState.currentPage,
-            containerColor = Theme.color.white,
+            containerColor = c.neutrals0,
             edgePadding = 0.dp,
             indicator = { tabPositions ->
                 TabIndicator(
@@ -130,6 +132,7 @@ fun FixedTabPager(
     isLight: Boolean = true,
     content: @Composable (Int) -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     val pagerState = rememberPagerState(pageCount = { items.size })
     var tabSizes by remember { mutableStateOf(List(items.size) { Size.Zero }) }
 
@@ -137,7 +140,7 @@ fun FixedTabPager(
         TabRow(
             modifier = Modifier.fillMaxWidth(),
             selectedTabIndex = pagerState.currentPage,
-            containerColor = Theme.color.white,
+            containerColor = c.neutrals0,
             indicator = { tabPositions ->
                 TabIndicator(
                     position = tabPositions[pagerState.currentPage],
@@ -184,11 +187,12 @@ private fun TabIndicator(
     tabSize: Size,
     isLight: Boolean
 ) {
+    val c = LocalTheme.current.primitive.colors
     val clipShape = Theme.shape.tiny.copy(
         bottomStart = CornerSize(0.dp),
         bottomEnd = CornerSize(0.dp)
     )
-    val indicatorColor = if (isLight) Theme.color.primary.mono200 else Theme.color.primary.mono900
+    val indicatorColor = if (isLight) c.neutrals200 else c.neutrals800
 
     return TabRowDefaults.SecondaryIndicator(
         modifier = Modifier
@@ -236,6 +240,7 @@ private fun TabItem(
     isCompact: Boolean,
     onContentSizeChange: (Size) -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     val scope = rememberCoroutineScope()
     val isSelected = index == pagerState.currentPage
 
@@ -247,7 +252,7 @@ private fun TabItem(
             }
         }
     ) {
-        val contentColor = if (isSelected) Theme.color.primary.mono900 else Theme.color.primary.mono500
+        val contentColor = if (isSelected) c.neutrals800 else c.neutrals500
         val horizontalPadding = if (isCompact) Theme.spacing.spacing4 else Theme.spacing.spacing8
 
         Column(

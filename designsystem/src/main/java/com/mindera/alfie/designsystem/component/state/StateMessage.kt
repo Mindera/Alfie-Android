@@ -17,6 +17,7 @@ import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 /**
  * Full-area, vertically centered message used for empty / no-results / error states.
@@ -30,6 +31,7 @@ fun StateMessage(
     subtitle: String? = null,
     action: StateMessageAction? = null
 ) {
+    val c = LocalTheme.current.primitive.colors
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -40,7 +42,7 @@ fun StateMessage(
         Text(
             text = title,
             style = Theme.typography.paragraphBold,
-            color = Theme.color.primary.mono900,
+            color = c.neutrals800,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -49,7 +51,7 @@ fun StateMessage(
             Text(
                 text = subtitle,
                 style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono500,
+                color = c.neutrals500,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )

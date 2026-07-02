@@ -63,6 +63,7 @@ internal fun SearchTextField(
     val focusRequester by remember { mutableStateOf(FocusRequester()) }
     val isSearchOpen = state.isSearchOpen
     val type = state.searchTextType
+    val colorSpec = type.colorSpec()
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(isSearchOpen, isPullDownToRefresh) {
@@ -77,11 +78,11 @@ internal fun SearchTextField(
 
     Surface(
         modifier = modifier,
-        color = if (isSearchOpen) type.selectedColor else type.unselectedColor,
+        color = if (isSearchOpen) colorSpec.selectedColor else colorSpec.unselectedColor,
         shape = Theme.shape.full,
         border = BorderStroke(
             width = 1.dp,
-            color = if (isSearchOpen) type.selectedBorderColor else type.unselectedBorderColor
+            color = if (isSearchOpen) colorSpec.selectedBorderColor else colorSpec.unselectedBorderColor
         )
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
@@ -119,7 +120,7 @@ internal fun SearchTextField(
             },
             singleLine = true,
             maxLines = 1,
-            textStyle = type.textStyle.copy(color = type.textColor),
+            textStyle = type.textStyle.copy(color = colorSpec.textColor),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search,
                 capitalization = KeyboardCapitalization.Sentences
@@ -130,10 +131,11 @@ internal fun SearchTextField(
                     keyboardController?.hide()
                 }
             ),
-            cursorBrush = SolidColor(type.cursorColor),
+            cursorBrush = SolidColor(colorSpec.cursorColor),
             decorationBox = { innerTextField ->
                 DecorationBox(
                     type = type,
+                    colorSpec = colorSpec,
                     searchState = state,
                     innerTextField = innerTextField
                 )
@@ -146,6 +148,7 @@ internal fun SearchTextField(
 @Composable
 private fun DecorationBox(
     type: SearchTextType,
+    colorSpec: SearchTextColorSpec,
     searchState: SearchState,
     innerTextField: @Composable () -> Unit
 ) {
@@ -169,7 +172,7 @@ private fun DecorationBox(
                 Text(
                     text = searchState.placeholderText,
                     style = type.textStyle,
-                    color = type.placeholderTextColor,
+                    color = colorSpec.placeholderTextColor,
                     maxLines = 1
                 )
             }

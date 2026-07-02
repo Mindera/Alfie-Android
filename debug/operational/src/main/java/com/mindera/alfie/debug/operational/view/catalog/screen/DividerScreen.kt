@@ -25,6 +25,7 @@ import com.mindera.alfie.designsystem.component.divider.VerticalDivider
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import androidx.compose.material3.HorizontalDivider as MaterialHorizontalDivider
 
@@ -33,6 +34,7 @@ import androidx.compose.material3.HorizontalDivider as MaterialHorizontalDivider
 fun DividerScreen(
     topBarState: TopBarState
 ) {
+    val c = LocalTheme.current.primitive.colors
     topBarState.logoTopBar(showNavigationIcon = true)
 
     Column(
@@ -58,7 +60,7 @@ fun DividerScreen(
         Box(
             modifier = Modifier
                 .height(24.dp)
-                .background(Theme.color.primary.mono400),
+                .background(c.neutrals400),
             contentAlignment = Alignment.Center
         ) {
             HorizontalDivider(dividerType = DividerType.Solid1Mono100)
@@ -74,7 +76,7 @@ fun DividerScreen(
         Box(
             modifier = Modifier
                 .height(24.dp)
-                .background(Theme.color.primary.mono400),
+                .background(c.neutrals400),
             contentAlignment = Alignment.Center
         ) {
             HorizontalDivider(dividerType = DividerType.Solid2Mono100)
@@ -99,7 +101,7 @@ fun DividerScreen(
             Box(
                 modifier = Modifier
                     .width(24.dp)
-                    .background(Theme.color.primary.mono400),
+                    .background(c.neutrals400),
                 contentAlignment = Alignment.Center
             ) {
                 VerticalDivider(dividerType = DividerType.Solid1Mono100)
@@ -110,7 +112,7 @@ fun DividerScreen(
             Box(
                 modifier = Modifier
                     .width(24.dp)
-                    .background(Theme.color.primary.mono400),
+                    .background(c.neutrals400),
                 contentAlignment = Alignment.Center
             ) {
                 VerticalDivider(dividerType = DividerType.Solid2Mono100)

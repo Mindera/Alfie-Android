@@ -31,6 +31,7 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -39,6 +40,7 @@ internal fun HorizontalProductCard(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
 ) {
+    val c = LocalTheme.current.primitive.colors
     Row(
         modifier = Modifier
             .clickable(enabled = isLoading.not()) { productCard.onClick?.invoke() }
@@ -57,7 +59,7 @@ internal fun HorizontalProductCard(
             Text(
                 text = productCard.brand,
                 style = Theme.typography.small,
-                color = Theme.color.primary.mono900,
+                color = c.neutrals800,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -72,7 +74,7 @@ internal fun HorizontalProductCard(
             Text(
                 text = productCard.name,
                 style = Theme.typography.small,
-                color = Theme.color.primary.mono500,
+                color = c.neutrals500,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
@@ -96,13 +98,13 @@ internal fun HorizontalProductCard(
                 Text(
                     text = stringResource(id = R.string.product_card_color),
                     style = Theme.typography.tiny,
-                    color = Theme.color.primary.mono500
+                    color = c.neutrals500
                 )
                 Spacer(modifier = Modifier.size(Theme.spacing.spacing8))
                 Text(
                     text = productCard.color,
                     style = Theme.typography.tiny,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             }
             Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
@@ -118,13 +120,13 @@ internal fun HorizontalProductCard(
                 Text(
                     text = stringResource(id = R.string.product_card_size),
                     style = Theme.typography.tiny,
-                    color = Theme.color.primary.mono500
+                    color = c.neutrals500
                 )
                 Spacer(modifier = Modifier.size(Theme.spacing.spacing8))
                 Text(
                     text = productCard.size,
                     style = Theme.typography.tiny,
-                    color = Theme.color.primary.mono700
+                    color = c.neutrals600
                 )
             }
             Spacer(modifier = Modifier.size(Theme.spacing.spacing8))

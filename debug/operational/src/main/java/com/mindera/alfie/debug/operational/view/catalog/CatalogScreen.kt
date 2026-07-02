@@ -17,6 +17,7 @@ import com.mindera.alfie.debug.operational.R
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -27,6 +28,7 @@ internal fun CatalogScreen(
     topBarState: TopBarState,
     bottomBarState: BottomBarState
 ) {
+    val c = LocalTheme.current.primitive.colors
     topBarState.logoTopBar(showNavigationIcon = true)
     bottomBarState.hideBottomBar()
 
@@ -40,7 +42,7 @@ internal fun CatalogScreen(
                 ),
                 text = stringResource(id = R.string.debug_screen_catalog),
                 style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono700
+                color = c.neutrals600
             )
         }
 
@@ -50,7 +52,7 @@ internal fun CatalogScreen(
                     Text(
                         text = it.title,
                         style = Theme.typography.paragraph,
-                        color = Theme.color.primary.mono700
+                        color = c.neutrals600
                     )
                 },
                 trailingContent = {

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 private val rectangleShapes = listOf(
@@ -110,6 +111,7 @@ private fun ShapeItem(
     text: String,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -117,12 +119,12 @@ private fun ShapeItem(
         Button(
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Theme.color.white,
-                contentColor = Theme.color.black
+                containerColor = c.neutrals0,
+                contentColor = c.neutrals900
             ),
             border = BorderStroke(
                 width = 2.dp,
-                color = Theme.color.black
+                color = c.neutrals900
             ),
             shape = shape,
             onClick = {}
@@ -139,17 +141,18 @@ private fun ShapeItem(
 
 @Composable
 private fun OuterBorder(content: @Composable () -> Unit) {
+    val c = LocalTheme.current.primitive.colors
     Box(
         modifier = Modifier
             .clip(Theme.shape.medium)
-            .background(Theme.color.black)
+            .background(c.neutrals900)
             .size(width = 128.dp, height = 76.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .clip(Theme.shape.medium)
-                .background(Theme.color.white)
+                .background(c.neutrals0)
                 .size(width = 122.dp, height = 70.dp),
             contentAlignment = Alignment.Center
         ) {

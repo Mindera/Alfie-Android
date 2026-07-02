@@ -43,6 +43,7 @@ import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.feature.plp.R as PlpR
@@ -142,6 +143,7 @@ private fun MainContent(
     pendingFilters: ProductListFilter?,
     onNavigate: (RefinePanel) -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     val sortLabel = pendingSort.toLabel()
     val priceLabel = pendingFilters?.toPriceLabel() ?: stringResource(PlpR.string.price_filter_all_prices)
 
@@ -151,27 +153,27 @@ private fun MainContent(
             value = sortLabel,
             onClick = { onNavigate(RefinePanel.SortBy) }
         )
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
         FilterCategoryRow(
             label = stringResource(PlpR.string.refine_category_price),
             value = priceLabel,
             onClick = { onNavigate(RefinePanel.PriceRange) }
         )
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
 
         // TODO: Enable these rows when the BFF returns available filter metadata
         DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_size))
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
         DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_colour))
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
         DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_materials))
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
         DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_brand))
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
         DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_style))
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
         DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_function))
-        HorizontalDivider(color = Theme.color.primary.mono100)
+        HorizontalDivider(color = c.neutrals100)
     }
 }
 
@@ -181,6 +183,7 @@ private fun FilterCategoryRow(
     value: String,
     onClick: () -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,21 +195,21 @@ private fun FilterCategoryRow(
         Text(
             text = label,
             style = Theme.typography.paragraph,
-            color = Theme.color.primary.mono900,
+            color = c.neutrals800,
             modifier = Modifier.weight(1f)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value,
                 style = Theme.typography.smallBold,
-                color = Theme.color.primary.mono500
+                color = c.neutrals500
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
             Icon(
                 painter = painterResource(AlfieIcons.ChevronRight),
                 contentDescription = null,
                 modifier = Modifier.size(Theme.iconSize.small),
-                tint = Theme.color.primary.mono900
+                tint = c.neutrals800
             )
         }
     }
@@ -214,6 +217,7 @@ private fun FilterCategoryRow(
 
 @Composable
 private fun DisabledFilterCategoryRow(label: String) {
+    val c = LocalTheme.current.primitive.colors
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -225,14 +229,14 @@ private fun DisabledFilterCategoryRow(label: String) {
         Text(
             text = label,
             style = Theme.typography.paragraph,
-            color = Theme.color.primary.mono900,
+            color = c.neutrals800,
             modifier = Modifier.weight(1f)
         )
         Icon(
             painter = painterResource(AlfieIcons.ChevronRight),
             contentDescription = null,
             modifier = Modifier.size(Theme.iconSize.small),
-            tint = Theme.color.primary.mono900
+            tint = c.neutrals800
         )
     }
 }
@@ -262,6 +266,7 @@ private fun PriceRangeContent(
     currentFilters: ProductListFilter?,
     onFiltersChange: (ProductListFilter?) -> Unit
 ) {
+    val c = LocalTheme.current.primitive.colors
     val currencySymbol = currencySymbol(currentFilters?.currencyCode ?: "USD")
 
     fun resolvedMin() = (currentFilters?.minPrice?.toFloat() ?: 0f).coerceIn(0f, MAX_PRICE_CAP)
@@ -302,9 +307,9 @@ private fun PriceRangeContent(
             onValueChangeFinished = { emitChange(sliderRange.start, sliderRange.endInclusive) },
             valueRange = 0f..MAX_PRICE_CAP,
             colors = SliderDefaults.colors(
-                thumbColor = Theme.color.primary.mono900,
-                activeTrackColor = Theme.color.primary.mono900,
-                inactiveTrackColor = Theme.color.primary.mono200
+                thumbColor = c.neutrals800,
+                activeTrackColor = c.neutrals800,
+                inactiveTrackColor = c.neutrals200
             ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -374,6 +379,7 @@ private fun PriceTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -383,11 +389,11 @@ private fun PriceTextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         textStyle = Theme.typography.paragraph,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Theme.color.primary.mono900,
-            unfocusedBorderColor = Theme.color.primary.mono200,
-            focusedLabelColor = Theme.color.primary.mono900,
-            unfocusedLabelColor = Theme.color.primary.mono500,
-            cursorColor = Theme.color.primary.mono900
+            focusedBorderColor = c.neutrals800,
+            unfocusedBorderColor = c.neutrals200,
+            focusedLabelColor = c.neutrals800,
+            unfocusedLabelColor = c.neutrals500,
+            cursorColor = c.neutrals800
         ),
         modifier = modifier
     )
@@ -399,7 +405,8 @@ private fun BottomActionBar(
     onRemoveAll: () -> Unit,
     onShowResults: () -> Unit
 ) {
-    HorizontalDivider(color = Theme.color.primary.mono100)
+    val c = LocalTheme.current.primitive.colors
+    HorizontalDivider(color = c.neutrals100)
     Row(
         modifier = Modifier
             .fillMaxWidth()

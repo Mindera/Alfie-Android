@@ -30,15 +30,10 @@ import com.mindera.alfie.designsystem.component.topbar.TopBar
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.search.SearchOverlay
 import com.ramcosta.composedestinations.annotation.Destination
 
-val cardColors = CardColors(
-    containerColor = Theme.color.primary.mono200,
-    contentColor = Theme.color.primary.mono900,
-    disabledContainerColor = Theme.color.white,
-    disabledContentColor = Theme.color.black
-)
 private val imagesList = listOf(
     "https://images.pexels.com/photos/6667911/pexels-photo-6667911.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     "https://images.pexels.com/photos/991509/pexels-photo-991509.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
@@ -57,6 +52,7 @@ internal fun SearchPullDownScreen(
     navController: NavController,
     directionProvider: DirectionProvider
 ) {
+    val c = LocalTheme.current.primitive.colors
     topBarState.logoTopBar(showNavigationIcon = true)
 
     var onPullDownToRefresh by remember { mutableStateOf(false) }
@@ -83,7 +79,7 @@ internal fun SearchPullDownScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(padding),
-                            containerColor = Theme.color.white
+                            containerColor = c.neutrals0
                         ) { innerPadding ->
                             appContent(innerPadding)
                         }
@@ -114,6 +110,13 @@ internal fun SearchPullDownScreen(
 
 @Composable
 private fun ProductCardGridComponent() {
+    val c = LocalTheme.current.primitive.colors
+    val cardColors = CardColors(
+        containerColor = c.neutrals200,
+        contentColor = c.neutrals800,
+        disabledContainerColor = c.neutrals0,
+        disabledContentColor = c.neutrals900
+    )
     LazyVerticalGrid(
         modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(COLUMN_COUNT),

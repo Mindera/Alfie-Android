@@ -30,16 +30,11 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-
-private val backgroundColors = persistentListOf(
-    Theme.color.secondary.green300,
-    Theme.color.secondary.blue300,
-    Theme.color.secondary.red300
-)
 
 @Destination
 @Composable
@@ -97,6 +92,12 @@ private fun SegmentedSection(
     segments: ImmutableList<SegmentedItem>,
     isCompact: Boolean
 ) {
+    val c = LocalTheme.current.primitive.colors
+    val backgroundColors = persistentListOf(
+        c.semanticSuccess300,
+        c.neutrals300,
+        c.semanticError300
+    )
     var selectedSegment by remember { mutableIntStateOf(0) }
 
     Column {

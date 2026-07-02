@@ -34,6 +34,7 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.event.ClickEventTwoArg
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
@@ -76,10 +77,11 @@ private fun SortByButton(
     isSelected: Boolean,
     onClick: ClickEventTwoArg<Int, Int>
 ) {
+    val c = LocalTheme.current.primitive.colors
     var startPosition by remember { mutableIntStateOf(0) }
     var endPosition by remember { mutableIntStateOf(0) }
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) Theme.color.primary.mono900 else Theme.color.primary.mono200,
+        targetValue = if (isSelected) c.neutrals800 else c.neutrals200,
         label = "SortByBorderColor"
     )
 
@@ -88,7 +90,7 @@ private fun SortByButton(
         modifier = Modifier
             .padding(vertical = Theme.spacing.spacing4)
             .heightIn(36.dp)
-            .background(Theme.color.white)
+            .background(c.neutrals0)
             .clip(Theme.shape.small)
             .border(
                 width = 1.dp,

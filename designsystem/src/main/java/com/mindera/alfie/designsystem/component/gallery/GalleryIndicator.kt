@@ -21,6 +21,7 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 internal fun GalleryIndicator(
@@ -30,10 +31,11 @@ internal fun GalleryIndicator(
     onRightClick: ClickEvent,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     Row(
         modifier = modifier
             .clip(Theme.shape.small)
-            .background(color = Theme.color.white.copy(alpha = Theme.alpha.alpha70)),
+            .background(color = c.neutrals0.copy(alpha = Theme.alpha.alpha70)),
         verticalAlignment = Alignment.CenterVertically
     ) {
         GalleryIndicatorButton(
@@ -44,7 +46,7 @@ internal fun GalleryIndicator(
         Text(
             text = stringResource(id = R.string.gallery_controls_counter, currentItem, itemCount),
             style = Theme.typography.tiny,
-            color = Theme.color.primary.mono900,
+            color = c.neutrals800,
             modifier = Modifier.padding(horizontal = Theme.spacing.spacing8)
         )
         GalleryIndicatorButton(
@@ -61,6 +63,7 @@ private fun GalleryIndicatorButton(
     @StringRes contentDescription: Int,
     onClick: ClickEvent
 ) {
+    val c = LocalTheme.current.primitive.colors
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -71,7 +74,7 @@ private fun GalleryIndicatorButton(
             painter = painterResource(id = icon),
             contentDescription = stringResource(id = contentDescription),
             modifier = Modifier.size(Theme.iconSize.small),
-            tint = Theme.color.primary.mono900
+            tint = c.neutrals800
         )
     }
 }

@@ -22,6 +22,7 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -76,6 +77,7 @@ private fun SizingButton(
     isSelected: Boolean,
     onClick: ClickEvent
 ) {
+    val c = LocalTheme.current.primitive.colors
     val modifier = Modifier.width(width = buttonWidth)
     when (state) {
         SizingButtonState.Selectable -> {
@@ -96,12 +98,12 @@ private fun SizingButton(
                     text = buttonText,
                     shape = Theme.shape.small,
                     overrideColors = ButtonColors(
-                        containerColor = Theme.color.white,
-                        contentColor = Theme.color.primary.mono200,
-                        disabledContainerColor = Theme.color.white,
-                        disabledContentColor = Theme.color.primary.mono200
+                        containerColor = c.neutrals0,
+                        contentColor = c.neutrals200,
+                        disabledContainerColor = c.neutrals0,
+                        disabledContentColor = c.neutrals200
                     ),
-                    overrideTextColor = Theme.color.primary.mono700,
+                    overrideTextColor = c.neutrals600,
                     overrideTextStyle = Theme.typography.paragraph,
                     onClick = { onClick() }
                 )
@@ -116,12 +118,12 @@ private fun SizingButton(
                 shape = Theme.shape.small,
                 modifier = modifier,
                 overrideColors = ButtonColors(
-                    containerColor = Theme.color.primary.mono050,
-                    contentColor = Theme.color.primary.mono100,
-                    disabledContainerColor = Theme.color.primary.mono050,
-                    disabledContentColor = Theme.color.primary.mono100
+                    containerColor = c.neutrals100,
+                    contentColor = c.neutrals100,
+                    disabledContainerColor = c.neutrals100,
+                    disabledContentColor = c.neutrals100
                 ),
-                overrideTextDisabledColor = Theme.color.primary.mono300,
+                overrideTextDisabledColor = c.neutrals300,
                 overrideTextStyle = Theme.typography.paragraph,
                 onClick = { Unit }
             )

@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val PRICE_RANGE_SEPARATOR = "-"
 
@@ -72,13 +73,14 @@ private fun PriceSale(
     orientation: PriceOrientation,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     val fullPriceStyle = when (size) {
-        PriceSize.Small -> Theme.typography.tinyStrikethrough.copy(color = Theme.color.primary.mono600)
-        PriceSize.Medium -> Theme.typography.smallStrikethrough.copy(color = Theme.color.primary.mono600)
+        PriceSize.Small -> Theme.typography.tinyStrikethrough.copy(color = c.neutrals600)
+        PriceSize.Medium -> Theme.typography.smallStrikethrough.copy(color = c.neutrals600)
     }
     val salePriceStyle = when (size) {
-        PriceSize.Small -> Theme.typography.small.copy(color = Theme.color.secondary.red800)
-        PriceSize.Medium -> Theme.typography.paragraph.copy(color = Theme.color.secondary.red800)
+        PriceSize.Small -> Theme.typography.small.copy(color = c.semanticError800)
+        PriceSize.Medium -> Theme.typography.paragraph.copy(color = c.semanticError800)
     }
     when (orientation) {
         PriceOrientation.Horizontal -> SaleHorizontal(

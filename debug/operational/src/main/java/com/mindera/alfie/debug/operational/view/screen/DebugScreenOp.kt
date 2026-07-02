@@ -30,6 +30,7 @@ import com.mindera.alfie.debug.operational.view.screen.model.DebugScreenOpUI
 import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -94,12 +95,13 @@ private fun DebugScreenContent(
 
 @Composable
 private fun Header(title: StringResource) {
+    val c = LocalTheme.current.primitive.colors
     Text(
         text = stringResource(title),
         style = Theme.typography.paragraphBold,
         modifier = Modifier
             .fillMaxWidth()
-            .background(Theme.color.primary.mono200)
+            .background(c.neutrals200)
             .padding(horizontal = Theme.spacing.spacing12, vertical = Theme.spacing.spacing8)
     )
 }

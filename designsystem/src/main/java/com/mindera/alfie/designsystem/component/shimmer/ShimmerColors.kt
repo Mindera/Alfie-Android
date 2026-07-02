@@ -1,23 +1,20 @@
 package com.mindera.alfie.designsystem.component.shimmer
 
-import androidx.compose.ui.graphics.Color
-import com.mindera.alfie.designsystem.theme.Theme
+import androidx.compose.runtime.Composable
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
-enum class ShimmerColors(val colors: ImmutableList<Color>) {
-    Light(
-        persistentListOf(
-            Theme.color.primary.mono200,
-            Theme.color.primary.mono300,
-            Theme.color.primary.mono200
-        )
-    ),
-    Dark(
-        persistentListOf(
-            Theme.color.primary.mono600,
-            Theme.color.primary.mono900,
-            Theme.color.primary.mono600
-        )
-    )
+enum class ShimmerColors {
+    Light,
+    Dark
+}
+
+@Composable
+fun ShimmerColors.resolvedColors(): ImmutableList<androidx.compose.ui.graphics.Color> {
+    val c = LocalTheme.current.primitive.colors
+    return when (this) {
+        ShimmerColors.Light -> persistentListOf(c.neutrals200, c.neutrals300, c.neutrals200)
+        ShimmerColors.Dark -> persistentListOf(c.neutrals600, c.neutrals800, c.neutrals600)
+    }
 }

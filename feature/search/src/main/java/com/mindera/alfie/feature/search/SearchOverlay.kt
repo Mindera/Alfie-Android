@@ -45,6 +45,7 @@ import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_TITLE
 import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
 import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch
@@ -117,6 +118,7 @@ private fun ContentOverlaySearch(
 
 @Composable
 private fun SearchEmpty() {
+    val c = LocalTheme.current.primitive.colors
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -130,7 +132,7 @@ private fun SearchEmpty() {
             Icon(
                 painter = painterResource(id = AlfieIcons.Search),
                 contentDescription = null,
-                tint = Theme.color.black,
+                tint = c.neutrals900,
                 modifier = Modifier.size(Theme.iconSize.large)
             )
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -181,6 +183,7 @@ private fun RecentSearchesPanel(
 
 @Composable
 private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
+    val c = LocalTheme.current.primitive.colors
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -203,7 +206,7 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
             Text(
                 text = stringResource(R.string.clear),
                 style = Theme.typography.paragraphBoldUnderline,
-                color = Theme.color.primary.mono900
+                color = c.neutrals800
             )
         }
     }
@@ -215,6 +218,7 @@ private fun RecentSearchItem(
     onSearchEvent: ClickEventOneArg<SearchEvent>,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -236,7 +240,7 @@ private fun RecentSearchItem(
                     .weight(1f),
                 text = recentSearch.searchTerm,
                 style = Theme.typography.paragraph,
-                color = Theme.color.primary.mono900,
+                color = c.neutrals800,
                 maxLines = 1,
                 overflow = Ellipsis
             )

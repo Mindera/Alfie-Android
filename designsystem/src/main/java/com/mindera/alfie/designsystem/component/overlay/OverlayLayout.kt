@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun OverlayLayout(
@@ -70,12 +71,14 @@ fun OverlayLayout(
 private fun Scrim(
     onDismiss: () -> Unit,
     dismissOnClick: Boolean,
-    color: Color = Theme.color.black.copy(alpha = .5f)
+    color: Color = Color.Unspecified
 ) {
+    val c = LocalTheme.current.primitive.colors
+    val resolvedColor = if (color == Color.Unspecified) c.neutrals900.copy(alpha = .5f) else color
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color)
+            .background(resolvedColor)
             .clickable(
                 enabled = dismissOnClick,
                 interactionSource = remember { MutableInteractionSource() },

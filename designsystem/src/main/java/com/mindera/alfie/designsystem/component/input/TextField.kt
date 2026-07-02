@@ -45,18 +45,12 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val TEXT_FIELD_MINIMUM_HEIGHT = 40.dp
 private val SUPPORT_TEXT_MINIMUM_HEIGHT = 20.dp
 private val TEXT_FIELD_BORDER_WIDTH = 1.5.dp
 private const val REQUIRED_LABEL = "*"
-private val DISABLED_COLOR = Theme.color.primary.mono200
-private val LABEL_COLOR = Theme.color.primary.mono500
-private val LABEL_REQUIRED_COLOR = Theme.color.secondary.red800
-private val COUNTER_COLOR = Theme.color.primary.mono500
-private val PLACEHOLDER_COLOR = Theme.color.primary.mono500
-private val INPUT_TEXT_COLOR = Theme.color.primary.mono900
-private val TRAILING_ICON_COLOR = Theme.color.primary.mono900
 private const val MAX_CHARACTERS = 100
 
 @Composable
@@ -77,47 +71,57 @@ fun TextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
+    val c = LocalTheme.current.primitive.colors
+    val typeColors = type.colorSpec()
+    val disabledColor = c.neutrals200
+    val labelColor = c.neutrals500
+    val labelRequiredColor = c.semanticError800
+    val counterColor = c.neutrals500
+    val placeholderColor = c.neutrals500
+    val inputTextColor = c.neutrals800
+    val trailingIconColorDefault = c.neutrals800
+
     var counterValue by remember { mutableIntStateOf(0) }
     var isFocused by remember { mutableStateOf(false) }
 
     val labelTextColor = animateColorAsState(
-        targetValue = if (isEnabled) LABEL_COLOR else DISABLED_COLOR,
+        targetValue = if (isEnabled) labelColor else disabledColor,
         label = "Label Color Animation"
     )
     val labelRequiredTextColor = animateColorAsState(
-        targetValue = if (isEnabled) LABEL_REQUIRED_COLOR else DISABLED_COLOR,
+        targetValue = if (isEnabled) labelRequiredColor else disabledColor,
         label = "Label Required Text Color Animation"
     )
     val counterTextColor = animateColorAsState(
-        targetValue = if (isEnabled) COUNTER_COLOR else DISABLED_COLOR,
+        targetValue = if (isEnabled) counterColor else disabledColor,
         label = "Counter Text Color Animation"
     )
     val borderColor = animateColorAsState(
         targetValue = when {
-            isFocused -> type.inputBorderFocusedColor
-            isEnabled -> type.inputBorderColor
-            else -> DISABLED_COLOR
+            isFocused -> typeColors.inputBorderFocusedColor
+            isEnabled -> typeColors.inputBorderColor
+            else -> disabledColor
         },
         label = "Border Color Animation"
     )
-    val inputTextColor = animateColorAsState(
-        targetValue = if (isEnabled) INPUT_TEXT_COLOR else DISABLED_COLOR,
+    val inputTextColorState = animateColorAsState(
+        targetValue = if (isEnabled) inputTextColor else disabledColor,
         label = "Input Text Color Animation"
     )
     val placeholderTextColor = animateColorAsState(
-        targetValue = if (isEnabled) PLACEHOLDER_COLOR else DISABLED_COLOR,
+        targetValue = if (isEnabled) placeholderColor else disabledColor,
         label = "Input Placeholder Text Color Animation"
     )
     val trailingIconColor = animateColorAsState(
-        targetValue = if (isEnabled) TRAILING_ICON_COLOR else DISABLED_COLOR,
+        targetValue = if (isEnabled) trailingIconColorDefault else disabledColor,
         label = "Input Trailing Icon Color Animation"
     )
     val supportTextColor = animateColorAsState(
-        targetValue = if (isEnabled) type.supportTextColor else DISABLED_COLOR,
+        targetValue = if (isEnabled) typeColors.supportTextColor else disabledColor,
         label = "Support Text Color Animation"
     )
     val supportIconColor = animateColorAsState(
-        targetValue = if (isEnabled) type.supportIconColor else DISABLED_COLOR,
+        targetValue = if (isEnabled) typeColors.supportIconColor else disabledColor,
         label = "Support Icon Color Animation"
     )
 
@@ -150,7 +154,7 @@ fun TextField(
                 }
             },
             borderColor = borderColor.value,
-            inputTextColor = inputTextColor.value,
+            inputTextColor = inputTextColorState.value,
             placeholderText = placeholder,
             placeholderTextColor = placeholderTextColor.value,
             trailingIconData = trailingIconData,

@@ -10,7 +10,7 @@ import com.mindera.alfie.designsystem.component.topbar.component.IconTopBar
 import com.mindera.alfie.designsystem.component.topbar.component.SearchTopBar
 import com.mindera.alfie.designsystem.component.topbar.component.TextTopBar
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
-import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,16 +52,20 @@ fun TopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun darkThemeAppBarColors(): TopAppBarColors {
+    val c = LocalTheme.current.primitive.colors
     return TopAppBarDefaults.topAppBarColors().copy(
-        containerColor = Theme.color.primary.mono700,
-        scrolledContainerColor = Theme.color.primary.mono700,
-        navigationIconContentColor = Theme.color.primary.mono100,
-        titleContentColor = Theme.color.primary.mono100,
-        actionIconContentColor = Theme.color.primary.mono100
+        containerColor = c.neutrals600,
+        scrolledContainerColor = c.neutrals600,
+        navigationIconContentColor = c.neutrals100,
+        titleContentColor = c.neutrals100,
+        actionIconContentColor = c.neutrals100
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun lightThemeAppBarColors() = TopAppBarDefaults.topAppBarColors()
-    .copy(actionIconContentColor = Theme.color.primary.mono900)
+private fun lightThemeAppBarColors(): TopAppBarColors {
+    val c = LocalTheme.current.primitive.colors
+    return TopAppBarDefaults.topAppBarColors()
+        .copy(actionIconContentColor = c.neutrals800)
+}

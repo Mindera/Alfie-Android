@@ -47,10 +47,11 @@ fun Loading(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
+        val typeColor = type.color()
         repeat(numberOfDots) {
             LoaderDot(
                 size = dotSize,
-                color = type.color,
+                color = typeColor,
                 dotAnimDuration = dotAnimDuration,
                 initialPeakDelay = it * (dotAnimDuration - (dotAnimDuration / 4)),
                 totalDuration = numberOfDots * (dotAnimDuration - (dotAnimDuration / 4))
@@ -85,7 +86,7 @@ fun LoadingWithLabel(
         Text(
             text = label,
             style = Theme.typography.paragraph,
-            color = type.color
+            color = type.color()
         )
     }
 }

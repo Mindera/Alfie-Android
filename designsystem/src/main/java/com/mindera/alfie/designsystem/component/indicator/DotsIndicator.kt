@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.animation.standard
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun DotsIndicator(
@@ -26,6 +27,7 @@ fun DotsIndicator(
     size: DotsIndicatorSize,
     modifier: Modifier = Modifier
 ) {
+    val c = LocalTheme.current.primitive.colors
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(
@@ -36,7 +38,7 @@ fun DotsIndicator(
         repeat(itemCount) { iteration ->
             val isSelected by remember { derivedStateOf { currentItem() % itemCount == iteration } }
             val color by animateColorAsState(
-                targetValue = if (isSelected) Theme.color.primary.mono700 else Theme.color.primary.mono200,
+                targetValue = if (isSelected) c.neutrals600 else c.neutrals200,
                 animationSpec = standard(),
                 label = "IndicatorDot${iteration}Color"
             )
