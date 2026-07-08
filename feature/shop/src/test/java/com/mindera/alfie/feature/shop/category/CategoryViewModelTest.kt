@@ -1,23 +1,15 @@
 package com.mindera.alfie.feature.shop.category
 
-import com.mindera.alfie.core.analytics.AnalyticsManager
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.test.CoroutineExtension
-import com.mindera.alfie.domain.UseCaseResult
-import com.mindera.alfie.domain.usecase.navigation.GetRootNavEntriesUseCase
-import com.mindera.alfie.feature.shop.category.factory.CategoryUIStateFactory
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEvent
-import com.mindera.alfie.feature.shop.categoryUiState
 import com.mindera.alfie.feature.shop.delegate.NavigateToEntryDelegate
-import com.mindera.alfie.feature.shop.navEntries
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
-import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -25,22 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 internal class CategoryViewModelTest {
 
     @RelaxedMockK
-    private lateinit var getRootNavEntriesUseCase: GetRootNavEntriesUseCase
-
-    @RelaxedMockK
-    private lateinit var analyticsManager: AnalyticsManager
-
-    @RelaxedMockK
-    private lateinit var uiFactory: CategoryUIStateFactory
-
-    @RelaxedMockK
     private lateinit var navigateToEntryDelegate: NavigateToEntryDelegate
-
-    @BeforeEach
-    fun setup() {
-        coEvery { getRootNavEntriesUseCase() } returns UseCaseResult.Success(navEntries)
-        coEvery { uiFactory(any(), any()) } returns categoryUiState
-    }
 
     @Test
     fun `GIVEN OnEntryClickEvent WHEN entry path is not empty THEN should open the entry`() = runTest {
@@ -81,9 +58,6 @@ internal class CategoryViewModelTest {
     }
 
     private fun buildViewModel() = CategoryViewModel(
-        getRootNavEntriesUseCase = getRootNavEntriesUseCase,
-        uiFactory = uiFactory,
-        analyticsManager = analyticsManager,
         navigateToEntryDelegate = navigateToEntryDelegate,
         uiEventEmitterDelegate = UIEventEmitterDelegate()
     )

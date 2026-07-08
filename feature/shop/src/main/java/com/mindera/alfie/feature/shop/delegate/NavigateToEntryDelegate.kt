@@ -30,11 +30,23 @@ internal class NavigateToEntryDelegate @Inject constructor(
 
     override fun ViewModel.openCategoryEntry(entry: CategoryEntryUI) {
         viewModelScope.launch {
-            val environment = environmentManager.current()
-            val items = getNavEntriesByParentIdUseCase(parentId = entry.id)
-
-            if (items.isEmpty() || entry.path == BRANDS_FIXED_PATH) {
+            if (entry.path == BRANDS_FIXED_PATH) {
+                val environment = environmentManager.current()
                 deeplinkHandler.handle("${environment.webUrl}${entry.path}")
+                return@launch
+            }
+
+            val items = getNavEntriesByParentIdUseCase(parentId = entry.id)
+            if (items.isEmpty()) {
+                runUIEvent {
+                    navigateTo(
+                        Screen.ProductList(
+                            args = ProductListNavArgs(
+                                type = ProductListType.Category.Slug(entry.path)
+                            )
+                        )
+                    )
+                }
             } else {
                 runUIEvent {
                     navigateTo(

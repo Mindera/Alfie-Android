@@ -96,17 +96,17 @@ internal class NavigateToEntryDelegateTest {
     @Test
     fun `GIVEN openCategoryEntry WHEN entry is childless THEN navigate to plp`() = runTest {
         coEvery { getNavEntriesByParentIdUseCase(any()) } returns emptyList()
-        val path = "/plp/path"
         val entry = CategoryEntryUI(
             id = 1,
             title = StringResource.fromText("title"),
-            path = path
+            path = "women"
         )
         val viewModel = TestViewModel(delegate, uiEventEmitterDelegate)
 
         with(viewModel) {
             openCategoryEntry(entry)
-            coVerify { deeplinkHandler.handle("$WEB_URL$path") }
+            coVerify(exactly = 0) { deeplinkHandler.handle(any()) }
+            coVerify { navigateTo(screen = any(Screen.ProductList::class)) }
         }
     }
 
