@@ -138,9 +138,11 @@ def resolve_font_weight(raw, typo_tokens, visited=None):
         return "Regular"
     m = REF_RE.match(raw)
     if not m:
-        return raw  # legacy literal, e.g. "Regular"
+        # Legacy literal, e.g. "Regular"; normalise to a known name, else Regular.
+        return _WEIGHT_WORD_TO_NAME.get(raw.replace(" ", "").lower(), "Regular")
     target = m.group(1)
-    visited = visited or set()
+    if visited is None:
+        visited = set()
     if target in visited:
         return "Regular"
     visited.add(target)
