@@ -114,6 +114,44 @@ def font_weight_to_kotlin(w):
     return FONT_WEIGHT_MAP.get(w, "FontWeight.Normal")
 
 
+# Weight-name tokens (typography-font-weight-<name>) are intentionally value-less
+# (they only appear in .broken-ref-allowlist.json); the weight is taken from the
+# token name suffix. typography.styles now expresses fontWeight as a {ref} instead
+# of a literal weight name, so we follow the ref chain to recover the named weight.
+_FONT_WEIGHT_PREFIX = "typography-font-weight-"
+_WEIGHT_WORD_TO_NAME = {
+    "thin": "Thin", "extralight": "ExtraLight", "light": "Light",
+    "regular": "Regular", "medium": "Medium", "semibold": "SemiBold",
+    "bold": "Bold", "extrabold": "ExtraBold", "black": "Black",
+}
+
+
+def resolve_font_weight(raw, typo_tokens, visited=None):
+    """Resolve a style's fontWeight (literal name OR {ref}) → a named weight.
+
+    Follows references through the typography tokens until a
+    'typography-font-weight-<name>' token is reached; the weight is derived from
+    <name>. Falls back to 'Regular' for legacy literals that aren't recognised or
+    for unresolvable refs.
+    """
+    if not isinstance(raw, str):
+        return "Regular"
+    m = REF_RE.match(raw)
+    if not m:
+        return raw  # legacy literal, e.g. "Regular"
+    target = m.group(1)
+    visited = visited or set()
+    if target in visited:
+        return "Regular"
+    visited.add(target)
+    if target.startswith(_FONT_WEIGHT_PREFIX):
+        word = target[len(_FONT_WEIGHT_PREFIX):].replace("-", "").lower()
+        return _WEIGHT_WORD_TO_NAME.get(word, "Regular")
+    if target in typo_tokens:
+        return resolve_font_weight(typo_tokens[target]["$value"], typo_tokens, visited)
+    return "Regular"
+
+
 # Numeric rank per named weight — orders Font(...) entries and matches the
 # weight suffix used in the static TTF filenames (e.g. Roboto-Medium.ttf).
 _WEIGHT_RANK = {
@@ -158,7 +196,9 @@ def discover_typography_fonts(styles_raw, typo_tokens, reg, walk, primitives, na
         font_name = primitives[prim_token]["$value"]
         if not isinstance(font_name, str):
             continue
-        weight_str = style_obj.get("$value", {}).get("fontWeight", "Regular")
+        weight_str = resolve_font_weight(
+            style_obj.get("$value", {}).get("fontWeight", "Regular"), typo_tokens
+        )
         info = usage.setdefault(prim_token, {
             "font_name": font_name,
             "folder": font_name.replace(" ", "_"),
@@ -877,7 +917,7 @@ _TYPOGRAPHY_STYLE_NAMES = [
 _TYPOGRAPHY_GROUP_ORDER = ["display", "heading", "body", "link", "label"]
 
 
-def emit_typography(styles_raw, reg, walk):
+def emit_typography(styles_raw, typo_tokens, reg, walk):
     lines = [
         GEN_HEADER,
         "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
@@ -927,7 +967,9 @@ def emit_typography(styles_raw, reg, walk):
             if raw is None:
                 print(f"  WARNING: style '{style_name}' not found in styles file", file=sys.stderr)
                 continue
-            weight_str = raw["$value"].get("fontWeight", "Regular")
+            weight_str = resolve_font_weight(
+                raw["$value"].get("fontWeight", "Regular"), typo_tokens
+            )
             weight_kt = font_weight_to_kotlin(weight_str)
 
             lines.append(f"        override val {member}: TextStyle =\n")
@@ -1012,7 +1054,7 @@ def main():
     print("  ✓ TypographyTokens.kt")
 
     (OUT_DIR / "Typography.kt").write_text(
-        emit_typography(styles_raw, reg, walk), encoding="utf-8"
+        emit_typography(styles_raw, typo_tokens, reg, walk), encoding="utf-8"
     )
     print("  ✓ Typography.kt")
 

@@ -1,7 +1,15 @@
 {
-  "screen-size-screen-min-width": {
+  "screen-size-columns": {
     "$type": "dimension",
-    "$value": "{screen-size-system-screen-min-width}"
+    "$value": "{screen-size-system-columns}"
+  },
+  "screen-size-gutter": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-gutter}"
+  },
+  "screen-size-margin": {
+    "$type": "dimension",
+    "$value": "{screen-size-system-margin}"
   },
   "screen-size-screen-max-width": {
     "$type": "dimension",
@@ -11,17 +19,9 @@
     "$type": "dimension",
     "$value": "{screen-size-system-screen-min-height}"
   },
-  "screen-size-columns": {
+  "screen-size-screen-min-width": {
     "$type": "dimension",
-    "$value": "{screen-size-system-columns}"
-  },
-  "screen-size-margin": {
-    "$type": "dimension",
-    "$value": "{screen-size-system-margin}"
-  },
-  "screen-size-gutter": {
-    "$type": "dimension",
-    "$value": "{screen-size-system-gutter}"
+    "$value": "{screen-size-system-screen-min-width}"
   },
   "typography-font-family-brand": {
     "$type": "fontFamily",
@@ -31,29 +31,25 @@
     "$type": "fontFamily",
     "$value": "{typography-font-family-system-primary}"
   },
-  "typography-font-size-root-font-size": {
+  "typography-font-size-font-size-l": {
     "$type": "dimension",
-    "$value": "{typography-font-size-system-root-font-size}"
-  },
-  "typography-font-size-font-size-xs": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-system-font-size-xs}"
-  },
-  "typography-font-size-font-size-s": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-system-font-size-s}"
+    "$value": "{typography-font-size-system-font-size-l}"
   },
   "typography-font-size-font-size-m": {
     "$type": "dimension",
     "$value": "{typography-font-size-system-font-size-m}"
   },
-  "typography-font-size-font-size-l": {
+  "typography-font-size-font-size-s": {
     "$type": "dimension",
-    "$value": "{typography-font-size-system-font-size-l}"
+    "$value": "{typography-font-size-system-font-size-s}"
   },
   "typography-font-size-font-size-xl": {
     "$type": "dimension",
     "$value": "{typography-font-size-system-font-size-xl}"
+  },
+  "typography-font-size-font-size-xs": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-system-font-size-xs}"
   },
   "typography-font-size-font-size-xxl": {
     "$type": "dimension",
@@ -63,28 +59,32 @@
     "$type": "dimension",
     "$value": "{typography-font-size-system-font-size-xxxl}"
   },
-  "typography-line-height-line-height-xxs": {
+  "typography-font-size-root-font-size": {
     "$type": "dimension",
-    "$value": "{typography-line-height-system-line-height-xxs}"
-  },
-  "typography-line-height-line-height-xs": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-system-line-height-xs}"
-  },
-  "typography-line-height-line-height-s": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-system-line-height-s}"
-  },
-  "typography-line-height-line-height-m": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-system-line-height-m}"
+    "$value": "{typography-font-size-system-root-font-size}"
   },
   "typography-line-height-line-height-l": {
     "$type": "dimension",
     "$value": "{typography-line-height-system-line-height-l}"
   },
+  "typography-line-height-line-height-m": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-m}"
+  },
+  "typography-line-height-line-height-s": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-s}"
+  },
   "typography-line-height-line-height-xl": {
     "$type": "dimension",
     "$value": "{typography-line-height-system-line-height-xl}"
+  },
+  "typography-line-height-line-height-xs": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-xs}"
+  },
+  "typography-line-height-line-height-xxs": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-xxs}"
   }
 }
