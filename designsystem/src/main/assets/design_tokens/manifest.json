@@ -1,46 +1,9 @@
 {
-  "name": "Design Tokens",
   "collections": {
-    "screen-size": {
-      "modes": {
-        "small-(s)": [
-          "screen-size.small-(s).tokens.json"
-        ],
-        "medium-(m)": [
-          "screen-size.medium-(m).tokens.json"
-        ],
-        "large-(l)": [
-          "screen-size.large-(l).tokens.json"
-        ],
-        "wide-(xl)": [
-          "screen-size.wide-(xl).tokens.json"
-        ]
-      }
-    },
     ".documentation": {
       "modes": {
         "mode-1": [
           ".documentation.mode-1.tokens.json"
-        ]
-      }
-    },
-    "system": {
-      "modes": {
-        "ios": [
-          "system.ios.tokens.json"
-        ],
-        "android": [
-          "system.android.tokens.json"
-        ],
-        "web": [
-          "system.web.tokens.json"
-        ]
-      }
-    },
-    "typography": {
-      "modes": {
-        "alfie-theme": [
-          "typography.alfie-theme.tokens.json"
         ]
       }
     },
@@ -51,10 +14,19 @@
         ]
       }
     },
-    "theme": {
+    "screen-size": {
       "modes": {
-        "alfie-theme": [
-          "theme.alfie-theme.tokens.json"
+        "large-(l)": [
+          "screen-size.large-(l).tokens.json"
+        ],
+        "medium-(m)": [
+          "screen-size.medium-(m).tokens.json"
+        ],
+        "small-(s)": [
+          "screen-size.small-(s).tokens.json"
+        ],
+        "wide-(xl)": [
+          "screen-size.wide-(xl).tokens.json"
         ]
       }
     },
@@ -64,8 +36,39 @@
           "sizing.alfie-theme.tokens.json"
         ]
       }
+    },
+    "system": {
+      "modes": {
+        "android": [
+          "system.android.tokens.json"
+        ],
+        "ios": [
+          "system.ios.tokens.json"
+        ],
+        "web": [
+          "system.web.tokens.json"
+        ]
+      }
+    },
+    "theme": {
+      "modes": {
+        "alfie-theme": [
+          "theme.alfie-theme.tokens.json"
+        ],
+        "selfridges": [
+          "theme.selfridges.tokens.json"
+        ]
+      }
+    },
+    "typography": {
+      "modes": {
+        "alfie-theme": [
+          "typography.alfie-theme.tokens.json"
+        ]
+      }
     }
   },
+  "name": "Design Tokens",
   "styles": {
     "typography": [
       "typography.styles.tokens.json"

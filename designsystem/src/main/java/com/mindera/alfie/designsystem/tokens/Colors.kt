@@ -42,18 +42,34 @@ interface ColorContent {
 
 @Immutable
 interface ColorBorder {
+    val medium: Color
     val soft: Color
 }
 
 @Immutable
 interface ColorButton {
     val destructiveBackgroundDestructiveDefault: Color
+    val destructiveBackgroundDestructiveDisabled: Color
+    val destructiveContentDestructiveDefault: Color
+    val destructiveContentDestructiveDisabled: Color
     val destructiveStrokeDestructiveDefault: Color
+    val destructiveStrokeDestructiveDisabled: Color
     val primaryBackgroundPrimaryDefault: Color
+    val primaryBackgroundPrimaryDisabled: Color
+    val primaryContentPrimaryDefault: Color
+    val primaryContentPrimaryDisabled: Color
+    val primaryStrokePrimaryDefault: Color
+    val primaryStrokePrimaryDisabled: Color
     val secondaryBackgroundSecondaryDefault: Color
     val secondaryBackgroundSecondaryDisabled: Color
+    val secondaryContentSecondaryDefault: Color
+    val secondaryContentSecondaryDisabled: Color
+    val secondaryStrokeSecondaryDefault: Color
+    val secondaryStrokeSecondaryDisabled: Color
     val terciaryBackgroundTerciaryDefault: Color
     val terciaryBackgroundTerciaryDisabled: Color
+    val terciaryContentTerciaryDefault: Color
+    val terciaryContentTerciaryDisabled: Color
     val terciaryStrokeTerciaryDefault: Color
     val terciaryStrokeTerciaryDisabled: Color
 }
@@ -90,16 +106,32 @@ class DefaultColors(private val primitive: Primitives) : Colors {
         override val contentTerciary = primitive.colors.neutrals500
     }
     override val border = object : ColorBorder {
+        override val medium = primitive.colors.neutrals400
         override val soft = primitive.colors.neutrals200
     }
     override val button = object : ColorButton {
         override val destructiveBackgroundDestructiveDefault = surface.backgroundDestructive
+        override val destructiveBackgroundDestructiveDisabled = primitive.colors.neutrals300
+        override val destructiveContentDestructiveDefault = primitive.colors.neutrals0
+        override val destructiveContentDestructiveDisabled = primitive.colors.neutrals500
         override val destructiveStrokeDestructiveDefault = surface.backgroundDestructive
+        override val destructiveStrokeDestructiveDisabled = primitive.colors.neutrals300
         override val primaryBackgroundPrimaryDefault = surface.backgroundInvertedPrimary
+        override val primaryBackgroundPrimaryDisabled = primitive.colors.neutrals300
+        override val primaryContentPrimaryDefault = primitive.colors.neutrals0
+        override val primaryContentPrimaryDisabled = primitive.colors.neutrals500
+        override val primaryStrokePrimaryDefault = primitive.colors.neutrals800
+        override val primaryStrokePrimaryDisabled = primitive.colors.neutrals300
         override val secondaryBackgroundSecondaryDefault = primitive.colors.transparent
         override val secondaryBackgroundSecondaryDisabled = primitive.colors.transparent
+        override val secondaryContentSecondaryDefault = primitive.colors.neutrals800
+        override val secondaryContentSecondaryDisabled = primitive.colors.neutrals500
+        override val secondaryStrokeSecondaryDefault = primitive.colors.neutrals900
+        override val secondaryStrokeSecondaryDisabled = primitive.colors.neutrals500
         override val terciaryBackgroundTerciaryDefault = primitive.colors.transparent
         override val terciaryBackgroundTerciaryDisabled = primitive.colors.transparent
+        override val terciaryContentTerciaryDefault = primitive.colors.neutrals800
+        override val terciaryContentTerciaryDisabled = primitive.colors.neutrals500
         override val terciaryStrokeTerciaryDefault = primitive.colors.transparent
         override val terciaryStrokeTerciaryDisabled = primitive.colors.transparent
     }
