@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.mindera.alfie.core.deeplink.DeeplinkHandler
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.navigation.Screen
-import com.mindera.alfie.core.navigation.arguments.categoryNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
-import com.mindera.alfie.domain.usecase.navigation.GetNavEntriesByParentIdUseCase
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
@@ -18,7 +16,6 @@ import javax.inject.Inject
 
 @ViewModelScoped
 internal class NavigateToEntryDelegate @Inject constructor(
-    private val getNavEntriesByParentIdUseCase: GetNavEntriesByParentIdUseCase,
     private val deeplinkHandler: DeeplinkHandler,
     private val uiEventEmitterDelegate: UIEventEmitterDelegate,
     private val environmentManager: EnvironmentManager
@@ -36,28 +33,14 @@ internal class NavigateToEntryDelegate @Inject constructor(
                 return@launch
             }
 
-            val items = getNavEntriesByParentIdUseCase(parentId = entry.id)
-            if (items.isEmpty()) {
-                runUIEvent {
-                    navigateTo(
-                        Screen.ProductList(
-                            args = ProductListNavArgs(
-                                type = ProductListType.Category.Slug(entry.path)
-                            )
+            runUIEvent {
+                navigateTo(
+                    Screen.ProductList(
+                        args = ProductListNavArgs(
+                            type = ProductListType.Category.Slug(entry.path)
                         )
                     )
-                }
-            } else {
-                runUIEvent {
-                    navigateTo(
-                        Screen.Category(
-                            args = categoryNavArgs(
-                                id = entry.id,
-                                title = entry.title
-                            )
-                        )
-                    )
-                }
+                )
             }
         }
     }
