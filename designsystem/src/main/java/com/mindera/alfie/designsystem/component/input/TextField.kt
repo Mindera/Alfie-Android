@@ -121,8 +121,8 @@ fun TextField(
         // D2: outer gap uses spacing4 (label ↔ box gap from Figma spec)
         verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing4)
     ) {
-        // D2: render LabelRow only when there is a label or mandatory marker to show
-        if (label != null || isMandatory) {
+        // D2: render LabelRow only when there is a label; the mandatory * only shows alongside a label
+        if (label != null) {
             LabelRow(
                 isMandatory = isMandatory,
                 label = label.orEmpty(),
@@ -139,10 +139,8 @@ fun TextField(
                 onFocusChange(focus)
             },
             onTextChange = { term ->
-                // Keep MAX_CHARACTERS input cap; counter UI removed (D3)
-                if (term.length <= MAX_CHARACTERS) {
-                    onTextChange(term)
-                }
+                // Clamp to MAX_CHARACTERS so an over-length restored value can still be edited down (D3)
+                onTextChange(term.take(MAX_CHARACTERS))
             },
             borderColor = borderColor.value,
             inputTextColor = inputTextColorState.value,
