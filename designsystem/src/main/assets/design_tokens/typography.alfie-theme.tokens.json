@@ -1,302 +1,362 @@
 {
-  "display-large-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-brand}"
-  },
-  "display-large-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
-  },
-  "display-large-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-xl}"
-  },
-  "display-large-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-xl}"
-  },
-  "display-large-kerning": {
-    "$type": "dimension",
-    "$value": "{typography-kerning-none}"
-  },
-  "display-medium-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-brand}"
-  },
-  "display-medium-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
-  },
-  "display-medium-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-l}"
-  },
-  "display-medium-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-l}"
-  },
-  "display-medium-kerning": {
-    "$type": "dimension",
-    "$value": "{typography-kerning-none}"
-  },
-  "display-small-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-brand}"
-  },
-  "display-small-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
-  },
-  "display-small-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-m}"
-  },
-  "display-small-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-m}"
-  },
-  "display-small-kerning": {
-    "$type": "dimension",
-    "$value": "{typography-kerning-none}"
-  },
-  "heading-large-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-primary}"
-  },
-  "heading-large-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-medium}"
-  },
-  "heading-large-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-xxl}"
-  },
-  "heading-large-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-xl}"
-  },
-  "heading-large-kerning": {
-    "$type": "dimension",
-    "$value": "{typography-kerning-tight}"
-  },
-  "heading-medium-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-primary}"
-  },
-  "heading-medium-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-medium}"
-  },
-  "heading-medium-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-xl}"
-  },
-  "heading-medium-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-l}"
-  },
-  "heading-medium-kerning": {
-    "$type": "dimension",
-    "$value": "{typography-kerning-tight}"
-  },
-  "heading-small-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-primary}"
-  },
-  "heading-small-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-medium}"
-  },
-  "heading-small-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-l}"
-  },
-  "heading-small-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-m}"
-  },
-  "heading-small-kerning": {
-    "$type": "dimension",
-    "$value": "{typography-kerning-tight}"
-  },
   "body-large-font-family": {
     "$type": "fontFamily",
     "$value": "{typography-font-family-primary}"
-  },
-  "body-large-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
   },
   "body-large-font-size": {
     "$type": "dimension",
     "$value": "{typography-font-size-font-size-m}"
   },
-  "body-large-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-system-line-height-m}"
+  "body-large-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
   },
   "body-large-kerning": {
     "$type": "dimension",
     "$value": "{typography-kerning-none}"
   },
+  "body-large-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-m}"
+  },
+  "body-large-text-style-name": {
+    "$type": "string",
+    "$value": "body-large"
+  },
   "body-medium-font-family": {
     "$type": "fontFamily",
     "$value": "{typography-font-family-primary}"
-  },
-  "body-medium-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
   },
   "body-medium-font-size": {
     "$type": "dimension",
     "$value": "{typography-font-size-font-size-s}"
   },
-  "body-medium-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-line-height-s}"
+  "body-medium-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
   },
   "body-medium-kerning": {
     "$type": "dimension",
     "$value": "{typography-kerning-none}"
   },
+  "body-medium-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-s}"
+  },
   "body-medium-strikethrough-font-family": {
     "$type": "fontFamily",
     "$value": "{body-medium-font-family}"
-  },
-  "body-medium-strikethrough-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
   },
   "body-medium-strikethrough-font-size": {
     "$type": "dimension",
     "$value": "{body-medium-font-size}"
   },
-  "body-medium-strikethrough-line-height": {
-    "$type": "dimension",
-    "$value": "{body-medium-line-height}"
+  "body-medium-strikethrough-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
   },
   "body-medium-strikethrough-kerning": {
     "$type": "dimension",
     "$value": "{typography-kerning-none}"
   },
+  "body-medium-strikethrough-line-height": {
+    "$type": "dimension",
+    "$value": "{body-medium-line-height}"
+  },
+  "body-medium-strikethrough-text-style-name": {
+    "$type": "string",
+    "$value": "body-medium-strikethrough"
+  },
+  "body-medium-text-style-name": {
+    "$type": "string",
+    "$value": "body-medium"
+  },
   "body-small-font-family": {
     "$type": "fontFamily",
     "$value": "{typography-font-family-primary}"
-  },
-  "body-small-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
   },
   "body-small-font-size": {
     "$type": "dimension",
     "$value": "{typography-font-size-font-size-xs}"
   },
-  "body-small-line-height": {
-    "$type": "dimension",
-    "$value": "{typography-line-height-system-line-height-xxs}"
+  "body-small-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
   },
   "body-small-kerning": {
     "$type": "dimension",
     "$value": "{typography-kerning-none}"
   },
-  "link-medium-font-family": {
-    "$type": "fontFamily",
-    "$value": "{body-medium-font-family}"
-  },
-  "link-medium-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-medium}"
-  },
-  "link-medium-font-size": {
-    "$type": "dimension",
-    "$value": "{body-medium-font-size}"
-  },
-  "link-medium-line-height": {
-    "$type": "dimension",
-    "$value": "{body-medium-line-height}"
-  },
-  "link-medium-kerning": {
-    "$type": "dimension",
-    "$value": "{body-medium-kerning}"
-  },
-  "link-small-font-family": {
-    "$type": "fontFamily",
-    "$value": "{body-small-font-family}"
-  },
-  "link-small-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-medium}"
-  },
-  "link-small-font-size": {
-    "$type": "dimension",
-    "$value": "{body-small-font-size}"
-  },
-  "link-small-line-height": {
-    "$type": "dimension",
-    "$value": "{body-small-line-height}"
-  },
-  "link-small-kerning": {
-    "$type": "dimension",
-    "$value": "{body-small-kerning}"
-  },
-  "label-small-font-family": {
-    "$type": "fontFamily",
-    "$value": "{typography-font-family-primary}"
-  },
-  "label-small-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-regular}"
-  },
-  "label-small-font-size": {
-    "$type": "dimension",
-    "$value": "{typography-font-size-font-size-xs}"
-  },
-  "label-small-line-height": {
+  "body-small-line-height": {
     "$type": "dimension",
     "$value": "{typography-line-height-system-line-height-xxs}"
   },
-  "label-small-kerning": {
+  "body-small-text-style-name": {
+    "$type": "string",
+    "$value": "body-small"
+  },
+  "display-large-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-brand}"
+  },
+  "display-large-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-xl}"
+  },
+  "display-large-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
+  },
+  "display-large-kerning": {
     "$type": "dimension",
     "$value": "{typography-kerning-none}"
   },
-  "label-small-bold-font-family": {
-    "$type": "fontFamily",
-    "$value": "{label-small-font-family}"
+  "display-large-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-xl}"
   },
-  "label-small-bold-font-weight": {
+  "display-large-text-style-name": {
     "$type": "string",
-    "$value": "{label-small-font-weight}"
+    "$value": "display-large"
   },
-  "label-small-bold-font-size": {
-    "$type": "dimension",
-    "$value": "{label-small-font-size}"
+  "display-medium-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-brand}"
   },
-  "label-small-bold-line-height": {
+  "display-medium-font-size": {
     "$type": "dimension",
-    "$value": "{label-small-line-height}"
+    "$value": "{typography-font-size-font-size-l}"
   },
-  "label-small-bold-kerning": {
+  "display-medium-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
+  },
+  "display-medium-kerning": {
     "$type": "dimension",
-    "$value": "{label-small-kerning}"
+    "$value": "{typography-kerning-none}"
+  },
+  "display-medium-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-l}"
+  },
+  "display-medium-text-style-name": {
+    "$type": "string",
+    "$value": "display-medium"
+  },
+  "display-small-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-brand}"
+  },
+  "display-small-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-m}"
+  },
+  "display-small-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
+  },
+  "display-small-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-none}"
+  },
+  "display-small-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-m}"
+  },
+  "display-small-text-style-name": {
+    "$type": "string",
+    "$value": "display-small"
+  },
+  "heading-large-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-primary}"
+  },
+  "heading-large-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-xxl}"
+  },
+  "heading-large-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "heading-large-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-tight}"
+  },
+  "heading-large-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-xl}"
+  },
+  "heading-large-text-style-name": {
+    "$type": "string",
+    "$value": "heading-large"
+  },
+  "heading-medium-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-primary}"
+  },
+  "heading-medium-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-xl}"
+  },
+  "heading-medium-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "heading-medium-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-tight}"
+  },
+  "heading-medium-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-l}"
+  },
+  "heading-medium-text-style-name": {
+    "$type": "string",
+    "$value": "heading-medium"
+  },
+  "heading-small-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-primary}"
+  },
+  "heading-small-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-l}"
+  },
+  "heading-small-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "heading-small-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-tight}"
+  },
+  "heading-small-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-line-height-m}"
+  },
+  "heading-small-text-style-name": {
+    "$type": "string",
+    "$value": "heading-small"
   },
   "heading-x-small-font-family": {
     "$type": "fontFamily",
     "$value": "{typography-font-family-primary}"
   },
-  "heading-x-small-font-weight": {
-    "$type": "string",
-    "$value": "{typography-font-weight-medium}"
-  },
   "heading-x-small-font-size": {
     "$type": "dimension",
     "$value": "{typography-font-size-font-size-s}"
+  },
+  "heading-x-small-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "heading-x-small-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-tight}"
   },
   "heading-x-small-line-height": {
     "$type": "dimension",
     "$value": "{typography-line-height-line-height-xs}"
   },
-  "heading-x-small-kerning": {
+  "heading-x-small-text-style-name": {
+    "$type": "string",
+    "$value": "heading-xsmall"
+  },
+  "label-small-bold-font-family": {
+    "$type": "fontFamily",
+    "$value": "{label-small-font-family}"
+  },
+  "label-small-bold-font-size": {
     "$type": "dimension",
-    "$value": "{typography-kerning-tight}"
+    "$value": "{label-small-font-size}"
+  },
+  "label-small-bold-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{label-small-font-weight}"
+  },
+  "label-small-bold-kerning": {
+    "$type": "dimension",
+    "$value": "{label-small-kerning}"
+  },
+  "label-small-bold-line-height": {
+    "$type": "dimension",
+    "$value": "{label-small-line-height}"
+  },
+  "label-small-bold-text-style-name": {
+    "$type": "string",
+    "$value": "label-small-bold"
+  },
+  "label-small-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-primary}"
+  },
+  "label-small-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-xs}"
+  },
+  "label-small-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-regular}"
+  },
+  "label-small-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-none}"
+  },
+  "label-small-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-xxs}"
+  },
+  "label-small-text-style-name": {
+    "$type": "string",
+    "$value": "label-small"
+  },
+  "link-medium-font-family": {
+    "$type": "fontFamily",
+    "$value": "{body-medium-font-family}"
+  },
+  "link-medium-font-size": {
+    "$type": "dimension",
+    "$value": "{body-medium-font-size}"
+  },
+  "link-medium-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "link-medium-kerning": {
+    "$type": "dimension",
+    "$value": "{body-medium-kerning}"
+  },
+  "link-medium-line-height": {
+    "$type": "dimension",
+    "$value": "{body-medium-line-height}"
+  },
+  "link-medium-text-style-name": {
+    "$type": "string",
+    "$value": "link-medium"
+  },
+  "link-small-font-family": {
+    "$type": "fontFamily",
+    "$value": "{body-small-font-family}"
+  },
+  "link-small-font-size": {
+    "$type": "dimension",
+    "$value": "{body-small-font-size}"
+  },
+  "link-small-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "link-small-kerning": {
+    "$type": "dimension",
+    "$value": "{body-small-kerning}"
+  },
+  "link-small-line-height": {
+    "$type": "dimension",
+    "$value": "{body-small-line-height}"
+  },
+  "link-small-text-style-name": {
+    "$type": "string",
+    "$value": "link-small"
   }
 }

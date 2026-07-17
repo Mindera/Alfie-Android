@@ -1,328 +1,152 @@
 {
-  "display-large": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{display-large-font-family}",
-      "fontWeight": "Regular",
-      "fontSize": "{display-large-font-size}",
-      "lineHeight": "{display-large-line-height}",
-      "letterSpacing": "{display-large-kerning}"
-    }
-  },
-  "display-medium": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{display-medium-font-family}",
-      "fontWeight": "Regular",
-      "fontSize": "{display-medium-font-size}",
-      "lineHeight": "{display-medium-line-height}",
-      "letterSpacing": "{display-medium-kerning}"
-    }
-  },
-  "display-small": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{display-small-font-family}",
-      "fontWeight": "Regular",
-      "fontSize": "{display-small-font-size}",
-      "lineHeight": "{display-small-line-height}",
-      "letterSpacing": "{display-small-kerning}"
-    }
-  },
-  "heading-large": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{heading-large-font-family}",
-      "fontWeight": "Medium",
-      "fontSize": "{heading-large-font-size}",
-      "lineHeight": "{heading-large-line-height}",
-      "letterSpacing": "{heading-large-kerning}"
-    }
-  },
-  "heading-medium": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{heading-medium-font-family}",
-      "fontWeight": "Medium",
-      "fontSize": "{heading-medium-font-size}",
-      "lineHeight": "{heading-medium-line-height}",
-      "letterSpacing": "{heading-medium-kerning}"
-    }
-  },
-  "heading-small": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{heading-small-font-family}",
-      "fontWeight": "Medium",
-      "fontSize": "{heading-small-font-size}",
-      "lineHeight": "{heading-small-line-height}",
-      "letterSpacing": "{heading-small-kerning}"
-    }
-  },
-  "heading-x-small": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{heading-x-small-font-family}",
-      "fontWeight": "Medium",
-      "fontSize": "{heading-x-small-font-size}",
-      "lineHeight": "{heading-x-small-line-height}",
-      "letterSpacing": "{heading-x-small-kerning}"
-    }
-  },
   "body-large": {
     "$type": "typography",
     "$value": {
       "fontFamily": "{body-large-font-family}",
-      "fontWeight": "Regular",
       "fontSize": "{body-large-font-size}",
-      "lineHeight": "{body-large-line-height}",
-      "letterSpacing": "{body-large-kerning}"
+      "fontWeight": "{body-large-font-weight}",
+      "letterSpacing": "{body-large-kerning}",
+      "lineHeight": "{body-large-line-height}"
     }
   },
   "body-medium": {
     "$type": "typography",
     "$value": {
       "fontFamily": "{body-medium-font-family}",
-      "fontWeight": "Regular",
       "fontSize": "{body-medium-font-size}",
-      "lineHeight": "{body-medium-line-height}",
-      "letterSpacing": "{body-medium-kerning}"
+      "fontWeight": "{body-medium-font-weight}",
+      "letterSpacing": "{body-medium-kerning}",
+      "lineHeight": "{body-medium-line-height}"
     }
   },
   "body-medium-strikethrough": {
     "$type": "typography",
     "$value": {
       "fontFamily": "{body-medium-strikethrough-font-family}",
-      "fontWeight": "Regular",
       "fontSize": "{body-medium-strikethrough-font-size}",
-      "lineHeight": "{body-medium-strikethrough-line-height}",
-      "letterSpacing": "{body-medium-strikethrough-kerning}"
+      "fontWeight": "{body-medium-strikethrough-font-weight}",
+      "letterSpacing": "{body-medium-strikethrough-kerning}",
+      "lineHeight": "{body-medium-strikethrough-line-height}"
     }
   },
   "body-small": {
     "$type": "typography",
     "$value": {
       "fontFamily": "{body-small-font-family}",
-      "fontWeight": "Regular",
       "fontSize": "{body-small-font-size}",
-      "lineHeight": "{body-small-line-height}",
-      "letterSpacing": "{body-small-kerning}"
+      "fontWeight": "{body-small-font-weight}",
+      "letterSpacing": "{body-small-kerning}",
+      "lineHeight": "{body-small-line-height}"
     }
   },
-  "link-medium": {
+  "display-large": {
     "$type": "typography",
     "$value": {
-      "fontFamily": "{link-medium-font-family}",
-      "fontWeight": "Medium",
-      "fontSize": "{link-medium-font-size}",
-      "lineHeight": "{link-medium-line-height}",
-      "letterSpacing": "{link-medium-kerning}"
+      "fontFamily": "{display-large-font-family}",
+      "fontSize": "{display-large-font-size}",
+      "fontWeight": "{display-large-font-weight}",
+      "letterSpacing": "{display-large-kerning}",
+      "lineHeight": "{display-large-line-height}"
     }
   },
-  "link-small": {
+  "display-medium": {
     "$type": "typography",
     "$value": {
-      "fontFamily": "{link-small-font-family}",
-      "fontWeight": "Medium",
-      "fontSize": "{link-small-font-size}",
-      "lineHeight": "{link-small-line-height}",
-      "letterSpacing": "{link-small-kerning}"
+      "fontFamily": "{display-medium-font-family}",
+      "fontSize": "{display-medium-font-size}",
+      "fontWeight": "{display-medium-font-weight}",
+      "letterSpacing": "{display-medium-kerning}",
+      "lineHeight": "{display-medium-line-height}"
+    }
+  },
+  "display-small": {
+    "$type": "typography",
+    "$value": {
+      "fontFamily": "{display-small-font-family}",
+      "fontSize": "{display-small-font-size}",
+      "fontWeight": "{display-small-font-weight}",
+      "letterSpacing": "{display-small-kerning}",
+      "lineHeight": "{display-small-line-height}"
+    }
+  },
+  "heading-large": {
+    "$type": "typography",
+    "$value": {
+      "fontFamily": "{heading-large-font-family}",
+      "fontSize": "{heading-large-font-size}",
+      "fontWeight": "{heading-large-font-weight}",
+      "letterSpacing": "{heading-large-kerning}",
+      "lineHeight": "{heading-large-line-height}"
+    }
+  },
+  "heading-medium": {
+    "$type": "typography",
+    "$value": {
+      "fontFamily": "{heading-medium-font-family}",
+      "fontSize": "{heading-medium-font-size}",
+      "fontWeight": "{heading-medium-font-weight}",
+      "letterSpacing": "{heading-medium-kerning}",
+      "lineHeight": "{heading-medium-line-height}"
+    }
+  },
+  "heading-small": {
+    "$type": "typography",
+    "$value": {
+      "fontFamily": "{heading-small-font-family}",
+      "fontSize": "{heading-small-font-size}",
+      "fontWeight": "{heading-small-font-weight}",
+      "letterSpacing": "{heading-small-kerning}",
+      "lineHeight": "{heading-small-line-height}"
+    }
+  },
+  "heading-x-small": {
+    "$type": "typography",
+    "$value": {
+      "fontFamily": "{heading-x-small-font-family}",
+      "fontSize": "{heading-x-small-font-size}",
+      "fontWeight": "{heading-x-small-font-weight}",
+      "letterSpacing": "{heading-x-small-kerning}",
+      "lineHeight": "{heading-x-small-line-height}"
     }
   },
   "label-small": {
     "$type": "typography",
     "$value": {
       "fontFamily": "{label-small-font-family}",
-      "fontWeight": "Regular",
       "fontSize": "{label-small-font-size}",
-      "lineHeight": "{label-small-line-height}",
-      "letterSpacing": "{label-small-kerning}"
+      "fontWeight": "{label-small-font-weight}",
+      "letterSpacing": "{label-small-kerning}",
+      "lineHeight": "{label-small-line-height}"
     }
   },
   "label-small-bold": {
     "$type": "typography",
     "$value": {
       "fontFamily": "{label-small-bold-font-family}",
-      "fontWeight": "Medium",
       "fontSize": "{label-small-bold-font-size}",
-      "lineHeight": "{label-small-bold-line-height}",
-      "letterSpacing": "{label-small-bold-kerning}"
+      "fontWeight": "{typography-font-weight-medium}",
+      "letterSpacing": "{label-small-bold-kerning}",
+      "lineHeight": "{label-small-bold-line-height}"
     }
   },
-  "~~doc-headings-large": {
+  "link-medium": {
     "$type": "typography",
     "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Regular",
-      "fontSize": {
-        "value": 48,
-        "unit": "px"
-      },
-      "lineHeight": 56,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
+      "fontFamily": "{link-medium-font-family}",
+      "fontSize": "{link-medium-font-size}",
+      "fontWeight": "{link-medium-font-weight}",
+      "letterSpacing": "{link-medium-kerning}",
+      "lineHeight": "{link-medium-line-height}"
     }
   },
-  "~~doc-headings-medium": {
+  "link-small": {
     "$type": "typography",
     "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Regular",
-      "fontSize": {
-        "value": 32,
-        "unit": "px"
-      },
-      "lineHeight": 40,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-headings-small": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Medium",
-      "fontSize": {
-        "value": 20,
-        "unit": "px"
-      },
-      "lineHeight": 24,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-large-bold": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Medium",
-      "fontSize": {
-        "value": 20,
-        "unit": "px"
-      },
-      "lineHeight": 28,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-large": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Regular",
-      "fontSize": {
-        "value": 20,
-        "unit": "px"
-      },
-      "lineHeight": 28,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-medium-bold": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Medium",
-      "fontSize": {
-        "value": 16,
-        "unit": "px"
-      },
-      "lineHeight": 24,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-medium": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Regular",
-      "fontSize": {
-        "value": 16,
-        "unit": "px"
-      },
-      "lineHeight": 24,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-small-bold": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Medium",
-      "fontSize": {
-        "value": 12,
-        "unit": "px"
-      },
-      "lineHeight": 16,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-small": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Regular",
-      "fontSize": {
-        "value": 12,
-        "unit": "px"
-      },
-      "lineHeight": 16,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-body-x-small": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-primary}",
-      "fontWeight": "Regular",
-      "fontSize": {
-        "value": 8,
-        "unit": "px"
-      },
-      "lineHeight": 12,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
-    }
-  },
-  "~~doc-others-token": {
-    "$type": "typography",
-    "$value": {
-      "fontFamily": "{~~doc-text-secondary}",
-      "fontWeight": "Medium",
-      "fontSize": {
-        "value": 12,
-        "unit": "px"
-      },
-      "lineHeight": 16,
-      "letterSpacing": {
-        "value": 0,
-        "unit": "px"
-      }
+      "fontFamily": "{link-small-font-family}",
+      "fontSize": "{link-small-font-size}",
+      "fontWeight": "{link-small-font-weight}",
+      "letterSpacing": "{link-small-kerning}",
+      "lineHeight": "{link-small-line-height}"
     }
   }
 }
