@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
@@ -81,10 +80,10 @@ fun TypographyScreen(
             Text("Small Italic", style = LocalTheme.current.typography.body.small.copy(fontStyle = FontStyle.Italic))
             Text("Small Underlined", style = LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.Underline))
             Text("Small Strikethrough", style = LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.LineThrough))
-            Text("Small Bold", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium))
-            Text("Small Bold Italic", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, fontStyle = FontStyle.Italic))
-            Text("Small Bold Underline", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, textDecoration = TextDecoration.Underline))
-            Text("Small Bold Strikethrough", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, textDecoration = TextDecoration.LineThrough))
+            Text("Small Bold", style = LocalTheme.current.typography.label.smallBold)
+            Text("Small Bold Italic", style = LocalTheme.current.typography.label.smallBold.copy(fontStyle = FontStyle.Italic))
+            Text("Small Bold Underline", style = LocalTheme.current.typography.label.smallBold.copy(textDecoration = TextDecoration.Underline))
+            Text("Small Bold Strikethrough", style = LocalTheme.current.typography.label.smallBold.copy(textDecoration = TextDecoration.LineThrough))
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

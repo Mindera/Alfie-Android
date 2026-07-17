@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -109,7 +108,7 @@ fun ProductCarousel(
                     Text(
                         text = actionText.toString(context),
                         color = c.neutrals800,
-                        style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, textDecoration = TextDecoration.Underline)
+                        style = LocalTheme.current.typography.label.smallBold.copy(textDecoration = TextDecoration.Underline)
                     )
                 }
             }

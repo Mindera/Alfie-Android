@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.currencySymbol
@@ -202,7 +201,7 @@ private fun FilterCategoryRow(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value,
-                style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium),
+                style = LocalTheme.current.typography.label.smallBold,
                 color = c.neutrals500
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))

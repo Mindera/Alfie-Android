@@ -76,8 +76,8 @@ private fun PriceSale(
 ) {
     val c = LocalTheme.current.primitive.colors
     val fullPriceStyle = when (size) {
-        PriceSize.Small -> LocalTheme.current.typography.label.small.copy(textDecoration = TextDecoration.LineThrough).copy(color = c.neutrals600)
-        PriceSize.Medium -> LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.LineThrough).copy(color = c.neutrals600)
+        PriceSize.Small -> LocalTheme.current.typography.label.small.copy(textDecoration = TextDecoration.LineThrough, color = c.neutrals600)
+        PriceSize.Medium -> LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.LineThrough, color = c.neutrals600)
     }
     val salePriceStyle = when (size) {
         PriceSize.Small -> LocalTheme.current.typography.body.small.copy(color = c.semanticError800)

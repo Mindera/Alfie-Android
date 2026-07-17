@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
@@ -118,7 +117,7 @@ private fun SortByButton(
             }
             Text(
                 text = item.text,
-                style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium)
+                style = LocalTheme.current.typography.label.smallBold
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing16))
         }

@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.debug.operational.R
@@ -43,7 +42,7 @@ private fun Logcat(log: List<String>) {
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
                 Text(
                     text = stringResource(R.string.log_bottom_sheet_label),
-                    style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium)
+                    style = LocalTheme.current.typography.label.smallBold
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
             }
