@@ -18,10 +18,10 @@ import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.repository.featuretoggle.model.FeatureToggle
 import com.mindera.alfie.repository.featuretoggle.model.FeatureToggleType
 import com.ramcosta.composedestinations.annotation.Destination
-import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 @Destination

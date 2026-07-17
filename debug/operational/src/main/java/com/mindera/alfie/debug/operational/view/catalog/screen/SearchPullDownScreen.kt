@@ -31,9 +31,9 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.search.SearchOverlay
 import com.ramcosta.composedestinations.annotation.Destination
-import com.mindera.alfie.designsystem.tokens.mediumBold
 
 private val imagesList = listOf(
     "https://images.pexels.com/photos/6667911/pexels-photo-6667911.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",

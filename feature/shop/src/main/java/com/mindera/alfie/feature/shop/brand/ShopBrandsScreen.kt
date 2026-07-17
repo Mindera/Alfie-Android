@@ -33,6 +33,7 @@ import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.component.searchbar.SearchBarWithCancelButton
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.brand.model.BrandEvent
@@ -42,7 +43,6 @@ import com.mindera.alfie.feature.shop.ui.ShopErrorScreen
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import kotlin.random.Random
-import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val EMPTY_CHARACTER: Char = ' '
 

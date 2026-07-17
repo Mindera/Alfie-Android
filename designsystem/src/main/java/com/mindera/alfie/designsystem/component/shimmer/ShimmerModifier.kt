@@ -46,8 +46,8 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
-import kotlinx.coroutines.delay
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import kotlinx.coroutines.delay
 
 private const val ALPHA_DURATION = 1000
 private const val BACKGROUND_DURATION = 500

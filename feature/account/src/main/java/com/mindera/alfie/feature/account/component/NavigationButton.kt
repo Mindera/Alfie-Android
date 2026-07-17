@@ -21,8 +21,8 @@ import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
-import com.mindera.alfie.feature.account.model.NavigationButtonUI
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.feature.account.model.NavigationButtonUI
 
 @Composable
 internal fun NavigationButton(

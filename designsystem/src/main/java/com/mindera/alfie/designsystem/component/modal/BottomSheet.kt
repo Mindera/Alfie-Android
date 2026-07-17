@@ -48,8 +48,8 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
-import kotlinx.coroutines.launch
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import kotlinx.coroutines.launch
 
 private const val MIN_HEIGHT_PERCENTAGE = 0.4F
 

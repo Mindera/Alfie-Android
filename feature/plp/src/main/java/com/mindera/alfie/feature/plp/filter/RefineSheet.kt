@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.currencySymbol
@@ -47,7 +48,6 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.feature.plp.R as PlpR
-import androidx.compose.ui.text.font.FontWeight
 
 /** Placeholder upper price cap; replace with BFF-supplied max when filter metadata is available. */
 private const val MAX_PRICE_CAP = 10_000f

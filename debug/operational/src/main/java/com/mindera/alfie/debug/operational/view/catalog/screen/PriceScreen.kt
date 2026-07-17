@@ -21,9 +21,9 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import okhttp3.internal.immutableListOf
-import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val prices: List<PriceType> = immutableListOf(
     PriceType.Default(

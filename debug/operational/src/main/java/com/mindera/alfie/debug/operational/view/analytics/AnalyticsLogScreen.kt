@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
@@ -35,9 +36,8 @@ import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.ramcosta.composedestinations.annotation.Destination
-import androidx.compose.ui.text.font.FontStyle
 import com.mindera.alfie.designsystem.tokens.mediumBold
+import com.ramcosta.composedestinations.annotation.Destination
 
 @Composable
 @Destination

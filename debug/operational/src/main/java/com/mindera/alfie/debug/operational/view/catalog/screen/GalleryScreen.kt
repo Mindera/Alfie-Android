@@ -22,10 +22,10 @@ import com.mindera.alfie.designsystem.component.image.ratio.DimensionConstraint.
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio.RATIO3x4
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Destination
 @Composable

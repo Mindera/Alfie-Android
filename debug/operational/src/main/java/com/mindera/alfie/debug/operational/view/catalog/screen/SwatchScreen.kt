@@ -25,8 +25,8 @@ import com.mindera.alfie.designsystem.component.swatch.SwatchType.PlainColor
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
-import com.ramcosta.composedestinations.annotation.Destination
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.ramcosta.composedestinations.annotation.Destination
 
 private val smallColorSwatchList = listOf(
     PlainColor(Color.Red),

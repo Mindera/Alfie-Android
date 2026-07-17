@@ -43,9 +43,9 @@ import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.flow.collectLatest
-import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 @Destination

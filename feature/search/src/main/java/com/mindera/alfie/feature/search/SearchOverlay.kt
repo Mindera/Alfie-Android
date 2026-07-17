@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
 import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch
@@ -54,8 +56,6 @@ import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handle
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.search.model.RecentSearch
-import androidx.compose.ui.text.style.TextDecoration
-import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Composable
 fun SearchOverlay(
