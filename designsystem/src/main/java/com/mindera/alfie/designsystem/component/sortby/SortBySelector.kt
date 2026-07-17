@@ -38,6 +38,7 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun SortBySelector(
@@ -117,7 +118,7 @@ private fun SortByButton(
             }
             Text(
                 text = item.text,
-                style = Theme.typography.smallBold
+                style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium)
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing16))
         }

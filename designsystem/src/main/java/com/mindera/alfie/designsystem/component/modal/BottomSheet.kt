@@ -49,6 +49,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.launch
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val MIN_HEIGHT_PERCENTAGE = 0.4F
 
@@ -153,7 +154,7 @@ private fun SheetTopBar(
         Spacer(modifier = Modifier.width(Theme.spacing.spacing12))
         Text(
             text = title,
-            style = Theme.typography.heading3,
+            style = LocalTheme.current.typography.heading.small,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

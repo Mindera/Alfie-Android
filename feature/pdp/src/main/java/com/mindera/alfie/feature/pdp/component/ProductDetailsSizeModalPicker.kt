@@ -74,7 +74,7 @@ private fun SizePickerItem(
             headlineContent = {
                 Text(
                     text = sizeUI.properties.text,
-                    style = Theme.typography.paragraph,
+                    style = LocalTheme.current.typography.body.medium,
                     color = textColor
                 )
             },
@@ -83,7 +83,7 @@ private fun SizePickerItem(
                     {
                         Text(
                             text = stringResource(id = R.string.product_details_size_out_of_stock),
-                            style = Theme.typography.tiny,
+                            style = LocalTheme.current.typography.label.small,
                             color = textColor
                         )
                     }

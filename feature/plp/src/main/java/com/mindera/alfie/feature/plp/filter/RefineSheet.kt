@@ -47,6 +47,7 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import com.mindera.alfie.feature.plp.R as PlpR
+import androidx.compose.ui.text.font.FontWeight
 
 /** Placeholder upper price cap; replace with BFF-supplied max when filter metadata is available. */
 private const val MAX_PRICE_CAP = 10_000f
@@ -194,14 +195,14 @@ private fun FilterCategoryRow(
     ) {
         Text(
             text = label,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
             modifier = Modifier.weight(1f)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value,
-                style = Theme.typography.smallBold,
+                style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium),
                 color = c.neutrals500
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
@@ -228,7 +229,7 @@ private fun DisabledFilterCategoryRow(label: String) {
     ) {
         Text(
             text = label,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
             modifier = Modifier.weight(1f)
         )
@@ -383,11 +384,11 @@ private fun PriceTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, style = Theme.typography.small) },
-        prefix = { Text(currencySymbol, style = Theme.typography.paragraph) },
+        label = { Text(label, style = LocalTheme.current.typography.body.small) },
+        prefix = { Text(currencySymbol, style = LocalTheme.current.typography.body.medium) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        textStyle = Theme.typography.paragraph,
+        textStyle = LocalTheme.current.typography.body.medium,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = c.neutrals800,
             unfocusedBorderColor = c.neutrals200,

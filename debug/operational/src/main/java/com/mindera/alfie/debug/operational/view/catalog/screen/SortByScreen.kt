@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Destination
 @Composable
@@ -35,7 +36,7 @@ fun SortByScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing16),
             text = "Sort By Component",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing40))
@@ -64,7 +65,7 @@ fun SortByScreen(
 
         Text(
             text = "Sort By",
-            style = Theme.typography.paragraphLarge,
+            style = LocalTheme.current.typography.body.large,
             modifier = Modifier.padding(horizontal = Theme.spacing.spacing16)
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

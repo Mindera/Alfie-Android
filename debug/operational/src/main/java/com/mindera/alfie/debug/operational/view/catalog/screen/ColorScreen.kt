@@ -40,7 +40,7 @@ fun ColorScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Primary",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -52,7 +52,7 @@ fun ColorScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Secondary",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -71,7 +71,7 @@ private fun BlackAndWhiteSection() {
     ) {
         Text(
             text = "Mono",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals600
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -96,7 +96,7 @@ private fun MonoSection() {
     ) {
         Text(
             text = "Mono",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals600
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -129,7 +129,7 @@ private fun GreenSection() {
     ) {
         Text(
             text = "Green",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals600
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -162,7 +162,7 @@ private fun RedSection() {
     ) {
         Text(
             text = "Red",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals600
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -202,7 +202,7 @@ private fun ColorItem(
         Text(
             text = text,
             color = c.neutrals600,
-            style = Theme.typography.tiny
+            style = LocalTheme.current.typography.label.small
         )
     }
 }

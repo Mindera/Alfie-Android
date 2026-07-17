@@ -25,6 +25,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Destination
 @Composable
@@ -68,13 +69,13 @@ internal fun GalleryScreen(
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             text = "COUNTRY ROAD",
-            style = Theme.typography.heading2,
+            style = LocalTheme.current.typography.heading.medium,
             modifier = Modifier.padding(horizontal = Theme.spacing.spacing16)
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Text(
             text = "VERIFIED AUSTRALIAN COTTON HERITAGE SWEAT",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             modifier = Modifier.padding(horizontal = Theme.spacing.spacing16)
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

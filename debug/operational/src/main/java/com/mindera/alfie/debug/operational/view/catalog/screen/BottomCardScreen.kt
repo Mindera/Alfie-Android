@@ -31,6 +31,8 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Destination
 @Composable
@@ -65,13 +67,13 @@ fun BottomCardScreen(topBarState: TopBarState) {
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
                 Text(
                     text = "COUNTRY ROAD",
-                    style = Theme.typography.heading2,
+                    style = LocalTheme.current.typography.heading.medium,
                     modifier = Modifier.padding(horizontal = Theme.spacing.spacing16)
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
                 Text(
                     text = "VERIFIED AUSTRALIAN COTTON HERITAGE SWEAT",
-                    style = Theme.typography.paragraph,
+                    style = LocalTheme.current.typography.body.medium,
                     modifier = Modifier.padding(horizontal = Theme.spacing.spacing16)
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -85,7 +87,7 @@ fun BottomCardScreen(topBarState: TopBarState) {
                 repeat(times = 100) {
                     Text(
                         text = "Lorem Ipsum $it",
-                        style = Theme.typography.paragraph,
+                        style = LocalTheme.current.typography.body.medium,
                         modifier = Modifier.padding(horizontal = Theme.spacing.spacing16)
                     )
                     Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -135,18 +137,18 @@ private fun ModalContent() {
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = "How To Measure",
-        style = Theme.typography.heading3
+        style = LocalTheme.current.typography.heading.small
     )
     Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = "Bust",
-        style = Theme.typography.paragraphBold
+        style = LocalTheme.current.typography.body.mediumBold
     )
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = "Measure around the fullest part of your chest.",
-        style = Theme.typography.paragraph
+        style = LocalTheme.current.typography.body.medium
     )
     Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
 }

@@ -337,7 +337,7 @@ private fun ResultCounter(
     ) {
         Text(
             text = stringResource(id = R.string.results_counter, resultCount),
-            style = Theme.typography.tiny,
+            style = LocalTheme.current.typography.label.small,
             color = c.neutrals500
         )
     }

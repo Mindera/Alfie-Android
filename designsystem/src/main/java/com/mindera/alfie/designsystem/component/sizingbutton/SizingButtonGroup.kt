@@ -88,7 +88,7 @@ private fun SizingButton(
                     text = buttonText,
                     overrideBorderThickness = 2.dp,
                     shape = Theme.shape.small,
-                    overrideTextStyle = Theme.typography.paragraph,
+                    overrideTextStyle = LocalTheme.current.typography.body.medium,
                     onClick = { Unit }
                 )
             } else {
@@ -104,7 +104,7 @@ private fun SizingButton(
                         disabledContentColor = c.neutrals200
                     ),
                     overrideTextColor = c.neutrals600,
-                    overrideTextStyle = Theme.typography.paragraph,
+                    overrideTextStyle = LocalTheme.current.typography.body.medium,
                     onClick = { onClick() }
                 )
             }
@@ -124,7 +124,7 @@ private fun SizingButton(
                     disabledContentColor = c.neutrals100
                 ),
                 overrideTextDisabledColor = c.neutrals300,
-                overrideTextStyle = Theme.typography.paragraph,
+                overrideTextStyle = LocalTheme.current.typography.body.medium,
                 onClick = { Unit }
             )
         }

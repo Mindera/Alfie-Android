@@ -37,6 +37,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Destination
 @Composable
@@ -116,7 +118,7 @@ private fun EmptyBagScreen() {
             )
             Text(
                 text = "Bag",
-                style = Theme.typography.paragraphBold
+                style = LocalTheme.current.typography.body.mediumBold
             )
         }
     }

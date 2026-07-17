@@ -102,7 +102,7 @@ private fun ProductImage(
             productCard.label?.let { label ->
                 Text(
                     text = label,
-                    style = Theme.typography.tinyBold,
+                    style = LocalTheme.current.typography.label.smallBold,
                     color = c.neutrals0,
                     modifier = Modifier
                         .align(Alignment.TopStart)
@@ -146,7 +146,7 @@ private fun ProductDescription(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = productCard.brand,
-                style = Theme.typography.tiny,
+                style = LocalTheme.current.typography.label.small,
                 color = c.neutrals500,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -161,7 +161,7 @@ private fun ProductDescription(
             Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
             Text(
                 text = productCard.name,
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals800,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,

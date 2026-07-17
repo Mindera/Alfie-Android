@@ -56,7 +56,7 @@ fun SearchBarWithCancelButton(
             ) {
                 Text(
                     text = stringResource(R.string.search_cancel),
-                    style = Theme.typography.small,
+                    style = LocalTheme.current.typography.body.small,
                     color = c.neutrals800
                 )
             }

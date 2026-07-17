@@ -42,6 +42,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Destination
 @Composable
@@ -81,7 +82,7 @@ fun SnackbarScreen(
                 .padding(Theme.spacing.spacing12),
             textAlign = TextAlign.Start,
             text = "Options",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -165,7 +166,7 @@ private fun SwitchRow(
     ) {
         Text(
             text = text,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Switch(
             checked = checked,

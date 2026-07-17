@@ -23,6 +23,7 @@ import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.R as FeatureR
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 internal fun ShopErrorScreen(
@@ -48,7 +49,7 @@ internal fun ShopErrorScreen(
                     notFoundRes = R.string.shop_error_not_found
                 )
             ),
-            style = Theme.typography.paragraphLarge
+            style = LocalTheme.current.typography.body.large
         )
         if (onRetry != null) {
             Spacer(modifier = Modifier.size(Theme.spacing.spacing16))

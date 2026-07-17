@@ -39,6 +39,8 @@ import com.mindera.alfie.feature.wishlist.models.WishlistProductUi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Destination(navArgsDelegate = WishlistNavArgs::class)
 @Composable
@@ -128,7 +130,7 @@ private fun EmptyBagScreen() {
             )
             Text(
                 text = "Wishlist",
-                style = Theme.typography.paragraphBold
+                style = LocalTheme.current.typography.body.mediumBold
             )
         }
     }

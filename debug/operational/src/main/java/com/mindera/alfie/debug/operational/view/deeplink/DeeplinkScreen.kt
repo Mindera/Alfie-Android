@@ -33,6 +33,8 @@ import com.mindera.alfie.designsystem.component.input.TextFieldType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Destination
 @Composable
@@ -80,7 +82,7 @@ private fun DeeplinkScreenSection(
     Column(modifier = Modifier.padding(vertical = Theme.spacing.spacing16)) {
         Text(
             text = section.name,
-            style = Theme.typography.paragraphBold
+            style = LocalTheme.current.typography.body.mediumBold
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing4))
         HorizontalDivider()
@@ -103,7 +105,7 @@ private fun CustomDeeplinkSection(onDeeplinkClick: ClickEventOneArg<String>) {
     Column(modifier = Modifier.padding(vertical = Theme.spacing.spacing16)) {
         Text(
             text = "Deep linking - Custom path",
-            style = Theme.typography.paragraphBold
+            style = LocalTheme.current.typography.body.mediumBold
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing4))
         HorizontalDivider()

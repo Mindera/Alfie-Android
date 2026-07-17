@@ -19,6 +19,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Destination
 @Composable
@@ -37,7 +38,7 @@ fun SwitchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Switch",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -51,7 +52,7 @@ fun SwitchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Switch on disabled",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -66,7 +67,7 @@ fun SwitchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Switch off disabled",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))

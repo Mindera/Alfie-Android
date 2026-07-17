@@ -99,7 +99,7 @@ private fun Counter(
                         ) {
                             Text(
                                 text = it,
-                                style = Theme.typography.tiny
+                                style = LocalTheme.current.typography.label.small
                             )
                         }
                     }

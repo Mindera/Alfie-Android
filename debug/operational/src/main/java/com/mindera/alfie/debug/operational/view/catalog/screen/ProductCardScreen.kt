@@ -27,6 +27,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.delay
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 @Destination
@@ -83,7 +84,7 @@ private fun Header(title: String) {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing24))
         Text(
             text = title,
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing24))

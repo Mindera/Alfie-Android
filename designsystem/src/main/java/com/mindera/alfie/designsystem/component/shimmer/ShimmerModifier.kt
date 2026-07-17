@@ -47,6 +47,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import kotlinx.coroutines.delay
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val ALPHA_DURATION = 1000
 private const val BACKGROUND_DURATION = 500
@@ -264,12 +265,12 @@ private fun PreviewShimmerModifier() {
         Text(
             text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sagittis, leo nec ultricies sodales, " +
                 "tellus diam bibendum erat, vel scelerisque augue magna ut arcu. Nulla eu lacinia leo.",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             modifier = Modifier
                 .fillMaxWidth()
                 .shimmer(
                     isShimmering = isShimmerEnabled,
-                    lineHeight = Theme.typography.paragraph.lineHeight,
+                    lineHeight = LocalTheme.current.typography.body.medium.lineHeight,
                     lines = 4,
                     lastLineFraction = .75f,
                     cornerRadius = 4.dp

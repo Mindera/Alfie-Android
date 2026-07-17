@@ -25,6 +25,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Destination
 @Composable
@@ -78,7 +79,7 @@ private fun ShadowRow(
     elements: Map<ShadowType, String>
 ) {
     Spacer(modifier = Modifier.height(Theme.spacing.spacing20))
-    Text(text = title, style = Theme.typography.heading2)
+    Text(text = title, style = LocalTheme.current.typography.heading.medium)
     Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
 
     Row(
@@ -118,7 +119,7 @@ private fun ShadowItem(shadowType: ShadowType, label: String) {
         ) {
             Text(
                 text = label,
-                style = Theme.typography.paragraphBold
+                style = LocalTheme.current.typography.body.mediumBold
             )
         }
     }

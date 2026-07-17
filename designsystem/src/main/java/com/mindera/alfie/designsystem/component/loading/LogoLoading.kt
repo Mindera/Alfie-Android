@@ -46,7 +46,7 @@ fun LogoLoading(
             Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
             Text(
                 text = it,
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals800
             )
         }

@@ -42,6 +42,7 @@ import com.mindera.alfie.feature.shop.ui.ShopErrorScreen
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import kotlin.random.Random
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val EMPTY_CHARACTER: Char = ' '
 
@@ -146,7 +147,7 @@ private fun LazyItemScope.AlphabeticalSectionHeader(headerCharacter: Char) {
                     xScale = scale
                 ),
             text = headerCharacter.toString(),
-            style = Theme.typography.paragraphLarge.copy(fontWeight = FontWeight.Bold)
+            style = LocalTheme.current.typography.body.large.copy(fontWeight = FontWeight.Bold)
         )
     }
 }

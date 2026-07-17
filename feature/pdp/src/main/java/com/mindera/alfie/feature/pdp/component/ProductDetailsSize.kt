@@ -38,6 +38,7 @@ import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import kotlinx.collections.immutable.toImmutableList
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 private val MIN_SIZE_MODAL_PICKER_BOX_HEIGHT = 44.dp
 
@@ -94,7 +95,7 @@ private fun SizeModalPicker(
                 .weight(1F)
                 .padding(vertical = Theme.spacing.spacing12),
             text = title,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = color
         )
 
@@ -176,8 +177,8 @@ private fun LoadingPlaceholder() {
 
 @Composable
 private fun getSizeText(customText: String): AnnotatedString {
-    val styleBold = Theme.typography.paragraphBold
-    val styleNormal = Theme.typography.paragraph
+    val styleBold = LocalTheme.current.typography.body.mediumBold
+    val styleNormal = LocalTheme.current.typography.body.medium
     return buildAnnotatedString {
         withStyle(
             style = SpanStyle(

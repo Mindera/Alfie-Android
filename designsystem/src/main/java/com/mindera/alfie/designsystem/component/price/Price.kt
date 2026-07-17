@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import androidx.compose.ui.text.style.TextDecoration
 
 private const val PRICE_RANGE_SEPARATOR = "-"
 
@@ -56,8 +57,8 @@ private fun PriceDefault(
     modifier: Modifier = Modifier
 ) {
     val style = when (size) {
-        PriceSize.Small -> Theme.typography.small
-        PriceSize.Medium -> Theme.typography.paragraph
+        PriceSize.Small -> LocalTheme.current.typography.body.small
+        PriceSize.Medium -> LocalTheme.current.typography.body.medium
     }
     Text(
         modifier = modifier,
@@ -75,12 +76,12 @@ private fun PriceSale(
 ) {
     val c = LocalTheme.current.primitive.colors
     val fullPriceStyle = when (size) {
-        PriceSize.Small -> Theme.typography.tinyStrikethrough.copy(color = c.neutrals600)
-        PriceSize.Medium -> Theme.typography.smallStrikethrough.copy(color = c.neutrals600)
+        PriceSize.Small -> LocalTheme.current.typography.label.small.copy(textDecoration = TextDecoration.LineThrough).copy(color = c.neutrals600)
+        PriceSize.Medium -> LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.LineThrough).copy(color = c.neutrals600)
     }
     val salePriceStyle = when (size) {
-        PriceSize.Small -> Theme.typography.small.copy(color = c.semanticError800)
-        PriceSize.Medium -> Theme.typography.paragraph.copy(color = c.semanticError800)
+        PriceSize.Small -> LocalTheme.current.typography.body.small.copy(color = c.semanticError800)
+        PriceSize.Medium -> LocalTheme.current.typography.body.medium.copy(color = c.semanticError800)
     }
     when (orientation) {
         PriceOrientation.Horizontal -> SaleHorizontal(
@@ -106,8 +107,8 @@ private fun PriceRange(
     modifier: Modifier = Modifier
 ) {
     val style = when (size) {
-        PriceSize.Small -> Theme.typography.small
-        PriceSize.Medium -> Theme.typography.paragraph
+        PriceSize.Small -> LocalTheme.current.typography.body.small
+        PriceSize.Medium -> LocalTheme.current.typography.body.medium
     }
     when (orientation) {
         PriceOrientation.Horizontal -> RangeHorizontal(

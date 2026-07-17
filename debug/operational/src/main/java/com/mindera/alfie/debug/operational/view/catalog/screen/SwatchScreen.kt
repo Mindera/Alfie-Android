@@ -26,6 +26,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val smallColorSwatchList = listOf(
     PlainColor(Color.Red),
@@ -81,7 +82,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Small size with colors",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -98,7 +99,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Small With Images",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -115,7 +116,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Large size with colors",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -132,7 +133,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Large With Images",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -149,7 +150,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Large size with colors and some disabled",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -166,7 +167,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Large With Images and some disabled",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -188,7 +189,7 @@ fun SwatchScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Mixed list",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.account.model.NavigationButtonUI
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 internal fun NavigationButton(
@@ -47,7 +48,7 @@ internal fun NavigationButton(
                 headlineContent = {
                     Text(
                         text = stringResource(id = item.title),
-                        style = Theme.typography.paragraph
+                        style = LocalTheme.current.typography.body.medium
                     )
                 },
                 trailingContent = {

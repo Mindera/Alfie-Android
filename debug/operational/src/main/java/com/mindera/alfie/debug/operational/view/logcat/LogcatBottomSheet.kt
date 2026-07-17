@@ -19,6 +19,8 @@ import com.mindera.alfie.debug.operational.R
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
+import androidx.compose.ui.text.font.FontWeight
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Destination(style = DestinationStyleBottomSheet::class)
 @Composable
@@ -41,14 +43,14 @@ private fun Logcat(log: List<String>) {
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
                 Text(
                     text = stringResource(R.string.log_bottom_sheet_label),
-                    style = Theme.typography.smallBold
+                    style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium)
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
             }
             items(items = log) {
                 Text(
                     text = it,
-                    style = Theme.typography.tiny
+                    style = LocalTheme.current.typography.label.small
                 )
             }
         }

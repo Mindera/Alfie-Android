@@ -94,7 +94,7 @@ private fun ScrollableTabSection(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = title,
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))

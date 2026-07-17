@@ -45,6 +45,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.flow.collectLatest
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 @Destination
@@ -103,7 +104,7 @@ private fun EnvironmentContent(
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         Text(
             text = stringResource(id = R.string.environment_choose_label),
-            style = Theme.typography.small
+            style = LocalTheme.current.typography.body.small
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
         RadioButtonGroup(

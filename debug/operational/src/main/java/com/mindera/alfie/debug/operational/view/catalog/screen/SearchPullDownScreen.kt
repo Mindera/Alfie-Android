@@ -33,6 +33,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.search.SearchOverlay
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 private val imagesList = listOf(
     "https://images.pexels.com/photos/6667911/pexels-photo-6667911.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
@@ -137,12 +138,12 @@ private fun ProductCardGridComponent() {
                     Image(url = item)
                     Text(
                         text = "Product $index",
-                        style = Theme.typography.paragraphBold,
+                        style = LocalTheme.current.typography.body.mediumBold,
                         modifier = Modifier.padding(Theme.spacing.spacing6)
                     )
                     Text(
                         text = "Description $index",
-                        style = Theme.typography.paragraphBold,
+                        style = LocalTheme.current.typography.body.mediumBold,
                         modifier = Modifier.padding(Theme.spacing.spacing12)
                     )
                 }

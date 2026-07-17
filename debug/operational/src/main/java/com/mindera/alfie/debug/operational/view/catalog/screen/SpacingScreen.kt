@@ -60,7 +60,7 @@ fun SpacingScreen(topBarState: TopBarState) {
             Text(
                 modifier = Modifier.padding(Theme.spacing.spacing12),
                 text = "Spacing",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -92,7 +92,7 @@ private fun SpacingItem(spacing: Dp, name: String) {
         )
         Text(
             text = name,
-            style = Theme.typography.small
+            style = LocalTheme.current.typography.body.small
         )
     }
 }

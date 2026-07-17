@@ -16,6 +16,11 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Destination
 @Composable
@@ -33,70 +38,70 @@ fun TypographyScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Heading",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Column(modifier = Modifier.padding(horizontal = Theme.spacing.spacing12)) {
-            Text(text = "Heading 1", style = Theme.typography.heading1)
-            Text(text = "Heading 2", style = Theme.typography.heading2)
-            Text(text = "Heading 3", style = Theme.typography.heading3)
+            Text(text = "Heading 1", style = LocalTheme.current.typography.display.large)
+            Text(text = "Heading 2", style = LocalTheme.current.typography.heading.medium)
+            Text(text = "Heading 3", style = LocalTheme.current.typography.heading.small)
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Paragraph",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
 
         Column(modifier = Modifier.padding(horizontal = Theme.spacing.spacing12)) {
-            Text("Paragraph", style = Theme.typography.paragraph)
-            Text("Paragraph Italic", style = Theme.typography.paragraphItalic)
-            Text("Paragraph Underlined", style = Theme.typography.paragraphUnderlined)
-            Text("Paragraph Strikethrough", style = Theme.typography.paragraphStrikethrough)
-            Text("Paragraph Bold", style = Theme.typography.paragraphBold)
-            Text("Paragraph Bold Italic", style = Theme.typography.paragraphBoldItalic)
-            Text("Paragraph Bold Underline", style = Theme.typography.paragraphBoldUnderline)
-            Text("Paragraph Strikethrough", style = Theme.typography.paragraphBoldStrikethrough)
+            Text("Paragraph", style = LocalTheme.current.typography.body.medium)
+            Text("Paragraph Italic", style = LocalTheme.current.typography.body.medium.copy(fontStyle = FontStyle.Italic))
+            Text("Paragraph Underlined", style = LocalTheme.current.typography.body.medium.copy(textDecoration = TextDecoration.Underline))
+            Text("Paragraph Strikethrough", style = LocalTheme.current.typography.body.medium.copy(textDecoration = TextDecoration.LineThrough))
+            Text("Paragraph Bold", style = LocalTheme.current.typography.body.mediumBold)
+            Text("Paragraph Bold Italic", style = LocalTheme.current.typography.body.mediumBold.copy(fontStyle = FontStyle.Italic))
+            Text("Paragraph Bold Underline", style = LocalTheme.current.typography.body.mediumBold.copy(textDecoration = TextDecoration.Underline))
+            Text("Paragraph Strikethrough", style = LocalTheme.current.typography.body.mediumBold.copy(textDecoration = TextDecoration.LineThrough))
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Small",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
 
         Column(modifier = Modifier.padding(horizontal = Theme.spacing.spacing12)) {
-            Text("Small Italic", style = Theme.typography.smallItalic)
-            Text("Small Underlined", style = Theme.typography.smallUnderlined)
-            Text("Small Strikethrough", style = Theme.typography.smallStrikethrough)
-            Text("Small Bold", style = Theme.typography.smallBold)
-            Text("Small Bold Italic", style = Theme.typography.smallBoldItalic)
-            Text("Small Bold Underline", style = Theme.typography.smallBoldUnderline)
-            Text("Small Bold Strikethrough", style = Theme.typography.smallBoldStrikethrough)
+            Text("Small Italic", style = LocalTheme.current.typography.body.small.copy(fontStyle = FontStyle.Italic))
+            Text("Small Underlined", style = LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.Underline))
+            Text("Small Strikethrough", style = LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.LineThrough))
+            Text("Small Bold", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium))
+            Text("Small Bold Italic", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, fontStyle = FontStyle.Italic))
+            Text("Small Bold Underline", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, textDecoration = TextDecoration.Underline))
+            Text("Small Bold Strikethrough", style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, textDecoration = TextDecoration.LineThrough))
         }
 
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Tiny",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
 
         Column(modifier = Modifier.padding(horizontal = Theme.spacing.spacing12)) {
-            Text("Tiny", style = Theme.typography.tiny)
-            Text("Tiny Italic", style = Theme.typography.tinyItalic)
-            Text("Tiny Bold", style = Theme.typography.tinyBold)
-            Text("Tiny Bold Italic", style = Theme.typography.tinyBoldItalic)
-            Text("Tiny Bold Underline", style = Theme.typography.tinyBoldUnderline)
+            Text("Tiny", style = LocalTheme.current.typography.label.small)
+            Text("Tiny Italic", style = LocalTheme.current.typography.label.small.copy(fontStyle = FontStyle.Italic))
+            Text("Tiny Bold", style = LocalTheme.current.typography.label.smallBold)
+            Text("Tiny Bold Italic", style = LocalTheme.current.typography.label.smallBold.copy(fontStyle = FontStyle.Italic))
+            Text("Tiny Bold Underline", style = LocalTheme.current.typography.label.smallBold.copy(textDecoration = TextDecoration.Underline))
         }
     }
 }

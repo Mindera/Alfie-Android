@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val actionIcons = listOf(
     AlfieIcons.LegacyArrowDown,
@@ -119,7 +120,7 @@ fun IconsScreen(
             Text(
                 modifier = Modifier.padding(Theme.spacing.spacing12),
                 text = "Action",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
         }
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
@@ -142,7 +143,7 @@ fun IconsScreen(
             Text(
                 modifier = Modifier.padding(Theme.spacing.spacing12),
                 text = "Information",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
         }
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {

@@ -181,7 +181,7 @@ fun SegmentedControlItem(
             }
             Text(
                 text = stringResource(resource = segment.label),
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = contentColor

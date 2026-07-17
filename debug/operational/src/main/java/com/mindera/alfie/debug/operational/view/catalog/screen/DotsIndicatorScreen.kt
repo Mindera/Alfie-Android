@@ -26,6 +26,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlin.random.Random
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val PAGER_SIZE = 3
 
@@ -67,7 +68,7 @@ private fun DotsIndicatorSection(
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = title,
-        style = Theme.typography.heading3
+        style = LocalTheme.current.typography.heading.small
     )
     HorizontalDivider()
     Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

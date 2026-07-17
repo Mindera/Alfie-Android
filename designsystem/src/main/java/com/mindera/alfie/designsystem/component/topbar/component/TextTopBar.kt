@@ -20,6 +20,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val PADDING_END_DEFAULT = 16.dp
 private val PADDING_ICON_EQUIVALENT = Theme.iconSize.large
@@ -97,7 +98,7 @@ private fun TopBarScope.CenterTopBar(
                     .fillMaxWidth()
                     .testTag(HOME_TITLE_HEADER),
                 text = title.title,
-                style = Theme.typography.paragraphLarge,
+                style = LocalTheme.current.typography.body.large,
                 textAlign = TextAlign.Center
             )
         }
@@ -123,7 +124,7 @@ private fun TopBarScope.LeftAlignedTopBar(
                     .fillMaxWidth()
                     .testTag(HOME_TITLE_HEADER),
                 text = title.title,
-                style = Theme.typography.heading1,
+                style = LocalTheme.current.typography.display.large,
                 textAlign = TextAlign.Start
             )
         }

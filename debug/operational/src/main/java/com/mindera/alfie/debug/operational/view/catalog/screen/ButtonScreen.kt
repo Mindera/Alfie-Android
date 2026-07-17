@@ -43,6 +43,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val COLUMN_COUNT = 2
 
@@ -65,7 +66,7 @@ fun ButtonScreen(topBarState: TopBarState) {
             Text(
                 modifier = Modifier.padding(vertical = Theme.spacing.spacing12),
                 text = "Properties",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
         }
         item(span = { GridItemSpan(maxCurrentLineSpan) }) {
@@ -92,7 +93,7 @@ fun ButtonScreen(topBarState: TopBarState) {
                         Text(
                             modifier = Modifier.padding(Theme.spacing.spacing12),
                             text = "Enabled",
-                            style = Theme.typography.paragraph
+                            style = LocalTheme.current.typography.body.medium
                         )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -103,7 +104,7 @@ fun ButtonScreen(topBarState: TopBarState) {
                         Text(
                             modifier = Modifier.padding(Theme.spacing.spacing12),
                             text = "Loading",
-                            style = Theme.typography.paragraph
+                            style = LocalTheme.current.typography.body.medium
                         )
                     }
                 }
@@ -114,7 +115,7 @@ fun ButtonScreen(topBarState: TopBarState) {
             Text(
                 modifier = Modifier.padding(vertical = Theme.spacing.spacing12),
                 text = "Buttons",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
         }
 
@@ -187,7 +188,7 @@ private fun ShowButtonOptions(
         Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
         Text(
             text = type.name,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
         Button(

@@ -187,7 +187,7 @@ private fun BottomBarItem(
             Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
             Text(
                 text = label,
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 color = color
             )
         }

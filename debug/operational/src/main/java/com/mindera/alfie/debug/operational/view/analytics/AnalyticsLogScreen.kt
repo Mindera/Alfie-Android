@@ -36,6 +36,8 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
+import androidx.compose.ui.text.font.FontStyle
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Composable
 @Destination
@@ -136,7 +138,7 @@ private fun Dropdown(
             label = {
                 Text(
                     text = stringResource(id = R.string.analytics_log_screen_trackers_label),
-                    style = Theme.typography.paragraph
+                    style = LocalTheme.current.typography.body.medium
                 )
             }
         )
@@ -149,7 +151,7 @@ private fun Dropdown(
                     text = {
                         Text(
                             text = it,
-                            style = Theme.typography.small
+                            style = LocalTheme.current.typography.body.small
                         )
                     },
                     onClick = {
@@ -170,22 +172,22 @@ private fun Event(analyticsLogData: AnalyticsLogData) {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             text = analyticsLogData.tracker,
-            style = Theme.typography.tiny,
+            style = LocalTheme.current.typography.label.small,
             color = c.neutrals400
         )
         Text(
             text = analyticsLogData.timestamp,
-            style = Theme.typography.tinyItalic,
+            style = LocalTheme.current.typography.label.small.copy(fontStyle = FontStyle.Italic),
             color = c.neutrals500
         )
         Text(
             text = analyticsLogData.event,
-            style = Theme.typography.paragraphBold
+            style = LocalTheme.current.typography.body.mediumBold
         )
         analyticsLogData.params.forEach { (key, value) ->
             Text(
                 text = "$key: $value",
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals500
             )
         }

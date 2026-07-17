@@ -58,7 +58,7 @@ internal fun HorizontalProductCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = productCard.brand,
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 color = c.neutrals800,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -73,7 +73,7 @@ internal fun HorizontalProductCard(
             Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
             Text(
                 text = productCard.name,
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 color = c.neutrals500,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -97,13 +97,13 @@ internal fun HorizontalProductCard(
             ) {
                 Text(
                     text = stringResource(id = R.string.product_card_color),
-                    style = Theme.typography.tiny,
+                    style = LocalTheme.current.typography.label.small,
                     color = c.neutrals500
                 )
                 Spacer(modifier = Modifier.size(Theme.spacing.spacing8))
                 Text(
                     text = productCard.color,
-                    style = Theme.typography.tiny,
+                    style = LocalTheme.current.typography.label.small,
                     color = c.neutrals600
                 )
             }
@@ -119,13 +119,13 @@ internal fun HorizontalProductCard(
             ) {
                 Text(
                     text = stringResource(id = R.string.product_card_size),
-                    style = Theme.typography.tiny,
+                    style = LocalTheme.current.typography.label.small,
                     color = c.neutrals500
                 )
                 Spacer(modifier = Modifier.size(Theme.spacing.spacing8))
                 Text(
                     text = productCard.size,
-                    style = Theme.typography.tiny,
+                    style = LocalTheme.current.typography.label.small,
                     color = c.neutrals600
                 )
             }

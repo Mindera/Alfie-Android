@@ -25,6 +25,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val sizingOptions = persistentListOf(
     SizingButtonProperties(
@@ -68,7 +69,7 @@ fun SizingButtonsScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Sizing",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider(dividerType = DividerType.Solid1Mono100)
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

@@ -46,7 +46,7 @@ fun LoadingScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Loading ",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -66,7 +66,7 @@ fun LoadingScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Loading with label",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -86,7 +86,7 @@ fun LoadingScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Loading with logo",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -107,7 +107,7 @@ fun LoadingScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Loading with logo and label",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))

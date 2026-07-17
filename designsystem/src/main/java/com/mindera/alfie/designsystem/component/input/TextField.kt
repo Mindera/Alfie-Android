@@ -190,7 +190,7 @@ private fun LabelRow(
         val modifierLabel = if (isMandatory.not()) Modifier.weight(1F) else Modifier
         Text(
             text = label,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             maxLines = 1,
             overflow = Ellipsis,
             color = labelTextColor,
@@ -199,7 +199,7 @@ private fun LabelRow(
         if (isMandatory) {
             Text(
                 text = REQUIRED_LABEL,
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = labelRequiredTextColor,
                 modifier = Modifier.weight(1F)
             )
@@ -207,7 +207,7 @@ private fun LabelRow(
         if (showCounter) {
             Text(
                 text = stringResource(id = R.string.text_field_counter, counterValue),
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = counterTextColor
             )
         }
@@ -247,7 +247,7 @@ private fun TextField(
                 color = borderColor,
                 shape = Theme.shape.extraSmall
             ),
-        textStyle = Theme.typography.paragraph,
+        textStyle = LocalTheme.current.typography.body.medium,
         onValueChange = { term ->
             onTextChange(term)
         },
@@ -273,7 +273,7 @@ private fun TextField(
                     DefaultVisibilityAnimation(isVisible = value.isEmpty()) {
                         Text(
                             text = placeholderText,
-                            style = Theme.typography.paragraph,
+                            style = LocalTheme.current.typography.body.medium,
                             color = placeholderTextColor,
                             maxLines = 1
                         )
@@ -329,7 +329,7 @@ private fun SupportTextRow(
         }
         Text(
             text = supportComponent?.text.orEmpty(),
-            style = Theme.typography.small,
+            style = LocalTheme.current.typography.body.small,
             maxLines = 2,
             overflow = Ellipsis,
             color = supportTextColor

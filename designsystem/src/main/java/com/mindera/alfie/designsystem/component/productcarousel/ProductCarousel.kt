@@ -45,6 +45,9 @@ import com.mindera.alfie.designsystem.component.productcard.size.VerticalProduct
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.persistentListOf
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -85,14 +88,14 @@ fun ProductCarousel(
                 title?.let {
                     Text(
                         text = title.toString(context),
-                        style = Theme.typography.paragraphBold
+                        style = LocalTheme.current.typography.body.mediumBold
                     )
                 }
                 description?.let {
                     Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
                     Text(
                         text = description.toString(context),
-                        style = Theme.typography.paragraph
+                        style = LocalTheme.current.typography.body.medium
                     )
                 }
             }
@@ -106,7 +109,7 @@ fun ProductCarousel(
                     Text(
                         text = actionText.toString(context),
                         color = c.neutrals800,
-                        style = Theme.typography.smallBoldUnderline
+                        style = LocalTheme.current.typography.body.small.copy(fontWeight = FontWeight.Medium, textDecoration = TextDecoration.Underline)
                     )
                 }
             }

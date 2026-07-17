@@ -36,6 +36,7 @@ import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.coroutines.delay
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val SHIMMER_TIME = 8000L
 
@@ -59,7 +60,7 @@ fun ShimmerScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Skeleton Animation",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Image(
@@ -74,13 +75,13 @@ fun ShimmerScreen(topBarState: TopBarState) {
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             text = "TOMMY HILFIGER",
-            style = Theme.typography.heading2,
+            style = LocalTheme.current.typography.heading.medium,
             modifier = Modifier.shimmer(isShimmering)
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Text(
             text = "TH CITY TOTE",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             modifier = Modifier.shimmer(isShimmering)
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
@@ -104,13 +105,13 @@ fun ShimmerScreen(topBarState: TopBarState) {
                 "Composition & Care\n" +
                 "\n" +
                 "- 100% polyurethane",
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             modifier = Modifier
                 .fillMaxWidth()
                 .shimmer(
                     isShimmering = isShimmering,
                     lines = 18,
-                    lineHeight = Theme.typography.paragraph.lineHeight,
+                    lineHeight = LocalTheme.current.typography.body.medium.lineHeight,
                     lastLineFraction = .5f
                 )
         )

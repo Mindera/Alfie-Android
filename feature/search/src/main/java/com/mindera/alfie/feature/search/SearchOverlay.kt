@@ -54,6 +54,8 @@ import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handle
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.search.model.RecentSearch
+import androidx.compose.ui.text.style.TextDecoration
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Composable
 fun SearchOverlay(
@@ -138,14 +140,14 @@ private fun SearchEmpty() {
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
             Text(
                 text = stringResource(R.string.search_empty_title),
-                style = Theme.typography.paragraphBold,
+                style = LocalTheme.current.typography.body.mediumBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
             Text(
                 text = stringResource(R.string.search_empty_description),
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -197,7 +199,7 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
         Text(
             modifier = Modifier.testTag(SEARCH_RECENT_SEARCH_TITLE),
             text = stringResource(R.string.your_recent_searches),
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         TextButton(
             modifier = Modifier.testTag(SEARCH_CLEAR_RECENT_SEARCH),
@@ -205,7 +207,7 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
         ) {
             Text(
                 text = stringResource(R.string.clear),
-                style = Theme.typography.paragraphBoldUnderline,
+                style = LocalTheme.current.typography.body.mediumBold.copy(textDecoration = TextDecoration.Underline),
                 color = c.neutrals800
             )
         }
@@ -239,7 +241,7 @@ private fun RecentSearchItem(
                     )
                     .weight(1f),
                 text = recentSearch.searchTerm,
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals800,
                 maxLines = 1,
                 overflow = Ellipsis

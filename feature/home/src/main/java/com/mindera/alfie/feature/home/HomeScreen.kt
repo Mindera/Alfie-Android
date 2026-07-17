@@ -34,6 +34,8 @@ import com.mindera.alfie.feature.home.model.HomeUIState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.toImmutableList
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 private const val SCREEN_CONTENT_HEIGHT = 100
 
@@ -97,7 +99,7 @@ private fun HomeLoaded() {
             )
             Text(
                 text = "Home",
-                style = Theme.typography.paragraphBold
+                style = LocalTheme.current.typography.body.mediumBold
             )
         }
     }

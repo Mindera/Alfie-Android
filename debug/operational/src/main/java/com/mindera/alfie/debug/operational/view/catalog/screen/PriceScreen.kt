@@ -23,6 +23,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.ramcosta.composedestinations.annotation.Destination
 import okhttp3.internal.immutableListOf
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val prices: List<PriceType> = immutableListOf(
     PriceType.Default(
@@ -95,7 +96,7 @@ private fun PriceSection(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = title,
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

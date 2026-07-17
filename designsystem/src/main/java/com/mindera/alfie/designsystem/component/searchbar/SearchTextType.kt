@@ -22,41 +22,40 @@ data class SearchTextColorSpec(
 )
 
 enum class SearchTextType(
-    val textStyle: TextStyle,
     @DrawableRes val searchIcon: Int,
     @DrawableRes val clearIcon: Int,
     val verticalPadding: Dp,
     val horizontalPadding: Dp
 ) {
     Light(
-        textStyle = Theme.typography.paragraph,
         searchIcon = AlfieIcons.Search,
         clearIcon = AlfieIcons.Close,
         verticalPadding = Theme.spacing.spacing8,
         horizontalPadding = Theme.spacing.spacing12
     ),
     Dark(
-        textStyle = Theme.typography.paragraph,
         searchIcon = AlfieIcons.Search,
         clearIcon = AlfieIcons.Close,
         verticalPadding = Theme.spacing.spacing10,
         horizontalPadding = Theme.spacing.spacing12
     ),
     Soft(
-        textStyle = Theme.typography.paragraph,
         searchIcon = AlfieIcons.Search,
         clearIcon = AlfieIcons.Close,
         verticalPadding = Theme.spacing.spacing8,
         horizontalPadding = Theme.spacing.spacing12
     ),
     SoftLarge(
-        textStyle = Theme.typography.paragraph,
         searchIcon = AlfieIcons.Search,
         clearIcon = AlfieIcons.Close,
         verticalPadding = Theme.spacing.spacing14,
         horizontalPadding = Theme.spacing.spacing12
     )
 }
+
+/** Composable accessor — all search types currently use body.medium. */
+val SearchTextType.textStyle: TextStyle
+    @Composable get() = LocalTheme.current.typography.body.medium
 
 @Composable
 fun SearchTextType.colorSpec(): SearchTextColorSpec {

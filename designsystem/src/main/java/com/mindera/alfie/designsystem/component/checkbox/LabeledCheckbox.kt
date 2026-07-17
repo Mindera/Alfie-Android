@@ -89,7 +89,7 @@ fun LabeledCheckbox(
         Spacer(modifier = Modifier.width(Theme.spacing.spacing12))
         Text(
             text = label,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
     }
 }
