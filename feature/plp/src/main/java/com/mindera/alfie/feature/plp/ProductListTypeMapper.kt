@@ -4,27 +4,22 @@ import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 
 /**
- * The BFF query source backing a [ProductListType].
+ * Maps each [ProductListType] to the BFF query source that backs the list.
  *
  * [ProductListType.Search] threads its term straight through to `searchProducts`. Every other
- * type currently falls back to [collectionHandle] because the BFF does not yet expose a query to
- * resolve a collection handle from a category/brand slug or id — when it does, this is the single
- * place that mapping needs to change.
+ * type uses its own slug/id directly as the collection handle for the `productList` query.
  */
-internal fun ProductListType.toQuerySource(collectionHandle: String): ProductListQuerySource =
+internal fun ProductListType.toQuerySource(): ProductListQuerySource =
     when (this) {
         is ProductListType.Search -> ProductListQuerySource.Search(term = query)
-        is ProductListType.Category.Slug,
-        is ProductListType.Category.Id,
-        is ProductListType.Brand.Slug,
-        is ProductListType.Brand.Id -> ProductListQuerySource.Collection(handle = collectionHandle)
+        is ProductListType.Category.Slug -> ProductListQuerySource.Collection(handle = slug)
+        is ProductListType.Category.Id -> ProductListQuerySource.Collection(handle = id)
+        is ProductListType.Brand.Slug -> ProductListQuerySource.Collection(handle = slug)
+        is ProductListType.Brand.Id -> ProductListQuerySource.Collection(handle = id)
     }
 
 /**
  * Human-readable title for a [ProductListType], shown in the top bar.
- *
- * Note: for non-search lists this may not match the products shown while the collection handle is
- * still hardcoded (see [toQuerySource]).
  */
 internal val ProductListType.displayTitle: String
     get() = when (this) {

@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,23 +34,20 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
-private val TEXT_FIELD_MINIMUM_HEIGHT = 40.dp
-private val SUPPORT_TEXT_MINIMUM_HEIGHT = 20.dp
-private val TEXT_FIELD_BORDER_WIDTH = 1.5.dp
-private const val REQUIRED_LABEL = "*"
+// TEXT_FIELD_MINIMUM_HEIGHT derived from: body.medium line-height (24dp) + 2 × spacing8 (vertical padding) = 40dp
+private const val TEXT_FIELD_MINIMUM_HEIGHT_DP = 40
 private const val MAX_CHARACTERS = 100
+private const val REQUIRED_LABEL = "*"
 
 @Composable
 fun TextField(
@@ -62,7 +58,6 @@ fun TextField(
     modifier: Modifier = Modifier,
     label: String? = null,
     isMandatory: Boolean = true,
-    showCounter: Boolean = false,
     isEnabled: Boolean = true,
     onFocusChange: ClickEventOneArg<Boolean> = {},
     supportComponent: TextFieldSupportComponent? = null,
@@ -71,17 +66,16 @@ fun TextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
+    val c = theme.primitive.colors
     val typeColors = type.colorSpec()
     val disabledColor = c.neutrals200
     val labelColor = c.neutrals500
     val labelRequiredColor = c.semanticError800
-    val counterColor = c.neutrals500
     val placeholderColor = c.neutrals500
     val inputTextColor = c.neutrals800
     val trailingIconColorDefault = c.neutrals800
 
-    var counterValue by remember { mutableIntStateOf(0) }
     var isFocused by remember { mutableStateOf(false) }
 
     val labelTextColor = animateColorAsState(
@@ -91,10 +85,6 @@ fun TextField(
     val labelRequiredTextColor = animateColorAsState(
         targetValue = if (isEnabled) labelRequiredColor else disabledColor,
         label = "Label Required Text Color Animation"
-    )
-    val counterTextColor = animateColorAsState(
-        targetValue = if (isEnabled) counterColor else disabledColor,
-        label = "Counter Text Color Animation"
     )
     val borderColor = animateColorAsState(
         targetValue = when {
@@ -128,17 +118,18 @@ fun TextField(
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)
+        // D2: outer gap uses spacing4 (label ↔ box gap from Figma spec)
+        verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing4)
     ) {
-        LabelRow(
-            isMandatory = isMandatory,
-            label = label.orEmpty(),
-            labelTextColor = labelTextColor.value,
-            labelRequiredTextColor = labelRequiredTextColor.value,
-            showCounter = showCounter,
-            counterTextColor = counterTextColor.value,
-            counterValue = counterValue
-        )
+        // D2: render LabelRow only when there is a label; the mandatory * only shows alongside a label
+        if (label != null) {
+            LabelRow(
+                isMandatory = isMandatory,
+                label = label.orEmpty(),
+                labelTextColor = labelTextColor.value,
+                labelRequiredTextColor = labelRequiredTextColor.value
+            )
+        }
 
         TextField(
             value = value,
@@ -148,10 +139,8 @@ fun TextField(
                 onFocusChange(focus)
             },
             onTextChange = { term ->
-                if (term.length <= MAX_CHARACTERS) {
-                    counterValue = term.length
-                    onTextChange(term)
-                }
+                // Clamp to MAX_CHARACTERS so an over-length restored value can still be edited down (D3)
+                onTextChange(term.take(MAX_CHARACTERS))
             },
             borderColor = borderColor.value,
             inputTextColor = inputTextColorState.value,
@@ -164,11 +153,14 @@ fun TextField(
             visualTransformation = visualTransformation
         )
 
-        SupportTextRow(
-            supportComponent = supportComponent,
-            supportIconColor = supportIconColor.value,
-            supportTextColor = supportTextColor.value
-        )
+        // D2/D4: render SupportTextRow only when a support component is provided; no reserved space
+        if (supportComponent != null) {
+            SupportTextRow(
+                supportComponent = supportComponent,
+                supportIconColor = supportIconColor.value,
+                supportTextColor = supportTextColor.value
+            )
+        }
     }
 }
 
@@ -177,38 +169,30 @@ private fun LabelRow(
     isMandatory: Boolean,
     label: String,
     labelTextColor: Color,
-    labelRequiredTextColor: Color,
-    showCounter: Boolean,
-    counterTextColor: Color,
-    counterValue: Int
+    labelRequiredTextColor: Color
 ) {
+    val theme = LocalTheme.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing4)
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing4)
     ) {
         val modifierLabel = if (isMandatory.not()) Modifier.weight(1F) else Modifier
         Text(
             text = label,
-            style = LocalTheme.current.typography.body.medium,
+            style = theme.typography.body.medium,
             maxLines = 1,
             overflow = Ellipsis,
             color = labelTextColor,
             modifier = modifierLabel
         )
+        // D5: mandatory * kept as code-only, conditional on isMandatory
         if (isMandatory) {
             Text(
                 text = REQUIRED_LABEL,
-                style = LocalTheme.current.typography.body.medium,
+                style = theme.typography.body.medium,
                 color = labelRequiredTextColor,
                 modifier = Modifier.weight(1F)
-            )
-        }
-        if (showCounter) {
-            Text(
-                text = stringResource(id = R.string.text_field_counter, counterValue),
-                style = LocalTheme.current.typography.body.medium,
-                color = counterTextColor
             )
         }
     }
@@ -230,6 +214,7 @@ private fun TextField(
     keyboardActions: KeyboardActions,
     visualTransformation: VisualTransformation
 ) {
+    val theme = LocalTheme.current
     val focusRequester by remember { mutableStateOf(FocusRequester()) }
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -237,17 +222,21 @@ private fun TextField(
         value = value,
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = TEXT_FIELD_MINIMUM_HEIGHT)
+            // Height derived from body.medium line-height (24dp) + 2×spacing8; kept as literal with comment above
+            .heightIn(min = TEXT_FIELD_MINIMUM_HEIGHT_DP.dp)
             .focusRequester(focusRequester)
             .onFocusChanged { focusState ->
                 onFocusChange(focusState.isFocused)
             }
             .border(
-                width = TEXT_FIELD_BORDER_WIDTH,
+                // D7/D9: was 1.5.dp literal → primitive.border.weightDefault (1dp)
+                width = theme.primitive.border.weightDefault,
                 color = borderColor,
-                shape = Theme.shape.extraSmall
+                // D7/D9: was Theme.shape.extraSmall → sizing.radius.soft (both = RoundedCornerShape(4dp))
+                shape = theme.sizing.radius.soft
             ),
-        textStyle = LocalTheme.current.typography.body.medium,
+        // D7/D9: was Theme.typography.paragraph → typography.body.medium
+        textStyle = theme.typography.body.medium.copy(color = inputTextColor),
         onValueChange = { term ->
             onTextChange(term)
         },
@@ -260,12 +249,20 @@ private fun TextField(
         decorationBox = { innerTextField ->
             Row(
                 modifier = Modifier
-                    .padding(horizontal = Theme.spacing.spacing20)
+                    // D7/D9: was padding(horizontal = Theme.spacing.spacing20) → start=spacing12, end=spacing16
+                    .padding(
+                        start = theme.spacing.spacing12,
+                        end = theme.spacing.spacing16,
+                        top = theme.spacing.spacing8,
+                        bottom = theme.spacing.spacing8
+                    )
                     .indication(
                         interactionSource = interactionSource,
                         indication = ripple(bounded = false)
                     ),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                // D7: gap between input and trailing icon
+                horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
             ) {
                 Box(
                     modifier = Modifier.weight(1F)
@@ -273,7 +270,8 @@ private fun TextField(
                     DefaultVisibilityAnimation(isVisible = value.isEmpty()) {
                         Text(
                             text = placeholderText,
-                            style = LocalTheme.current.typography.body.medium,
+                            // D7/D9: was Theme.typography.paragraph → typography.body.medium
+                            style = theme.typography.body.medium,
                             color = placeholderTextColor,
                             maxLines = 1
                         )
@@ -284,7 +282,8 @@ private fun TextField(
                 DefaultVisibilityAnimation(isVisible = trailingIconData != null) {
                     if (trailingIconData != null) {
                         IconButton(
-                            modifier = Modifier.size(Theme.iconSize.medium),
+                            // D9: was Theme.iconSize.medium → sizing.icon.medium
+                            modifier = Modifier.size(theme.sizing.icon.medium),
                             enabled = isEnabled,
                             onClick = {
                                 trailingIconData.onIconClickEvent()
@@ -292,7 +291,8 @@ private fun TextField(
                         ) {
                             Icon(
                                 modifier = Modifier
-                                    .size(Theme.iconSize.small)
+                                    // D9: was Theme.iconSize.small → sizing.icon.small
+                                    .size(theme.sizing.icon.small)
                                     .align(Alignment.CenterVertically),
                                 painter = painterResource(id = trailingIconData.icon),
                                 contentDescription = trailingIconData.iconContentDescription,
@@ -308,28 +308,31 @@ private fun TextField(
 
 @Composable
 private fun SupportTextRow(
-    supportComponent: TextFieldSupportComponent?,
+    supportComponent: TextFieldSupportComponent,
     supportIconColor: Color,
     supportTextColor: Color
 ) {
+    val theme = LocalTheme.current
+    // D2: no heightIn(min = 20.dp) reserved space — row only renders when supportComponent != null
     Row(
-        modifier = Modifier.heightIn(min = SUPPORT_TEXT_MINIMUM_HEIGHT),
         verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing2)
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing2)
     ) {
-        val icon = supportComponent?.icon
+        val icon = supportComponent.icon
         if (icon != null) {
             Icon(
-                modifier = Modifier.size(Theme.iconSize.small),
+                // D9: was Theme.iconSize.small → sizing.icon.small
+                modifier = Modifier.size(theme.sizing.icon.small),
                 painter = painterResource(id = icon),
                 tint = supportIconColor,
                 contentDescription = null
             )
-            Spacer(modifier = Modifier.width(Theme.spacing.spacing2))
+            Spacer(modifier = Modifier.width(theme.spacing.spacing2))
         }
         Text(
-            text = supportComponent?.text.orEmpty(),
-            style = LocalTheme.current.typography.body.small,
+            text = supportComponent.text,
+            // D7/D9: was Theme.typography.small → typography.body.small
+            style = theme.typography.body.small,
             maxLines = 2,
             overflow = Ellipsis,
             color = supportTextColor
@@ -337,9 +340,38 @@ private fun SupportTextRow(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "TextField - basic box (null extras)")
 @Composable
-private fun TextFieldPreview() {
+private fun TextFieldPreviewBasicBox() {
+    Theme {
+        TextField(
+            value = "",
+            placeholder = "Placeholder",
+            type = TextFieldType.Default,
+            onTextChange = {},
+            label = null,
+            isMandatory = false
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "TextField - label only")
+@Composable
+private fun TextFieldPreviewLabelOnly() {
+    Theme {
+        TextField(
+            value = "",
+            label = "Label",
+            placeholder = "Placeholder",
+            type = TextFieldType.Default,
+            onTextChange = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "TextField - label + helper")
+@Composable
+private fun TextFieldPreviewLabelHelper() {
     Theme {
         TextField(
             value = "",
@@ -347,7 +379,53 @@ private fun TextFieldPreview() {
             placeholder = "Placeholder",
             type = TextFieldType.Default,
             onTextChange = {},
-            supportComponent = TextFieldSupportComponent("Hint")
+            supportComponent = TextFieldSupportComponent("Hint text")
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "TextField - Error")
+@Composable
+private fun TextFieldPreviewError() {
+    Theme {
+        TextField(
+            value = "Input text",
+            label = "Label",
+            placeholder = "Placeholder",
+            type = TextFieldType.Error,
+            onTextChange = {},
+            supportComponent = TextFieldSupportComponent("Error message")
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "TextField - Success")
+@Composable
+private fun TextFieldPreviewSuccess() {
+    Theme {
+        TextField(
+            value = "Input text",
+            label = "Label",
+            placeholder = "Placeholder",
+            type = TextFieldType.Success,
+            onTextChange = {},
+            supportComponent = TextFieldSupportComponent("Success message")
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "TextField - Disabled")
+@Composable
+private fun TextFieldPreviewDisabled() {
+    Theme {
+        TextField(
+            value = "Input text",
+            label = "Label",
+            placeholder = "Placeholder",
+            type = TextFieldType.Default,
+            isEnabled = false,
+            onTextChange = {},
+            supportComponent = TextFieldSupportComponent("Hint text")
         )
     }
 }

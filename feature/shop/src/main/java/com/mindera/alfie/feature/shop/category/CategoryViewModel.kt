@@ -1,15 +1,7 @@
 package com.mindera.alfie.feature.shop.category
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.mindera.alfie.core.analytics.AnalyticsManager
-import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.core.commons.string.StringResource
-import com.mindera.alfie.domain.doOnResult
-import com.mindera.alfie.domain.usecase.navigation.GetRootNavEntriesUseCase
-import com.mindera.alfie.feature.mappers.toApiErrorType
-import com.mindera.alfie.feature.mappers.toEventErrorValue
-import com.mindera.alfie.feature.shop.category.factory.CategoryUIStateFactory
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEvent
 import com.mindera.alfie.feature.shop.category.model.CategoryUIState
@@ -18,57 +10,28 @@ import com.mindera.alfie.feature.shop.delegate.NavigateToEntryDelegate
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 internal class CategoryViewModel @Inject constructor(
-    private val getRootNavEntriesUseCase: GetRootNavEntriesUseCase,
-    private val uiFactory: CategoryUIStateFactory,
-    private val analyticsManager: AnalyticsManager,
     navigateToEntryDelegate: NavigateToEntryDelegate,
     uiEventEmitterDelegate: UIEventEmitterDelegate
 ) : ViewModel(),
     NavigateToEntry by navigateToEntryDelegate,
     UIEventEmitter by uiEventEmitterDelegate {
 
-    private val _state = MutableStateFlow<CategoryUIState>(CategoryUIStateFactory.PLACEHOLDER)
+    private val _state = MutableStateFlow<CategoryUIState>(STATIC_STATE)
     val state: StateFlow<CategoryUIState> = _state.asStateFlow()
 
-    init {
-        loadCategories()
-    }
-
-    fun retry() = loadCategories()
+    fun retry() = Unit
 
     fun handleEvent(event: CategoryEvent) {
         when (event) {
             is CategoryEvent.OnEntryClickEvent -> navigateToCategoryEntry(event.entry)
-        }
-    }
-
-    private fun loadCategories() {
-        viewModelScope.launch {
-            getRootNavEntriesUseCase().doOnResult(
-                onSuccess = {
-                    _state.value = uiFactory(
-                        title = StringResource.EMPTY,
-                        navEntries = it
-                    )
-                },
-                onError = {
-                    analyticsManager.trackError(
-                        screenName = SCREEN_NAME,
-                        eventName = EVENT_LOAD_ERROR,
-                        eventErrorValue = it.type.toEventErrorValue(),
-                        params = EmptyParams()
-                    )
-                    _state.value = CategoryUIState.Error(it.type.toApiErrorType())
-                }
-            )
         }
     }
 
@@ -80,7 +43,22 @@ internal class CategoryViewModel @Inject constructor(
     }
 
     companion object {
-        private const val SCREEN_NAME = "shop_category"
-        private const val EVENT_LOAD_ERROR = "load_error"
+        private val STATIC_ENTRIES = listOf(
+            CategoryEntryUI(id = 0, title = StringResource.fromText("Women"), path = "women"),
+            CategoryEntryUI(id = 1, title = StringResource.fromText("Men"), path = "men"),
+            CategoryEntryUI(id = 2, title = StringResource.fromText("Featured"), path = "frontpage"),
+            CategoryEntryUI(id = 3, title = StringResource.fromText("Tops"), path = "womens-tops"),
+            CategoryEntryUI(id = 4, title = StringResource.fromText("Beauty"), path = "spring-summer"),
+            CategoryEntryUI(id = 5, title = StringResource.fromText("Bags"), path = "womens-bags"),
+            CategoryEntryUI(id = 6, title = StringResource.fromText("Dresses"), path = "dresses"),
+            CategoryEntryUI(id = 7, title = StringResource.fromText("Jackets"), path = "womens-jackets"),
+            CategoryEntryUI(id = 8, title = StringResource.fromText("Jeans"), path = "womens-jeans")
+        ).toImmutableList()
+
+        private val STATIC_STATE = CategoryUIState.Data(
+            title = StringResource.EMPTY,
+            entries = STATIC_ENTRIES,
+            isLoading = false
+        )
     }
 }

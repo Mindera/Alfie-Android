@@ -80,14 +80,6 @@ internal class ProductListViewModel @Inject constructor(
         private const val PREVIEW_DEBOUNCE_MS = 300L
         private const val PREVIEW_PAGE_SIZE = 1
 
-        // Search is backed directly by the BFF `searchProducts` query (the search term comes
-        // straight from the nav args). For Category/Brand, the BFF does not yet expose a
-        // navigation/category lookup, so the collection handle falls back to "frontpage" as a
-        // placeholder until the BFF can resolve a handle from category slug/id or brand. The
-        // displayed title still uses nav args (see collectionTitle), so for non-search lists the
-        // title may not match the products shown — a known trade-off until that BFF work lands.
-        private const val COLLECTION_HANDLE = "frontpage"
-
         private val initialPagerLoadState = LoadStates(
             refresh = LoadState.Loading,
             append = LoadState.NotLoading(false),
@@ -102,8 +94,7 @@ internal class ProductListViewModel @Inject constructor(
      */
     val collectionTitle: String = navArgs.type.displayTitle
 
-    /** The BFF query backing this list (see [toQuerySource]). */
-    private val querySource: ProductListQuerySource = navArgs.type.toQuerySource(COLLECTION_HANDLE)
+    private val querySource: ProductListQuerySource = navArgs.type.toQuerySource()
 
     /** Non-null only in search mode; drives the search-specific no-results copy. */
     val searchQuery: String? = (querySource as? ProductListQuerySource.Search)?.term

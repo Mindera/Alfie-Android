@@ -42,7 +42,6 @@ fun InputScreen(
     var isEnabled by remember { mutableStateOf(true) }
     var isMandatory by remember { mutableStateOf(true) }
     var showLabel by remember { mutableStateOf(true) }
-    var showCounter by remember { mutableStateOf(true) }
     var showTailingIcon by remember { mutableStateOf(true) }
     var showHint by remember { mutableStateOf(true) }
     var isHintLongText by remember { mutableStateOf(true) }
@@ -76,11 +75,6 @@ fun InputScreen(
             onCheckChange = { showLabel = it }
         )
         SwitchItem(
-            text = "Counter",
-            isChecked = showCounter,
-            onCheckChange = { showCounter = it }
-        )
-        SwitchItem(
             text = "Trailing Icon",
             isChecked = showTailingIcon,
             onCheckChange = { showTailingIcon = it }
@@ -109,7 +103,6 @@ fun InputScreen(
                 isEnabled = isEnabled,
                 isMandatory = isMandatory,
                 showLabel = showLabel,
-                showCounter = showCounter,
                 showTrailingIcon = showTailingIcon,
                 showSupportText = showHint,
                 isHintLongText = isHintLongText,
@@ -162,7 +155,6 @@ private fun InputItem(
     isEnabled: Boolean,
     isMandatory: Boolean,
     showLabel: Boolean,
-    showCounter: Boolean,
     showTrailingIcon: Boolean,
     showSupportText: Boolean,
     isHintLongText: Boolean,
@@ -219,7 +211,6 @@ private fun InputItem(
         type = type,
         isEnabled = isEnabled,
         isMandatory = isMandatory,
-        showCounter = showCounter,
         supportComponent = supportTextFieldSupportComponent,
         trailingIconData = trailingIconData,
         label = label

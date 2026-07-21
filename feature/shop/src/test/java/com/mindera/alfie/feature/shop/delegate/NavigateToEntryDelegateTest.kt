@@ -7,10 +7,8 @@ import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.environment.model.Environment
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.test.CoroutineExtension
-import com.mindera.alfie.domain.usecase.navigation.GetNavEntriesByParentIdUseCase
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
-import com.mindera.alfie.feature.shop.navEntries
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import io.mockk.coEvery
@@ -30,9 +28,6 @@ internal class NavigateToEntryDelegateTest {
     companion object {
         private const val WEB_URL = "https://www.alfie.com"
     }
-
-    @RelaxedMockK
-    private lateinit var getNavEntriesByParentIdUseCase: GetNavEntriesByParentIdUseCase
 
     @RelaxedMockK
     private lateinit var deeplinkHandler: DeeplinkHandler
@@ -55,26 +50,7 @@ internal class NavigateToEntryDelegateTest {
     }
 
     @Test
-    fun `GIVEN openCategoryEntry WHEN entry has child entries THEN navigate to category`() = runTest {
-        coEvery { getNavEntriesByParentIdUseCase(any()) } returns navEntries
-        val entry = CategoryEntryUI(
-            id = 1,
-            title = StringResource.fromText("title"),
-            path = "https://url.com"
-        )
-        val viewModel = TestViewModel(delegate, uiEventEmitterDelegate)
-
-        with(viewModel) {
-            openCategoryEntry(entry)
-
-            coVerify(exactly = 0) { deeplinkHandler.handle(any()) }
-            coVerify { navigateTo(screen = any(Screen.Category::class)) }
-        }
-    }
-
-    @Test
     fun `GIVEN openCategoryEntry WHEN entry is brands THEN navigate to Brands shop screen`() = runTest {
-        coEvery { getNavEntriesByParentIdUseCase(any()) } returns emptyList()
         coEvery { uiEventEmitterDelegate.uiEvent }
         coJustRun { deeplinkHandler.handle(any()) }
 
@@ -94,19 +70,18 @@ internal class NavigateToEntryDelegateTest {
     }
 
     @Test
-    fun `GIVEN openCategoryEntry WHEN entry is childless THEN navigate to plp`() = runTest {
-        coEvery { getNavEntriesByParentIdUseCase(any()) } returns emptyList()
-        val path = "/plp/path"
+    fun `GIVEN openCategoryEntry WHEN entry is a leaf category THEN navigate to plp`() = runTest {
         val entry = CategoryEntryUI(
             id = 1,
             title = StringResource.fromText("title"),
-            path = path
+            path = "women"
         )
         val viewModel = TestViewModel(delegate, uiEventEmitterDelegate)
 
         with(viewModel) {
             openCategoryEntry(entry)
-            coVerify { deeplinkHandler.handle("$WEB_URL$path") }
+            coVerify(exactly = 0) { deeplinkHandler.handle(any()) }
+            coVerify { navigateTo(screen = any(Screen.ProductList::class)) }
         }
     }
 
