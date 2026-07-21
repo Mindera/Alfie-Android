@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun ErrorScreen(
@@ -42,7 +43,7 @@ fun ErrorScreen(
             Spacer(modifier = Modifier.size(Theme.spacing.spacing16))
             Text(
                 text = data.message,
-                style = Theme.typography.paragraphLarge
+                style = LocalTheme.current.typography.body.large
             )
             Spacer(modifier = Modifier.height(Theme.spacing.spacing20))
             Button(

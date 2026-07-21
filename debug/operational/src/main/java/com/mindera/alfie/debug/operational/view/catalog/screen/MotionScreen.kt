@@ -110,7 +110,7 @@ fun MotionScreen(topBarState: TopBarState) {
             Text(
                 modifier = Modifier.padding(Theme.spacing.spacing12),
                 text = "Options",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
             HorizontalDivider()
             Spacer(modifier = Modifier.height(Theme.spacing.spacing24))
@@ -134,7 +134,7 @@ fun MotionScreen(topBarState: TopBarState) {
                     label = {
                         Text(
                             text = "Motion:",
-                            style = Theme.typography.paragraph
+                            style = LocalTheme.current.typography.body.medium
                         )
                     }
                 )
@@ -147,7 +147,7 @@ fun MotionScreen(topBarState: TopBarState) {
                             text = {
                                 Text(
                                     text = it.title,
-                                    style = Theme.typography.small
+                                    style = LocalTheme.current.typography.body.small
                                 )
                             },
                             onClick = {

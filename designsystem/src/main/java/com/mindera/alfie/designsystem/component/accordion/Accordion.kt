@@ -106,7 +106,7 @@ private fun SectionHeader(
             ) {
                 Text(
                     text = title,
-                    style = Theme.typography.paragraph,
+                    style = LocalTheme.current.typography.body.medium,
                     color = c.neutrals600
                 )
             }
@@ -155,7 +155,7 @@ private fun AccordionPreview() {
                     text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Rhoncus, accumsan, vel interdum diam " +
                         "tortor cursus nam quisque ut. Blandit ut netus consequat ridiculus mi. Lacus a fermentum nec nisl " +
                         "consectetur molestie. Mauris mi cursus quis risus aliquam vivamus blandit. Maecenas dui odio odio aliquet.",
-                    style = Theme.typography.small,
+                    style = LocalTheme.current.typography.body.small,
                     color = c.neutrals600
                 )
             }

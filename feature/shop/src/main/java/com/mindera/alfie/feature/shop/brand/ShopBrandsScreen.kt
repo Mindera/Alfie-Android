@@ -33,6 +33,7 @@ import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.component.searchbar.SearchBarWithCancelButton
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.brand.model.BrandEvent
@@ -146,7 +147,7 @@ private fun LazyItemScope.AlphabeticalSectionHeader(headerCharacter: Char) {
                     xScale = scale
                 ),
             text = headerCharacter.toString(),
-            style = Theme.typography.paragraphLarge.copy(fontWeight = FontWeight.Bold)
+            style = LocalTheme.current.typography.body.large.copy(fontWeight = FontWeight.Bold)
         )
     }
 }

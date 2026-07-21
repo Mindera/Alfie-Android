@@ -14,6 +14,8 @@ import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Composable
 internal fun HeaderDivider(
@@ -27,7 +29,7 @@ internal fun HeaderDivider(
                 vertical = Theme.spacing.spacing12
             ),
             text = text,
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider(dividerType = DividerType.Solid1Mono300)
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -42,7 +44,7 @@ internal fun SectionDivider(text: String) {
             vertical = Theme.spacing.spacing12
         ),
         text = text,
-        style = Theme.typography.paragraphBold
+        style = LocalTheme.current.typography.body.mediumBold
     )
     HorizontalDivider(dividerType = DividerType.Solid1Mono300)
     Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -65,7 +67,7 @@ internal fun SwitchItem(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = text,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
     }
 }

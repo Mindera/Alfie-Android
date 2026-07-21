@@ -45,7 +45,7 @@ internal fun GalleryIndicator(
         )
         Text(
             text = stringResource(id = R.string.gallery_controls_counter, currentItem, itemCount),
-            style = Theme.typography.tiny,
+            style = LocalTheme.current.typography.label.small,
             color = c.neutrals800,
             modifier = Modifier.padding(horizontal = Theme.spacing.spacing8)
         )

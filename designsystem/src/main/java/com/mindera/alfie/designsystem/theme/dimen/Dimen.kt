@@ -1,24 +1,6 @@
 package com.mindera.alfie.designsystem.theme.dimen
 
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-object FontSize {
-    val tiny = 12.sp
-    val small = 14.sp
-    val medium = 16.sp
-    val large = 20.sp
-    val xLarge = 24.sp
-    val xxLarge = 36.sp
-}
-
-object LineHeight {
-    val small = 16.8.sp
-    val medium = 22.sp
-    val large = 24.sp
-    val xLarge = 28.8.sp
-    val xxLarge = 39.79.sp
-}
 
 object Spacing {
     val spacing0 = 0.dp

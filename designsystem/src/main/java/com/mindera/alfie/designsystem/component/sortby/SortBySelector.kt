@@ -117,7 +117,7 @@ private fun SortByButton(
             }
             Text(
                 text = item.text,
-                style = Theme.typography.smallBold
+                style = LocalTheme.current.typography.label.smallBold
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing16))
         }

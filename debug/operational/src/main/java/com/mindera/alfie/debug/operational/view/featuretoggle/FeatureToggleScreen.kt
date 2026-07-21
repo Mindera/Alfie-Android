@@ -18,6 +18,7 @@ import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.repository.featuretoggle.model.FeatureToggle
 import com.mindera.alfie.repository.featuretoggle.model.FeatureToggleType
 import com.ramcosta.composedestinations.annotation.Destination
@@ -80,7 +81,7 @@ internal fun SwitchItem(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing16),
             text = text,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Switch(
             modifier = Modifier.padding(Theme.spacing.spacing16),

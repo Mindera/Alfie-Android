@@ -27,6 +27,8 @@ import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -44,7 +46,7 @@ fun ModalScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Modal",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -126,41 +128,41 @@ private fun ModalContent(showAllContent: Boolean = true) {
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = "How To Measure",
-        style = Theme.typography.heading3
+        style = LocalTheme.current.typography.heading.small
     )
     Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = "Bust",
-        style = Theme.typography.paragraphBold
+        style = LocalTheme.current.typography.body.mediumBold
     )
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = "Measure around the fullest part of your chest.",
-        style = Theme.typography.paragraph
+        style = LocalTheme.current.typography.body.medium
     )
     Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
     if (showAllContent) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Waist",
-            style = Theme.typography.paragraphBold
+            style = LocalTheme.current.typography.body.mediumBold
         )
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "The slimmest part of your natural waistline, above your naval em below your ribcage",
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Hip",
-            style = Theme.typography.paragraphBold
+            style = LocalTheme.current.typography.body.mediumBold
         )
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Measure around the widest point of your hips, at the top of the legs.",
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
     }

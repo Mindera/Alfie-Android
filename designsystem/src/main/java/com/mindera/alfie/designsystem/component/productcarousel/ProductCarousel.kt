@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.commons.string.StringResource
@@ -44,6 +45,7 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.productcard.size.VerticalProductCardSize
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -85,14 +87,14 @@ fun ProductCarousel(
                 title?.let {
                     Text(
                         text = title.toString(context),
-                        style = Theme.typography.paragraphBold
+                        style = LocalTheme.current.typography.body.mediumBold
                     )
                 }
                 description?.let {
                     Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
                     Text(
                         text = description.toString(context),
-                        style = Theme.typography.paragraph
+                        style = LocalTheme.current.typography.body.medium
                     )
                 }
             }
@@ -106,7 +108,7 @@ fun ProductCarousel(
                     Text(
                         text = actionText.toString(context),
                         color = c.neutrals800,
-                        style = Theme.typography.smallBoldUnderline
+                        style = LocalTheme.current.typography.label.smallBold.copy(textDecoration = TextDecoration.Underline)
                     )
                 }
             }

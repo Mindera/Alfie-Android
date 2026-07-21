@@ -55,7 +55,7 @@ fun ShapeScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Rectangles",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -74,7 +74,7 @@ fun ShapeScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Nested Corners",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -131,7 +131,7 @@ private fun ShapeItem(
         ) {
             Text(
                 text = text,
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 modifier = Modifier.padding(Theme.spacing.spacing8)
             )
         }

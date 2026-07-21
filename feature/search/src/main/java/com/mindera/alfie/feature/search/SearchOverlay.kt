@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,7 @@ import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
 import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch
@@ -138,14 +140,14 @@ private fun SearchEmpty() {
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
             Text(
                 text = stringResource(R.string.search_empty_title),
-                style = Theme.typography.paragraphBold,
+                style = LocalTheme.current.typography.body.mediumBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
             Text(
                 text = stringResource(R.string.search_empty_description),
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -197,7 +199,7 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
         Text(
             modifier = Modifier.testTag(SEARCH_RECENT_SEARCH_TITLE),
             text = stringResource(R.string.your_recent_searches),
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         TextButton(
             modifier = Modifier.testTag(SEARCH_CLEAR_RECENT_SEARCH),
@@ -205,7 +207,7 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
         ) {
             Text(
                 text = stringResource(R.string.clear),
-                style = Theme.typography.paragraphBoldUnderline,
+                style = LocalTheme.current.typography.body.mediumBold.copy(textDecoration = TextDecoration.Underline),
                 color = c.neutrals800
             )
         }
@@ -239,7 +241,7 @@ private fun RecentSearchItem(
                     )
                     .weight(1f),
                 text = recentSearch.searchTerm,
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals800,
                 maxLines = 1,
                 overflow = Ellipsis

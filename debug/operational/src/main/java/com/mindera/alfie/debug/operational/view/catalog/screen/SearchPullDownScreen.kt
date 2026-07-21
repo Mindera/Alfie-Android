@@ -31,6 +31,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.search.SearchOverlay
 import com.ramcosta.composedestinations.annotation.Destination
 
@@ -137,12 +138,12 @@ private fun ProductCardGridComponent() {
                     Image(url = item)
                     Text(
                         text = "Product $index",
-                        style = Theme.typography.paragraphBold,
+                        style = LocalTheme.current.typography.body.mediumBold,
                         modifier = Modifier.padding(Theme.spacing.spacing6)
                     )
                     Text(
                         text = "Description $index",
-                        style = Theme.typography.paragraphBold,
+                        style = LocalTheme.current.typography.body.mediumBold,
                         modifier = Modifier.padding(Theme.spacing.spacing12)
                     )
                 }

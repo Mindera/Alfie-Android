@@ -29,6 +29,7 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -123,7 +124,7 @@ private fun HeaderDivider(text: String) {
     Text(
         modifier = Modifier.padding(Theme.spacing.spacing12),
         text = text,
-        style = Theme.typography.heading3
+        style = LocalTheme.current.typography.heading.small
     )
     HorizontalDivider()
     Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -143,7 +144,7 @@ private fun SwitchItem(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = text,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
     }
 }
@@ -199,7 +200,7 @@ private fun InputItem(
 
     Text(
         text = title,
-        style = Theme.typography.paragraph
+        style = LocalTheme.current.typography.body.medium
     )
     Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
     TextField(

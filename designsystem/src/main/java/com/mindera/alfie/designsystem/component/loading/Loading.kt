@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private val LOADER_DOT_SIZE = 8.dp
 private const val LOADER_NUM_DOTS = 3
@@ -85,7 +86,7 @@ fun LoadingWithLabel(
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Text(
             text = label,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = type.color()
         )
     }

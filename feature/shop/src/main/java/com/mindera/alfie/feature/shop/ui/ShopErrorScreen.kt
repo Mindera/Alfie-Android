@@ -19,6 +19,7 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.shop.R
@@ -48,7 +49,7 @@ internal fun ShopErrorScreen(
                     notFoundRes = R.string.shop_error_not_found
                 )
             ),
-            style = Theme.typography.paragraphLarge
+            style = LocalTheme.current.typography.body.large
         )
         if (onRetry != null) {
             Spacer(modifier = Modifier.size(Theme.spacing.spacing16))

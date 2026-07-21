@@ -31,6 +31,7 @@ import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -98,7 +99,7 @@ private fun Header(title: StringResource) {
     val c = LocalTheme.current.primitive.colors
     Text(
         text = stringResource(title),
-        style = Theme.typography.paragraphBold,
+        style = LocalTheme.current.typography.body.mediumBold,
         modifier = Modifier
             .fillMaxWidth()
             .background(c.neutrals200)
@@ -120,11 +121,11 @@ private fun TextItem(
     ) {
         Text(
             text = stringResource(title),
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Text(
             text = stringResource(replaceDisplayMetrics(title = title, value = value)),
-            style = Theme.typography.small
+            style = LocalTheme.current.typography.body.small
         )
     }
 }
@@ -144,7 +145,7 @@ private fun SwitchItem(
     ) {
         Text(
             text = stringResource(title),
-            style = Theme.typography.small
+            style = LocalTheme.current.typography.body.small
         )
         Switch(checked = checked, onCheckChange = onSwitch)
     }
@@ -165,7 +166,7 @@ private fun NavigationItem(
     ) {
         Text(
             text = stringResource(title),
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Icon(
             painter = painterResource(id = AlfieIcons.ChevronRight),
@@ -191,7 +192,7 @@ private fun EventItem(
     ) {
         Text(
             text = stringResource(title),
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Icon(
             painter = painterResource(id = icon),

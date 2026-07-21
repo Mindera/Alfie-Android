@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 
 private val HEIGHT_SINGLE_LINE = 22.dp
 private val HEIGHT_DOUBLE_LINE = 44.dp
@@ -81,7 +83,7 @@ internal fun Snackbar(
 
         Text(
             text = message,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = colors.contentColor,
             overflow = TextOverflow.Ellipsis,
             maxLines = messageMaxLines,
@@ -95,7 +97,7 @@ internal fun Snackbar(
         actionLabel?.let {
             Text(
                 text = it,
-                style = Theme.typography.paragraphBold,
+                style = LocalTheme.current.typography.body.mediumBold,
                 color = colors.contentColor,
                 textAlign = TextAlign.Center,
                 modifier = Modifier

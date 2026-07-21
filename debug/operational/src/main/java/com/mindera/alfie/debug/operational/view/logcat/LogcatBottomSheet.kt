@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.debug.operational.R
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.spec.DestinationStyleBottomSheet
 
@@ -41,14 +42,14 @@ private fun Logcat(log: List<String>) {
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
                 Text(
                     text = stringResource(R.string.log_bottom_sheet_label),
-                    style = Theme.typography.smallBold
+                    style = LocalTheme.current.typography.label.smallBold
                 )
                 Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
             }
             items(items = log) {
                 Text(
                     text = it,
-                    style = Theme.typography.tiny
+                    style = LocalTheme.current.typography.label.small
                 )
             }
         }
