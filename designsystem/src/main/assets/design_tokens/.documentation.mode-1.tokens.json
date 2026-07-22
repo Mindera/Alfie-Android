@@ -1,44 +1,57 @@
 {
-  "~~doc-space-xxsmall": {
+  "~~doc-border-radius-medium": {
     "$type": "dimension",
     "$value": {
-      "value": 4,
-      "unit": "px"
+      "unit": "px",
+      "value": 8
     }
   },
-  "~~doc-space-xsmall": {
+  "~~doc-border-radius-soft": {
     "$type": "dimension",
     "$value": {
-      "value": 8,
-      "unit": "px"
+      "unit": "px",
+      "value": 4
     }
   },
-  "~~doc-space-small": {
+  "~~doc-border-radius-strong": {
     "$type": "dimension",
     "$value": {
-      "value": 16,
-      "unit": "px"
+      "unit": "px",
+      "value": 16
     }
   },
-  "~~doc-space-medium": {
-    "$type": "dimension",
+  "~~doc-colours-accent-primary": {
+    "$type": "color",
     "$value": {
-      "value": 24,
-      "unit": "px"
+      "colorSpace": "srgb",
+      "components": [
+        0.592157,
+        0.278431,
+        1
+      ]
     }
   },
-  "~~doc-space-large": {
-    "$type": "dimension",
+  "~~doc-colours-accent-primary-alpha": {
+    "$type": "color",
     "$value": {
-      "value": 40,
-      "unit": "px"
+      "colorSpace": "srgb",
+      "components": [
+        0.592157,
+        0.278431,
+        1,
+        0.4
+      ]
     }
   },
-  "~~doc-space-xlarge": {
-    "$type": "dimension",
+  "~~doc-colours-accent-secondary": {
+    "$type": "color",
     "$value": {
-      "value": 80,
-      "unit": "px"
+      "colorSpace": "srgb",
+      "components": [
+        0.956863,
+        0.921569,
+        1
+      ]
     }
   },
   "~~doc-colours-background-primary": {
@@ -57,31 +70,9 @@
     "$value": {
       "colorSpace": "srgb",
       "components": [
-        0.9700000286102295,
-        0.9700000286102295,
-        0.9700000286102295
-      ]
-    }
-  },
-  "~~doc-colours-screen-border-grey": {
-    "$type": "color",
-    "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.9098039269447327,
-        0.9058823585510254,
-        0.9058823585510254
-      ]
-    }
-  },
-  "~~doc-colours-screen-border-black": {
-    "$type": "color",
-    "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.06666667014360428,
-        0.06666667014360428,
-        0.06666667014360428
+        0.97,
+        0.97,
+        0.97
       ]
     }
   },
@@ -90,9 +81,9 @@
     "$value": {
       "colorSpace": "srgb",
       "components": [
-        0.06666667014360428,
-        0.06666667014360428,
-        0.06666667014360428
+        0.066667,
+        0.066667,
+        0.066667
       ]
     }
   },
@@ -101,20 +92,9 @@
     "$value": {
       "colorSpace": "srgb",
       "components": [
-        0.46074968576431274,
-        0.46074968576431274,
-        0.46074968576431274
-      ]
-    }
-  },
-  "~~doc-colours-medium-grey": {
-    "$type": "color",
-    "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.8628868460655212,
-        0.8610718846321106,
-        0.8610718846321106
+        0.46075,
+        0.46075,
+        0.46075
       ]
     }
   },
@@ -123,9 +103,53 @@
     "$value": {
       "colorSpace": "srgb",
       "components": [
-        0.9700000286102295,
-        0.9700000286102295,
-        0.9700000286102295
+        0.97,
+        0.97,
+        0.97
+      ]
+    }
+  },
+  "~~doc-colours-medium-grey": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [
+        0.862887,
+        0.861072,
+        0.861072
+      ]
+    }
+  },
+  "~~doc-colours-screen-border-black": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [
+        0.066667,
+        0.066667,
+        0.066667
+      ]
+    }
+  },
+  "~~doc-colours-screen-border-grey": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [
+        0.909804,
+        0.905882,
+        0.905882
+      ]
+    }
+  },
+  "~~doc-colours-success": {
+    "$type": "color",
+    "$value": {
+      "colorSpace": "srgb",
+      "components": [
+        0.760784,
+        0.937255,
+        0.780392
       ]
     }
   },
@@ -140,91 +164,79 @@
       ]
     }
   },
-  "~~doc-colours-accent-primary": {
-    "$type": "color",
+  "~~doc-space-large": {
+    "$type": "dimension",
     "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.5921568870544434,
-        0.27843138575553894,
-        1
-      ]
+      "unit": "px",
+      "value": 40
     }
   },
-  "~~doc-colours-accent-primary-alpha": {
-    "$type": "color",
+  "~~doc-space-medium": {
+    "$type": "dimension",
     "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.5921568870544434,
-        0.27843138575553894,
-        1
-      ],
-      "alpha": 0.4000000059604645
+      "unit": "px",
+      "value": 24
     }
   },
-  "~~doc-colours-accent-secondary": {
-    "$type": "color",
+  "~~doc-space-small": {
+    "$type": "dimension",
     "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.95686274766922,
-        0.9215686321258545,
-        1
-      ]
+      "unit": "px",
+      "value": 16
     }
   },
-  "~~doc-colours-success": {
-    "$type": "color",
+  "~~doc-space-xlarge": {
+    "$type": "dimension",
     "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.7607843279838562,
-        0.9372549057006836,
-        0.7803921699523926
-      ]
+      "unit": "px",
+      "value": 80
+    }
+  },
+  "~~doc-space-xsmall": {
+    "$type": "dimension",
+    "$value": {
+      "unit": "px",
+      "value": 8
+    }
+  },
+  "~~doc-space-xxsmall": {
+    "$type": "dimension",
+    "$value": {
+      "unit": "px",
+      "value": 4
     }
   },
   "~~doc-stroke-default": {
     "$type": "dimension",
     "$value": {
-      "value": 1,
-      "unit": "px"
-    }
-  },
-  "~~doc-border-radius-soft": {
-    "$type": "dimension",
-    "$value": {
-      "value": 4,
-      "unit": "px"
+      "unit": "px",
+      "value": 1
     }
   },
   "~~doc-stroke-screen-default": {
     "$type": "dimension",
     "$value": {
-      "value": 2,
-      "unit": "px"
+      "unit": "px",
+      "value": 2
     }
   },
   "~~doc-stroke-screen-emphasis": {
     "$type": "dimension",
     "$value": {
-      "value": 8,
-      "unit": "px"
+      "unit": "px",
+      "value": 8
     }
   },
-  "~~doc-border-radius-medium": {
-    "$type": "dimension",
-    "$value": {
-      "value": 8,
-      "unit": "px"
-    }
+  "~~doc-text-primary": {
+    "$type": "string",
+    "$value": "Helvetica Neue"
   },
-  "~~doc-border-radius-strong": {
-    "$type": "dimension",
-    "$value": {
-      "value": 16,
-      "unit": "px"
-    }
+  "~~doc-text-sample-text": {
+    "$type": "string",
+    "$value": "Mindera Alfie"
+  },
+  "~~doc-text-secondary": {
+    "$type": "string",
+    "$value": "Roboto Mono"
   }
 }

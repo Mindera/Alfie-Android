@@ -36,6 +36,7 @@ interface TypographyHeading {
 interface TypographyBody {
     val large: TextStyle
     val medium: TextStyle
+    val mediumBold: TextStyle
     val mediumStrikethrough: TextStyle
     val small: TextStyle
 }
@@ -139,6 +140,15 @@ class DefaultTypography(private val tokens: TypographyTokens) : Typography {
                 fontSize = tokens.bodyMedium.fontSize,
                 lineHeight = tokens.bodyMedium.lineHeight,
                 letterSpacing = tokens.bodyMedium.kerning,
+            )
+        override val mediumBold: TextStyle =
+            TextStyle(
+                platformStyle = PlatformTextStyle(includeFontPadding = false),
+                fontFamily = tokens.bodyMediumBold.fontFamily,
+                fontWeight = FontWeight.W500,
+                fontSize = tokens.bodyMediumBold.fontSize,
+                lineHeight = tokens.bodyMediumBold.lineHeight,
+                letterSpacing = tokens.bodyMediumBold.kerning,
             )
         override val mediumStrikethrough: TextStyle =
             TextStyle(
