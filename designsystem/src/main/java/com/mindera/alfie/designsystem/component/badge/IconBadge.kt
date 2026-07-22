@@ -58,8 +58,7 @@ private fun Highlight(
     isVisible: Boolean,
     content: @Composable () -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
-    val badgeColor = c.semanticError700
+    val badgeColor = LocalTheme.current.color.surface.backgroundInvertedPrimary
     BadgedBox(
         badge = {
             AnimatedVisibility(isVisible = isVisible) {
@@ -76,8 +75,9 @@ private fun Counter(
     count: Int,
     content: @Composable () -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
-    val badgeColor = c.semanticError700
+    val theme = LocalTheme.current
+    val badgeColor = theme.color.surface.backgroundInvertedPrimary
+    val ringColor = theme.color.surface.backgroundPrimary
     val limitText = stringResource(id = RD.string.badge_count_limit)
     val countText = if (count > COUNTER_THRESHOLD) limitText else count.toString()
     BadgedBox(
@@ -87,19 +87,22 @@ private fun Counter(
                     modifier = Modifier
                         .border(
                             width = 1.dp,
-                            color = c.neutrals0,
+                            color = ringColor,
                             shape = CircleShape
                         )
                         .padding(1.dp)
                 ) {
-                    Badge(containerColor = badgeColor) {
+                    Badge(
+                        containerColor = badgeColor,
+                        contentColor = theme.color.content.contentInvertedPrimary
+                    ) {
                         AnimatedContent(
                             targetState = countText,
                             label = "countText"
                         ) {
                             Text(
                                 text = it,
-                                style = Theme.typography.tiny
+                                style = theme.typography.label.smallBold
                             )
                         }
                     }
