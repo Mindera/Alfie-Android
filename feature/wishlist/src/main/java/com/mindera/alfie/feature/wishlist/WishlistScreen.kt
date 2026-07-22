@@ -34,6 +34,8 @@ import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.theme.dimen.Spacing.spacing10
 import com.mindera.alfie.designsystem.theme.dimen.Spacing.spacing16
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.feature.wishlist.models.WishlistProductUi
 import com.ramcosta.composedestinations.annotation.Destination
@@ -128,7 +130,7 @@ private fun EmptyBagScreen() {
             )
             Text(
                 text = "Wishlist",
-                style = Theme.typography.paragraphBold
+                style = LocalTheme.current.typography.body.mediumBold
             )
         }
     }

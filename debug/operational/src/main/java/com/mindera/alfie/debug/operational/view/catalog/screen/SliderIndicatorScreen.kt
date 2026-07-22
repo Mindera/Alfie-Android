@@ -53,7 +53,7 @@ fun SliderIndicatorScreen(topBarState: TopBarState) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Slider",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -77,7 +77,7 @@ private fun ScrollableSliderIndicator() {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Scrollable Slider Indicator",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -125,7 +125,7 @@ private fun ScrollableSliderIndicator() {
                 ) {
                     Text(
                         text = it,
-                        style = Theme.typography.paragraph,
+                        style = LocalTheme.current.typography.body.medium,
                         modifier = Modifier.padding(Theme.spacing.spacing8)
                     )
                 }
@@ -150,7 +150,7 @@ private fun PagedSliderIndicator() {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Paged Slider Indicator",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

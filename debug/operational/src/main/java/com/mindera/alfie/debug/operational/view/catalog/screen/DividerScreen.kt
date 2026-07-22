@@ -46,7 +46,7 @@ fun DividerScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Horizontal",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         MaterialHorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -54,7 +54,7 @@ fun DividerScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "1.dp",
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
         Box(
@@ -70,7 +70,7 @@ fun DividerScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "2.dp",
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
         Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
         Box(
@@ -86,7 +86,7 @@ fun DividerScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Vertical",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         MaterialHorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

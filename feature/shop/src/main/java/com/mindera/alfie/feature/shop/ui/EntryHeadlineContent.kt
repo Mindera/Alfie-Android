@@ -12,6 +12,7 @@ import com.mindera.alfie.core.commons.extension.nextFloat
 import com.mindera.alfie.core.ui.extension.ItemWithUpdate
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlin.random.Random
 
 @Composable
@@ -30,7 +31,7 @@ internal fun LazyItemScope.EntryHeadlineContent(
                     xScale = scale
                 ),
             text = if (isPlaceholder) "" else text,
-            style = Theme.typography.paragraph
+            style = LocalTheme.current.typography.body.medium
         )
     }
 }

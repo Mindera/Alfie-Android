@@ -41,7 +41,7 @@ internal fun CatalogScreen(
                     bottom = Theme.spacing.spacing8
                 ),
                 text = stringResource(id = R.string.debug_screen_catalog),
-                style = Theme.typography.paragraph,
+                style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals600
             )
         }
@@ -51,7 +51,7 @@ internal fun CatalogScreen(
                 headlineContent = {
                     Text(
                         text = it.title,
-                        style = Theme.typography.paragraph,
+                        style = LocalTheme.current.typography.body.medium,
                         color = c.neutrals600
                     )
                 },

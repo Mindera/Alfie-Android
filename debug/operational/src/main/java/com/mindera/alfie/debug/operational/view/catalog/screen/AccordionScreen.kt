@@ -44,7 +44,7 @@ fun AccordionScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Accordion Small",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Accordion(
@@ -53,7 +53,7 @@ fun AccordionScreen(
             content = {
                 Text(
                     text = "Blandit ut netus consequat ridiculus mi.",
-                    style = Theme.typography.small,
+                    style = LocalTheme.current.typography.body.small,
                     color = c.neutrals600
                 )
             }
@@ -65,7 +65,7 @@ fun AccordionScreen(
             content = {
                 Text(
                     text = "Blandit ut netus consequat ridiculus mi.",
-                    style = Theme.typography.small,
+                    style = LocalTheme.current.typography.body.small,
                     color = c.neutrals600
                 )
             }
@@ -74,7 +74,7 @@ fun AccordionScreen(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Accordion Large",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
         Accordion(
@@ -85,7 +85,7 @@ fun AccordionScreen(
                     text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Rhoncus, accumsan, vel interdum diam " +
                         "tortor cursus nam quisque ut. Blandit ut netus consequat ridiculus mi. Lacus a fermentum nec nisl " +
                         "consectetur molestie. Mauris mi cursus quis risus aliquam vivamus blandit. Maecenas dui odio odio aliquet.",
-                    style = Theme.typography.small,
+                    style = LocalTheme.current.typography.body.small,
                     color = c.neutrals600
                 )
             },
@@ -100,7 +100,7 @@ fun AccordionScreen(
                     text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Rhoncus, accumsan, vel interdum diam " +
                         "tortor cursus nam quisque ut. Blandit ut netus consequat ridiculus mi. Lacus a fermentum nec nisl " +
                         "consectetur molestie. Mauris mi cursus quis risus aliquam vivamus blandit. Maecenas dui odio odio aliquet.",
-                    style = Theme.typography.small,
+                    style = LocalTheme.current.typography.body.small,
                     color = c.neutrals600
                 )
             },
@@ -116,7 +116,7 @@ fun AccordionScreen(
             Text(
                 modifier = Modifier.padding(Theme.spacing.spacing12),
                 text = "Enabled",
-                style = Theme.typography.paragraph
+                style = LocalTheme.current.typography.body.medium
             )
         }
     }

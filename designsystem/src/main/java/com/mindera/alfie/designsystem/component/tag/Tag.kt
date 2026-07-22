@@ -94,7 +94,7 @@ fun Tag(
                         vertical = Theme.spacing.spacing8,
                         horizontal = Theme.spacing.spacing12
                     ),
-                    style = Theme.typography.paragraph,
+                    style = LocalTheme.current.typography.body.medium,
                     color = c.neutrals900
                 )
                 if (isDismissible) {

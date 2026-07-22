@@ -66,6 +66,7 @@ import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.pdp.component.ProductDetailsColorPicker
@@ -250,7 +251,7 @@ private fun ProductDetailsScreenError(
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         Text(
             text = stringResource(errorType.toStringRes(notFoundRes = R.string.product_details_product_not_found)),
-            style = Theme.typography.paragraphBold,
+            style = LocalTheme.current.typography.body.mediumBold,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -331,7 +332,7 @@ private fun ProductDetailsName(state: ProductDetailsUIState.Data) {
                 xScale = Theme.scale.scale80
             ),
         text = state.details.name,
-        style = Theme.typography.paragraphLarge,
+        style = LocalTheme.current.typography.body.large,
         color = c.neutrals900
     )
 }
@@ -355,7 +356,7 @@ private fun ProductDetailsSections(
                     Text(
                         modifier = modifier,
                         text = if (isLoading) "" else stringResource(resource = section.title),
-                        style = Theme.typography.paragraph,
+                        style = LocalTheme.current.typography.body.medium,
                         color = c.neutrals600
                     )
                 },

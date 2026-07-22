@@ -21,6 +21,8 @@ import com.mindera.alfie.designsystem.component.chip.ChipProperties
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
+import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -36,7 +38,7 @@ fun ChipScreen(topBarState: TopBarState) {
         ) {
             Text(
                 text = "Chips",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
             Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
             HorizontalDivider()
@@ -49,7 +51,7 @@ fun ChipScreen(topBarState: TopBarState) {
         ) {
             Text(
                 text = "Default",
-                style = Theme.typography.paragraphBold
+                style = LocalTheme.current.typography.body.mediumBold
             )
             Chip(
                 label = "Default",
@@ -83,7 +85,7 @@ fun ChipScreen(topBarState: TopBarState) {
                     horizontal = Theme.spacing.spacing16
                 ),
                 text = "Single selection group",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = Theme.spacing.spacing16))
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -136,7 +138,7 @@ fun ChipScreen(topBarState: TopBarState) {
                     horizontal = Theme.spacing.spacing16
                 ),
                 text = "Multiple selection group",
-                style = Theme.typography.heading3
+                style = LocalTheme.current.typography.heading.small
             )
             HorizontalDivider(modifier = Modifier.padding(horizontal = Theme.spacing.spacing16))
             Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

@@ -279,7 +279,7 @@ private fun TabItem(
                 }
                 Text(
                     text = stringResource(resource = item.label),
-                    style = Theme.typography.paragraph,
+                    style = LocalTheme.current.typography.body.medium,
                     color = contentColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis

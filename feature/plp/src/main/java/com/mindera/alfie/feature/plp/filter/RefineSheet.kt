@@ -194,14 +194,14 @@ private fun FilterCategoryRow(
     ) {
         Text(
             text = label,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
             modifier = Modifier.weight(1f)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value,
-                style = Theme.typography.smallBold,
+                style = LocalTheme.current.typography.label.smallBold,
                 color = c.neutrals500
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
@@ -228,7 +228,7 @@ private fun DisabledFilterCategoryRow(label: String) {
     ) {
         Text(
             text = label,
-            style = Theme.typography.paragraph,
+            style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
             modifier = Modifier.weight(1f)
         )
@@ -383,11 +383,11 @@ private fun PriceTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, style = Theme.typography.small) },
-        prefix = { Text(currencySymbol, style = Theme.typography.paragraph) },
+        label = { Text(label, style = LocalTheme.current.typography.body.small) },
+        prefix = { Text(currencySymbol, style = LocalTheme.current.typography.body.medium) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        textStyle = Theme.typography.paragraph,
+        textStyle = LocalTheme.current.typography.body.medium,
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = c.neutrals800,
             unfocusedBorderColor = c.neutrals200,

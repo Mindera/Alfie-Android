@@ -22,6 +22,7 @@ import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -48,7 +49,7 @@ fun LabeledRadioButtons() {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Radio Button",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -85,7 +86,7 @@ fun EnabledRadioButtonGroup() {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Radio Button Group (enabled)",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
@@ -103,7 +104,7 @@ fun DisabledRadioButtonGroup() {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = "Radio Button Group (disabled)",
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))

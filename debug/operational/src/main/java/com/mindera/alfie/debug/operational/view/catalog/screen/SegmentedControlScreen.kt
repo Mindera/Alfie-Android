@@ -104,7 +104,7 @@ private fun SegmentedSection(
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
             text = title,
-            style = Theme.typography.heading3
+            style = LocalTheme.current.typography.heading.small
         )
         HorizontalDivider()
         SegmentedPage(

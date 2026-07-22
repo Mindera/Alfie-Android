@@ -107,7 +107,7 @@ private fun GreetingTopBar(
     Column(modifier = Modifier.testTag(HOME_TITLE_HEADER)) {
         Text(
             text = stringResource(id = R.string.top_bar_greeting, greetingType.userName),
-            style = Theme.typography.heading2,
+            style = LocalTheme.current.typography.heading.medium,
             color = c.neutrals900,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -115,7 +115,7 @@ private fun GreetingTopBar(
         greetingType.subtitle?.let {
             Text(
                 text = it,
-                style = Theme.typography.small,
+                style = LocalTheme.current.typography.body.small,
                 color = c.neutrals500
             )
         }
