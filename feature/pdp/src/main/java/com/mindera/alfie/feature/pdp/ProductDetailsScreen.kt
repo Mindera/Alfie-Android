@@ -66,7 +66,6 @@ import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.model.ApiErrorType
 import com.mindera.alfie.feature.model.toStringRes
 import com.mindera.alfie.feature.pdp.component.ProductDetailsColorPicker

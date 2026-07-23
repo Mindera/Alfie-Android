@@ -116,11 +116,11 @@ class DefaultColors(private val primitive: Primitives) : Colors {
         override val destructiveContentDestructiveDisabled = primitive.colors.neutrals500
         override val destructiveStrokeDestructiveDefault = surface.backgroundDestructive
         override val destructiveStrokeDestructiveDisabled = primitive.colors.neutrals300
-        override val primaryBackgroundPrimaryDefault = surface.backgroundInvertedPrimary
+        override val primaryBackgroundPrimaryDefault = primitive.colors.brand500
         override val primaryBackgroundPrimaryDisabled = primitive.colors.neutrals300
         override val primaryContentPrimaryDefault = primitive.colors.neutrals0
         override val primaryContentPrimaryDisabled = primitive.colors.neutrals500
-        override val primaryStrokePrimaryDefault = primitive.colors.neutrals800
+        override val primaryStrokePrimaryDefault = primitive.colors.brand500
         override val primaryStrokePrimaryDisabled = primitive.colors.neutrals300
         override val secondaryBackgroundSecondaryDefault = primitive.colors.transparent
         override val secondaryBackgroundSecondaryDisabled = primitive.colors.transparent

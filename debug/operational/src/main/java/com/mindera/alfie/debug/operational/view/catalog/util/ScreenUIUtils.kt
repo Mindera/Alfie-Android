@@ -15,7 +15,6 @@ import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
 import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 
 @Composable
 internal fun HeaderDivider(

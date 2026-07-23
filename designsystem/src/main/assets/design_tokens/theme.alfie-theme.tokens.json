@@ -33,7 +33,7 @@
   },
   "button-primary-background-primary-default": {
     "$type": "color",
-    "$value": "{surface-background-inverted-primary}"
+    "$value": "{colours-brand-500}"
   },
   "button-primary-background-primary-disabled": {
     "$type": "color",
@@ -49,7 +49,7 @@
   },
   "button-primary-stroke-primary-default": {
     "$type": "color",
-    "$value": "{colours-neutrals-800}"
+    "$value": "{colours-brand-500}"
   },
   "button-primary-stroke-primary-disabled": {
     "$type": "color",

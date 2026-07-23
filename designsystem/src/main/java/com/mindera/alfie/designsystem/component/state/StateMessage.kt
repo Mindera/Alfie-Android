@@ -18,7 +18,6 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 
 /**
  * Full-area, vertically centered message used for empty / no-results / error states.

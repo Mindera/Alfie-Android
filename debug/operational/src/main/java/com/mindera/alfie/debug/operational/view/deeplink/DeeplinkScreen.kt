@@ -33,7 +33,6 @@ import com.mindera.alfie.designsystem.component.input.TextFieldType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
