@@ -24,6 +24,27 @@ interface Primitives {
 
 @Immutable
 interface PrimitiveColors {
+    val brand0: Color
+    val brand02Color3: Color
+    val brand100: Color
+    val brand200: Color
+    val brand300: Color
+    val brand400: Color
+    val brand500: Color
+    val brand600: Color
+    val brand700: Color
+    val brand800: Color
+    val brand900: Color
+    val brandNewBrand0: Color
+    val brandNewBrand100: Color
+    val brandNewBrand200: Color
+    val brandNewBrand300: Color
+    val brandNewBrand400: Color
+    val brandNewBrand500: Color
+    val brandNewBrand600: Color
+    val brandNewBrand700: Color
+    val brandNewBrand800: Color
+    val brandNewBrand900: Color
     val neutrals0: Color
     val neutrals100: Color
     val neutrals200: Color
@@ -68,6 +89,7 @@ interface PrimitiveSpacing {
     val spacing28: Dp
     val spacing32: Dp
     val spacing40: Dp
+    val spacing44: Dp
     val spacing48: Dp
     val spacing56: Dp
     val spacing64: Dp
@@ -133,6 +155,27 @@ interface PrimitiveBorder {
 @Immutable
 object LightPrimitives : Primitives {
     override val colors = object : PrimitiveColors {
+        override val brand0 = Color(0xFFFFFFFF)
+        override val brand02Color3 = Color(0xFF7A5B00)
+        override val brand100 = Color(0xFFF7F7F7)
+        override val brand200 = Color(0xFFE9E9E9)
+        override val brand300 = Color(0xFFCDCDCD)
+        override val brand400 = Color(0xFFA1A1A1)
+        override val brand500 = Color(0xFF111111)
+        override val brand600 = Color(0xFF4A4A4A)
+        override val brand700 = Color(0xFF2B2B2B)
+        override val brand800 = Color(0xFF111111)
+        override val brand900 = Color(0xFF06080A)
+        override val brandNewBrand0 = Color(0xFFFFFFFF)
+        override val brandNewBrand100 = Color(0xFFFFFBE5)
+        override val brandNewBrand200 = Color(0xFFFFF5B8)
+        override val brandNewBrand300 = Color(0xFFFFE88A)
+        override val brandNewBrand400 = Color(0xFFFFDE5C)
+        override val brandNewBrand500 = Color(0xFFFFD100)
+        override val brandNewBrand600 = Color(0xFFDBB000)
+        override val brandNewBrand700 = Color(0xFFB89000)
+        override val brandNewBrand800 = Color(0xFF947100)
+        override val brandNewBrand900 = Color(0xFF7A5B00)
         override val neutrals0 = Color(0xFFFFFFFF)
         override val neutrals100 = Color(0xFFF7F7F7)
         override val neutrals200 = Color(0xFFE9E9E9)
@@ -175,6 +218,7 @@ object LightPrimitives : Primitives {
         override val spacing28 = 28.dp
         override val spacing32 = 32.dp
         override val spacing40 = 40.dp
+        override val spacing44 = 44.dp
         override val spacing48 = 48.dp
         override val spacing56 = 56.dp
         override val spacing64 = 64.dp

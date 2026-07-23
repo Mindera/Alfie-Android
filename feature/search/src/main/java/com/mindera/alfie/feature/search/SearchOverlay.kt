@@ -47,7 +47,6 @@ import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
 import com.mindera.alfie.feature.search.model.SearchEvent.OnDeleteRecentSearch

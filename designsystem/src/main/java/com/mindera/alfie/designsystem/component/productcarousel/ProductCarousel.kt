@@ -45,7 +45,6 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.productcard.size.VerticalProductCardSize
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalFoundationApi::class)

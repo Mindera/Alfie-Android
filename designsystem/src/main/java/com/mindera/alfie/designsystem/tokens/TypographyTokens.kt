@@ -26,6 +26,7 @@ interface TypographyTokens {
     val headingXSmall: StyleTokens
     val bodyLarge: StyleTokens
     val bodyMedium: StyleTokens
+    val bodyMediumBold: StyleTokens
     val bodySmall: StyleTokens
     val labelSmall: StyleTokens
     val bodyMediumStrikethrough: StyleTokens
@@ -89,6 +90,12 @@ class DefaultTypographyTokens(private val primitive: Primitives) : TypographyTok
         override val fontSize = primitive.typography.fontSize.fontSize16
         override val lineHeight = primitive.typography.lineHeight.lineHeight24
         override val kerning = primitive.typography.kerning.none
+    }
+    override val bodyMediumBold = object : StyleTokens {
+        override val fontFamily = bodyMedium.fontFamily
+        override val fontSize = bodyMedium.fontSize
+        override val lineHeight = bodyMedium.lineHeight
+        override val kerning = bodyMedium.kerning
     }
     override val bodySmall = object : StyleTokens {
         override val fontFamily = primitive.typography.fontFamily.primaryAndroid

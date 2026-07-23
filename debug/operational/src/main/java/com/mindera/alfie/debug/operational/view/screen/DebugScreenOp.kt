@@ -31,7 +31,6 @@ import com.mindera.alfie.designsystem.component.switch.Switch
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

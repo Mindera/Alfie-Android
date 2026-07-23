@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 
 private val HEIGHT_SINGLE_LINE = 22.dp
 private val HEIGHT_DOUBLE_LINE = 44.dp

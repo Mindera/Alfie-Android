@@ -75,10 +75,29 @@ def _to8(f):
     return max(0, min(255, round(f * 255)))
 
 
-def color_to_kotlin(value):
-    """Convert resolved color dict → Color(0xAARRGGBB)."""
+def color_to_kotlin(value, name=None):
+    """Convert resolved color dict → Color(0xAARRGGBB).
+
+    Alpha may be given as a separate `alpha` field or as a 4th entry in
+    `components` (DTCG srgba); the explicit field wins, then the 4th component,
+    else fully opaque.
+    """
     comps = value["components"]
-    alpha = value.get("alpha", 1.0)
+    if "alpha" in value:
+        alpha = value["alpha"]
+    elif len(comps) >= 4:
+        alpha = comps[3]
+    else:
+        alpha = 1.0
+    channels = list(comps[:3]) + [alpha]
+    if not all(isinstance(c, (int, float)) for c in channels):
+        who = f"'{name}'" if name else "a color token"
+        print(
+            f"\n✗ Color {who} has a non-numeric component ({value['components']}, "
+            f"alpha={alpha!r}). DTCG 'none' / string channels are not supported.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     aa = _to8(alpha)
     rr = _to8(comps[0])
     gg = _to8(comps[1])
@@ -126,6 +145,19 @@ _WEIGHT_WORD_TO_NAME = {
 }
 
 
+def _weight_word_to_name(word):
+    """Map a weight word → named weight, warning (not silently) on an unknown
+    one so token drift surfaces instead of shipping Regular."""
+    name = _WEIGHT_WORD_TO_NAME.get(word)
+    if name is None:
+        print(
+            f"  WARNING: unrecognised font weight '{word}' → defaulting to Regular",
+            file=sys.stderr,
+        )
+        return "Regular"
+    return name
+
+
 def resolve_font_weight(raw, typo_tokens, visited=None):
     """Resolve a style's fontWeight (literal name OR {ref}) → a named weight.
 
@@ -139,7 +171,7 @@ def resolve_font_weight(raw, typo_tokens, visited=None):
     m = REF_RE.match(raw)
     if not m:
         # Legacy literal, e.g. "Regular"; normalise to a known name, else Regular.
-        return _WEIGHT_WORD_TO_NAME.get(raw.replace(" ", "").lower(), "Regular")
+        return _weight_word_to_name(raw.replace(" ", "").lower())
     target = m.group(1)
     if visited is None:
         visited = set()
@@ -148,7 +180,7 @@ def resolve_font_weight(raw, typo_tokens, visited=None):
     visited.add(target)
     if target.startswith(_FONT_WEIGHT_PREFIX):
         word = target[len(_FONT_WEIGHT_PREFIX):].replace("-", "").lower()
-        return _WEIGHT_WORD_TO_NAME.get(word, "Regular")
+        return _weight_word_to_name(word)
     if target in typo_tokens:
         return resolve_font_weight(typo_tokens[target]["$value"], typo_tokens, visited)
     return "Regular"
@@ -598,7 +630,7 @@ def emit_primitives(primitives, font_import):
     lines.append("    override val colors = object : PrimitiveColors {\n")
     for n in color_names:
         val = resolve_prim_raw(n, primitives)
-        lines.append(f"        override val {prim_color_member(n)} = {color_to_kotlin(val)}\n")
+        lines.append(f"        override val {prim_color_member(n)} = {color_to_kotlin(val, n)}\n")
     lines.append("    }\n")
 
     lines.append("    override val spacing = object : PrimitiveSpacing {\n")
@@ -716,7 +748,7 @@ def emit_colors(theme_colors, reg, walk):
                 else:
                     expr = f'"{raw_val}"'
             else:
-                expr = color_to_kotlin(raw_val)
+                expr = color_to_kotlin(raw_val, token_name)
             lines.append(f"        override val {member} = {expr}\n")
         lines.append("    }\n")
 
@@ -825,7 +857,7 @@ def emit_sizing(sizing, reg, walk):
 _STYLE_ORDER = [
     "display-large", "display-medium", "display-small",
     "heading-large", "heading-medium", "heading-small", "heading-x-small",
-    "body-large", "body-medium", "body-small",
+    "body-large", "body-medium", "body-medium-bold", "body-small",
     "label-small",
     # refs bodyMedium / bodySmall / labelSmall:
     "body-medium-strikethrough",
@@ -841,8 +873,17 @@ _TYPO_FIELDS = [
     ("-kerning", "kerning"),
 ]
 
+# Maps a StyleTokens field back to its key in the style's $value block. Note the
+# style calls kerning "letterSpacing".
+_STYLE_VALUE_KEY = {
+    "fontFamily": "fontFamily",
+    "fontSize": "fontSize",
+    "lineHeight": "lineHeight",
+    "kerning": "letterSpacing",
+}
 
-def emit_typography_tokens(typo_tokens, reg, walk):
+
+def emit_typography_tokens(styles_raw, typo_tokens, reg, walk):
     lines = [
         GEN_HEADER,
         "@file:Suppress(\"MagicNumber\", \"LongMethod\")\n",
@@ -877,7 +918,28 @@ def emit_typography_tokens(typo_tokens, reg, walk):
         lines.append(f"    override val {style_member} = object : StyleTokens {{\n")
 
         for suffix, kt_field in _TYPO_FIELDS:
-            token_name = style_name + suffix
+            own_token = style_name + suffix
+
+            # The style's $value is the source of truth. When it declares a
+            # field against a *different* token than this style's own
+            # same-named one (e.g. body-medium-bold points its metrics at
+            # body-medium's tokens), honour that ref instead of the synthesised
+            # own-token — which may hold stale/divergent data.
+            declared = (
+                styles_raw.get(style_name, {}).get("$value", {}).get(_STYLE_VALUE_KEY[kt_field])
+            )
+            dm = REF_RE.match(declared) if isinstance(declared, str) else None
+            if dm and dm.group(1) != own_token:
+                try:
+                    layer, nav = resolve_ref(dm.group(1), reg, walk)
+                    expr = to_expr(layer, nav, "DefaultTypographyTokens")
+                except RuntimeError as exc:
+                    print(f"  WARNING: {exc}", file=sys.stderr)
+                    expr = "FontFamily.Default  // unresolved"
+                lines.append(f"        override val {kt_field} = {expr}\n")
+                continue
+
+            token_name = own_token
             if token_name not in typo_tokens:
                 print(f"  WARNING: missing token '{token_name}'", file=sys.stderr)
                 continue
@@ -911,7 +973,7 @@ def emit_typography_tokens(typo_tokens, reg, walk):
 _TYPOGRAPHY_STYLE_NAMES = [
     "display-large", "display-medium", "display-small",
     "heading-large", "heading-medium", "heading-small", "heading-x-small",
-    "body-large", "body-medium", "body-medium-strikethrough", "body-small",
+    "body-large", "body-medium", "body-medium-bold", "body-medium-strikethrough", "body-small",
     "link-medium", "link-small",
     "label-small", "label-small-bold",
 ]
@@ -1051,7 +1113,7 @@ def main():
     print("  ✓ Sizing.kt")
 
     (OUT_DIR / "TypographyTokens.kt").write_text(
-        emit_typography_tokens(typo_tokens, reg, walk), encoding="utf-8"
+        emit_typography_tokens(styles_raw, typo_tokens, reg, walk), encoding="utf-8"
     )
     print("  ✓ TypographyTokens.kt")
 

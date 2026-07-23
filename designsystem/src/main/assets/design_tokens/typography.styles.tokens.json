@@ -19,6 +19,16 @@
       "lineHeight": "{body-medium-line-height}"
     }
   },
+  "body-medium-bold": {
+    "$type": "typography",
+    "$value": {
+      "fontFamily": "{body-medium-font-family}",
+      "fontSize": "{body-medium-font-size}",
+      "fontWeight": "{body-medium-bold-font-weight}",
+      "letterSpacing": "{body-medium-kerning}",
+      "lineHeight": "{body-medium-line-height}"
+    }
+  },
   "body-medium-strikethrough": {
     "$type": "typography",
     "$value": {

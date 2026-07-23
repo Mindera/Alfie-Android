@@ -30,7 +30,6 @@ import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import com.mindera.alfie.designsystem.tokens.mediumBold
 import com.mindera.alfie.feature.home.model.HomeUI
 import com.mindera.alfie.feature.home.model.HomeUIState
 import com.ramcosta.composedestinations.annotation.Destination

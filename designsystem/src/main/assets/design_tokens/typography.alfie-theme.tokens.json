@@ -23,6 +23,30 @@
     "$type": "string",
     "$value": "body-large"
   },
+  "body-medium-bold-font-family": {
+    "$type": "fontFamily",
+    "$value": "{typography-font-family-primary}"
+  },
+  "body-medium-bold-font-size": {
+    "$type": "dimension",
+    "$value": "{typography-font-size-font-size-s}"
+  },
+  "body-medium-bold-font-weight": {
+    "$type": "fontWeight",
+    "$value": "{typography-font-weight-medium}"
+  },
+  "body-medium-bold-kerning": {
+    "$type": "dimension",
+    "$value": "{typography-kerning-none}"
+  },
+  "body-medium-bold-line-height": {
+    "$type": "dimension",
+    "$value": "{typography-line-height-system-line-height-m}"
+  },
+  "body-medium-bold-text-style-name": {
+    "$type": "string",
+    "$value": "body-medium-bold"
+  },
   "body-medium-font-family": {
     "$type": "fontFamily",
     "$value": "{typography-font-family-primary}"
