@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -39,8 +42,7 @@ fun Chip(
     isEnabled: Boolean = true,
     isDismissible: Boolean = false,
     onDismiss: ClickEvent = {},
-    counter: Int? = null,
-    leadingIcon: (@Composable () -> Unit)? = null
+    counter: Int? = null
 ) {
     val theme = LocalTheme.current
     val color = theme.color
@@ -74,7 +76,12 @@ fun Chip(
             .clip(shape)
             .background(color = background, shape = shape)
             .border(width = borderWidth, color = borderColor, shape = shape)
-            .clickable(enabled = isEnabled, onClick = onClickEvent)
+            .selectable(
+                selected = isSelected,
+                enabled = isEnabled,
+                role = Role.Checkbox,
+                onClick = onClickEvent
+            )
             .padding(
                 horizontal = theme.spacing.spacing16,
                 vertical = theme.spacing.spacing4
@@ -82,7 +89,6 @@ fun Chip(
         horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing4),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        leadingIcon?.invoke()
         Text(
             text = chipLabel,
             style = theme.typography.body.medium,
@@ -91,11 +97,16 @@ fun Chip(
         AnimatedVisibility(visible = isSelected && isDismissible) {
             Icon(
                 modifier = Modifier
-                    .size(theme.sizing.icon.small)
-                    .clickable(enabled = isEnabled, onClick = onDismiss),
+                    .minimumInteractiveComponentSize()
+                    .clickable(
+                        enabled = isEnabled,
+                        role = Role.Button,
+                        onClick = onDismiss
+                    )
+                    .size(theme.sizing.icon.small),
                 painter = painterResource(id = AlfieIcons.Close),
-                contentDescription = null,
-                tint = color.content.contentPrimaryActive
+                contentDescription = stringResource(id = R.string.chip_dismiss),
+                tint = if (isEnabled) color.content.contentPrimaryActive else color.content.contentPrimaryDisabled
             )
         }
     }
