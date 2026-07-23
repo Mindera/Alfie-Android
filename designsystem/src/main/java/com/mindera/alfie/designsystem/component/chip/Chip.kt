@@ -3,21 +3,27 @@ package com.mindera.alfie.designsystem.component.chip
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -25,152 +31,123 @@ import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
-import androidx.compose.material3.FilterChip as MaterialChip
 
 private const val MAXIMUM_COUNTER_VALUE = 99
-private val CHIP_HEIGHT_REGULAR = 32.dp
-private val CHIP_HEIGHT_LARGE = 44.dp
 
 @Composable
 fun Chip(
     label: String,
     isSelected: Boolean,
     onClickEvent: ClickEvent,
-    chipType: ChipType = ChipType.REGULAR,
     isEnabled: Boolean = true,
     isDismissible: Boolean = false,
     onDismiss: ClickEvent = {},
     counter: Int? = null
 ) {
+    val theme = LocalTheme.current
+    val color = theme.color
+
     val counterText = counter?.let {
         if (counter > MAXIMUM_COUNTER_VALUE) stringResource(id = R.string.chip_count_limit) else "$counter"
     }.orEmpty()
     val chipLabel = "$label $counterText".trim()
 
-    val modifier = if (chipType == ChipType.REGULAR) {
-        Modifier.height(CHIP_HEIGHT_REGULAR)
-    } else {
-        Modifier.height(CHIP_HEIGHT_LARGE)
+    val shape = theme.sizing.radius.rounded
+    val weightDefault = theme.primitive.border.weightDefault
+
+    val targetBackground = if (isSelected) color.surface.backgroundPrimaryActive else Color.Transparent
+    val (targetBorderWidth, targetBorderColor) = when {
+        isSelected -> 0.dp to Color.Transparent
+        !isEnabled -> weightDefault to color.content.contentPrimaryDisabled
+        else -> weightDefault to color.border.medium
+    }
+    val textColor = when {
+        !isEnabled -> color.content.contentPrimaryDisabled
+        isSelected -> color.content.contentPrimaryActive
+        else -> color.content.contentPrimary
     }
 
-    MaterialChip(
-        modifier = modifier,
-        selected = isSelected,
-        onClick = onClickEvent,
-        label = {
-            Text(
-                text = chipLabel,
-                color = getTextColor(isEnabled = isEnabled)
+    val background by animateColorAsState(targetValue = targetBackground, label = "chipBackground")
+    val borderWidth by animateDpAsState(targetValue = targetBorderWidth, label = "chipBorderWidth")
+    val borderColor by animateColorAsState(targetValue = targetBorderColor, label = "chipBorderColor")
+
+    Row(
+        modifier = Modifier
+            .clip(shape)
+            .background(color = background, shape = shape)
+            .border(width = borderWidth, color = borderColor, shape = shape)
+            .selectable(
+                selected = isSelected,
+                enabled = isEnabled,
+                role = Role.Checkbox,
+                onClick = onClickEvent
             )
-        },
-        trailingIcon = {
-            AnimatedVisibility(visible = isSelected && isDismissible) {
-                IconButton(
-                    modifier = Modifier.size(Theme.iconSize.small),
-                    enabled = isEnabled,
-                    onClick = onDismiss,
-                    content = {
-                        Icon(
-                            painter = painterResource(id = AlfieIcons.Close),
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
-        },
-        enabled = isEnabled,
-        colors = chipColors(),
-        border = chipBorder(
-            isEnabled = isEnabled,
-            isSelected = isSelected
-        ),
-        shape = Theme.shape.full
-    )
-}
-
-@Composable
-private fun getTextColor(
-    isEnabled: Boolean
-): Color {
-    val c = LocalTheme.current.primitive.colors
-    return if (isEnabled) {
-        c.neutrals800
-    } else {
-        c.neutrals300
-    }
-}
-
-@Composable
-private fun chipColors(): androidx.compose.material3.SelectableChipColors {
-    val c = LocalTheme.current.primitive.colors
-    return FilterChipDefaults.filterChipColors().copy(
-        containerColor = Color.Transparent,
-        labelColor = c.neutrals600,
-        disabledContainerColor = c.neutrals100,
-        disabledLabelColor = c.neutrals300,
-        selectedContainerColor = Color.Transparent,
-        selectedLabelColor = c.neutrals800
-    )
-}
-
-@Composable
-private fun chipBorder(isEnabled: Boolean, isSelected: Boolean): BorderStroke {
-    val c = LocalTheme.current.primitive.colors
-    val (border, color) = if (isSelected && isEnabled) {
-        Pair(2.dp, c.neutrals800)
-    } else if (isEnabled.not() && isSelected.not()) {
-        Pair(0.dp, c.neutrals100)
-    } else {
-        val defaultChipBorder = FilterChipDefaults.filterChipBorder(
-            enabled = isEnabled,
-            selected = isSelected
+            .padding(
+                horizontal = theme.spacing.spacing16,
+                vertical = theme.spacing.spacing4
+            ),
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing4),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = chipLabel,
+            style = theme.typography.body.medium,
+            color = textColor
         )
-        Pair(defaultChipBorder.width, c.neutrals800)
+        AnimatedVisibility(visible = isSelected && isDismissible) {
+            Icon(
+                modifier = Modifier
+                    .minimumInteractiveComponentSize()
+                    .clickable(
+                        enabled = isEnabled,
+                        role = Role.Button,
+                        onClick = onDismiss
+                    )
+                    .size(theme.sizing.icon.small),
+                painter = painterResource(id = AlfieIcons.Close),
+                contentDescription = stringResource(id = R.string.chip_dismiss),
+                tint = if (isEnabled) color.content.contentPrimaryActive else color.content.contentPrimaryDisabled
+            )
+        }
     }
-
-    val animatedBorder by animateDpAsState(
-        targetValue = border,
-        label = "animatedBorder"
-    )
-    val animatedColor by animateColorAsState(
-        targetValue = color,
-        label = "animatedColor"
-    )
-
-    return BorderStroke(
-        width = animatedBorder,
-        color = animatedColor
-    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun ChipScreenPreview() {
-    Column(modifier = Modifier.padding(Theme.spacing.spacing16)) {
-        Chip(
-            label = "Default",
-            counter = 12,
-            onClickEvent = {},
-            isSelected = false
-        )
-        Chip(
-            label = "Selected",
-            counter = 1234,
-            onClickEvent = {},
-            isSelected = true
-        )
-        Chip(
-            label = "Disabled",
-            counter = 0,
-            onClickEvent = {},
-            isSelected = false,
-            isEnabled = false
-        )
-        Chip(
-            label = "Disabled Selected",
-            onClickEvent = {},
-            isSelected = true,
-            isEnabled = false
-        )
+    Theme {
+        Column(modifier = Modifier.padding(LocalTheme.current.spacing.spacing16)) {
+            Chip(
+                label = "Default",
+                counter = 12,
+                onClickEvent = {},
+                isSelected = false
+            )
+            Chip(
+                label = "Selected",
+                counter = 1234,
+                onClickEvent = {},
+                isSelected = true
+            )
+            Chip(
+                label = "Disabled",
+                counter = 0,
+                onClickEvent = {},
+                isSelected = false,
+                isEnabled = false
+            )
+            Chip(
+                label = "Disabled Selected",
+                onClickEvent = {},
+                isSelected = true,
+                isEnabled = false
+            )
+            Chip(
+                label = "Dismissible",
+                onClickEvent = {},
+                isSelected = true,
+                isDismissible = true
+            )
+        }
     }
 }

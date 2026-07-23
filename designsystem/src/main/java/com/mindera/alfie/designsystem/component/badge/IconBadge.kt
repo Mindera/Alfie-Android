@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.animation.standardAccelerate
 import com.mindera.alfie.designsystem.component.badge.BadgeType.Counter
 import com.mindera.alfie.designsystem.component.badge.BadgeType.Highlight
@@ -58,12 +57,24 @@ private fun Highlight(
     isVisible: Boolean,
     content: @Composable () -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
-    val badgeColor = c.semanticError700
+    val theme = LocalTheme.current
+    val badgeColor = theme.color.surface.backgroundInvertedPrimary
+    val ringColor = theme.color.surface.backgroundPrimary
+    val ringWidth = theme.primitive.border.weightDefault
     BadgedBox(
         badge = {
             AnimatedVisibility(isVisible = isVisible) {
-                Badge(containerColor = badgeColor)
+                Box(
+                    modifier = Modifier
+                        .border(
+                            width = ringWidth,
+                            color = ringColor,
+                            shape = CircleShape
+                        )
+                        .padding(ringWidth)
+                ) {
+                    Badge(containerColor = badgeColor)
+                }
             }
         }
     ) {
@@ -76,8 +87,10 @@ private fun Counter(
     count: Int,
     content: @Composable () -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
-    val badgeColor = c.semanticError700
+    val theme = LocalTheme.current
+    val badgeColor = theme.color.surface.backgroundInvertedPrimary
+    val ringColor = theme.color.surface.backgroundPrimary
+    val ringWidth = theme.primitive.border.weightDefault
     val limitText = stringResource(id = RD.string.badge_count_limit)
     val countText = if (count > COUNTER_THRESHOLD) limitText else count.toString()
     BadgedBox(
@@ -86,20 +99,23 @@ private fun Counter(
                 Box(
                     modifier = Modifier
                         .border(
-                            width = 1.dp,
-                            color = c.neutrals0,
+                            width = ringWidth,
+                            color = ringColor,
                             shape = CircleShape
                         )
-                        .padding(1.dp)
+                        .padding(ringWidth)
                 ) {
-                    Badge(containerColor = badgeColor) {
+                    Badge(
+                        containerColor = badgeColor,
+                        contentColor = theme.color.content.contentInvertedPrimary
+                    ) {
                         AnimatedContent(
                             targetState = countText,
                             label = "countText"
                         ) {
                             Text(
                                 text = it,
-                                style = LocalTheme.current.typography.label.small
+                                style = theme.typography.label.smallBold
                             )
                         }
                     }

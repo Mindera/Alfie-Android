@@ -2,7 +2,6 @@ package com.mindera.alfie.debug.operational.view.catalog.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.component.chip.Chip
 import com.mindera.alfie.designsystem.component.chip.ChipGroup
 import com.mindera.alfie.designsystem.component.chip.ChipProperties
-import com.mindera.alfie.designsystem.component.chip.ChipType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
@@ -44,77 +42,39 @@ fun ChipScreen(topBarState: TopBarState) {
             Spacer(modifier = Modifier.height(Theme.spacing.spacing12))
             HorizontalDivider()
         }
-        Row(
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = Theme.spacing.spacing16),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing12)
         ) {
-            Column(
-                modifier = Modifier.padding(horizontal = Theme.spacing.spacing16),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing12)
-            ) {
-                Text(
-                    text = "Regular",
-                    style = LocalTheme.current.typography.body.mediumBold
-                )
-                Chip(
-                    label = "Default",
-                    counter = 12,
-                    onClickEvent = {},
-                    isSelected = false
-                )
-                Chip(
-                    label = "Selected",
-                    onClickEvent = {},
-                    isSelected = true
-                )
-                Chip(
-                    label = "Disabled",
-                    onClickEvent = {},
-                    isSelected = false,
-                    isEnabled = false
-                )
-                Chip(
-                    label = "Disabled Selected",
-                    onClickEvent = {},
-                    isSelected = true,
-                    isEnabled = false
-                )
-            }
-            Column(
-                modifier = Modifier.padding(end = Theme.spacing.spacing16),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing12)
-            ) {
-                Text(
-                    text = "Large",
-                    style = LocalTheme.current.typography.body.mediumBold
-                )
-                Chip(
-                    label = "Default",
-                    chipType = ChipType.LARGE,
-                    counter = 12,
-                    onClickEvent = {},
-                    isSelected = false
-                )
-                Chip(
-                    label = "Selected",
-                    chipType = ChipType.LARGE,
-                    onClickEvent = {},
-                    isSelected = true
-                )
-                Chip(
-                    label = "Disabled",
-                    chipType = ChipType.LARGE,
-                    onClickEvent = {},
-                    isSelected = false,
-                    isEnabled = false
-                )
-                Chip(
-                    label = "Disabled Selected",
-                    chipType = ChipType.LARGE,
-                    onClickEvent = {},
-                    isSelected = true,
-                    isEnabled = false
-                )
-            }
+            Text(
+                text = "Default",
+                style = LocalTheme.current.typography.body.mediumBold
+            )
+            Chip(
+                label = "Default",
+                counter = 12,
+                onClickEvent = {},
+                isSelected = false
+            )
+            Chip(
+                label = "Selected",
+                onClickEvent = {},
+                isSelected = true
+            )
+            Chip(
+                label = "Disabled",
+                onClickEvent = {},
+                isSelected = false,
+                isEnabled = false
+            )
+            Chip(
+                label = "Disabled Selected",
+                onClickEvent = {},
+                isSelected = true,
+                isEnabled = false
+            )
         }
 
         Column {

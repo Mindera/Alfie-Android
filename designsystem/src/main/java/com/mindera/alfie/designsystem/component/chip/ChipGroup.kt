@@ -9,8 +9,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.isSpecified
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
-import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 fun ChipGroup(
@@ -18,15 +19,18 @@ fun ChipGroup(
     onSelectionChange: ClickEventOneArg<Int>,
     modifier: Modifier = Modifier,
     onDismiss: ClickEventOneArg<Int> = {},
-    chipSpacing: Dp = Theme.spacing.spacing8,
-    horizontalSpacing: Dp = Theme.spacing.spacing8
+    chipSpacing: Dp = Dp.Unspecified,
+    horizontalSpacing: Dp = Dp.Unspecified
 ) {
+    val defaultSpacing = LocalTheme.current.spacing.spacing8
+    val resolvedChipSpacing = if (chipSpacing.isSpecified) chipSpacing else defaultSpacing
+    val resolvedHorizontalSpacing = if (horizontalSpacing.isSpecified) horizontalSpacing else defaultSpacing
     LazyRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(chipSpacing),
+        horizontalArrangement = Arrangement.spacedBy(resolvedChipSpacing),
         state = rememberLazyListState()
     ) {
-        item { Spacer(modifier = Modifier.width(horizontalSpacing)) }
+        item { Spacer(modifier = Modifier.width(resolvedHorizontalSpacing)) }
         itemsIndexed(chips) { index, chip ->
             Chip(
                 label = chip.label,
@@ -38,6 +42,6 @@ fun ChipGroup(
                 onDismiss = { onDismiss(index) }
             )
         }
-        item { Spacer(modifier = Modifier.width(horizontalSpacing)) }
+        item { Spacer(modifier = Modifier.width(resolvedHorizontalSpacing)) }
     }
 }

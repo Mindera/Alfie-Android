@@ -4,6 +4,7 @@
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
     <string name="chip_count_limit">99+</string>
+    <string name="chip_dismiss">Remove filter</string>
     <string name="date_input_placeholder">Date</string>
     <string name="loading_label">Loading</string>
     <string name="search_placeholder">What are you looking for?</string>
