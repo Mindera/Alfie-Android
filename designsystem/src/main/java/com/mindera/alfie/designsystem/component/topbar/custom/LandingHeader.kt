@@ -47,7 +47,6 @@ import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Logo
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +62,9 @@ fun TopBarScope.LandingHeader(
             type = type,
             isSearchMode = searchState.isSearchOpen
         )
-        Search(searchState = searchState)
+        Search(
+            searchState = searchState
+        )
     }
 }
 
@@ -73,6 +74,7 @@ private fun TopBarScope.LandingHeaderContent(
     type: LandingHeaderType,
     isSearchMode: Boolean
 ) {
+    val theme = LocalTheme.current
     TopAppBar(
         title = {
             when (type) {
@@ -83,7 +85,7 @@ private fun TopBarScope.LandingHeaderContent(
         actions = { TopBarActions(animateVisibility = false) },
         colors = topBarColors,
         modifier = Modifier
-            .padding(end = Theme.spacing.spacing12)
+            .padding(end = theme.spacing.spacing12)
             .animateContentSize(standardAccelerate())
             .layout { measurable, constraints ->
                 val placeable = measurable.measure(constraints)
@@ -128,7 +130,7 @@ private fun LogoTopBar(type: Logo) {
         painter = painterResource(id = type.icon),
         contentDescription = type.contentDescription,
         modifier = Modifier
-            .height(Theme.iconSize.small)
+            .height(LocalTheme.current.sizing.icon.small)
             .testTag(HOME_TITLE_HEADER)
     )
 }
@@ -137,9 +139,10 @@ private fun LogoTopBar(type: Logo) {
 private fun TopBarScope.Search(
     searchState: SearchState
 ) {
+    val theme = LocalTheme.current
     val isSearchMode = searchState.isSearchOpen
     val searchFieldStartPadding by animateDpAsState(
-        targetValue = if (isSearchMode) Theme.spacing.spacing0 else Theme.spacing.spacing16,
+        targetValue = if (isSearchMode) theme.spacing.spacing0 else theme.spacing.spacing16,
         animationSpec = standardAccelerate(),
         label = "search field padding"
     )
@@ -173,7 +176,9 @@ private fun TopBarScope.Search(
                 modifier = Modifier
                     .padding(
                         start = searchFieldStartPadding,
-                        end = Theme.spacing.spacing16
+                        end = theme.spacing.spacing16,
+                        top = theme.spacing.spacing16,
+                        bottom = theme.spacing.spacing16
                     ),
                 onClick = {
                     searchState.updateSearchState(true)
