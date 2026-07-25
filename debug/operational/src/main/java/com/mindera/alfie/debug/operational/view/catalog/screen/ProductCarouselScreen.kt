@@ -25,6 +25,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 private val items = List(8) {
     ProductCardType.Vertical(
@@ -36,7 +37,7 @@ private val items = List(8) {
         name = "Soft Lounge Long Sleeve Dress",
         price = PriceType.Default(price = "$219.00")
     )
-}
+}.toImmutableList()
 
 @Destination
 @Composable
