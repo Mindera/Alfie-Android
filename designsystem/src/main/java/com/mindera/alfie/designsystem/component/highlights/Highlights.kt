@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -23,6 +22,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,11 +32,14 @@ import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.commons.string.toString
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
+import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.component.image.Image
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 // D1: Pagination dot metrics have no design token (scale skips 6dp); values read directly off Figma
 // node 4421:132068 and flagged as approximated in the handoff.
@@ -58,7 +63,7 @@ private const val SCRIM_START_STOP = 0.5f
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Highlights(
-    items: List<HighlightsItem>,
+    items: ImmutableList<HighlightsItem>,
     modifier: Modifier = Modifier
 ) {
     if (items.isEmpty()) return
@@ -143,8 +148,14 @@ private fun HighlightsPagination(
     modifier: Modifier = Modifier
 ) {
     val theme = LocalTheme.current
+    // Expose page position to assistive tech — the dots are otherwise purely visual.
+    val pageDescription = stringResource(
+        R.string.highlights_pagination_content_description,
+        currentPage + 1,
+        pageCount
+    )
     Row(
-        modifier = modifier,
+        modifier = modifier.semantics { contentDescription = pageDescription },
         horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
     ) {
         repeat(pageCount) { index ->
@@ -183,7 +194,7 @@ private fun HighlightsSingleSlidePreview() {
     }
 }
 
-private fun previewItems(count: Int): List<HighlightsItem> = List(count) { index ->
+private fun previewItems(count: Int): ImmutableList<HighlightsItem> = List(count) { index ->
     HighlightsItem(
         image = ImageUI(
             images = persistentListOf(
@@ -197,4 +208,4 @@ private fun previewItems(count: Int): List<HighlightsItem> = List(count) { index
         actionText = StringResource.fromText("Explore Collection"),
         onActionClick = { }
     )
-}
+}.toImmutableList()

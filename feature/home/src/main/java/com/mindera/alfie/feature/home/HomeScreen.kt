@@ -10,11 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.ui.media.image.ImageSizeUI
+import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.debug.runner.LocalDebugComposeRunner
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.highlights.Highlights
+import com.mindera.alfie.designsystem.component.highlights.HighlightsItem
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
@@ -26,6 +30,7 @@ import com.mindera.alfie.feature.home.model.HomeUI
 import com.mindera.alfie.feature.home.model.HomeUIState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Destination
@@ -100,8 +105,20 @@ private fun TopBarScope.SetupTopBar(homeUI: HomeUI?) {
 @Composable
 private fun HomeScreenPreview() {
     Theme {
-        HomeScreenContent(
-            HomeUIState.Loaded(HomeUIFactory().invoke())
-        )
+        HomeScreenContent(HomeUIState.Loaded(previewHomeUI()))
     }
 }
+
+// Local preview fixture — keeps the preview independent of HomeUIFactory (DI wiring).
+private fun previewHomeUI() = HomeUI(
+    userName = null,
+    membershipDate = null,
+    highlights = persistentListOf(
+        HighlightsItem(
+            image = ImageUI(images = persistentListOf(ImageSizeUI.Large("")), alt = ""),
+            title = StringResource.fromText("Transcending Trends\nfor Breezy Nights"),
+            actionText = StringResource.fromText("Explore Collection"),
+            onActionClick = { }
+        )
+    )
+)
