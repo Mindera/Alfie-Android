@@ -2,7 +2,9 @@
     <string name="app_name">Alfie</string>
 
     <string name="bottom_bar_home">Home</string>
-    <string name="bottom_bar_shop">Shop</string>
+    <!-- Key names the Shop destination; Figma labels the tab "Store" (ALFMOB-448 D2). -->
+    <string name="bottom_bar_shop">Store</string>
     <string name="bottom_bar_wishlist">Wishlist</string>
     <string name="bottom_bar_bag">Bag</string>
+    <string name="bottom_bar_account">Account</string>
 </resources>

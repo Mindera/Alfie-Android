@@ -7,6 +7,7 @@ import com.mindera.alfie.R
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.navigation.arguments.shop.shopNavArgs
 import com.mindera.alfie.core.navigation.arguments.wishlist.wishlistNavArgs
+import com.mindera.alfie.core.ui.test.ACCOUNT_TAB
 import com.mindera.alfie.core.ui.test.BAG_TAB
 import com.mindera.alfie.core.ui.test.HOME_TAB
 import com.mindera.alfie.core.ui.test.SHOP_TAB
@@ -15,6 +16,7 @@ import com.mindera.alfie.designsystem.component.bottombar.BottomBarItem
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarItemState
 import com.mindera.alfie.designsystem.component.bottombar.rememberBottomBarItemState
 import com.mindera.alfie.designsystem.icons.AlfieIcons
+import com.mindera.alfie.feature.account.destinations.AccountScreenDestination
 import com.mindera.alfie.feature.bag.destinations.BagScreenDestination
 import com.mindera.alfie.feature.home.destinations.HomeScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopCategoryScreenDestination
@@ -63,7 +65,8 @@ fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDest
         BottomBarDestination(
             direction = ShopScreenDestination(shopNavArgs()),
             state = rememberBottomBarItemState(),
-            icon = AlfieIcons.LegacyStore,
+            // D3: Figma's Store tab uses the rules-and-magnifier glyph, not the legacy storefront.
+            icon = AlfieIcons.Menu,
             label = StringResource.fromId(id = R.string.bottom_bar_shop),
             testTag = SHOP_TAB,
             shouldSelect = { ShopScreenDestination == it || ShopCategoryScreenDestination == it },
@@ -77,6 +80,18 @@ fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDest
             testTag = BAG_TAB,
             shouldSelect = { BagScreenDestination == it },
             shouldRestore = { BagScreenDestination == it }
+        ),
+        // D1: fifth tab from Figma. Declared here rather than appended after the conditional
+        // wishlist insert below so its `rememberBottomBarItemState()` slot stays stable when the
+        // wishlist toggle flips.
+        BottomBarDestination(
+            direction = AccountScreenDestination,
+            state = rememberBottomBarItemState(),
+            icon = AlfieIcons.Account,
+            label = StringResource.fromId(id = R.string.bottom_bar_account),
+            testTag = ACCOUNT_TAB,
+            shouldSelect = { AccountScreenDestination == it },
+            shouldRestore = { AccountScreenDestination == it }
         )
     )
 

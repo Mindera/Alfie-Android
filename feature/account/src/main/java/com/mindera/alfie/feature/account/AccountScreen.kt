@@ -53,7 +53,9 @@ internal fun AccountScreen(
     val viewState by viewModel.state.collectAsStateWithLifecycle()
 
     topBarState.textTopBar(title = stringResource(R.string.account_title_header))
-    bottomBarState.hideBottomBar()
+    // ALFMOB-448: Account is now a bottom-bar tab, so the bar stays visible here as it does on
+    // every other top-level destination. Hiding it would strand the user with no way back.
+    bottomBarState.showBottomBar()
 
     viewModel.handleUIEvents(
         navigator = navigator,
