@@ -35,6 +35,4 @@
     <string name="environment_save_button">Save and Restart</string>
     <string name="environment_success_message">Done. The app will now restart automatically.</string>
     <string name="environment_error_message">Invalid URL</string>
-
-    <string name="feature_toggle_show_wishlist">Show Wishlist On Bottom Bar</string>
 </resources>

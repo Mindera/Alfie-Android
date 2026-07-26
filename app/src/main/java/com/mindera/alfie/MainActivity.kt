@@ -6,10 +6,8 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.mindera.alfie.core.commons.extension.isNotNullOrBlank
 import com.mindera.alfie.core.deeplink.DeeplinkHandler
@@ -41,8 +39,6 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var deeplinkHandler: DeeplinkHandler
 
-    private val viewModel: MainActivityViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -50,7 +46,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             Theme {
                 val systemUiController = rememberSystemUiController()
-                val wishlistToggle = viewModel.wishlistToggle.collectAsStateWithLifecycle()
                 val c = LocalTheme.current.primitive.colors
                 systemUiController.setSystemUiColors(
                     componentActivity = this,
@@ -67,8 +62,7 @@ class MainActivity : ComponentActivity() {
                             startDestination = startDestination,
                             navGraphs = navGraphs,
                             directionProvider = directionProvider,
-                            deeplinkHandler = deeplinkHandler,
-                            wishlistToggleEnabled = wishlistToggle.value
+                            deeplinkHandler = deeplinkHandler
                         )
                     }
                 }

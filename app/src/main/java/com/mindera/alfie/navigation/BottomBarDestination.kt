@@ -50,62 +50,55 @@ fun ImmutableList<BottomBarDestination>.updateSelectedState(
     it.updateSelectedState(currentDestination)
 }
 
+// D1: the five tabs Figma specifies, in Figma's order. Wishlist used to sit behind the
+// "Show Wishlist On Bottom Bar" debug toggle; the design shows it unconditionally, so the toggle
+// and its plumbing were removed.
 @Composable
-fun bottomBarItems(wishlistToggleEnabled: Boolean): PersistentList<BottomBarDestination> {
-    val destinations = mutableListOf(
-        BottomBarDestination(
-            direction = HomeScreenDestination(),
-            state = rememberBottomBarItemState(),
-            icon = AlfieIcons.Home,
-            label = StringResource.fromId(id = R.string.bottom_bar_home),
-            testTag = HOME_TAB,
-            shouldSelect = { HomeScreenDestination == it },
-            shouldRestore = { HomeScreenDestination == it }
-        ),
-        BottomBarDestination(
-            direction = ShopScreenDestination(shopNavArgs()),
-            state = rememberBottomBarItemState(),
-            // D3: Figma's Store tab uses the rules-and-magnifier glyph, not the legacy storefront.
-            icon = AlfieIcons.Menu,
-            label = StringResource.fromId(id = R.string.bottom_bar_shop),
-            testTag = SHOP_TAB,
-            shouldSelect = { ShopScreenDestination == it || ShopCategoryScreenDestination == it },
-            shouldRestore = { ShopScreenDestination == it }
-        ),
-        BottomBarDestination(
-            direction = BagScreenDestination(),
-            state = rememberBottomBarItemState(),
-            icon = AlfieIcons.Bag,
-            label = StringResource.fromId(id = R.string.bottom_bar_bag),
-            testTag = BAG_TAB,
-            shouldSelect = { BagScreenDestination == it },
-            shouldRestore = { BagScreenDestination == it }
-        ),
-        // D1: fifth tab from Figma. Declared here rather than appended after the conditional
-        // wishlist insert below so its `rememberBottomBarItemState()` slot stays stable when the
-        // wishlist toggle flips.
-        BottomBarDestination(
-            direction = AccountScreenDestination,
-            state = rememberBottomBarItemState(),
-            icon = AlfieIcons.Account,
-            label = StringResource.fromId(id = R.string.bottom_bar_account),
-            testTag = ACCOUNT_TAB,
-            shouldSelect = { AccountScreenDestination == it },
-            shouldRestore = { AccountScreenDestination == it }
-        )
+fun bottomBarItems(): PersistentList<BottomBarDestination> = persistentListOf(
+    BottomBarDestination(
+        direction = HomeScreenDestination(),
+        state = rememberBottomBarItemState(),
+        icon = AlfieIcons.Home,
+        label = StringResource.fromId(id = R.string.bottom_bar_home),
+        testTag = HOME_TAB,
+        shouldSelect = { HomeScreenDestination == it },
+        shouldRestore = { HomeScreenDestination == it }
+    ),
+    BottomBarDestination(
+        direction = ShopScreenDestination(shopNavArgs()),
+        state = rememberBottomBarItemState(),
+        // D3: Figma's Store tab uses the rules-and-magnifier glyph, not the legacy storefront.
+        icon = AlfieIcons.Menu,
+        label = StringResource.fromId(id = R.string.bottom_bar_shop),
+        testTag = SHOP_TAB,
+        shouldSelect = { ShopScreenDestination == it || ShopCategoryScreenDestination == it },
+        shouldRestore = { ShopScreenDestination == it }
+    ),
+    BottomBarDestination(
+        direction = WishlistScreenDestination(wishlistNavArgs(launchFromTop = true)),
+        state = rememberBottomBarItemState(),
+        icon = AlfieIcons.Wishlist,
+        label = StringResource.fromId(id = R.string.bottom_bar_wishlist),
+        testTag = WISHLIST_TAB,
+        shouldSelect = { WishlistScreenDestination == it },
+        shouldRestore = { WishlistScreenDestination == it }
+    ),
+    BottomBarDestination(
+        direction = BagScreenDestination(),
+        state = rememberBottomBarItemState(),
+        icon = AlfieIcons.Bag,
+        label = StringResource.fromId(id = R.string.bottom_bar_bag),
+        testTag = BAG_TAB,
+        shouldSelect = { BagScreenDestination == it },
+        shouldRestore = { BagScreenDestination == it }
+    ),
+    BottomBarDestination(
+        direction = AccountScreenDestination,
+        state = rememberBottomBarItemState(),
+        icon = AlfieIcons.Account,
+        label = StringResource.fromId(id = R.string.bottom_bar_account),
+        testTag = ACCOUNT_TAB,
+        shouldSelect = { AccountScreenDestination == it },
+        shouldRestore = { AccountScreenDestination == it }
     )
-
-    if (wishlistToggleEnabled) {
-        destinations.add(2, BottomBarDestination(
-            direction = WishlistScreenDestination(wishlistNavArgs(launchFromTop = true)),
-            state = rememberBottomBarItemState(),
-            icon = AlfieIcons.Wishlist,
-            label = StringResource.fromId(id = R.string.bottom_bar_wishlist),
-            testTag = WISHLIST_TAB,
-            shouldSelect = { WishlistScreenDestination == it },
-            shouldRestore = { WishlistScreenDestination == it }
-        ))
-    }
-
-    return persistentListOf<BottomBarDestination>().addAll(destinations)
-}
+)
