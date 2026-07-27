@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -130,31 +129,41 @@ private fun SheetTopBar(
     title: String,
     onDismiss: () -> Unit
 ) {
+    val theme = LocalTheme.current
+    // DS `Header` (4526:110114): 48 dp tall, padding left 16 / right 4 / top 4 / bottom 4, gap 8,
+    // no divider, title `heading/x-small` leading-aligned.
+    //
+    // NOT yet aligned, pending a design answer (see Docs/ALFMOB-450 §6.B.6): the DS variant used by
+    // the sheet has NO leading icon at all — neither this close X nor the back arrow the PLP Refine
+    // mock shows — and the DS adds a drag handle and squares the top corners. The DS page states
+    // platform parity was chosen deliberately over DS parity, so that is a human decision.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = Theme.spacing.spacing16,
-                bottom = Theme.spacing.spacing16,
-                start = Theme.spacing.spacing6
+                top = theme.spacing.spacing4,
+                bottom = theme.spacing.spacing4,
+                start = theme.spacing.spacing16,
+                end = theme.spacing.spacing4
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
     ) {
         IconButton(
-            modifier = Modifier.size(Theme.iconSize.large),
+            modifier = Modifier.size(theme.sizing.icon.large),
             onClick = { onDismiss() }
         ) {
             Icon(
-                modifier = Modifier.size(Theme.iconSize.large),
+                modifier = Modifier.size(theme.sizing.icon.medium),
                 painter = painterResource(id = AlfieIcons.Close),
-                contentDescription = null
+                contentDescription = null,
+                tint = theme.color.content.contentPrimary
             )
         }
-        Spacer(modifier = Modifier.width(Theme.spacing.spacing12))
         Text(
             text = title,
-            style = LocalTheme.current.typography.heading.small,
+            style = theme.typography.heading.xSmall,
+            color = theme.color.content.contentPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

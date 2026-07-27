@@ -1,5 +1,6 @@
 package com.mindera.alfie.designsystem.component.price
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,16 +12,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 private const val PRICE_RANGE_SEPARATOR = "-"
+
+/**
+ * Every live price value renders bold — in the Design System (component set `3457:17306`) bold is not
+ * a variant, it is the only treatment, and there is no red anywhere in the component. The struck
+ * through was-price is the sole exception, in `content/content-terciary`.
+ *
+ * Note the DS has **no size axis**; [PriceSize] is an Android-only extension kept because
+ * `HorizontalProductCard` needs a denser row. `Medium` is the DS size.
+ */
+@Composable
+private fun PriceSize.valueStyle(): TextStyle = when (this) {
+    PriceSize.Small -> LocalTheme.current.typography.label.smallBold
+    PriceSize.Medium -> LocalTheme.current.typography.body.mediumBold
+}
+
+@Composable
+private fun PriceSize.wasPriceStyle(): TextStyle = when (this) {
+    PriceSize.Small -> LocalTheme.current.typography.label.small
+    PriceSize.Medium -> LocalTheme.current.typography.body.mediumStrikethrough
+}.copy(
+    textDecoration = TextDecoration.LineThrough,
+    color = LocalTheme.current.color.content.contentTerciary
+)
 
 @Composable
 fun Price(
@@ -56,14 +78,11 @@ private fun PriceDefault(
     size: PriceSize,
     modifier: Modifier = Modifier
 ) {
-    val style = when (size) {
-        PriceSize.Small -> LocalTheme.current.typography.body.small
-        PriceSize.Medium -> LocalTheme.current.typography.body.medium
-    }
     Text(
         modifier = modifier,
         text = price.price,
-        style = style
+        style = size.valueStyle(),
+        color = LocalTheme.current.color.content.contentPrimary
     )
 }
 
@@ -74,15 +93,9 @@ private fun PriceSale(
     orientation: PriceOrientation,
     modifier: Modifier = Modifier
 ) {
-    val c = LocalTheme.current.primitive.colors
-    val fullPriceStyle = when (size) {
-        PriceSize.Small -> LocalTheme.current.typography.label.small.copy(textDecoration = TextDecoration.LineThrough, color = c.neutrals600)
-        PriceSize.Medium -> LocalTheme.current.typography.body.small.copy(textDecoration = TextDecoration.LineThrough, color = c.neutrals600)
-    }
-    val salePriceStyle = when (size) {
-        PriceSize.Small -> LocalTheme.current.typography.body.small.copy(color = c.semanticError800)
-        PriceSize.Medium -> LocalTheme.current.typography.body.medium.copy(color = c.semanticError800)
-    }
+    // The DS uses content/content-primary for the sale price — there is no error/red treatment.
+    val fullPriceStyle = size.wasPriceStyle()
+    val salePriceStyle = size.valueStyle().copy(color = LocalTheme.current.color.content.contentPrimary)
     when (orientation) {
         PriceOrientation.Horizontal -> SaleHorizontal(
             modifier = modifier,
@@ -106,10 +119,7 @@ private fun PriceRange(
     orientation: PriceOrientation,
     modifier: Modifier = Modifier
 ) {
-    val style = when (size) {
-        PriceSize.Small -> LocalTheme.current.typography.body.small
-        PriceSize.Medium -> LocalTheme.current.typography.body.medium
-    }
+    val style = size.valueStyle().copy(color = LocalTheme.current.color.content.contentPrimary)
     when (orientation) {
         PriceOrientation.Horizontal -> RangeHorizontal(
             modifier = modifier,
@@ -139,7 +149,7 @@ private fun SaleVertical(
             text = price.fullPrice,
             style = fullPriceStyle
         )
-        Spacer(modifier = Modifier.height(Theme.spacing.spacing4))
+        Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
         Text(
             text = price.salePrice,
             style = salePriceStyle
@@ -159,7 +169,7 @@ private fun SaleHorizontal(
             text = price.salePrice,
             style = salePriceStyle
         )
-        Spacer(modifier = Modifier.width(Theme.spacing.spacing4))
+        Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
         Text(
             text = price.fullPrice,
             style = fullPriceStyle
@@ -187,7 +197,7 @@ private fun RangeVertical(
                 textAlign = TextAlign.End,
                 style = style
             )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing6))
+            Spacer(modifier = Modifier.height(Theme.spacing.spacing4))
             Text(
                 text = price.endPrice,
                 textAlign = TextAlign.End,
@@ -203,11 +213,20 @@ private fun RangeHorizontal(
     style: TextStyle,
     modifier: Modifier = Modifier
 ) {
-    Text(
+    // The DS renders the bounds bold and the separator at regular weight, so this cannot collapse
+    // into a single Text. Gap is spacing/spacing-xxs.
+    Row(
         modifier = modifier,
-        text = stringResource(id = R.string.price_range, price.startPrice, price.endPrice),
-        style = style
-    )
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing4)
+    ) {
+        Text(text = price.startPrice, style = style)
+        Text(
+            text = PRICE_RANGE_SEPARATOR,
+            style = LocalTheme.current.typography.body.medium,
+            color = LocalTheme.current.color.content.contentPrimary
+        )
+        Text(text = price.endPrice, style = style)
+    }
 }
 
 @Preview(showBackground = true)
