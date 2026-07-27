@@ -42,6 +42,26 @@ type Inventory {
   available: Int
 }
 
+type Menu {
+  handle: String
+
+  id: ID
+
+  items: [MenuItem!]!
+
+  title: String
+}
+
+type MenuItem {
+  id: ID!
+
+  items: [MenuItem]
+
+  title: String!
+
+  url: String
+}
+
 type Metafield {
   key: String!
 
@@ -215,6 +235,8 @@ type ProductVariant {
 }
 
 type Query {
+  mainMenu(handle: String! = "main-menu", platform: String): Menu!
+
   productDetails(handle: String!, platform: String!, productMetafields: [MetafieldIdentifierInput!], variantMetafields: [MetafieldIdentifierInput!]): OmniProduct
 
   productList(after: String, collectionHandle: String!, filters: ProductFilterInput, limit: Int! = 25, platform: String, sort: ProductSortEnum! = NEWEST): ProductListResponse!

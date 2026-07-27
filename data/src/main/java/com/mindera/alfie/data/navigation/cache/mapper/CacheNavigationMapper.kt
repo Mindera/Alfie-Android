@@ -10,6 +10,7 @@ private fun NavEntry.toEntity(): NavigationEntryEntity = NavigationEntryEntity(
     title = title,
     path = url.orEmpty(),
     navItemType = type.name,
+    hasChildren = hasChildren,
     items = items.toEntity()
 )
 
@@ -19,5 +20,6 @@ internal fun NavigationEntryEntity.toDomain(): NavEntry = NavEntry(
     id = id,
     title = title,
     type = NavItemType.from(navItemType),
-    url = path
+    url = path,
+    hasChildren = hasChildren
 )

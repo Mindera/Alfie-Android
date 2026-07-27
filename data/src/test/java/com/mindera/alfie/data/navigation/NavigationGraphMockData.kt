@@ -1,72 +1,91 @@
 package com.mindera.alfie.data.navigation
 
 import com.mindera.alfie.data.database.navigation.model.NavigationEntryEntity
-import com.mindera.alfie.graphql.NavEntriesByHandleQuery
-import com.mindera.alfie.graphql.type.NavMenuItemType
+import com.mindera.alfie.graphql.bff.MainMenuQuery
 import com.mindera.alfie.repository.navigation.model.NavEntry
 import com.mindera.alfie.repository.navigation.model.NavItemType
 
-internal val navEntriesData = NavEntriesByHandleQuery.Data(
-    navigation = listOf(
-        NavEntriesByHandleQuery.Navigation(
-            title = "Home Item",
-            url = "https://home.item",
-            type = NavMenuItemType.HOME,
-            items = emptyList(),
-            attributes = emptyList()
-        ),
-        NavEntriesByHandleQuery.Navigation(
-            title = "Product Item",
-            url = "https://product.item",
-            type = NavMenuItemType.PRODUCT,
-            items = emptyList(),
-            attributes = emptyList()
-        )
+// region BFF mainMenu builders
+
+internal fun mainMenuData(vararg items: MainMenuQuery.Item) = MainMenuQuery.Data(
+    mainMenu = MainMenuQuery.MainMenu(
+        handle = "main-menu",
+        title = "Main",
+        items = items.toList()
     )
 )
 
-internal val navEntries = listOf(
-    NavEntry(
-        id = 0,
-        title = "Home Item",
-        type = NavItemType.HOME,
-        url = "https://home.item"
+internal fun menuItem(
+    title: String,
+    url: String?,
+    id: String = "l1-$title",
+    items: List<MainMenuQuery.Item1>? = null
+) = MainMenuQuery.Item(id = id, title = title, url = url, items = items)
+
+internal fun subMenuItem(
+    title: String,
+    url: String?,
+    id: String = "l2-$title",
+    items: List<MainMenuQuery.Item2>? = null
+) = MainMenuQuery.Item1(id = id, title = title, url = url, items = items)
+
+internal fun leafMenuItem(
+    title: String,
+    url: String?,
+    id: String = "l3-$title"
+) = MainMenuQuery.Item2(id = id, title = title, url = url)
+
+/** A two-level menu: one parent with a handle plus one child, and one plain leaf. */
+internal val navEntriesData = mainMenuData(
+    menuItem(
+        title = "Women",
+        url = "/women",
+        items = listOf(subMenuItem(title = "Dresses", url = "/dresses"))
     ),
-    NavEntry(
-        id = 0,
-        title = "Product Item",
-        type = NavItemType.PRODUCT,
-        url = "https://product.item"
-    )
+    menuItem(title = "Men", url = "/men")
 )
 
 internal val navEntryEntitiesFromGraph = listOf(
     NavigationEntryEntity(
-        id = 0,
-        title = "Home Item",
-        navItemType = NavItemType.HOME.name,
-        path = "https://home.item"
+        title = "Women",
+        path = "/women",
+        navItemType = NavItemType.LISTING.name,
+        hasChildren = true,
+        items = listOf(
+            NavigationEntryEntity(
+                title = "Dresses",
+                path = "/dresses",
+                navItemType = NavItemType.LISTING.name,
+                hasChildren = false
+            )
+        )
     ),
     NavigationEntryEntity(
-        id = 0,
-        title = "Product Item",
-        navItemType = NavItemType.PRODUCT.name,
-        path = "https://product.item"
+        title = "Men",
+        path = "/men",
+        navItemType = NavItemType.LISTING.name,
+        hasChildren = false
     )
 )
+
+// endregion
+
+// region Cache mapper fixtures
 
 val navEntryEntities = listOf(
     NavigationEntryEntity(
         id = 1,
         title = "Home Item",
         path = "https://home.item",
-        navItemType = "HOME"
+        navItemType = "HOME",
+        hasChildren = true
     ),
     NavigationEntryEntity(
         id = 2,
         title = "Product Item",
         path = "https://product.item",
-        navItemType = "PRODUCT"
+        navItemType = "PRODUCT",
+        hasChildren = true
     ),
     NavigationEntryEntity(
         id = 3,
@@ -96,13 +115,15 @@ val mappedNavEntries = listOf(
         id = 1,
         title = "Home Item",
         type = NavItemType.HOME,
-        url = "https://home.item"
+        url = "https://home.item",
+        hasChildren = true
     ),
     NavEntry(
         id = 2,
         title = "Product Item",
         type = NavItemType.PRODUCT,
-        url = "https://product.item"
+        url = "https://product.item",
+        hasChildren = true
     ),
     NavEntry(
         id = 3,
@@ -129,13 +150,15 @@ val mappedNavEntryEntities = listOf(
         id = 0,
         title = "Home Item",
         path = "https://home.item",
-        navItemType = "HOME"
+        navItemType = "HOME",
+        hasChildren = true
     ),
     NavigationEntryEntity(
         id = 0,
         title = "Product Item",
         path = "https://product.item",
-        navItemType = "PRODUCT"
+        navItemType = "PRODUCT",
+        hasChildren = true
     ),
     NavigationEntryEntity(
         id = 0,
@@ -156,3 +179,5 @@ val mappedNavEntryEntities = listOf(
         navItemType = "PRODUCT"
     )
 )
+
+// endregion

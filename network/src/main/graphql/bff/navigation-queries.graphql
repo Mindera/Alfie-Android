@@ -1,0 +1,28 @@
+# Nesting is hand-unrolled to exactly 3 levels: GraphQL cannot express unbounded recursion in a
+# selection set, and Shopify caps menu depth at 3. The BFF returns the whole tree in one call —
+# MenuItem carries no handle and Shopify sub-menus are not separately addressable, so there is no
+# lazy per-level fetch. The deepest level therefore selects no `items`.
+query MainMenu(
+    $handle: String!,
+    $platform: String
+) {
+    mainMenu(handle: $handle, platform: $platform) {
+        handle
+        title
+        items {
+            id
+            title
+            url
+            items {
+                id
+                title
+                url
+                items {
+                    id
+                    title
+                    url
+                }
+            }
+        }
+    }
+}
