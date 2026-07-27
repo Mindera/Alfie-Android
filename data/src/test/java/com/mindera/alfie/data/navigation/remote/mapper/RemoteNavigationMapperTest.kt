@@ -38,7 +38,7 @@ internal class RemoteNavigationMapperTest {
 
         assertEquals(1, result.size)
         assertEquals("Women", result.first().title)
-        assertEquals("/women", result.first().path)
+        assertEquals("women", result.first().path)
         assertEquals(NavItemType.LISTING.name, result.first().navItemType)
         assertEquals(false, result.first().hasChildren)
         assertEquals(emptyList(), result.first().items)
@@ -48,7 +48,7 @@ internal class RemoteNavigationMapperTest {
     fun `GIVEN a multi segment url WHEN mapped THEN it reduces to the last path component`() = runTest {
         val result = mainMenuData(menuItem(title = "Dresses", url = "/shop/new/dresses")).toEntity()
 
-        assertEquals("/dresses", result.first().path)
+        assertEquals("dresses", result.first().path)
     }
 
     @Test
@@ -72,7 +72,7 @@ internal class RemoteNavigationMapperTest {
 
         assertTrue(result.first().hasChildren)
         assertTrue(level2.hasChildren)
-        assertEquals("/dresses", level3.path)
+        assertEquals("dresses", level3.path)
         assertEquals(false, level3.hasChildren)
         assertEquals(emptyList(), level3.items)
     }
@@ -116,14 +116,14 @@ internal class RemoteNavigationMapperTest {
     fun `GIVEN a query string WHEN mapped THEN it is stripped`() = runTest {
         val result = mainMenuData(menuItem(title = "Sale", url = "/collections/sale?filter=color")).toEntity()
 
-        assertEquals("/sale", result.first().path)
+        assertEquals("sale", result.first().path)
     }
 
     @Test
     fun `GIVEN a fragment WHEN mapped THEN it is stripped`() = runTest {
         val result = mainMenuData(menuItem(title = "Dresses", url = "/dresses#top")).toEntity()
 
-        assertEquals("/dresses", result.first().path)
+        assertEquals("dresses", result.first().path)
     }
 
     @Test
@@ -140,7 +140,7 @@ internal class RemoteNavigationMapperTest {
     fun `GIVEN a trailing slash WHEN mapped THEN it reduces to the last segment`() = runTest {
         val result = mainMenuData(menuItem(title = "Dresses", url = "/dresses/")).toEntity()
 
-        assertEquals("/dresses", result.first().path)
+        assertEquals("dresses", result.first().path)
     }
 
     @Test
@@ -149,7 +149,7 @@ internal class RemoteNavigationMapperTest {
             menuItem(title = "Dresses", url = "https://shop.example.com/collections/dresses")
         ).toEntity()
 
-        assertEquals("/dresses", result.first().path)
+        assertEquals("dresses", result.first().path)
     }
 
     @Test
@@ -163,17 +163,18 @@ internal class RemoteNavigationMapperTest {
     fun `GIVEN a mixed case handle WHEN mapped THEN it is lowercased`() = runTest {
         val result = mainMenuData(menuItem(title = "Tops", url = "/Womens-Tops")).toEntity()
 
-        assertEquals("/womens-tops", result.first().path)
+        assertEquals("womens-tops", result.first().path)
     }
 
     @Test
-    fun `GIVEN a special category url WHEN mapped THEN it is preserved verbatim`() = runTest {
+    fun `GIVEN a special category url WHEN mapped THEN it stays matchable as a bare handle`() = runTest {
         val result = mainMenuData(
             menuItem(title = "Brands", url = "/brands"),
             menuItem(title = "Services", url = "/store-services")
         ).toEntity()
 
-        assertEquals(listOf("/brands", "/store-services"), result.map { it.path })
+        // NavigateToEntryDelegate.BRANDS_FIXED_PATH compares against this exact value.
+        assertEquals(listOf("brands", "store-services"), result.map { it.path })
     }
 
     @Test
@@ -187,7 +188,7 @@ internal class RemoteNavigationMapperTest {
         ).toEntity()
 
         assertEquals(1, result.size)
-        assertEquals("/women", result.first().path)
+        assertEquals("women", result.first().path)
         assertEquals(false, result.first().hasChildren)
         assertEquals(emptyList(), result.first().items)
     }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mindera.alfie.core.deeplink.DeeplinkHandler
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.navigation.arguments.categoryNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
@@ -22,25 +23,46 @@ internal class NavigateToEntryDelegate @Inject constructor(
 ) : NavigateToEntry {
 
     companion object {
-        private const val BRANDS_FIXED_PATH = "/brands"
+        // Bare handle: the mapper strips the leading slash, since `path` is passed straight
+// through as the PLP `collectionHandle` without further trimming.
+        private const val BRANDS_FIXED_PATH = "brands"
     }
 
+    /**
+     * Resolution order matches iOS: the fixed brands link wins, then a drill-down into
+     * sub-categories, and only a leaf opens the listing. [CategoryEntryUI.hasChildren] is the single
+     * source of truth shared with the row's chevron, so the affordance and the destination agree.
+     */
     override fun ViewModel.openCategoryEntry(entry: CategoryEntryUI) {
         viewModelScope.launch {
             if (entry.path == BRANDS_FIXED_PATH) {
                 val environment = environmentManager.current()
-                deeplinkHandler.handle("${environment.webUrl}${entry.path}")
+                // `path` is a bare handle, so the separator has to be supplied here.
+                deeplinkHandler.handle("${environment.webUrl}/${entry.path}")
                 return@launch
             }
 
             runUIEvent {
-                navigateTo(
-                    Screen.ProductList(
-                        args = ProductListNavArgs(
-                            type = ProductListType.Category.Slug(entry.path)
+                if (entry.hasChildren) {
+                    // Children were persisted under this entry's row id when the menu was inserted,
+                    // so the sub-category screen resolves them by parent id.
+                    navigateTo(
+                        Screen.Category(
+                            args = categoryNavArgs(
+                                id = entry.id,
+                                title = entry.title
+                            )
                         )
                     )
-                )
+                } else {
+                    navigateTo(
+                        Screen.ProductList(
+                            args = ProductListNavArgs(
+                                type = ProductListType.Category.Slug(entry.path)
+                            )
+                        )
+                    )
+                }
             }
         }
     }

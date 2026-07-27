@@ -48,13 +48,13 @@ internal val navEntriesData = mainMenuData(
 internal val navEntryEntitiesFromGraph = listOf(
     NavigationEntryEntity(
         title = "Women",
-        path = "/women",
+        path = "women",
         navItemType = NavItemType.LISTING.name,
         hasChildren = true,
         items = listOf(
             NavigationEntryEntity(
                 title = "Dresses",
-                path = "/dresses",
+                path = "dresses",
                 navItemType = NavItemType.LISTING.name,
                 hasChildren = false
             )
@@ -62,7 +62,7 @@ internal val navEntryEntitiesFromGraph = listOf(
     ),
     NavigationEntryEntity(
         title = "Men",
-        path = "/men",
+        path = "men",
         navItemType = NavItemType.LISTING.name,
         hasChildren = false
     )

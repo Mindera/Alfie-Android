@@ -54,7 +54,7 @@ internal class NavigateToEntryDelegateTest {
         coEvery { uiEventEmitterDelegate.uiEvent }
         coJustRun { deeplinkHandler.handle(any()) }
 
-        val path = "/brands"
+        val path = "brands"
         val entry = CategoryEntryUI(
             id = 1,
             title = StringResource.fromText("brands"),
@@ -65,7 +65,7 @@ internal class NavigateToEntryDelegateTest {
 
         with(viewModel) {
             openCategoryEntry(entry)
-            coVerify { deeplinkHandler.handle("$WEB_URL$path") }
+            coVerify { deeplinkHandler.handle("$WEB_URL/$path") }
         }
     }
 
@@ -82,6 +82,42 @@ internal class NavigateToEntryDelegateTest {
             openCategoryEntry(entry)
             coVerify(exactly = 0) { deeplinkHandler.handle(any()) }
             coVerify { navigateTo(screen = any(Screen.ProductList::class)) }
+        }
+    }
+
+    @Test
+    fun `GIVEN openCategoryEntry WHEN entry has children THEN drill into the sub-category screen`() = runTest {
+        val entry = CategoryEntryUI(
+            id = 7,
+            title = StringResource.fromText("Women"),
+            path = "women",
+            hasChildren = true
+        )
+        val viewModel = TestViewModel(delegate, uiEventEmitterDelegate)
+
+        with(viewModel) {
+            openCategoryEntry(entry)
+            coVerify(exactly = 0) { deeplinkHandler.handle(any()) }
+            coVerify { navigateTo(screen = any(Screen.Category::class)) }
+        }
+    }
+
+    @Test
+    fun `GIVEN openCategoryEntry WHEN entry is brands AND has children THEN the brands link wins`() = runTest {
+        coJustRun { deeplinkHandler.handle(any()) }
+
+        val path = "brands"
+        val entry = CategoryEntryUI(
+            id = 1,
+            title = StringResource.fromText("brands"),
+            path = path,
+            hasChildren = true
+        )
+        val viewModel = TestViewModel(delegate, uiEventEmitterDelegate)
+
+        with(viewModel) {
+            openCategoryEntry(entry)
+            coVerify { deeplinkHandler.handle("$WEB_URL/$path") }
         }
     }
 

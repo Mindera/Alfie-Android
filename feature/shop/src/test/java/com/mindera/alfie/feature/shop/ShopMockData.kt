@@ -20,6 +20,7 @@ internal val navEntries = listOf(
         title = "Home Item",
         type = HOME,
         url = "https://home.item",
+        hasChildren = true,
         items = listOf(
             NavEntry(
                 id = 3,
@@ -40,6 +41,7 @@ internal val navEntries = listOf(
         title = "Product Item",
         type = PRODUCT,
         url = "https://product.item",
+        hasChildren = true,
         items = listOf(
             NavEntry(
                 id = 5,
@@ -55,12 +57,14 @@ internal val shopEntries = persistentListOf(
     CategoryEntryUI(
         id = 1,
         title = StringResource.fromText("Home Item"),
-        path = "https://home.item"
+        path = "https://home.item",
+        hasChildren = true
     ),
     CategoryEntryUI(
         id = 2,
         title = StringResource.fromText("Product Item"),
-        path = "https://product.item"
+        path = "https://product.item",
+        hasChildren = true
     )
 )
 

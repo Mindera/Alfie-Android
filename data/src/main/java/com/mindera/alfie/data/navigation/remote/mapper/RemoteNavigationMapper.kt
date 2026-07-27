@@ -58,10 +58,10 @@ private fun navigationEntry(
 }
 
 /**
- * Reduces a BFF menu url to `/<collection-handle>`: the last non-empty path segment, lowercased,
+ * Reduces a BFF menu url to `<collection-handle>`: the last non-empty path segment, lowercased,
  * with any query and fragment stripped. Shopify handles are lowercase, and the PLP strips the
  * leading `/` before passing the remainder to `productList` as its `collectionHandle` — so a
- * multi-segment path such as `/shop/new/dresses` must collapse to `/dresses`.
+ * multi-segment path such as `/shop/new/dresses` must collapse to `dresses`.
  *
  * Returns null when nothing usable remains: empty, blank, `"/"`, or a host-only absolute url.
  */
@@ -79,5 +79,5 @@ private fun collectionHandlePath(url: String?): String? {
     }
 
     val handle = path.split('/').lastOrNull { it.isNotBlank() } ?: return null
-    return "/${handle.lowercase()}"
+    return handle.lowercase()
 }
