@@ -14,7 +14,6 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.RangeSliderState
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
@@ -32,8 +31,11 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
  * - The DS leaves the **inactive track unfilled** (its fill is genuinely unbound, so it renders
  *   invisible as authored). The PLP mock shows it as `border/soft`, which is what is used here.
  *   Confirm with design and bind the DS fill.
- * - The DS documents the thumbs as a **24 dp touch target**, well under Android's 48 dp minimum, so
- *   the visual stays 24 dp while the touch target is expanded.
+ * - The DS documents the thumbs as a **24 dp touch target**, under Android's 48 dp minimum. The thumb
+ *   is nonetheless left at 24 dp: Material measures this slot to inset the track, so padding it out
+ *   would shorten the rail and pull the handles inward, away from the ends the DS draws them at.
+ *   Material applies its own minimum interactive size to the thumb slot; verify by hand and raise
+ *   with design if the target still feels tight.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,27 +74,21 @@ private fun SliderThumb() {
     val theme = LocalTheme.current
     Box(
         modifier = Modifier
-            .size(THUMB_TOUCH_TARGET),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size(theme.sizing.icon.medium)
-                .shadow(
-                    elevation = THUMB_SHADOW_ELEVATION,
-                    shape = Theme.shape.full
-                )
-                .background(
-                    color = theme.color.surface.backgroundPrimary,
-                    shape = Theme.shape.full
-                )
-                .border(
-                    width = theme.primitive.border.weightDefault,
-                    color = theme.color.surface.foregroundInvertedPrimary,
-                    shape = Theme.shape.full
-                )
-        )
-    }
+            .size(theme.sizing.icon.medium)
+            .shadow(
+                elevation = THUMB_SHADOW_ELEVATION,
+                shape = Theme.shape.full
+            )
+            .background(
+                color = theme.color.surface.backgroundPrimary,
+                shape = Theme.shape.full
+            )
+            .border(
+                width = theme.primitive.border.weightDefault,
+                color = theme.color.surface.foregroundInvertedPrimary,
+                shape = Theme.shape.full
+            )
+    )
 }
 
 /** Both tracks are 2 dp: inactive `border/soft`, active `surface/foreground-inverted-primary`. */
@@ -130,5 +126,4 @@ private fun SliderTrack(
 }
 
 private val TRACK_HEIGHT = 2.dp
-private val THUMB_TOUCH_TARGET = 48.dp
 private val THUMB_SHADOW_ELEVATION = 2.dp
