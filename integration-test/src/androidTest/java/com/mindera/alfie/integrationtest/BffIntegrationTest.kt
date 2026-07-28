@@ -61,8 +61,8 @@ internal abstract class BffIntegrationTest {
         .getOrDefault(false)
 
     companion object {
-        /** Emulator → host alias for the local BFF (NestJS, port 3000, `/graphql`). */
-        const val BFF_URL = "http://10.0.2.2:3000/graphql"
+        /** Emulator → host alias for the local BFF (NestJS, port 4000, `/graphql`). */
+        const val BFF_URL = "http://10.0.2.2:4000/graphql"
 
         /** A Shopify catch-all collection handle, used as the default Store collection. */
         const val DEFAULT_COLLECTION_HANDLE = "frontpage"

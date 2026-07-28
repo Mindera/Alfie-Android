@@ -13,9 +13,14 @@ enum class Environment(
 ) {
     Dev(
         // Android emulator reaches the host machine via 10.0.2.2.
-        // BFF runs on port 3000 by default.
+        // The local BFF serves on port 4000.
         // For a real device, use the Custom environment with your machine's LAN IP.
-        url = "http://10.0.2.2:3000/graphql",
+        //
+        // Note both urls are the same host and port: the legacy server also used 4000, and the BFF
+        // has taken it over. The only remaining legacy consumer is BrandServiceImpl, reached solely
+        // through the currently unreferenced ShopBrandsScreen, so nothing live queries it — but if
+        // Brands is wired back up it will hit the BFF, which has no `brands` field.
+        url = "http://10.0.2.2:4000/graphql",
         legacyUrl = "http://10.0.2.2:4000/graphql",
         buildType = BuildType.DEBUG
     ),
