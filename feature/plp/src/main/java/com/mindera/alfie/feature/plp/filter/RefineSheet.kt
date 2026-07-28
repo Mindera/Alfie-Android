@@ -85,9 +85,20 @@ internal fun RefineSheet(
         RefinePanel.PriceRange -> stringResource(PlpR.string.refine_category_price)
     }
 
+    // The design shows a leading chevron on every panel, including the root. In a sub-panel it pops
+    // back to Main; at Main there is nothing above it, so it falls through to the sheet's default
+    // dismiss — which is also what keeps the hide animation. Passing null rather than calling
+    // onDismiss() directly is what selects that default. This finally puts the header and the
+    // BackHandler above on the same behaviour.
     BottomSheet(
         title = title,
-        onDismiss = onDismiss
+        onDismiss = onDismiss,
+        navigationIcon = AlfieIcons.ChevronLeft,
+        onNavigationClick = if (currentPanel == RefinePanel.Main) {
+            null
+        } else {
+            { currentPanel = RefinePanel.Main }
+        }
     ) {
         Column {
             // Content — no weight needed; all panels have short content that fits without scrolling.

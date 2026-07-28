@@ -1,9 +1,11 @@
 package com.mindera.alfie.designsystem.component.modal
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +39,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -59,6 +62,8 @@ fun BottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     isFullscreen: Boolean = true,
+    @DrawableRes navigationIcon: Int = AlfieIcons.Close,
+    onNavigationClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -114,7 +119,10 @@ fun BottomSheet(
         Column(Modifier.navigationBarsPadding()) {
             SheetTopBar(
                 title = title,
-                onDismiss = {
+                navigationIcon = navigationIcon,
+                // Only the default (dismissing) action animates the sheet away. A caller supplying
+                // its own action is navigating inside the sheet, so it must stay open.
+                onNavigationClick = onNavigationClick ?: {
                     scope.launch { sheetState.hide() }
                     onDismiss()
                 }
@@ -127,16 +135,15 @@ fun BottomSheet(
 @Composable
 private fun SheetTopBar(
     title: String,
-    onDismiss: () -> Unit
+    @DrawableRes navigationIcon: Int,
+    onNavigationClick: () -> Unit
 ) {
     val theme = LocalTheme.current
-    // DS `Header` (4526:110114): 48 dp tall, padding left 16 / right 4 / top 4 / bottom 4, gap 8,
-    // no divider, title `heading/x-small` leading-aligned.
-    //
-    // NOT yet aligned, pending a design answer (see Docs/ALFMOB-450 §6.B.6): the DS variant used by
-    // the sheet has NO leading icon at all — neither this close X nor the back arrow the PLP Refine
-    // mock shows — and the DS adds a drag handle and squares the top corners. The DS page states
-    // platform parity was chosen deliberately over DS parity, so that is a human decision.
+    // DS `Header` component set 4526:110113. It has two variants, and a leading icon comes with a
+    // centred title: `Leading=False` is title-only and leading-aligned, while
+    // `Leading=Default, Trailing=True` (3001:9278) pairs a leading chevron with a centred title.
+    // This sheet always has a leading icon, so it follows the latter — with a spacer standing in for
+    // the trailing action, which is how the design keeps the title optically centred.
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -151,11 +158,11 @@ private fun SheetTopBar(
     ) {
         IconButton(
             modifier = Modifier.size(theme.sizing.icon.large),
-            onClick = { onDismiss() }
+            onClick = onNavigationClick
         ) {
             Icon(
                 modifier = Modifier.size(theme.sizing.icon.medium),
-                painter = painterResource(id = AlfieIcons.Close),
+                painter = painterResource(id = navigationIcon),
                 contentDescription = null,
                 tint = theme.color.content.contentPrimary
             )
@@ -164,9 +171,12 @@ private fun SheetTopBar(
             text = title,
             style = theme.typography.heading.xSmall,
             color = theme.color.content.contentPrimary,
+            textAlign = TextAlign.Center,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
         )
+        Spacer(modifier = Modifier.size(theme.sizing.icon.large))
     }
 }
 
