@@ -21,8 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.commons.extension.nextFloat
@@ -42,6 +41,7 @@ import com.mindera.alfie.feature.shop.ui.EntryHeadlineContent
 import com.mindera.alfie.feature.shop.ui.ShopErrorScreen
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.handleUIEvents
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.random.Random
 
 private const val EMPTY_CHARACTER: Char = ' '
@@ -106,9 +106,12 @@ private fun LazyListScope.brandItems(
     ) { _, entry ->
         when (entry) {
             is BrandEntryUI.Entry -> {
+                // No Figma design exists for the brands list (handoff §6.B.1), so this keeps the
+                // current 44 dp row and only moves it off a dp literal onto the token layer, which
+                // is where the 44 lives — the legacy Theme.spacing scale skips it.
                 Row(
                     modifier = Modifier
-                        .heightIn(44.dp)
+                        .heightIn(LocalTheme.current.spacing.spacing44)
                         .clickable { onEntryClick(entry) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -147,7 +150,31 @@ private fun LazyItemScope.AlphabeticalSectionHeader(headerCharacter: Char) {
                     xScale = scale
                 ),
             text = headerCharacter.toString(),
-            style = LocalTheme.current.typography.body.large.copy(fontWeight = FontWeight.Bold)
+            style = LocalTheme.current.typography.heading.xSmall
         )
     }
 }
+
+// region Previews
+
+@Preview(showBackground = true)
+@Composable
+private fun ShopBrandsLoadedPreview() {
+    Theme {
+        ShopBrandsScreenContent(
+            state = BrandUIState.Data(
+                entries = persistentListOf(
+                    BrandEntryUI.Divider(character = 'A'),
+                    BrandEntryUI.Entry(id = "1", name = "Adidas", slug = "adidas"),
+                    BrandEntryUI.Entry(id = "2", name = "Ardidas", slug = "ardidas"),
+                    BrandEntryUI.Divider(character = 'B'),
+                    BrandEntryUI.Entry(id = "3", name = "Balaclava", slug = "balaclava")
+                ),
+                isLoading = false
+            ),
+            onEvent = {}
+        )
+    }
+}
+
+// endregion
