@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,12 @@ fun SliderInputField(
     onValueChange: ClickEventOneArg<String>,
     modifier: Modifier = Modifier,
     prefix: String? = null,
+    /**
+     * Names the field for screen readers. The DS draws no visible label, and when a bound is
+     * unset the field shows only the currency prefix, so without this the two ends of a range are
+     * indistinguishable to TalkBack.
+     */
+    contentDescription: String? = null,
     isEnabled: Boolean = true
 ) {
     val theme = LocalTheme.current
@@ -76,7 +84,11 @@ fun SliderInputField(
             textStyle = textStyle,
             cursorBrush = SolidColor(theme.color.content.contentPrimary),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .semantics {
+                    contentDescription?.let { this.contentDescription = it }
+                }
         )
     }
 }

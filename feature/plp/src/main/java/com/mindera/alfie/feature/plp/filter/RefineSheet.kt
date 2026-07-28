@@ -258,6 +258,9 @@ private fun SortByContent(
         options = labels,
         optionSelected = selectedIndex,
         onSelectionChange = { index -> onSortSelect(sortOptions[index]) },
+        // The DS radio list spaces rows 8 dp apart for a 48 dp pitch over the 40 dp row; the group
+        // defaults to 0, which would leave them abutting.
+        checkboxSpacing = LocalTheme.current.spacing.spacing8,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = Theme.spacing.spacing8)
@@ -349,6 +352,7 @@ private fun PriceRangeInputRow(
         SliderInputField(
             value = minText,
             prefix = currencySymbol,
+            contentDescription = stringResource(PlpR.string.price_filter_min_label),
             modifier = Modifier.weight(1f),
             onValueChange = { text ->
                 val clamped = (text.toFloatOrNull() ?: 0f).coerceIn(0f, sliderRange.endInclusive)
@@ -358,6 +362,7 @@ private fun PriceRangeInputRow(
         SliderInputField(
             value = maxText,
             prefix = currencySymbol,
+            contentDescription = stringResource(PlpR.string.price_filter_max_label),
             modifier = Modifier.weight(1f),
             onValueChange = { text ->
                 val clamped = (text.toFloatOrNull() ?: MAX_PRICE_CAP).coerceIn(sliderRange.start, MAX_PRICE_CAP)

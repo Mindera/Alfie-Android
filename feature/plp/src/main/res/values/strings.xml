@@ -44,6 +44,9 @@
 
     <!-- Price filter -->
     <string name="price_filter_title">Price</string>
+    <!-- Accessibility names for the price range bounds; the design shows no visible labels. -->
+    <string name="price_filter_min_label">Minimum price</string>
+    <string name="price_filter_max_label">Maximum price</string>
     <string name="price_filter_all_prices">All Prices</string>
     <string name="price_filter_range">%1$s – %2$s</string>
 </resources>
