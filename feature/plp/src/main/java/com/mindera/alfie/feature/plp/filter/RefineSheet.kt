@@ -12,14 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.RangeSlider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,10 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.currencySymbol
 import com.mindera.alfie.core.commons.string.formatMoney
@@ -41,6 +32,8 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.component.radio.RadioButtonGroup
+import com.mindera.alfie.designsystem.component.slider.RangeSlider
+import com.mindera.alfie.designsystem.component.slider.SliderInputField
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
@@ -50,7 +43,6 @@ import com.mindera.alfie.feature.plp.R as PlpR
 
 /** Placeholder upper price cap; replace with BFF-supplied max when filter metadata is available. */
 private const val MAX_PRICE_CAP = 10_000f
-private const val DISABLED_ALPHA = 0.4f
 
 /** Which sub-panel inside the Refine sheet is currently showing. */
 private sealed interface RefinePanel {
@@ -143,37 +135,35 @@ private fun MainContent(
     pendingFilters: ProductListFilter?,
     onNavigate: (RefinePanel) -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
     val sortLabel = pendingSort.toLabel()
     val priceLabel = pendingFilters?.toPriceLabel() ?: stringResource(PlpR.string.price_filter_all_prices)
 
-    Column {
+    // D10: Figma has no dividers between rows. The layout is two groups separated by a 24 dp gap —
+    //  the standalone "Sort by" row, then a group holding the remaining seven at 0 dp spacing (their
+    //  12 dp paddings already give 24 dp of air between labels).
+    Column(verticalArrangement = Arrangement.spacedBy(LocalTheme.current.spacing.spacing24)) {
         FilterCategoryRow(
             label = stringResource(PlpR.string.refine_category_sort_by),
             value = sortLabel,
             onClick = { onNavigate(RefinePanel.SortBy) }
         )
-        HorizontalDivider(color = c.neutrals100)
-        FilterCategoryRow(
-            label = stringResource(PlpR.string.refine_category_price),
-            value = priceLabel,
-            onClick = { onNavigate(RefinePanel.PriceRange) }
-        )
-        HorizontalDivider(color = c.neutrals100)
+        Column {
+            FilterCategoryRow(
+                label = stringResource(PlpR.string.refine_category_price),
+                value = priceLabel,
+                onClick = { onNavigate(RefinePanel.PriceRange) }
+            )
 
-        // TODO: Enable these rows when the BFF returns available filter metadata
-        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_size))
-        HorizontalDivider(color = c.neutrals100)
-        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_colour))
-        HorizontalDivider(color = c.neutrals100)
-        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_materials))
-        HorizontalDivider(color = c.neutrals100)
-        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_brand))
-        HorizontalDivider(color = c.neutrals100)
-        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_style))
-        HorizontalDivider(color = c.neutrals100)
-        DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_function))
-        HorizontalDivider(color = c.neutrals100)
+            // TODO: ALFMOB-337 – Figma shows these rows enabled with their own sub-panels (colour
+            //  swatches, checkbox lists, per-facet count badges). They stay unavailable until the BFF
+            //  returns filter facet metadata; showing an enabled row that does nothing would be worse.
+            DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_size))
+            DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_colour))
+            DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_materials))
+            DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_brand))
+            DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_style))
+            DisabledFilterCategoryRow(label = stringResource(PlpR.string.refine_category_function))
+        }
     }
 }
 
@@ -183,33 +173,35 @@ private fun FilterCategoryRow(
     value: String,
     onClick: () -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
+    // D-filter-row: DS `.filter-item` (3450:20328) — 12 dp vertical padding (48 dp row), value in
+    //  body/medium + content/content-terciary, trailing Chevron Right at 24 dp.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing16),
+            .padding(horizontal = theme.spacing.spacing16, vertical = theme.spacing.spacing12),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,
-            style = LocalTheme.current.typography.body.medium,
-            color = c.neutrals800,
+            style = theme.typography.body.medium,
+            color = theme.color.content.contentPrimary,
             modifier = Modifier.weight(1f)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = value,
-                style = LocalTheme.current.typography.label.smallBold,
-                color = c.neutrals500
+                style = theme.typography.body.medium,
+                color = theme.color.content.contentTerciary
             )
-            Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
+            Spacer(modifier = Modifier.width(theme.spacing.spacing8))
             Icon(
                 painter = painterResource(AlfieIcons.ChevronRight),
                 contentDescription = null,
-                modifier = Modifier.size(Theme.iconSize.small),
-                tint = c.neutrals800
+                modifier = Modifier.size(theme.sizing.icon.medium),
+                tint = theme.color.content.contentPrimary
             )
         }
     }
@@ -217,26 +209,27 @@ private fun FilterCategoryRow(
 
 @Composable
 private fun DisabledFilterCategoryRow(label: String) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
+    // D13: the DS has no disabled state for `.filter-item`, so unavailability is expressed with the
+    //  standard disabled content token rather than a hardcoded alpha.
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(DISABLED_ALPHA)
-            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing16),
+            .padding(horizontal = theme.spacing.spacing16, vertical = theme.spacing.spacing12),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = label,
-            style = LocalTheme.current.typography.body.medium,
-            color = c.neutrals800,
+            style = theme.typography.body.medium,
+            color = theme.color.content.contentPrimaryDisabled,
             modifier = Modifier.weight(1f)
         )
         Icon(
             painter = painterResource(AlfieIcons.ChevronRight),
             contentDescription = null,
-            modifier = Modifier.size(Theme.iconSize.small),
-            tint = c.neutrals800
+            modifier = Modifier.size(theme.sizing.icon.medium),
+            tint = theme.color.content.contentPrimaryDisabled
         )
     }
 }
@@ -260,13 +253,12 @@ private fun SortByContent(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PriceRangeContent(
     currentFilters: ProductListFilter?,
     onFiltersChange: (ProductListFilter?) -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
     val currencySymbol = currencySymbol(currentFilters?.currencyCode ?: "USD")
 
     fun resolvedMin() = (currentFilters?.minPrice?.toFloat() ?: 0f).coerceIn(0f, MAX_PRICE_CAP)
@@ -295,7 +287,7 @@ private fun PriceRangeContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing16)
+            .padding(horizontal = theme.spacing.spacing16, vertical = theme.spacing.spacing16)
     ) {
         RangeSlider(
             value = sliderRange,
@@ -305,16 +297,11 @@ private fun PriceRangeContent(
                 maxText = if (range.endInclusive < MAX_PRICE_CAP) range.endInclusive.toInt().toString() else ""
             },
             onValueChangeFinished = { emitChange(sliderRange.start, sliderRange.endInclusive) },
-            valueRange = 0f..MAX_PRICE_CAP,
-            colors = SliderDefaults.colors(
-                thumbColor = c.neutrals800,
-                activeTrackColor = c.neutrals800,
-                inactiveTrackColor = c.neutrals200
-            ),
-            modifier = Modifier.fillMaxWidth()
+            valueRange = 0f..MAX_PRICE_CAP
         )
 
-        Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
+        // DS gap between the rail and the inputs is spacing/spacing-xs.
+        Spacer(modifier = Modifier.height(theme.spacing.spacing8))
 
         PriceRangeInputRow(
             minText = minText,
@@ -348,20 +335,18 @@ private fun PriceRangeInputRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
     ) {
-        PriceTextField(
-            label = stringResource(PlpR.string.price_filter_min_label),
+        SliderInputField(
             value = minText,
-            currencySymbol = currencySymbol,
+            prefix = currencySymbol,
             modifier = Modifier.weight(1f),
             onValueChange = { text ->
                 val clamped = (text.toFloatOrNull() ?: 0f).coerceIn(0f, sliderRange.endInclusive)
                 onMinChange(text, clamped..sliderRange.endInclusive)
             }
         )
-        PriceTextField(
-            label = stringResource(PlpR.string.price_filter_max_label),
+        SliderInputField(
             value = maxText,
-            currencySymbol = currencySymbol,
+            prefix = currencySymbol,
             modifier = Modifier.weight(1f),
             onValueChange = { text ->
                 val clamped = (text.toFloatOrNull() ?: MAX_PRICE_CAP).coerceIn(sliderRange.start, MAX_PRICE_CAP)
@@ -372,54 +357,26 @@ private fun PriceRangeInputRow(
 }
 
 @Composable
-private fun PriceTextField(
-    label: String,
-    value: String,
-    currencySymbol: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val c = LocalTheme.current.primitive.colors
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label, style = LocalTheme.current.typography.body.small) },
-        prefix = { Text(currencySymbol, style = LocalTheme.current.typography.body.medium) },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        textStyle = LocalTheme.current.typography.body.medium,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = c.neutrals800,
-            unfocusedBorderColor = c.neutrals200,
-            focusedLabelColor = c.neutrals800,
-            unfocusedLabelColor = c.neutrals500,
-            cursorColor = c.neutrals800
-        ),
-        modifier = modifier
-    )
-}
-
-@Composable
 private fun BottomActionBar(
     totalCount: Int,
     onRemoveAll: () -> Unit,
     onShowResults: () -> Unit
 ) {
-    val c = LocalTheme.current.primitive.colors
-    HorizontalDivider(color = c.neutrals100)
-    Row(
+    val theme = LocalTheme.current
+    // D11: Figma stacks the two actions vertically at full width with a 16 dp gap and no divider
+    //  above them (node 1:3221). "Remove All" is the Secondary (outlined) button, not Underlined.
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing.spacing16, vertical = Theme.spacing.spacing12),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing12),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = theme.spacing.spacing16, vertical = theme.spacing.spacing16),
+        verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing16)
     ) {
         Button(
-            type = ButtonType.Underlined,
+            type = ButtonType.Secondary,
             text = stringResource(PlpR.string.refine_remove_all),
             buttonSize = ButtonSize.Medium,
             onClick = onRemoveAll,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.fillMaxWidth()
         )
         Button(
             type = ButtonType.Primary,
@@ -430,7 +387,7 @@ private fun BottomActionBar(
             },
             buttonSize = ButtonSize.Medium,
             onClick = onShowResults,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -497,6 +454,43 @@ private fun RefineSheetWithFiltersPreview() {
             onPreviewFilters = {},
             onApply = { _, _ -> },
             onDismiss = {}
+        )
+    }
+}
+
+/**
+ * The sub-panels are previewed directly rather than through [RefineSheet], whose panel is private
+ * local state that a preview cannot drive.
+ */
+@Preview(showBackground = true)
+@Composable
+private fun RefineSheetSortByPreview() {
+    Theme {
+        SortByContent(
+            selectedSort = ProductSortOption.MOST_RECENT,
+            onSortSelect = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RefineSheetPriceRangePreview() {
+    Theme {
+        PriceRangeContent(
+            currentFilters = ProductListFilter(minPrice = 40.0, maxPrice = 120.0),
+            onFiltersChange = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RefineSheetPriceRangeEmptyPreview() {
+    Theme {
+        PriceRangeContent(
+            currentFilters = null,
+            onFiltersChange = {}
         )
     }
 }

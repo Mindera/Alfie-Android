@@ -8,6 +8,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,14 +26,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.mindera.alfie.core.navigation.DirectionProvider
@@ -70,6 +75,7 @@ import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.flowOf
 
 private const val NUM_LOADING_ITEMS = 16
 
@@ -91,7 +97,9 @@ internal fun ProductListScreen(
         title = viewModel.collectionTitle,
         actions = persistentListOf()
     )
-    bottomBarState.hideBottomBar()
+    // D3: Figma renders the app-shell bottom bar as part of the PLP frame, with "Store" in the
+    //  selected style — the listing keeps its tab context instead of hiding the bar.
+    bottomBarState.showBottomBar()
 
     LaunchedEffect(Unit) {
         if (state != ProductListUI.EMPTY) {
@@ -175,6 +183,7 @@ private fun ProductListGrid(
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
     if (state == ProductListUI.EMPTY) return
+    val theme = LocalTheme.current
     val isLoading = products.loadState.refresh is LoadState.Loading
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -190,41 +199,27 @@ private fun ProductListGrid(
                 onEvent = onEvent
             )
         } else {
+            // D-grid: outer margin (screen-size/margin = 16), column gutter (screen-size/gutter = 8)
+            //  and row gap (16) belong to the grid itself rather than to each item.
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columnCount),
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
+                contentPadding = PaddingValues(horizontal = theme.spacing.spacing16),
+                horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8),
+                verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing16)
             ) {
                 item(span = { GridItemSpan(columnCount) }) {
-                    ToolbarSection(
-                        resultCount = state.resultCount,
-                        layoutMode = state.layoutMode,
-                        onEvent = onEvent,
-                        isLoading = state.isLoadingMetadata
+                    RefineHeaderSection(
+                        state = state,
+                        onEvent = onEvent
                     )
-                }
-                // TODO: ALFMOB-337 – Add a horizontally-scrollable quick-filter chip row here once
-                //  the BFF exposes available filter facets (e.g. brand names, product types, sizes).
-                //  Each chip should toggle the corresponding filter on/off without opening the Refine
-                //  sheet. BFF schema currently has no facets in ProductListResponse.
-                if (state.availableFilters.isNotEmpty()) {
-                    item(span = { GridItemSpan(columnCount) }) {
-                        FilterChipsRow(
-                            filters = state.availableFilters,
-                            onToggle = { chipId -> onEvent(ProductListEvent.ToggleFilterChip(chipId)) }
-                        )
-                    }
                 }
                 itemsIndexed(
                     items = products,
                     key = { it.id }
-                ) { index, item ->
+                ) { _, item ->
                     item?.let { entry ->
                         ProductCard(
                             productCardType = entry.productCardData,
-                            modifier = Modifier.productListEntryPadding(
-                                index = index,
-                                columnCount = columnCount
-                            ),
                             isWishlisted = state.wishlistIds.contains(entry.slug)
                         )
                     }
@@ -241,7 +236,7 @@ private fun ProductListGrid(
                         ) {
                             LoadingWithLabel(
                                 type = LoadingType.Dark,
-                                modifier = Modifier.padding(vertical = Theme.spacing.spacing32)
+                                modifier = Modifier.padding(vertical = theme.spacing.spacing32)
                             )
                         }
                     }
@@ -257,22 +252,51 @@ private fun ProductListLoadingState(
     columnCount: Int,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
+    val theme = LocalTheme.current
     LazyVerticalGrid(
         columns = GridCells.Fixed(columnCount),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)
+        contentPadding = PaddingValues(horizontal = theme.spacing.spacing16),
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8),
+        verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing16)
     ) {
         item(span = { GridItemSpan(columnCount) }) {
-            ToolbarSection(
-                resultCount = state.resultCount,
-                layoutMode = state.layoutMode,
-                onEvent = onEvent,
-                isLoading = state.isLoadingMetadata
+            RefineHeaderSection(
+                state = state,
+                onEvent = onEvent
             )
         }
-        items(count = NUM_LOADING_ITEMS) { index ->
-            ProductListGridLoadingItem(
-                index = index,
-                columnCount = columnCount
+        items(count = NUM_LOADING_ITEMS) {
+            ProductListGridLoadingItem()
+        }
+    }
+}
+
+/**
+ * Toolbar row + quick-filter chips as a single span item, mirroring Figma's `Refine` container
+ * (`I673:95608;1:3157`), which groups both rows and owns their shared 16 dp horizontal margin.
+ * They must share one item because `LazyVerticalGrid` applies `verticalArrangement` uniformly to
+ * span items, which would otherwise force a 16 dp gap where Figma wants 8.
+ */
+@Composable
+private fun RefineHeaderSection(
+    state: ProductListUI,
+    onEvent: ClickEventOneArg<ProductListEvent>
+) {
+    Column {
+        ToolbarSection(
+            resultCount = state.resultCount,
+            layoutMode = state.layoutMode,
+            onEvent = onEvent,
+            isLoading = state.isLoadingMetadata
+        )
+        // TODO: ALFMOB-337 – the quick-filter chip row is in the Figma design but stays hidden until
+        //  the BFF exposes available filter facets (e.g. brand names, product types, sizes). Each chip
+        //  should toggle the corresponding filter on/off without opening the Refine sheet. The BFF
+        //  schema currently has no facets in ProductListResponse.
+        if (state.availableFilters.isNotEmpty()) {
+            FilterChipsRow(
+                filters = state.availableFilters,
+                onToggle = { chipId -> onEvent(ProductListEvent.ToggleFilterChip(chipId)) }
             )
         }
     }
@@ -285,15 +309,14 @@ private fun ToolbarSection(
     onEvent: ClickEventOneArg<ProductListEvent>,
     isLoading: Boolean
 ) {
+    // D-toolbar: 4 dp vertical padding only — the 16 dp horizontal margin comes from the grid's
+    //  contentPadding, matching Figma where the `Refine` container owns the inset.
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = Theme.spacing.spacing12,
-                vertical = Theme.spacing.spacing8
-            )
+            .padding(vertical = LocalTheme.current.spacing.spacing4)
     ) {
         LayoutModeToggle(
             layoutMode = layoutMode,
@@ -329,16 +352,18 @@ private fun ResultCounter(
     resultCount: Int,
     isLoading: Boolean
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
     AnimatedVisibility(
         visible = isLoading.not(),
         enter = fadeIn(standard()),
         exit = fadeOut(standard())
     ) {
+        // D-counter: body/small + content/content-terciary. Metrically identical to the previous
+        //  label.small/neutrals500 pair (both 12/16 W400 #767676), but bound to the semantic layer.
         Text(
             text = stringResource(id = R.string.results_counter, resultCount),
-            style = LocalTheme.current.typography.label.small,
-            color = c.neutrals500
+            style = theme.typography.body.small,
+            color = theme.color.content.contentTerciary
         )
     }
 }
@@ -348,9 +373,10 @@ private fun FilterChipsRow(
     filters: List<QuickFilterChipUI>,
     onToggle: (String) -> Unit
 ) {
+    // D-chips: gap = screen-size/gutter (8). No content padding — the 16 dp margin is inherited
+    //  from the grid's contentPadding.
     LazyRow(
-        contentPadding = PaddingValues(horizontal = Theme.spacing.spacing12),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
+        horizontalArrangement = Arrangement.spacedBy(LocalTheme.current.spacing.spacing8),
         modifier = Modifier.fillMaxWidth()
     ) {
         items(filters, key = { it.id }) { chip ->
@@ -388,52 +414,34 @@ private fun LayoutModeButton(
     selectedLayoutMode: ProductListLayoutMode,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
+    val isSelected = layoutMode == selectedLayoutMode
+    // D7: Figma expresses the toggle as two *different* glyphs — `Grid 1` vs `Grid 2 (Fill)` — so the
+    //  selected mode uses the filled variant. Both states tint content/content-primary; the previous
+    //  neutrals800-vs-neutrals200 tint difference is not in the design.
     val icon = when (layoutMode) {
-        ProductListLayoutMode.GRID -> AlfieIcons.Grid2
-        ProductListLayoutMode.COLUMN -> AlfieIcons.Grid1
-    }
-    val (isEnabled, color) = if (layoutMode == selectedLayoutMode) {
-        false to c.neutrals800
-    } else {
-        true to c.neutrals200
+        ProductListLayoutMode.GRID -> if (isSelected) AlfieIcons.Grid2Fill else AlfieIcons.Grid2
+        ProductListLayoutMode.COLUMN -> if (isSelected) AlfieIcons.Grid1Fill else AlfieIcons.Grid1
     }
 
     IconButton(
-        enabled = isEnabled,
+        enabled = isSelected.not(),
         onClick = { onEvent(ProductListEvent.ChangeLayoutMode(layoutMode)) },
-        modifier = Modifier.size(Theme.iconSize.xLarge)
+        modifier = Modifier.size(theme.sizing.icon.large)
     ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(Theme.iconSize.small)
+            // Explicit tint overrides IconButton's disabled content colour, so the selected
+            // (disabled) button still renders at full contentPrimary.
+            tint = theme.color.content.contentPrimary,
+            modifier = Modifier.size(theme.sizing.icon.medium)
         )
     }
 }
 
 @Composable
-private fun Modifier.productListEntryPadding(
-    index: Int,
-    columnCount: Int
-): Modifier {
-    val startPadding = if (index % columnCount == 0) Theme.spacing.spacing16 else Theme.spacing.spacing0
-    val endPadding = if (index % columnCount == columnCount - 1) Theme.spacing.spacing16 else Theme.spacing.spacing0
-
-    return this.padding(
-        start = startPadding,
-        end = endPadding,
-        top = Theme.spacing.spacing8,
-        bottom = Theme.spacing.spacing8
-    )
-}
-
-@Composable
-private fun ProductListGridLoadingItem(
-    index: Int,
-    columnCount: Int
-) {
+private fun ProductListGridLoadingItem() {
     ProductCard(
         productCardType = ProductCardType.Vertical(
             image = ImageUI(images = persistentListOf(), alt = null),
@@ -442,10 +450,125 @@ private fun ProductListGridLoadingItem(
             price = PriceType.Default(""),
             onFavoriteClick = { }
         ),
-        modifier = Modifier.productListEntryPadding(
-            index = index,
-            columnCount = columnCount
-        ),
         isLoading = true
     )
 }
+
+// region Previews
+
+private fun previewEntry(index: Int): ProductListEntryUI = ProductListEntryUI(
+    id = "preview-$index",
+    slug = "preview-$index",
+    productCardData = ProductCardType.Vertical(
+        image = ImageUI(images = persistentListOf(), alt = null),
+        brand = "Brand Name",
+        name = "100% Cotton Fluid Blazer",
+        price = PriceType.Default("£170"),
+        // Figma shows the promo label on the first card only (node I725:12955;3003:11344).
+        label = "Best Seller".takeIf { index == 0 },
+        onFavoriteClick = { }
+    )
+)
+
+/**
+ * Fakes a [LazyPagingItems] for previews. `PagingData.from(data, sourceLoadStates)` is public API
+ * in paging 3.3.5, so terminal load states can be driven directly.
+ */
+@Composable
+private fun previewProducts(
+    items: List<ProductListEntryUI>,
+    refresh: LoadState = LoadState.NotLoading(endOfPaginationReached = true)
+): LazyPagingItems<ProductListEntryUI> = remember(items, refresh) {
+    flowOf(
+        PagingData.from(
+            data = items,
+            sourceLoadStates = LoadStates(
+                refresh = refresh,
+                prepend = LoadState.NotLoading(endOfPaginationReached = true),
+                append = LoadState.NotLoading(endOfPaginationReached = true)
+            )
+        )
+    )
+}.collectAsLazyPagingItems()
+
+private val previewGridState = ProductListUI.EMPTY.copy(
+    resultCount = 14,
+    isLoadingMetadata = false,
+    layoutMode = ProductListLayoutMode.GRID,
+    compactColumnCount = 2,
+    nonCompactColumnCount = 3
+)
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductListGridPreview() {
+    Theme {
+        ProductListScreenContent(
+            state = previewGridState,
+            products = previewProducts(items = List(size = 6) { previewEntry(index = it) }),
+            searchQuery = null,
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductListColumnPreview() {
+    Theme {
+        ProductListScreenContent(
+            state = previewGridState.copy(
+                layoutMode = ProductListLayoutMode.COLUMN,
+                compactColumnCount = 1,
+                nonCompactColumnCount = 2
+            ),
+            products = previewProducts(items = List(size = 3) { previewEntry(index = it) }),
+            searchQuery = null,
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductListLoadingPreview() {
+    Theme {
+        ProductListScreenContent(
+            state = previewGridState.copy(isLoadingMetadata = true),
+            products = previewProducts(items = emptyList(), refresh = LoadState.Loading),
+            searchQuery = null,
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductListErrorPreview() {
+    Theme {
+        ProductListScreenContent(
+            state = previewGridState,
+            products = previewProducts(
+                items = emptyList(),
+                refresh = LoadState.Error(Throwable("preview"))
+            ),
+            searchQuery = null,
+            onEvent = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductListEmptyPreview() {
+    Theme {
+        ProductListScreenContent(
+            state = previewGridState.copy(resultCount = 0),
+            products = previewProducts(items = emptyList()),
+            searchQuery = null,
+            onEvent = {}
+        )
+    }
+}
+
+// endregion
