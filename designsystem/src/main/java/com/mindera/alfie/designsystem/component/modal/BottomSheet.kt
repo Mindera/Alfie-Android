@@ -156,8 +156,10 @@ private fun SheetTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
     ) {
+        // 40 dp so the header resolves to the DS's 48 dp: 4 + 40 + 4. It also gives the 24 dp glyph
+        // the 8 dp inset the design draws around it.
         IconButton(
-            modifier = Modifier.size(theme.sizing.icon.large),
+            modifier = Modifier.size(theme.sizing.icon.xlarge),
             onClick = onNavigationClick
         ) {
             Icon(
@@ -176,7 +178,7 @@ private fun SheetTopBar(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.size(theme.sizing.icon.large))
+        Spacer(modifier = Modifier.size(theme.sizing.icon.xlarge))
     }
 }
 
