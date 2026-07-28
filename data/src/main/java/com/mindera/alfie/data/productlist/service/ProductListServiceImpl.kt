@@ -6,7 +6,6 @@ import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.graphql.bff.SearchProductsQuery
 import com.mindera.alfie.graphql.bff.type.ProductFilterInput
 import com.mindera.alfie.graphql.bff.type.ProductSortEnum
-import com.mindera.alfie.network.di.NewClient
 import com.mindera.alfie.network.extension.unwrap
 import com.mindera.alfie.network.graphql.GraphService
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
@@ -14,7 +13,7 @@ import com.mindera.alfie.repository.productlist.model.ProductSortOption
 import javax.inject.Inject
 
 internal class ProductListServiceImpl @Inject constructor(
-    @NewClient apolloClient: ApolloClient
+    apolloClient: ApolloClient
 ) : GraphService(apolloClient), ProductListService {
 
     override suspend fun getProductList(

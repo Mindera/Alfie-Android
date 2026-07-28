@@ -8,7 +8,6 @@ import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.categoryNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
-import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -63,20 +62,6 @@ internal class NavigateToEntryDelegate @Inject constructor(
                         )
                     )
                 }
-            }
-        }
-    }
-
-    override fun ViewModel.openBrandEntry(entry: BrandEntryUI.Entry) {
-        viewModelScope.launch {
-            runUIEvent {
-                navigateTo(
-                    Screen.ProductList(
-                        args = ProductListNavArgs(
-                            type = ProductListType.Brand.Slug(entry.slug)
-                        )
-                    )
-                )
             }
         }
     }

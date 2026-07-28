@@ -7,7 +7,6 @@ import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.environment.model.Environment
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.test.CoroutineExtension
-import com.mindera.alfie.feature.shop.brand.model.BrandEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
@@ -118,23 +117,6 @@ internal class NavigateToEntryDelegateTest {
         with(viewModel) {
             openCategoryEntry(entry)
             coVerify { deeplinkHandler.handle("$WEB_URL/$path") }
-        }
-    }
-
-    @Test
-    fun `GIVEN openBrandEntry THEN navigate to plp`() = runTest {
-        val slug = "slug"
-        val entry = BrandEntryUI.Entry(
-            id = "123",
-            name = "Brand",
-            slug = slug
-        )
-
-        val viewModel = TestViewModel(delegate, uiEventEmitterDelegate)
-
-        with(viewModel) {
-            openBrandEntry(entry)
-            coVerify { navigateTo(screen = any(Screen.ProductList::class)) }
         }
     }
 
