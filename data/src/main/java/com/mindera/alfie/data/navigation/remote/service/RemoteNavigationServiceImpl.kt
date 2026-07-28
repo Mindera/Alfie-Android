@@ -11,7 +11,6 @@ internal class RemoteNavigationServiceImpl @Inject constructor(
     @NewClient apolloClient: ApolloClient
 ) : GraphService(apolloClient), RemoteNavigationService {
 
-    // `platform` is left absent so the BFF applies its own default, matching ProductListServiceImpl.
     override suspend fun getNavEntriesByHandle(handle: String): Result<MainMenuQuery.Data> =
         query(MainMenuQuery(handle = handle)).unwrap()
 }

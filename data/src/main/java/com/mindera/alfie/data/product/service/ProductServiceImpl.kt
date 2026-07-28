@@ -12,8 +12,7 @@ internal class ProductServiceImpl @Inject constructor(
 ) : GraphService(apolloClient), ProductService {
 
     override suspend fun getProduct(
-        handle: String,
-        platform: String
+        handle: String
     ): Result<GetProductDetailsQuery.Data> =
-        query(GetProductDetailsQuery(handle = handle, platform = platform)).unwrap()
+        query(GetProductDetailsQuery(handle = handle)).unwrap()
 }

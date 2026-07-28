@@ -52,8 +52,6 @@ internal class SearchProductsIntegrationTest : BffIntegrationTest() {
         searchTerm = term,
         after = Optional.presentIfNotNull(after),
         sort = Optional.present(ProductSortEnum.RELEVANCE),
-        limit = Optional.present(limit),
-        // searchProducts requires an explicit platform (unlike productList, which defaults it server-side).
-        platform = Optional.present(PLATFORM)
+        limit = Optional.present(limit)
     )
 }

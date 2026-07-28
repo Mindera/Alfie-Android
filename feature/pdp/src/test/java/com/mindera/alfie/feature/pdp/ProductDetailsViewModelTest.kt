@@ -75,7 +75,7 @@ internal class ProductDetailsViewModelTest {
         mockkStatic("com.mindera.alfie.feature.pdp.NavArgsGettersKt")
         every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns productDetailsNavArgs(handle = "test-handle")
 
-        coEvery { getProductUseCase(any(), any()) } returns UseCaseResult.Success(product)
+        coEvery { getProductUseCase(any()) } returns UseCaseResult.Success(product)
         coEvery { productDetailsUIFactory(any()) } returns productDetailsUI
         every { productDetailsUI.copy(isWishlisted = any()) } returns productDetailsUI
     }
