@@ -3,13 +3,10 @@ package com.mindera.alfie.feature.shop
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryUIState
-import com.mindera.alfie.feature.shop.model.ShopUI
 import com.mindera.alfie.repository.navigation.model.NavEntry
 import com.mindera.alfie.repository.navigation.model.NavItemType.HOME
 import com.mindera.alfie.repository.navigation.model.NavItemType.PRODUCT
 import kotlinx.collections.immutable.persistentListOf
-
-internal const val BASE_URL = "https://www.alfie.com"
 
 internal val navEntries = listOf(
     NavEntry(
@@ -69,8 +66,4 @@ internal val categoryUiState = CategoryUIState.Data(
     title = StringResource.fromText("Title"),
     entries = shopEntries,
     isLoading = false
-)
-
-internal val shopUi = ShopUI(
-    servicesUrl = "$BASE_URL/${ShopUIFactory.SERVICES_WEB_URL}"
 )
