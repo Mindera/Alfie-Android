@@ -1,6 +1,5 @@
 package com.mindera.alfie.designsystem.component.highlights
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,17 +40,25 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-// D1: Pagination dot metrics have no design token (scale skips 6dp); values read directly off Figma
-// node 4421:132068 and flagged as approximated in the handoff.
+// D1: Figma's Pagination instance (node 4421:132068) is 40x6 and decomposes exactly to 12 + 6 + 6 with
+// two 8dp gaps, so these are the design's own values, not approximations. They are literals only because
+// the spacing scale skips 6dp — there is no token to point at.
 private val INACTIVE_DOT_SIZE = 6.dp
 private val ACTIVE_DOT_WIDTH = 12.dp
 private val DOT_HEIGHT = 6.dp
 
-// D2: Figma scrim is a `multiply` linear gradient rgba(17,17,17,0.5)->transparent over the lower ~half of
-// the card. Compose Box background has no multiply blend; a plain alpha scrim is visually equivalent for a
-// darkening overlay. Stops approximated (transparent top half -> 0.5α bottom). Flagged in handoff.
+// D2: Figma paints the scrim as a `multiply` layer of rgba(17,17,17,a). Compose backgrounds have no
+// multiply blend, so the same colour is composited source-over. For a source this close to black the two
+// agree exactly on a white backdrop and diverge by at most a * (17/255) ~= 8/255 on pure black, so the
+// substitution is imperceptible rather than an approximation of the design.
+//
+// Dev mode gives `linear-gradient(to top, rgba(17,17,17,0.5) 19.25%, rgba(17,17,17,0) 52%)`. CSS `to top`
+// measures from the bottom and verticalGradient from the top, so the stops invert: 52% -> 0.48 (fade
+// begins), 19.25% -> 0.8075 (full scrim). Skia holds the terminal stop's colour past the last position,
+// which is what produces the flat 0.5-alpha band across the bottom 19.25% that Figma specifies.
 private const val SCRIM_ALPHA = 0.5f
-private const val SCRIM_START_STOP = 0.5f
+private const val SCRIM_FADE_START_STOP = 0.48f
+private const val SCRIM_FADE_END_STOP = 0.8075f
 
 /**
  * Editorial hero carousel — Figma "Highlights" (Design System file, node 4421:132068).
@@ -60,35 +67,55 @@ private const val SCRIM_START_STOP = 0.5f
  * an overlaid [display.medium][com.mindera.alfie.designsystem.tokens.Typography] title and an optional
  * underlined inverted link, plus a page indicator (active pill + inactive dots).
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Highlights(
     items: ImmutableList<HighlightsItem>,
     modifier: Modifier = Modifier
 ) {
     if (items.isEmpty()) return
+    val theme = LocalTheme.current
     val pagerState = rememberPagerState(initialPage = 0) { items.size }
+    val hasPagination = items.size > 1
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier.fillMaxWidth()
-    ) { page ->
-        HighlightSlide(
-            item = items[page],
-            pageCount = items.size,
-            currentPage = pagerState.currentPage
-        )
+    // The indicator is hoisted out of the pager so it renders once and stays put: as page content it
+    // translated with the swipe, showed two indicators mid-gesture, and re-announced its page count to
+    // TalkBack for every composed page. Same shape as `NonZoomablePager` and `DotsIndicatorScreen`.
+    Box(modifier = modifier.fillMaxWidth()) {
+        HorizontalPager(
+            state = pagerState,
+            beyondViewportPageCount = 1
+        ) { page ->
+            HighlightSlide(
+                item = items[page],
+                hasPagination = hasPagination
+            )
+        }
+        if (hasPagination) {
+            HighlightsPagination(
+                pageCount = items.size,
+                currentPage = { pagerState.currentPage },
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(theme.spacing.spacing16)
+            )
+        }
     }
 }
 
 @Composable
 private fun HighlightSlide(
     item: HighlightsItem,
-    pageCount: Int,
-    currentPage: Int
+    hasPagination: Boolean
 ) {
     val theme = LocalTheme.current
     val context = LocalContext.current
+    // D3: overlay inset = Figma `screen-size/margin` (16). With the indicator shown the text block is
+    // lifted clear of it: 16 (indicator inset) + 6 (indicator height) + 24 (Figma gap) = Figma's 500-454.
+    val contentBottomPadding = if (hasPagination) {
+        theme.spacing.spacing16 + DOT_HEIGHT + theme.spacing.spacing24
+    } else {
+        theme.spacing.spacing16
+    }
 
     Box(modifier = Modifier.fillMaxWidth()) {
         Image(
@@ -104,8 +131,9 @@ private fun HighlightSlide(
                 .background(
                     Brush.verticalGradient(
                         colorStops = arrayOf(
-                            SCRIM_START_STOP to Color.Transparent,
-                            1f to theme.primitive.colors.neutrals800.copy(alpha = SCRIM_ALPHA)
+                            SCRIM_FADE_START_STOP to Color.Transparent,
+                            SCRIM_FADE_END_STOP to
+                                theme.primitive.colors.neutrals800.copy(alpha = SCRIM_ALPHA)
                         )
                     )
                 )
@@ -114,28 +142,25 @@ private fun HighlightSlide(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                // D3: overlay padding = Figma `screen-size/margin` (16).
-                .padding(theme.spacing.spacing16),
-            verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing24),
-            horizontalAlignment = Alignment.Start
+                .padding(
+                    start = theme.spacing.spacing16,
+                    end = theme.spacing.spacing16,
+                    bottom = contentBottomPadding
+                ),
+            verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)) {
+            Text(
+                text = item.title.toString(context),
+                style = theme.typography.display.medium,
+                color = theme.color.content.contentInvertedPrimary
+            )
+            if (item.actionText != null && item.onActionClick != null) {
                 Text(
-                    text = item.title.toString(context),
-                    style = theme.typography.display.medium,
-                    color = theme.color.content.contentInvertedPrimary
+                    text = item.actionText.toString(context),
+                    style = theme.typography.link.medium.copy(textDecoration = TextDecoration.Underline),
+                    color = theme.color.link.linkPrimaryInvertedDefault,
+                    modifier = Modifier.clickable { item.onActionClick.invoke() }
                 )
-                if (item.actionText != null && item.onActionClick != null) {
-                    Text(
-                        text = item.actionText.toString(context),
-                        style = theme.typography.link.medium.copy(textDecoration = TextDecoration.Underline),
-                        color = theme.color.link.linkPrimaryInvertedDefault,
-                        modifier = Modifier.clickable { item.onActionClick.invoke() }
-                    )
-                }
-            }
-            if (pageCount > 1) {
-                HighlightsPagination(pageCount = pageCount, currentPage = currentPage)
             }
         }
     }
@@ -144,14 +169,17 @@ private fun HighlightSlide(
 @Composable
 private fun HighlightsPagination(
     pageCount: Int,
-    currentPage: Int,
+    currentPage: () -> Int,
     modifier: Modifier = Modifier
 ) {
     val theme = LocalTheme.current
+    // Deferred like `DotsIndicator(currentItem = ...)`, so settling a page recomposes the indicator
+    // rather than the caller — `Highlights` never subscribes to `pagerState.currentPage`.
+    val page = currentPage()
     // Expose page position to assistive tech — the dots are otherwise purely visual.
     val pageDescription = stringResource(
         R.string.highlights_pagination_content_description,
-        currentPage + 1,
+        page + 1,
         pageCount
     )
     Row(
@@ -159,7 +187,7 @@ private fun HighlightsPagination(
         horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
     ) {
         repeat(pageCount) { index ->
-            val isSelected = currentPage == index
+            val isSelected = page == index
             // D1: active page = extended pill (button/primary background), inactive = disabled-grey dot.
             Box(
                 modifier = Modifier

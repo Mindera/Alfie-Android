@@ -62,9 +62,7 @@ fun TopBarScope.LandingHeader(
             type = type,
             isSearchMode = searchState.isSearchOpen
         )
-        Search(
-            searchState = searchState
-        )
+        Search(searchState = searchState)
     }
 }
 
@@ -176,9 +174,7 @@ private fun TopBarScope.Search(
                 modifier = Modifier
                     .padding(
                         start = searchFieldStartPadding,
-                        end = theme.spacing.spacing16,
-                        top = theme.spacing.spacing16,
-                        bottom = theme.spacing.spacing16
+                        end = theme.spacing.spacing16
                     ),
                 onClick = {
                     searchState.updateSearchState(true)
