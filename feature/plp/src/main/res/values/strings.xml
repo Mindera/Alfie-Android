@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="filters_button_label">Refine</string>
-    <!-- D8: Figma's literal string is "14 Items" (node I673:95608;1:3157;4022:87055) -->
-    <string name="results_counter">%1$d Items</string>
+    <!-- D8: Figma's literal string is "14 Items" (node I673:95608;1:3157;4022:87055).
+         Pluralised because the design only ever shows a plural count. -->
+    <plurals name="results_counter">
+        <item quantity="one">%1$d Item</item>
+        <item quantity="other">%1$d Items</item>
+    </plurals>
 
     <!-- Search deeplink -->
     <string name="plp_search_empty_query_error">Please enter something to search for.</string>

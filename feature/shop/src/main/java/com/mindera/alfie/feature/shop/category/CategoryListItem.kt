@@ -27,9 +27,12 @@ internal fun LazyListScope.categoryItems(
     isPlaceholder: Boolean,
     onEntryClick: ClickEventOneArg<CategoryEntryUI>
 ) {
+    // Keyed by the Room row id rather than position, so reordering or inserting entries cannot
+    // cause the wrong row to be reused. Placeholder entries carry distinct ids (0 until
+    // PLACEHOLDER_COUNT) and are never mixed with real ones.
     itemsIndexed(
         items = entries,
-        key = { index, _ -> index }
+        key = { _, entry -> entry.id }
     ) { _, entry ->
         val theme = LocalTheme.current
         Box(
