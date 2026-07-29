@@ -283,7 +283,7 @@ private fun RefineHeaderSection(
     state: ProductListUI,
     onEvent: ClickEventOneArg<ProductListEvent>
 ) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(LocalTheme.current.spacing.spacing8)) {
         ToolbarSection(
             resultCount = state.resultCount,
             layoutMode = state.layoutMode,

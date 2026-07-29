@@ -173,7 +173,8 @@ internal class RemoteNavigationMapperTest {
             menuItem(title = "Services", url = "/store-services")
         ).toEntity()
 
-        // NavigateToEntryDelegate.BRANDS_FIXED_PATH compares against this exact value.
+        // Menu urls arrive leading-slashed; navigation matches on the bare handle, so the slash has
+        // to be reduced away here rather than at every call site.
         assertEquals(listOf("brands", "store-services"), result.map { it.path })
     }
 
