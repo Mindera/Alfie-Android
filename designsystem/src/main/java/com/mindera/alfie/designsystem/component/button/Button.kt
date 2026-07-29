@@ -23,14 +23,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -128,8 +133,10 @@ fun Button(
             textStyle = textStyle
         )
     } else {
-        val textStyle = overrideTextStyle
-            ?: LocalTheme.current.typography.body.medium.copy(textDecoration = TextDecoration.Underline)
+        // DS: the Link styles are `link/medium` (Medium 510), not `body/medium` (Regular 400), and
+        // their underline is #A1A1A1 — a different colour from the #111111 text. TextDecoration
+        // inherits the text colour and cannot be tinted, so UnderlineButton draws the rule itself.
+        val textStyle = overrideTextStyle ?: LocalTheme.current.typography.link.medium
 
         UnderlineButton(
             modifier = modifier,
@@ -248,17 +255,39 @@ private fun UnderlineButton(
     textStyle: TextStyle,
     modifier: Modifier = Modifier
 ) {
+    val theme = LocalTheme.current
+    val underlineColor = theme.color.border.medium
+    val underlineWidth = theme.primitive.border.weightDefault
+    // Anchored off the measured baseline rather than the layout box, which sits well below the
+    // glyphs when the line height exceeds the font size (link/medium is 16 over 24).
+    var textLayout by remember { mutableStateOf<TextLayoutResult?>(null) }
+
     Text(
         modifier = modifier
             .shimmer(isShimmering)
             .clickable(enabled = isEnabled) { onClick() }
-            .padding(LocalTheme.current.spacing.spacing8),
+            .padding(theme.spacing.spacing8)
+            .drawBehind {
+                val layout = textLayout ?: return@drawBehind
+                val strokePx = underlineWidth.toPx()
+                val y = layout.firstBaseline + strokePx
+                // Span the measured line rather than layout.size.width: with textAlign Center a
+                // button wider than its label would otherwise rule the full width while the glyphs
+                // sit centred. maxLines is 1, so line 0 always exists once textLayout is set.
+                drawLine(
+                    color = underlineColor,
+                    start = Offset(x = layout.getLineLeft(lineIndex = 0), y = y),
+                    end = Offset(x = layout.getLineRight(lineIndex = 0), y = y),
+                    strokeWidth = strokePx
+                )
+            },
         text = text,
         textAlign = Center,
         maxLines = 1,
         overflow = Ellipsis,
         color = textColor,
-        style = textStyle
+        style = textStyle,
+        onTextLayout = { textLayout = it }
     )
 }
 

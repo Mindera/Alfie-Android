@@ -11,6 +11,5 @@
     <ID>LongParameterList:SearchTextType.kt$SearchTextType$( val textStyle: TextStyle, val textColor: Color, @DrawableRes val searchIcon: Int, @DrawableRes val clearIcon: Int, val cursorColor: Color, val unselectedBorderColor: Color, val selectedBorderColor: Color, val placeholderTextColor: Color, val selectedColor: Color, val unselectedColor: Color, val verticalPadding: Dp, val horizontalPadding: Dp )</ID>
     <ID>ModifierHeightWithText:Tag.kt$height(intrinsicSize = IntrinsicSize.Max)</ID>
     <ID>ReturnCount:DeeplinkSpec.kt$DeeplinkSpec$fun resolve(url: String): DeeplinkInstance?</ID>
-    <ID>SpreadOperator:BrandUIStateFactory.kt$BrandUIStateFactory$( initial.takeIf { it.isNotEmpty() }?.let { BrandEntryUI.Divider(it.first()) }, *entries.toTypedArray() )</ID>
   </CurrentIssues>
 </SmellBaseline>

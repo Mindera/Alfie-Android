@@ -1,3 +1,9 @@
+input AddToCartInput {
+  cartId: ID!
+
+  lines: [CartLineInput!]!
+}
+
 type Barcode {
   type: String!
 
@@ -8,6 +14,84 @@ type Barcode {
 The `Boolean` scalar type represents `true` or `false`.
 """
 scalar Boolean
+
+type Cart {
+  checkoutUrl: String
+
+  createdAt: String
+
+  customerId: String
+
+  externalReferences: CartExternalReferences!
+
+  id: ID!
+
+  lineItems: [CartItem!]!
+
+  platformId: String!
+
+  status: String!
+
+  totals: CartTotals!
+
+  updatedAt: String
+}
+
+type CartExternalReferences {
+  bigcommerceCartId: String
+
+  shopifyCartId: String
+}
+
+type CartItem {
+  id: ID!
+
+  image: Image
+
+  lineTotal: Money!
+
+  name: String
+
+  price: Money!
+
+  productId: String
+
+  quantity: Int!
+
+  sku: String
+
+  variantId: String
+}
+
+input CartLineInput {
+  options: [CartLineOptionInput!]
+
+  productId: ID
+
+  quantity: Int! = 1
+
+  variantId: ID!
+}
+
+input CartLineOptionInput {
+  name: String!
+
+  value: String!
+}
+
+type CartTotals {
+  currency: String!
+
+  grandTotal: Money!
+
+  subtotal: Money!
+}
+
+input CreateCartInput {
+  customerAccessToken: String
+
+  lines: [CartLineInput!]
+}
 
 type Dimensions {
   height: Float
@@ -42,6 +126,26 @@ type Inventory {
   available: Int
 }
 
+type Menu {
+  handle: String
+
+  id: ID
+
+  items: [MenuItem!]!
+
+  title: String
+}
+
+type MenuItem {
+  id: ID!
+
+  items: [MenuItem]
+
+  title: String!
+
+  url: String
+}
+
 type Metafield {
   key: String!
 
@@ -72,6 +176,12 @@ type MoneyRange {
   maxVariantPrice: Money!
 
   minVariantPrice: Money!
+}
+
+type Mutation {
+  addToCart(input: AddToCartInput!): Cart!
+
+  createCart(input: CreateCartInput!): Cart!
 }
 
 type OmniProduct {
@@ -215,11 +325,17 @@ type ProductVariant {
 }
 
 type Query {
-  productDetails(handle: String!, platform: String!, productMetafields: [MetafieldIdentifierInput!], variantMetafields: [MetafieldIdentifierInput!]): OmniProduct
+  cart(cartId: String!): Cart!
 
-  productList(after: String, collectionHandle: String!, filters: ProductFilterInput, limit: Int! = 25, platform: String, sort: ProductSortEnum! = NEWEST): ProductListResponse!
+  cartCheckoutUrl(cartId: String!): String!
 
-  searchProducts(after: String, filters: ProductFilterInput, limit: Int! = 10, platform: String, searchTerm: String!, sort: ProductSortEnum! = NEWEST): ProductListResponse!
+  mainMenu(handle: String! = "main-menu"): Menu!
+
+  productDetails(handle: String!, productMetafields: [MetafieldIdentifierInput!], variantMetafields: [MetafieldIdentifierInput!]): OmniProduct
+
+  productList(after: String, collectionHandle: String!, filters: ProductFilterInput, limit: Int! = 25, sort: ProductSortEnum! = NEWEST): ProductListResponse!
+
+  searchProducts(after: String, filters: ProductFilterInput, limit: Int! = 10, searchTerm: String!, sort: ProductSortEnum! = NEWEST): ProductListResponse!
 }
 
 type Seo {
@@ -541,4 +657,5 @@ directive @specifiedBy ("The URL that specifies the behavior of this scalar." ur
 
 schema {
   query: Query
+  mutation: Mutation
 }

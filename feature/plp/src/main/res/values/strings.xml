@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="filters_button_label">Refine</string>
-    <string name="results_counter">%1$d results</string>
+    <!-- D8: Figma's literal string is "14 Items" (node I673:95608;1:3157;4022:87055).
+         Pluralised because the design only ever shows a plural count. -->
+    <plurals name="results_counter">
+        <item quantity="one">%1$d Item</item>
+        <item quantity="other">%1$d Items</item>
+    </plurals>
 
     <!-- Search deeplink -->
     <string name="plp_search_empty_query_error">Please enter something to search for.</string>
@@ -43,8 +48,9 @@
 
     <!-- Price filter -->
     <string name="price_filter_title">Price</string>
+    <!-- Accessibility names for the price range bounds; the design shows no visible labels. -->
+    <string name="price_filter_min_label">Minimum price</string>
+    <string name="price_filter_max_label">Maximum price</string>
     <string name="price_filter_all_prices">All Prices</string>
     <string name="price_filter_range">%1$s – %2$s</string>
-    <string name="price_filter_min_label">Min</string>
-    <string name="price_filter_max_label">Max</string>
 </resources>

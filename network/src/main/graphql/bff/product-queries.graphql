@@ -1,5 +1,5 @@
-query GetProductDetails($handle: String!, $platform: String!) {
-    productDetails(handle: $handle, platform: $platform) {
+query GetProductDetails($handle: String!) {
+    productDetails(handle: $handle) {
         ...ProductFragment
     }
 }

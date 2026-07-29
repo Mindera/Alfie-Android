@@ -37,7 +37,8 @@ internal class CategoryUIStateFactory @Inject constructor(
         CategoryEntryUI(
             id = entry.id,
             title = StringResource.fromText(entry.title),
-            path = entry.url.orEmpty()
+            path = entry.url.orEmpty(),
+            hasChildren = entry.hasChildren
         )
     }
 }

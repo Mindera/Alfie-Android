@@ -1,8 +1,8 @@
 package com.mindera.alfie.data.navigation.remote.service
 
-import com.mindera.alfie.graphql.NavEntriesByHandleQuery
+import com.mindera.alfie.graphql.bff.MainMenuQuery
 
 internal interface RemoteNavigationService {
 
-    suspend fun getNavEntriesByHandle(handle: String): Result<NavEntriesByHandleQuery.Data>
+    suspend fun getNavEntriesByHandle(handle: String): Result<MainMenuQuery.Data>
 }

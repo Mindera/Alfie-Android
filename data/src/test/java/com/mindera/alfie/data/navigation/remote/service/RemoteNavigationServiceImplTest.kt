@@ -4,7 +4,7 @@ import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.ApolloResponse
 import com.mindera.alfie.core.test.setPrivatePropertyField
-import com.mindera.alfie.graphql.NavEntriesByHandleQuery
+import com.mindera.alfie.graphql.bff.MainMenuQuery
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 internal class RemoteNavigationServiceImplTest {
 
     @RelaxedMockK
-    private lateinit var apolloCall: ApolloCall<NavEntriesByHandleQuery.Data>
+    private lateinit var apolloCall: ApolloCall<MainMenuQuery.Data>
 
     @RelaxedMockK
     private lateinit var apolloClient: ApolloClient
@@ -30,10 +30,10 @@ internal class RemoteNavigationServiceImplTest {
 
     @Test
     fun testGetNavEntriesByHandle() = runTest {
-        val expectedData = NavEntriesByHandleQuery.Data(mockk())
+        val expectedData = MainMenuQuery.Data(mockk())
         val expectedResult = Result.success(expectedData)
-        val navEntriesQuery = NavEntriesByHandleQuery("handle")
-        val mockResponse = mockk<ApolloResponse<NavEntriesByHandleQuery.Data>>()
+        val navEntriesQuery = MainMenuQuery("handle")
+        val mockResponse = mockk<ApolloResponse<MainMenuQuery.Data>>()
         mockResponse.setPrivatePropertyField("data", expectedData)
 
         coEvery { apolloClient.query(navEntriesQuery) } returns apolloCall
