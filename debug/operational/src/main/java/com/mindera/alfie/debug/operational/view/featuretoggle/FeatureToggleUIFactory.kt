@@ -1,8 +1,6 @@
 package com.mindera.alfie.debug.operational.view.featuretoggle
 
-import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.repository.featuretoggle.model.FeatureToggle
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
@@ -12,10 +10,6 @@ import javax.inject.Inject
  * Currently empty: the only entry was "Show Wishlist On Bottom Bar", removed in ALFMOB-448
  * because the Figma design shows the Wishlist tab unconditionally. Add new toggles here.
  */
-class FeatureToggleUIFactory @Inject constructor(
-    private val dispatcher: DispatcherProvider
-) {
-    suspend operator fun invoke(): List<FeatureToggle> = withContext(dispatcher.default()) {
-        emptyList()
-    }
+class FeatureToggleUIFactory @Inject constructor() {
+    operator fun invoke(): List<FeatureToggle> = emptyList()
 }

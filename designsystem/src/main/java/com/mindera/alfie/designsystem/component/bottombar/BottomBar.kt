@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -107,10 +108,6 @@ private fun BottomBarContainer(
                         size = Size(size.width, borderWidth.toPx())
                     )
                 }
-                .padding(
-                    top = theme.spacing.spacing8,
-                    bottom = theme.spacing.spacing16
-                )
                 .selectableGroup(),
             horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8),
             verticalAlignment = Alignment.Top,
@@ -147,7 +144,17 @@ private fun BottomBarItem(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(bounded = false)
             )
-            .semantics { selected = state.isSelected },
+            // The bar's vertical padding lives here, inside `combinedClickable`, so the whole 76 dp
+            // cell is tappable. On the container `Row` it would sit outside each tab's touch target.
+            .padding(
+                top = theme.spacing.spacing8,
+                bottom = theme.spacing.spacing16
+            )
+            // `mergeDescendants` is stated explicitly rather than relied upon: `combinedClickable`
+            // already merges, so TalkBack reads the whole cell as "Home, tab, selected" either way
+            // (verified on device — the focus rect wraps icon + label). Spelling it out keeps the
+            // single-stop announcement from depending on a `combinedClickable` implementation detail.
+            .semantics(mergeDescendants = true) { selected = state.isSelected },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing4)
     ) {
@@ -173,6 +180,9 @@ private fun BottomBarItem(
             color = color,
             textAlign = TextAlign.Center,
             maxLines = 1,
+            // Five weighted tabs leave ~65 dp each at 360 dp; the longer labels exceed that at large
+            // font scales, where the default `Clip` would cut a glyph in half with no cue.
+            overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -195,6 +205,25 @@ private fun previewItem(
 @Preview(showBackground = true, widthDp = 360)
 @Composable
 private fun BottomBarPreview() {
+    Theme {
+        BottomBar(
+            state = rememberBottomBarState(),
+            items = persistentListOf(
+                previewItem(label = "Home", icon = AlfieIcons.Home, isSelected = true),
+                previewItem(label = "Store", icon = AlfieIcons.Menu),
+                previewItem(label = "Wishlist", icon = AlfieIcons.Wishlist),
+                previewItem(label = "Bag", icon = AlfieIcons.Bag),
+                previewItem(label = "Account", icon = AlfieIcons.Account)
+            ),
+            onItemClick = { _, _ -> }
+        )
+    }
+}
+
+/** Guards the label overflow: five weighted tabs at 360 dp are the tightest case for the long labels. */
+@Preview(showBackground = true, widthDp = 360, fontScale = 1.5f)
+@Composable
+private fun BottomBarLargeFontPreview() {
     Theme {
         BottomBar(
             state = rememberBottomBarState(),

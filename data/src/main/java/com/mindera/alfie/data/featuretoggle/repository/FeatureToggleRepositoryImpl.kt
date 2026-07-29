@@ -23,7 +23,4 @@ class FeatureToggleRepositoryImpl @Inject constructor(
             featureToggle.toDB().toggleTitle,
             featureToggle.toDB().enabled
         )
-
-    override fun getFeatureTogglesByNameAsFlow(toggleTitle: String) =
-        featureToggleDao.getFeatureTogglesByNameAsFlow(toggleTitle).map { it.toDomain() }
 }
