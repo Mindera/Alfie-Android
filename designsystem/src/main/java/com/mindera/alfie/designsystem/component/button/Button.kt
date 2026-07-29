@@ -271,10 +271,13 @@ private fun UnderlineButton(
                 val layout = textLayout ?: return@drawBehind
                 val strokePx = underlineWidth.toPx()
                 val y = layout.firstBaseline + strokePx
+                // Span the measured line rather than layout.size.width: with textAlign Center a
+                // button wider than its label would otherwise rule the full width while the glyphs
+                // sit centred. maxLines is 1, so line 0 always exists once textLayout is set.
                 drawLine(
                     color = underlineColor,
-                    start = Offset(x = 0f, y = y),
-                    end = Offset(x = layout.size.width.toFloat(), y = y),
+                    start = Offset(x = layout.getLineLeft(lineIndex = 0), y = y),
+                    end = Offset(x = layout.getLineRight(lineIndex = 0), y = y),
                     strokeWidth = strokePx
                 )
             },

@@ -38,11 +38,14 @@ fun LabeledRadioButton(
     horizontalPadding: Dp = Theme.spacing.spacing16
 ) {
     val theme = LocalTheme.current
-    // DS: unselected is a white fill with a #111111 ring; selected drops the fill for the inner dot.
-    val radioColor = if (isEnabled && isSelected) {
-        theme.color.surface.backgroundPrimary
-    } else {
-        theme.color.surface.foregroundPrimary
+    // DS: unselected is a white fill with a #111111 ring; selected drops the fill so only the ring
+    // and the inner dot show. These were the wrong way round — unselected rendered foregroundPrimary
+    // (#F7F7F7) and selected rendered white — which predates this branch.
+    val radioColor = when {
+        // The DS defines no disabled state; this keeps the pre-existing muted fill.
+        !isEnabled -> theme.color.surface.foregroundPrimary
+        isSelected -> theme.primitive.colors.transparent
+        else -> theme.color.surface.backgroundPrimary
     }
     val borderColor = if (isEnabled) {
         theme.color.content.contentPrimary
