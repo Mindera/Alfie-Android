@@ -5,8 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -88,7 +86,7 @@ private fun ProductImage(
     isLoading: Boolean,
     isWishlisted: Boolean
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
     Box {
         Image(
             imageUI = productCard.image,
@@ -102,25 +100,30 @@ private fun ProductImage(
             productCard.label?.let { label ->
                 Text(
                     text = label,
-                    style = LocalTheme.current.typography.label.smallBold,
-                    color = c.neutrals0,
+                    style = theme.typography.body.small,
+                    color = theme.color.content.contentInvertedPrimary,
                     modifier = Modifier
                         .align(Alignment.TopStart)
+                        // The DS insets the label 8 dp from the image's top-left corner; this padding
+                        // sits outside the background so it offsets rather than inflates the chip.
+                        .padding(theme.spacing.spacing8)
                         .background(
-                            color = c.neutrals800,
+                            color = theme.color.surface.backgroundInvertedPrimary,
                             shape = Theme.shape.none
                         )
                         .padding(
-                            horizontal = Theme.spacing.spacing8,
-                            vertical = Theme.spacing.spacing4
+                            horizontal = theme.spacing.spacing8,
+                            vertical = theme.spacing.spacing4
                         )
                 )
             }
             if (productCard.onFavoriteClick != null) {
+                // Flush to the image's top-right corner. The 40 dp box around a 24 dp glyph is what
+                // produces the 8 dp optical inset — the DS draws no scrim or circle behind it.
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .size(Theme.iconSize.large),
+                        .size(theme.sizing.icon.xlarge),
                     onClick = productCard.onFavoriteClick
                 ) {
                     val iconRes =
@@ -128,7 +131,8 @@ private fun ProductImage(
                     Icon(
                         painter = painterResource(iconRes),
                         contentDescription = null,
-                        modifier = Modifier.size(Theme.iconSize.medium)
+                        tint = theme.color.content.contentPrimary,
+                        modifier = Modifier.size(theme.sizing.icon.medium)
                     )
                 }
             }
@@ -141,52 +145,50 @@ private fun ProductDescription(
     productCard: ProductCardType.Vertical,
     isLoading: Boolean
 ) {
-    val c = LocalTheme.current.primitive.colors
-    Row(verticalAlignment = Alignment.Bottom) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = productCard.brand,
-                style = LocalTheme.current.typography.label.small,
-                color = c.neutrals500,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shimmer(
-                        isShimmering = isLoading,
-                        xScale = Theme.scale.scale40
-                    )
-                    .testTag(productCard.brandTestTag)
-            )
-            Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
-            Text(
-                text = productCard.name,
-                style = LocalTheme.current.typography.body.medium,
-                color = c.neutrals800,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shimmer(
-                        isShimmering = isLoading,
-                        xScale = Theme.scale.scale60
-                    )
-                    .testTag(productCard.nameTestTag)
-            )
-            Spacer(modifier = Modifier.size(Theme.spacing.spacing4))
-            Price(
-                item = productCard.price,
-                size = PriceSize.Medium,
-                orientation = PriceOrientation.Vertical,
-                modifier = Modifier
-                    .shimmer(
-                        isShimmering = isLoading,
-                        minWidth = PRICE_PLACEHOLDER_WIDTH
-                    )
-                    .testTag(productCard.priceTestTag)
-            )
-        }
-        Spacer(modifier = Modifier.size(Theme.spacing.spacing24))
+    val theme = LocalTheme.current
+    // The DS `Product Details` block has itemSpacing 0 and no padding — the brand/name/price rhythm
+    // comes from the line heights alone (16/24/24). It also has no trailing spacer, so the text
+    // column spans the full card width rather than being inset by 24 dp.
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = productCard.brand,
+            style = theme.typography.label.small,
+            color = theme.color.content.contentPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmer(
+                    isShimmering = isLoading,
+                    xScale = Theme.scale.scale40
+                )
+                .testTag(productCard.brandTestTag)
+        )
+        Text(
+            text = productCard.name,
+            style = theme.typography.body.medium,
+            color = theme.color.content.contentPrimary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .shimmer(
+                    isShimmering = isLoading,
+                    xScale = Theme.scale.scale60
+                )
+                .testTag(productCard.nameTestTag)
+        )
+        Price(
+            item = productCard.price,
+            size = PriceSize.Medium,
+            orientation = PriceOrientation.Vertical,
+            modifier = Modifier
+                .shimmer(
+                    isShimmering = isLoading,
+                    minWidth = PRICE_PLACEHOLDER_WIDTH
+                )
+                .testTag(productCard.priceTestTag)
+        )
     }
 }
 

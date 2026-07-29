@@ -16,7 +16,7 @@ internal class ProductDetailsIntegrationTest : BffIntegrationTest() {
         // Use a real handle from the product list so the test is self-sufficient.
         val slug = firstProductSlug(client) ?: return@withBff
 
-        val data = client.executeOrFail(GetProductDetailsQuery(handle = slug, platform = PLATFORM))
+        val data = client.executeOrFail(GetProductDetailsQuery(handle = slug))
         val product = requireNotNull(data.productDetails) { "No productDetails for handle '$slug'" }.productFragment
 
         assertTrue(product.id.isNotBlank(), "Product id should not be blank")

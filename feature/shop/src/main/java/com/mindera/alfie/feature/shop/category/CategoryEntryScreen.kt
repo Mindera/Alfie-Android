@@ -74,21 +74,34 @@ private fun CategoryScreenContent(
     }
 }
 
+/** Mixes parent and leaf rows, since only the former carry a chevron. */
 @Preview(showBackground = true)
 @Composable
-private fun ShopScreenPreview() {
+private fun CategoryScreenContentPreview() {
     Theme {
         CategoryScreenContent(
             entries = persistentListOf(
                 CategoryEntryUI(
                     id = 1,
                     title = StringResource.fromText("New in"),
-                    path = "url"
+                    path = "new-in"
                 ),
                 CategoryEntryUI(
                     id = 2,
+                    title = StringResource.fromText("Clothes"),
+                    path = "clothes",
+                    hasChildren = true
+                ),
+                CategoryEntryUI(
+                    id = 3,
+                    title = StringResource.fromText("Shoes"),
+                    path = "shoes",
+                    hasChildren = true
+                ),
+                CategoryEntryUI(
+                    id = 4,
                     title = StringResource.fromText("Sale"),
-                    path = "url"
+                    path = "sale"
                 )
             ),
             onEvent = {}

@@ -1,5 +1,6 @@
 package com.mindera.alfie.designsystem.component.modal
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -60,6 +62,8 @@ fun BottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     isFullscreen: Boolean = true,
+    @DrawableRes navigationIcon: Int = AlfieIcons.Close,
+    onNavigationClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -115,7 +119,10 @@ fun BottomSheet(
         Column(Modifier.navigationBarsPadding()) {
             SheetTopBar(
                 title = title,
-                onDismiss = {
+                navigationIcon = navigationIcon,
+                // Only the default (dismissing) action animates the sheet away. A caller supplying
+                // its own action is navigating inside the sheet, so it must stay open.
+                onNavigationClick = onNavigationClick ?: {
                     scope.launch { sheetState.hide() }
                     onDismiss()
                 }
@@ -128,36 +135,50 @@ fun BottomSheet(
 @Composable
 private fun SheetTopBar(
     title: String,
-    onDismiss: () -> Unit
+    @DrawableRes navigationIcon: Int,
+    onNavigationClick: () -> Unit
 ) {
+    val theme = LocalTheme.current
+    // DS `Header` component set 4526:110113. It has two variants, and a leading icon comes with a
+    // centred title: `Leading=False` is title-only and leading-aligned, while
+    // `Leading=Default, Trailing=True` (3001:9278) pairs a leading chevron with a centred title.
+    // This sheet always has a leading icon, so it follows the latter — with a spacer standing in for
+    // the trailing action, which is how the design keeps the title optically centred.
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = Theme.spacing.spacing16,
-                bottom = Theme.spacing.spacing16,
-                start = Theme.spacing.spacing6
+                top = theme.spacing.spacing4,
+                bottom = theme.spacing.spacing4,
+                start = theme.spacing.spacing16,
+                end = theme.spacing.spacing4
             ),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.spacedBy(theme.spacing.spacing8)
     ) {
+        // 40 dp so the header resolves to the DS's 48 dp: 4 + 40 + 4. It also gives the 24 dp glyph
+        // the 8 dp inset the design draws around it.
         IconButton(
-            modifier = Modifier.size(Theme.iconSize.large),
-            onClick = { onDismiss() }
+            modifier = Modifier.size(theme.sizing.icon.xlarge),
+            onClick = onNavigationClick
         ) {
             Icon(
-                modifier = Modifier.size(Theme.iconSize.large),
-                painter = painterResource(id = AlfieIcons.Close),
-                contentDescription = null
+                modifier = Modifier.size(theme.sizing.icon.medium),
+                painter = painterResource(id = navigationIcon),
+                contentDescription = null,
+                tint = theme.color.content.contentPrimary
             )
         }
-        Spacer(modifier = Modifier.width(Theme.spacing.spacing12))
         Text(
             text = title,
-            style = LocalTheme.current.typography.heading.small,
+            style = theme.typography.heading.xSmall,
+            color = theme.color.content.contentPrimary,
+            textAlign = TextAlign.Center,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
         )
+        Spacer(modifier = Modifier.size(theme.sizing.icon.xlarge))
     }
 }
 

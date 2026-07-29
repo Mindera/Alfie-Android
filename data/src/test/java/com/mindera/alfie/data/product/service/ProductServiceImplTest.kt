@@ -41,7 +41,7 @@ internal class ProductServiceImplTest {
         every { mockResponse.hasErrors() } returns false
         every { mockResponse.dataAssertNoErrors } returns expectedData
 
-        val result = service.getProduct(handle = "test-handle", platform = "android")
+        val result = service.getProduct(handle = "test-handle")
 
         assert(result.isSuccess)
         assertEquals(expectedResult, result)
@@ -57,7 +57,7 @@ internal class ProductServiceImplTest {
         coEvery { apolloCall.execute() } returns mockResponse
         every { mockResponse.hasErrors() } returns true
 
-        val result = service.getProduct(handle = "test-handle", platform = "android")
+        val result = service.getProduct(handle = "test-handle")
 
         assert(result.isFailure)
     }

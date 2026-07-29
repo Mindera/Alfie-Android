@@ -22,7 +22,6 @@ internal class ProductRepositoryImplTest {
 
     companion object {
         private const val HANDLE = "camilla-and-marc-patterson-mini-skirt"
-        private const val PLATFORM = "android"
     }
 
     @RelaxedMockK
@@ -44,9 +43,9 @@ internal class ProductRepositoryImplTest {
         every { mockProduct.productFragment.defaultVariantId } returns null
         every { mockProduct.productFragment.images } returns emptyList()
         every { mockProduct.productFragment.variants } returns emptyList()
-        coEvery { productService.getProduct(any(), any()) } returns Result.success(mockData)
+        coEvery { productService.getProduct(any()) } returns Result.success(mockData)
 
-        val result = subject.getProduct(handle = HANDLE, platform = PLATFORM)
+        val result = subject.getProduct(handle = HANDLE)
 
         assertIs<RepositoryResult.Success<Product>>(result)
         assertEquals("p-1", result.data.id)
@@ -55,11 +54,11 @@ internal class ProductRepositoryImplTest {
 
     @Test
     fun `getProduct - WHEN result is failure THEN repository returns error`() = runTest {
-        coEvery { productService.getProduct(any(), any()) } returns Result.failure(
+        coEvery { productService.getProduct(any()) } returns Result.failure(
             GraphNetworkException.UnexpectedException(message = "Error")
         )
 
-        val result = subject.getProduct(handle = HANDLE, platform = PLATFORM)
+        val result = subject.getProduct(handle = HANDLE)
 
         assertIs<RepositoryResult.Error>(result)
     }
@@ -67,9 +66,9 @@ internal class ProductRepositoryImplTest {
     @Test
     fun `getProduct - WHEN data is null THEN repository returns error`() = runTest {
         val expectedServiceResponse = GetProductDetailsQuery.Data(productDetails = null)
-        coEvery { productService.getProduct(any(), any()) } returns Result.success(expectedServiceResponse)
+        coEvery { productService.getProduct(any()) } returns Result.success(expectedServiceResponse)
 
-        val result = subject.getProduct(handle = HANDLE, platform = PLATFORM)
+        val result = subject.getProduct(handle = HANDLE)
 
         assertIs<RepositoryResult.Error>(result)
     }

@@ -31,7 +31,9 @@ internal fun LazyItemScope.EntryHeadlineContent(
                     xScale = scale
                 ),
             text = if (isPlaceholder) "" else text,
-            style = LocalTheme.current.typography.body.medium
+            style = LocalTheme.current.typography.body.medium,
+            // Without this the text resolves to Material's onSurface (~#1D1B20) rather than #111111.
+            color = LocalTheme.current.color.content.contentPrimary
         )
     }
 }
