@@ -61,13 +61,15 @@ internal class NavigationRepositoryImplTest {
                     id = 1,
                     title = "Home Item",
                     url = "https://home.item",
-                    type = NavItemType.HOME
+                    type = NavItemType.HOME,
+                    hasChildren = true
                 ),
                 NavEntry(
                     id = 2,
                     title = "Product Item",
                     url = "https://product.item",
-                    type = NavItemType.PRODUCT
+                    type = NavItemType.PRODUCT,
+                    hasChildren = true
                 )
             )
         )

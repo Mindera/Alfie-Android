@@ -227,3 +227,9 @@ fabric.properties
 !/gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,kotlin,firebase,macos
+# Local-only working directories — never committed.
+# Docs/ holds per-ticket handoff notes kept on the authoring machine; .claude/ and
+# .codegraph/ are tooling state. Un-ignore deliberately if docs should ever be shared.
+Docs/
+.claude/
+.codegraph/

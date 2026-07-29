@@ -2,7 +2,7 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">api-dev.alfie.com</domain>
-        <!-- Android emulator reaches the host machine via 10.0.2.2 (BFF default port 3000) -->
+        <!-- Android emulator reaches the host machine via 10.0.2.2 (BFF default port 4000) -->
         <domain includeSubdomains="false">10.0.2.2</domain>
     </domain-config>
     <debug-overrides>

@@ -3,16 +3,14 @@ query ProductListQuery(
     $after: String,
     $filters: ProductFilterInput,
     $sort: ProductSortEnum! = NEWEST,
-    $limit: Int! = 25,
-    $platform: String
+    $limit: Int! = 25
 ) {
     productList(
         collectionHandle: $collectionHandle,
         after: $after,
         filters: $filters,
         sort: $sort,
-        limit: $limit,
-        platform: $platform
+        limit: $limit
     ) {
         ...ProductListResponseFragment
     }
@@ -23,16 +21,14 @@ query SearchProductsQuery(
     $after: String,
     $filters: ProductFilterInput,
     $sort: ProductSortEnum! = NEWEST,
-    $limit: Int! = 25,
-    $platform: String
+    $limit: Int! = 25
 ) {
     searchProducts(
         searchTerm: $searchTerm,
         after: $after,
         filters: $filters,
         sort: $sort,
-        limit: $limit,
-        platform: $platform
+        limit: $limit
     ) {
         ...ProductListResponseFragment
     }

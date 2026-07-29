@@ -6,7 +6,7 @@ import com.mindera.alfie.data.navigation.cache.mapper.toDomain
 import com.mindera.alfie.data.navigation.remote.mapper.toEntity
 import com.mindera.alfie.data.navigation.remote.service.RemoteNavigationService
 import com.mindera.alfie.data.toRepositoryResult
-import com.mindera.alfie.graphql.NavEntriesByHandleQuery
+import com.mindera.alfie.graphql.bff.MainMenuQuery
 import com.mindera.alfie.repository.navigation.NavigationRepository
 import com.mindera.alfie.repository.navigation.model.HandleType
 import com.mindera.alfie.repository.navigation.model.NavEntry
@@ -26,7 +26,7 @@ internal class NavigationRepositoryImpl @Inject constructor(
             .mapCatching { insertAndReturnRootEntries(it).toDomain() }
             .toRepositoryResult()
 
-    private suspend fun insertAndReturnRootEntries(entries: NavEntriesByHandleQuery.Data): List<NavigationEntryEntity> =
+    private suspend fun insertAndReturnRootEntries(entries: MainMenuQuery.Data): List<NavigationEntryEntity> =
         navigationEntryDao.insert(entries = entries.toEntity())
             .filter { it.parentId == null }
 }
