@@ -13,9 +13,6 @@ interface FeatureToggleDao {
     @Query("SELECT * FROM feature_toggle ORDER BY toggle_title ASC")
     fun getAllFeatureTogglesAsFlow(): Flow<List<FeatureToggleEntity>>
 
-    @Query("SELECT * FROM feature_toggle WHERE toggle_title = :toggleTitle")
-    fun getFeatureTogglesByNameAsFlow(toggleTitle: String): Flow<List<FeatureToggleEntity>>
-
     @Transaction
     suspend fun insertFeatureToggle(entries: List<FeatureToggleEntity>) {
         val list = getAllFeatureToggles().toMutableList()

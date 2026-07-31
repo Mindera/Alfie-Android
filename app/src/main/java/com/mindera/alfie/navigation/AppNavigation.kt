@@ -63,8 +63,7 @@ fun AppNavigation(
     startDestination: Screen,
     navGraphs: NavGraphs,
     directionProvider: DirectionProvider,
-    deeplinkHandler: DeeplinkHandler,
-    wishlistToggleEnabled: Boolean
+    deeplinkHandler: DeeplinkHandler
 ) {
     val navController = rememberNavController()
     val topBarState = rememberTopBarState(isVisible = false)
@@ -151,8 +150,7 @@ fun AppNavigation(
                         bottomBarState = bottomBarState,
                         snackbarCustomHostState = snackbarHostState,
                         getNavController = { navController },
-                        directionProvider = directionProvider,
-                        wishlistToggleEnabled = wishlistToggleEnabled
+                        directionProvider = directionProvider
                     )
                 }
             } ?: run {
@@ -164,8 +162,7 @@ fun AppNavigation(
                     bottomBarState = bottomBarState,
                     snackbarCustomHostState = snackbarHostState,
                     getNavController = { navController },
-                    directionProvider = directionProvider,
-                    wishlistToggleEnabled = wishlistToggleEnabled
+                    directionProvider = directionProvider
                 )
             }
         }
@@ -181,8 +178,7 @@ private fun DefaultOverlayContent(
     bottomBarState: BottomBarState,
     snackbarCustomHostState: SnackbarCustomHostState,
     getNavController: () -> NavHostController,
-    directionProvider: DirectionProvider,
-    wishlistToggleEnabled: Boolean
+    directionProvider: DirectionProvider
 ) {
     val isSearchOpen = topBarState.isSearchOpen()
     val searchState = topBarState.getSearchState()
@@ -205,8 +201,7 @@ private fun DefaultOverlayContent(
                 bottomBarState = bottomBarState,
                 snackbarCustomHostState = snackbarCustomHostState,
                 getNavController = getNavController,
-                directionProvider = directionProvider,
-                wishlistToggleEnabled = wishlistToggleEnabled
+                directionProvider = directionProvider
             )
         }
     )
@@ -221,10 +216,9 @@ private fun BottomBarScaffold(
     bottomBarState: BottomBarState,
     snackbarCustomHostState: SnackbarCustomHostState,
     getNavController: () -> NavHostController,
-    directionProvider: DirectionProvider,
-    wishlistToggleEnabled: Boolean
+    directionProvider: DirectionProvider
 ) {
-    val bottomBarItems = bottomBarItems(wishlistToggleEnabled)
+    val bottomBarItems = bottomBarItems()
     val navController = getNavController()
     val currentDestination = navController.currentDestinationAsState().value
     bottomBarItems.updateSelectedState(currentDestination)

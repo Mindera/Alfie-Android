@@ -8,6 +8,7 @@ import com.mindera.alfie.repository.featuretoggle.model.FeatureToggle
 import com.mindera.alfie.repository.featuretoggle.model.FeatureToggleType
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -54,7 +55,7 @@ class FeatureToggleViewModelTest {
 
     @Test
     fun addFeatureToggle() = runTest {
-        coEvery { featureToggleUIFactory.invoke() } returns mockFeatureToggleList
+        every { featureToggleUIFactory.invoke() } returns mockFeatureToggleList
 
         viewModel = buildSubject()
 

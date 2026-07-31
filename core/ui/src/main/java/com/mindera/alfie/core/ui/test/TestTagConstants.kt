@@ -22,6 +22,7 @@ const val HOME_TAB = "home-tab"
 const val SHOP_TAB = "shop-tab"
 const val WISHLIST_TAB = "wishlist-tab"
 const val BAG_TAB = "bag-tab"
+const val ACCOUNT_TAB = "account-tab"
 
 // ACCOUNT SCREEN
 const val ACCOUNT_ACTION_ICON = "action-icon"
