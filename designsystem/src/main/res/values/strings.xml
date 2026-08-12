@@ -14,6 +14,7 @@
     <string name="product_card_size">Size:</string>
     <string name="text_field_counter">%d/100</string>
     <string name="product_carousel_content_description">Product Carousel with %s items</string>
+    <string name="highlights_pagination_content_description">Highlights carousel, page %1$d of %2$d</string>
     <string name="top_bar_greeting">Hi, %s</string>
     <string name="gallery_controls_counter">%1$d/%2$d</string>
     <string name="gallery_controls_left_content_description">Previous media</string>

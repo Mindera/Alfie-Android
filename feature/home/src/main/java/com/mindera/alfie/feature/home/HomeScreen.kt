@@ -1,42 +1,37 @@
 package com.mindera.alfie.feature.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.ui.media.image.ImageSizeUI
+import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.debug.runner.LocalDebugComposeRunner
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
+import com.mindera.alfie.designsystem.component.highlights.Highlights
+import com.mindera.alfie.designsystem.component.highlights.HighlightsItem
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeader
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
-import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.home.model.HomeUI
 import com.mindera.alfie.feature.home.model.HomeUIState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-
-private const val SCREEN_CONTENT_HEIGHT = 100
 
 @Destination
 @Composable
@@ -76,31 +71,19 @@ private fun HomeScreenContent(
     state: HomeUIState
 ) {
     when (state) {
-        is HomeUIState.Loaded -> HomeLoaded()
+        is HomeUIState.Loaded -> HomeLoaded(homeUI = state.homeUI)
     }
 }
 
 @Composable
-private fun HomeLoaded() {
-    // Lets assume that the Icon + Text height will be 80 + 20
-    val paddingBottom = (LocalConfiguration.current.screenHeightDp / 2) - SCREEN_CONTENT_HEIGHT
-    Box(
-        contentAlignment = Alignment.BottomCenter,
+private fun HomeLoaded(homeUI: HomeUI) {
+    // Hero-only for now — remaining Home sections land in a later ticket once the BFF is ready (ALFMOB-449).
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = paddingBottom.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                painter = painterResource(AlfieIcons.Home),
-                contentDescription = null,
-                modifier = Modifier.size(Theme.iconSize.xxLarge)
-            )
-            Text(
-                text = "Home",
-                style = LocalTheme.current.typography.body.mediumBold
-            )
-        }
+        Highlights(items = homeUI.highlights)
     }
 }
 
@@ -122,13 +105,20 @@ private fun TopBarScope.SetupTopBar(homeUI: HomeUI?) {
 @Composable
 private fun HomeScreenPreview() {
     Theme {
-        val homeUI = HomeUI(
-            userName = "User",
-            membershipDate = "1982"
-        )
-
-        HomeScreenContent(
-            HomeUIState.Loaded(homeUI)
-        )
+        HomeScreenContent(HomeUIState.Loaded(previewHomeUI()))
     }
 }
+
+// Local preview fixture — keeps the preview independent of HomeUIFactory (DI wiring).
+private fun previewHomeUI() = HomeUI(
+    userName = null,
+    membershipDate = null,
+    highlights = persistentListOf(
+        HighlightsItem(
+            image = ImageUI(images = persistentListOf(ImageSizeUI.Large("")), alt = ""),
+            title = StringResource.fromText("Transcending Trends\nfor Breezy Nights"),
+            actionText = StringResource.fromText("Explore Collection"),
+            onActionClick = { }
+        )
+    )
+)

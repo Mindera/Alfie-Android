@@ -45,12 +45,14 @@ import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.productcard.size.VerticalProductCardSize
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductCarousel(
-    items: List<ProductCardType.Vertical>,
+    items: ImmutableList<ProductCardType.Vertical>,
     modifier: Modifier = Modifier,
     title: StringResource? = null,
     description: StringResource? = null,
@@ -173,7 +175,7 @@ private fun ProductCarouselPreview() {
                 name = "Soft Lounge Long Sleeve Dress",
                 price = PriceType.Default(price = "$219.00")
             )
-        }
+        }.toImmutableList()
         ProductCarousel(
             items = items,
             title = StringResource.fromText("New In"),
