@@ -4,15 +4,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,11 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -39,7 +34,6 @@ import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.test.SEARCH_CLEAR_RECENT_SEARCH
-import com.mindera.alfie.core.ui.test.SEARCH_EMPTY_SCREEN
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_REMOVE_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_TITLE
@@ -112,45 +106,6 @@ private fun ContentOverlaySearch(
             onSearchEvent = onSearchEvent,
             recentSearches = recentSearches
         )
-    } else {
-        SearchEmpty()
-    }
-}
-
-@Composable
-private fun SearchEmpty() {
-    val c = LocalTheme.current.primitive.colors
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .width(294.dp)
-                .testTag(SEARCH_EMPTY_SCREEN)
-        ) {
-            Icon(
-                painter = painterResource(id = AlfieIcons.Search),
-                contentDescription = null,
-                tint = c.neutrals900,
-                modifier = Modifier.size(Theme.iconSize.large)
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
-            Text(
-                text = stringResource(R.string.search_empty_title),
-                style = LocalTheme.current.typography.body.mediumBold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
-            Text(
-                text = stringResource(R.string.search_empty_description),
-                style = LocalTheme.current.typography.body.small,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
     }
 }
 
@@ -160,45 +115,44 @@ private fun RecentSearchesPanel(
     onSearchEvent: ClickEventOneArg<SearchEvent>,
     recentSearches: List<RecentSearch>
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = Theme.spacing.spacing8),
-        contentAlignment = Alignment.TopCenter
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = rememberLazyListState(),
+        contentPadding = PaddingValues(
+            top = Theme.spacing.spacing16,
+            start = Theme.spacing.spacing16,
+            end = Theme.spacing.spacing16
+        )
     ) {
-        LazyColumn(state = rememberLazyListState()) {
-            item { RecentSearchesTitle(onSearchEvent = onSearchEvent) }
-            items(
-                items = recentSearches,
-                key = { it.searchTerm }
-            ) {
-                RecentSearchItem(
-                    recentSearch = it,
-                    onSearchEvent = onSearchEvent,
-                    modifier = Modifier.animateItem()
-                )
-            }
+        item { RecentSearchesTitle(onSearchEvent = onSearchEvent) }
+        items(
+            items = recentSearches,
+            key = { it.searchTerm }
+        ) {
+            RecentSearchItem(
+                recentSearch = it,
+                onSearchEvent = onSearchEvent,
+                modifier = Modifier.animateItem()
+            )
         }
     }
 }
 
 @Composable
 private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
-    val c = LocalTheme.current.primitive.colors
+    val c = LocalTheme.current.color.content
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                start = Theme.spacing.spacing16,
-                end = Theme.spacing.spacing4
-            ),
+            .padding(bottom = Theme.spacing.spacing8),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             modifier = Modifier.testTag(SEARCH_RECENT_SEARCH_TITLE),
             text = stringResource(R.string.your_recent_searches),
-            style = LocalTheme.current.typography.heading.small
+            style = LocalTheme.current.typography.heading.xSmall,
+            color = c.contentPrimary
         )
         TextButton(
             modifier = Modifier.testTag(SEARCH_CLEAR_RECENT_SEARCH),
@@ -207,7 +161,7 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
             Text(
                 text = stringResource(R.string.clear),
                 style = LocalTheme.current.typography.body.mediumBold.copy(textDecoration = TextDecoration.Underline),
-                color = c.neutrals800
+                color = c.contentPrimary
             )
         }
     }
@@ -219,7 +173,7 @@ private fun RecentSearchItem(
     onSearchEvent: ClickEventOneArg<SearchEvent>,
     modifier: Modifier = Modifier
 ) {
-    val c = LocalTheme.current.primitive.colors
+    val c = LocalTheme.current.color.content
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -234,41 +188,28 @@ private fun RecentSearchItem(
         ) {
             Text(
                 modifier = Modifier
-                    .padding(
-                        vertical = Theme.spacing.spacing16,
-                        horizontal = Theme.spacing.spacing24
-                    )
+                    .padding(vertical = Theme.spacing.spacing8)
                     .weight(1f),
                 text = recentSearch.searchTerm,
                 style = LocalTheme.current.typography.body.medium,
-                color = c.neutrals800,
+                color = c.contentPrimary,
                 maxLines = 1,
                 overflow = Ellipsis
             )
             IconButton(
                 modifier = Modifier
-                    .padding(end = Theme.spacing.spacing16)
                     .size(Theme.iconSize.large)
                     .testTag(SEARCH_RECENT_SEARCH_REMOVE_ITEM),
                 onClick = { onSearchEvent(OnDeleteRecentSearch(recentSearch)) }
             ) {
                 Icon(
                     painter = painterResource(id = AlfieIcons.Close),
-                    modifier = Modifier.size(Theme.iconSize.small),
+                    modifier = Modifier.size(Theme.iconSize.medium),
                     contentDescription = null
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xffffff)
-@Composable
-private fun ContentOverlaySearchEmptyPreview() {
-    ContentOverlaySearch(
-        onSearchEvent = {},
-        recentSearches = emptyList()
-    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xffffff)

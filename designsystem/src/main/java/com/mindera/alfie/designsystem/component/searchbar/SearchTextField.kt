@@ -79,7 +79,7 @@ internal fun SearchTextField(
     Surface(
         modifier = modifier,
         color = if (isSearchOpen) colorSpec.selectedColor else colorSpec.unselectedColor,
-        shape = Theme.shape.full,
+        shape = Theme.shape.extraSmall,
         border = BorderStroke(
             width = 1.dp,
             color = if (isSearchOpen) colorSpec.selectedBorderColor else colorSpec.unselectedBorderColor
@@ -156,8 +156,10 @@ private fun DecorationBox(
     Row(
         modifier = Modifier
             .padding(
-                horizontal = type.horizontalPadding,
-                vertical = type.verticalPadding
+                start = type.startPadding,
+                end = type.endPadding,
+                top = type.verticalPadding,
+                bottom = type.verticalPadding
             )
             .indication(
                 interactionSource = interactionSource,
@@ -179,7 +181,7 @@ private fun DecorationBox(
             innerTextField()
         }
 
-        Spacer(modifier = Modifier.width(Theme.spacing.spacing6))
+        Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
 
         AnimatedContent(
             targetState = searchState.searchTerm.isNotNullOrBlank(),

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="search_empty_title">Find what you\'re looking for</string>
-    <string name="search_empty_description">Search for designers, categories and products</string>
     <string name="your_recent_searches">Your Recent Searches</string>
     <string name="clear">Clear</string>
 </resources>
