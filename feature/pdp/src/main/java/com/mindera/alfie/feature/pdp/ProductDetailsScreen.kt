@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -162,12 +162,19 @@ private fun ProductDetailsScreenContent(
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
+    // Offset of the colour grid within the scrollable content. positionInParent() would be
+    // relative to the padded content column and miss the gallery above it, so both values are
+    // taken in root coordinates (stable under scrolling) and subtracted.
+    var scrollContentRootY by remember { mutableIntStateOf(0) }
     var colourSectionOffset by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(state = scrollState)
+            .onGloballyPositioned { coordinates ->
+                scrollContentRootY = coordinates.positionInRoot().y.roundToInt()
+            }
     ) {
         ProductDetailsGallery(state = state)
         Column(
@@ -195,7 +202,8 @@ private fun ProductDetailsScreenContent(
             if (state.details.colors.size > 1) {
                 Box(
                     modifier = Modifier.onGloballyPositioned { coordinates ->
-                        colourSectionOffset = coordinates.positionInParent().y.roundToInt()
+                        colourSectionOffset =
+                            coordinates.positionInRoot().y.roundToInt() - scrollContentRootY
                     }
                 ) {
                     ProductDetailsColourCards(

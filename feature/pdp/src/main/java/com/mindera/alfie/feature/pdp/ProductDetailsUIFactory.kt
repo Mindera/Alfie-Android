@@ -136,16 +136,28 @@ internal class ProductDetailsUIFactory @Inject constructor(
     suspend fun getSelectedVariantSku(
         details: ProductDetailsUI
     ): String? = withContext(dispatcher.default()) {
-        val selectedColorId = details.selectedColorUI?.id ?: return@withContext null
-        val selectedSizeId = (details.sizeSectionUI as? SizeSectionUI.SizeSelector)?.selectedSize?.id
-            ?: return@withContext null
+        val selectedSize = (details.sizeSectionUI as? SizeSectionUI.SizeSelector)?.selectedSize
 
-        // Products can carry options beyond colour+size (e.g. "Sleeve length type"); prefer an
-        // in-stock sibling so a mixed-availability size still adds a purchasable variant.
-        val matches = details.variants.filter {
-            it.colorOptionValue == selectedColorId && it.sizeOptionValue == selectedSizeId
+        // A product with a size grid must have a size picked before anything can be added —
+        // the disabled CTA enforces it, this keeps the factory honest about it too.
+        if (details.sizeSectionUI is SizeSectionUI.SizeSelector && selectedSize == null) {
+            return@withContext null
         }
-        return@withContext (matches.firstOrNull { it.available } ?: matches.firstOrNull())?.sku
+
+        val selectedColorId = details.selectedColorUI?.id
+        if (selectedColorId != null && selectedSize != null) {
+            // Products can carry options beyond colour+size (e.g. "Sleeve length type"); prefer an
+            // in-stock sibling so a mixed-availability size still adds a purchasable variant.
+            val matches = details.variants.filter {
+                it.colorOptionValue == selectedColorId && it.sizeOptionValue == selectedSize.id
+            }
+            (matches.firstOrNull { it.available } ?: matches.firstOrNull())?.sku
+                ?.let { return@withContext it }
+        }
+
+        // No size choice applies (SingleSize / SizeOnly) or the product carries no colour
+        // option — the display variant is the selection.
+        details.displayVariant()?.sku
     }
 
     private fun List<ColorUI>.findSelected(defaultVariant: Variant?): ColorUI? {

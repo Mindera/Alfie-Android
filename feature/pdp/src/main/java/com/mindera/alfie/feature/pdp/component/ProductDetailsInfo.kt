@@ -94,11 +94,13 @@ private fun ColourSummary(
 ) {
     val c = LocalTheme.current.primitive.colors
     val remainingLabel = stringResource(id = R.string.product_details_colour_summary_more, remainingCount)
+    // "+N" is a visual shorthand; screen readers get the action it performs instead.
+    val a11yLabel = stringResource(id = R.string.product_details_colour_summary_a11y, remainingCount)
 
     Row(
         modifier = Modifier
             .clickable(onClick = onClick)
-            .semantics { contentDescription = remainingLabel },
+            .semantics { contentDescription = a11yLabel },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(

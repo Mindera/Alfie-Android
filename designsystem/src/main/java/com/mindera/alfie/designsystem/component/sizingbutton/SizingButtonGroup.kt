@@ -27,6 +27,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -178,7 +180,10 @@ private fun OutOfStockChip(
         Text(
             modifier = Modifier
                 .fillMaxSize()
-                .wrapContentSize(Alignment.Center),
+                .wrapContentSize(Alignment.Center)
+                // The chip is drawn rather than a disabled Button, so it must announce its
+                // unavailability itself; the bell stays invisible to accessibility by design.
+                .semantics { disabled() },
             text = text,
             style = LocalTheme.current.typography.body.medium,
             color = c.neutrals500

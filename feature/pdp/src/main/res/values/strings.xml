@@ -12,6 +12,7 @@
     <string name="product_details_single_size">Size: %1$s</string>
     <string name="product_details_select_a_colour">Select a Colour</string>
     <string name="product_details_colour_summary_more">+%1$d</string>
+    <string name="product_details_colour_summary_a11y">View %1$d more colours</string>
     <string name="product_details_reference">Ref. %1$s</string>
     <string name="product_details_colour_and_reference_a11y">%1$s, Ref. %2$s</string>
     <string name="product_details_section_view_link">View %1$s</string>

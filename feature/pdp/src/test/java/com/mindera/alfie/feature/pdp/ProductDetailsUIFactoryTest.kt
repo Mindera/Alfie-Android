@@ -257,6 +257,55 @@ class ProductDetailsUIFactoryTest {
     }
 
     @Test
+    fun `getSelectedVariantSku - WHEN no size choice applies THEN returns the display variant's sku`() = runTest {
+        // Colour-only variants (no size option) map to SingleSize — the CTA is enabled with
+        // no size to pick, so the display variant is what a tap must add to the bag.
+        val colourOnly = { id: String, sku: String, color: String, available: Boolean ->
+            variant(id = id, sku = sku, color = color, size = "10 AU", available = available)
+                .copy(options = listOf(VariantOption("color", color)))
+        }
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                colourOnly("v1", "sku-steel", "steel", true),
+                colourOnly("v2", "sku-bone", "bone", false)
+            )
+        )
+        val details = uiFactory(testProduct)
+
+        val sku = uiFactory.getSelectedVariantSku(details)
+
+        assertEquals("sku-steel", sku)
+    }
+
+    @Test
+    fun `getSelectedVariantSku - WHEN a size grid has no selection THEN returns null`() = runTest {
+        val details = uiFactory(product)
+
+        assertNull(uiFactory.getSelectedVariantSku(details))
+    }
+
+    @Test
+    fun `getSelectedVariantSku - WHEN the product carries no colour option THEN resolves via the selected size`() = runTest {
+        val sizeOnly = { id: String, sku: String, size: String ->
+            variant(id = id, sku = sku, color = "steel", size = size)
+                .copy(options = listOf(VariantOption("size", size)))
+        }
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                sizeOnly("v1", "sku-s", "S"),
+                sizeOnly("v2", "sku-m", "M")
+            )
+        )
+        val details = uiFactory(testProduct)
+        val small = SizeUI(id = "S", properties = SizingButtonProperties(text = "S", state = SizingButtonState.Selectable))
+        val withSize = uiFactory.setSelectedSize(details = details, sizeUI = small)
+
+        assertEquals("sku-s", uiFactory.getSelectedVariantSku(withSize))
+    }
+
+    @Test
     fun `invoke - WHEN compareAtPrice is above the price THEN renders a sale price`() = runTest {
         val testProduct = product.copy(
             defaultVariantId = "v1",
