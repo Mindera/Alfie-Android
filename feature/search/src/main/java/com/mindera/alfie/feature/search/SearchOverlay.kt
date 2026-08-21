@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -154,9 +153,10 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
             style = LocalTheme.current.typography.heading.xSmall,
             color = c.contentPrimary
         )
-        TextButton(
-            modifier = Modifier.testTag(SEARCH_CLEAR_RECENT_SEARCH),
-            onClick = { onSearchEvent(OnClearRecentSearches) }
+        Box(
+            modifier = Modifier
+                .testTag(SEARCH_CLEAR_RECENT_SEARCH)
+                .clickable { onSearchEvent(OnClearRecentSearches) }
         ) {
             Text(
                 text = stringResource(R.string.clear),
