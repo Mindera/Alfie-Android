@@ -329,7 +329,7 @@ type Query {
 
   cartCheckoutUrl(cartId: String!): String!
 
-  mainMenu(handle: String! = "main-menu"): Menu!
+  menu(handle: String! = "main-menu"): Menu!
 
   productDetails(handle: String!, productMetafields: [MetafieldIdentifierInput!], variantMetafields: [MetafieldIdentifierInput!]): OmniProduct
 

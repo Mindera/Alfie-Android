@@ -5,10 +5,10 @@ import com.mindera.alfie.graphql.bff.MainMenuQuery
 import com.mindera.alfie.repository.navigation.model.NavEntry
 import com.mindera.alfie.repository.navigation.model.NavItemType
 
-// region BFF mainMenu builders
+// region BFF menu builders
 
 internal fun mainMenuData(vararg items: MainMenuQuery.Item) = MainMenuQuery.Data(
-    mainMenu = MainMenuQuery.MainMenu(
+    menu = MainMenuQuery.Menu(
         handle = "main-menu",
         title = "Main",
         items = items.toList()

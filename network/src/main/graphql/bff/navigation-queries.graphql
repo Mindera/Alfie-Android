@@ -3,7 +3,7 @@
 # MenuItem carries no handle and Shopify sub-menus are not separately addressable, so there is no
 # lazy per-level fetch. The deepest level therefore selects no `items`.
 query MainMenu($handle: String!) {
-    mainMenu(handle: $handle) {
+    menu(handle: $handle) {
         handle
         title
         items {
