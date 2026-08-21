@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="product_details_add_to_bag">Add to bag</string>
-    <string name="product_details_information_description">Description</string>
     <string name="product_details_section_delivery_and_returns">Delivery &amp; Returns</string>
     <string name="product_details_section_payment_options">Payment Options</string>
     <string name="product_details_share_text">Brand: %1$s\nName: %2$s\nPrice: %3$s\nUrl: %4$s</string>
-    <string name="product_details_size_picker_title">Size</string>
-    <string name="product_details_size_field_placeholder_text">Select Size</string>
     <string name="product_details_size_out_of_stock">Out of Stock</string>
-    <string name="product_details_size_label">Size:</string>
     <string name="product_details_one_size_label">One Size</string>
     <string name="product_details_product_not_found">Product not found</string>
+    <string name="product_details_select_your_size">Select Your Size</string>
+    <string name="product_details_size_guide">Size Guide</string>
+    <string name="product_details_single_size">Size: %1$s</string>
+    <string name="product_details_select_a_colour">Select a Colour</string>
+    <string name="product_details_colour_summary_more">+%1$d</string>
+    <string name="product_details_reference">Ref. %1$s</string>
+    <string name="product_details_colour_and_reference_a11y">%1$s, Ref. %2$s</string>
+    <string name="product_details_section_view_link">View %1$s</string>
+    <string name="product_details_wishlist_content_description">Wishlist</string>
 </resources>

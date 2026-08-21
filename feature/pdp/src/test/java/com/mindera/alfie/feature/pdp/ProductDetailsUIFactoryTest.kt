@@ -3,8 +3,14 @@ package com.mindera.alfie.feature.pdp
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.core.environment.EnvironmentManager
 import com.mindera.alfie.core.environment.model.Environment
+import com.mindera.alfie.designsystem.component.price.PriceType
+import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonProperties
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
+import com.mindera.alfie.feature.pdp.model.SizeUI
+import com.mindera.alfie.repository.product.model.Price
+import com.mindera.alfie.repository.product.model.VariantOption
+import com.mindera.alfie.repository.shared.model.Money
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.every
@@ -200,5 +206,112 @@ class ProductDetailsUIFactoryTest {
 
         assertEquals("bone", result.selectedColorUI?.id)
         assertEquals(galleryBeforeSwitch, result.gallery)
+    }
+
+    @Test
+    fun `toSizeSectionUI - WHEN a third option duplicates a size THEN it collapses to one chip`() = runTest {
+        // Live BFF shape: "Sleeve length type" splits one colour+size into sibling variants.
+        val sleeveVariant = { id: String, sku: String, available: Boolean ->
+            variant(id = id, sku = sku, color = "steel", size = "10 AU", available = available)
+                .copy(options = listOf(VariantOption("color", "steel"), VariantOption("size", "10 AU"), VariantOption("Sleeve length type", "Long")))
+        }
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                sleeveVariant("v1", "sku-long", false),
+                sleeveVariant("v2", "sku-short", true),
+                variant(id = "v3", sku = "sku-6", color = "steel", size = "6 AU")
+            )
+        )
+
+        val result = uiFactory(testProduct)
+
+        val sizeSelector = result.sizeSectionUI as SizeSectionUI.SizeSelector
+        // "10 AU" appears twice (Long/Sleeveless) but must collapse to a single chip.
+        assertEquals(2, sizeSelector.sizes.size)
+        assertEquals(1, sizeSelector.sizes.count { it.id == "10 AU" })
+        // The in-stock sibling wins the dedupe, so the chip stays selectable.
+        assertEquals(SizingButtonState.Selectable, sizeSelector.sizes.first { it.id == "10 AU" }.properties.state)
+    }
+
+    @Test
+    fun `getSelectedVariantSku - WHEN sibling variants share colour and size THEN prefers the available one`() = runTest {
+        val sleeveVariant = { id: String, sku: String, available: Boolean ->
+            variant(id = id, sku = sku, color = "steel", size = "10 AU", available = available)
+                .copy(options = listOf(VariantOption("color", "steel"), VariantOption("size", "10 AU"), VariantOption("Sleeve length type", "Long")))
+        }
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                sleeveVariant("v1", "sku-long", false),
+                sleeveVariant("v2", "sku-short", true),
+                variant(id = "v3", sku = "sku-6", color = "steel", size = "6 AU")
+            )
+        )
+        val details = uiFactory(testProduct)
+        val withSize = uiFactory.setSelectedSize(details = details, sizeUI = sizeUI)
+
+        val sku = uiFactory.getSelectedVariantSku(withSize)
+
+        assertEquals("sku-short", sku)
+    }
+
+    @Test
+    fun `invoke - WHEN compareAtPrice is above the price THEN renders a sale price`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                variant(id = "v1", sku = "s1", color = "steel", size = "10 AU").copy(
+                    price = Price(
+                        amount = Money(currencyCode = "GBP", amount = 8.0, amountFormatted = "£8.00"),
+                        was = Money(currencyCode = "GBP", amount = 10.0, amountFormatted = "£10.00")
+                    )
+                ),
+                variant(id = "v2", sku = "s2", color = "bone", size = "12 AU")
+            )
+        )
+
+        val result = uiFactory(testProduct)
+
+        assertEquals(PriceType.Sale(fullPrice = "£10.00", salePrice = "£8.00"), result.price)
+    }
+
+    @Test
+    fun `invoke - WHEN there is no was-price THEN renders a default price`() = runTest {
+        val result = uiFactory(product)
+
+        assertEquals(PriceType.Default("$400.00"), result.price)
+    }
+
+    @Test
+    fun `invoke - exposes the selected colour name and the display variant reference`() = runTest {
+        val result = uiFactory(product)
+
+        assertEquals("steel", result.selectedColourName)
+        // defaultVariantId "v1" is steel/10 AU — the display variant until a size is picked.
+        assertEquals("sku-steel-10", result.productReference)
+    }
+
+    @Test
+    fun `setSelectedSize - recomputes the price from the exact selected variant`() = runTest {
+        val testProduct = product.copy(
+            defaultVariantId = "v1",
+            variants = listOf(
+                variant(id = "v1", sku = "s1", color = "steel", size = "10 AU"),
+                variant(id = "v2", sku = "s2", color = "steel", size = "6 AU").copy(
+                    price = Price(
+                        amount = Money(currencyCode = "GBP", amount = 12.0, amountFormatted = "£12.00"),
+                        was = Money(currencyCode = "GBP", amount = 15.0, amountFormatted = "£15.00")
+                    )
+                )
+            )
+        )
+        val details = uiFactory(testProduct)
+        val sixAu = SizeUI(id = "6 AU", properties = SizingButtonProperties(text = "6 AU", state = SizingButtonState.Selectable))
+
+        val result = uiFactory.setSelectedSize(details = details, sizeUI = sixAu)
+
+        assertEquals(PriceType.Sale(fullPrice = "£15.00", salePrice = "£12.00"), result.price)
+        assertEquals("s2", result.productReference)
     }
 }
