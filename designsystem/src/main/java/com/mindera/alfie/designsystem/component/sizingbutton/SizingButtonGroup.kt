@@ -65,13 +65,14 @@ fun SizingButtonGroup(
 ) {
     var itemWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+    val itemGap = LocalTheme.current.spacing.spacing8
 
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
             .onSizeChanged { size ->
                 val sumSpacings = with(density) {
-                    Theme.spacing.spacing8.toPx() * (MAX_ITEMS_PER_LINE - 1)
+                    itemGap.toPx() * (MAX_ITEMS_PER_LINE - 1)
                 }
 
                 val itemsFullWidth = size.width - sumSpacings
@@ -79,8 +80,8 @@ fun SizingButtonGroup(
                     (itemsFullWidth / MAX_ITEMS_PER_LINE).toDp()
                 }
             },
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
+        verticalArrangement = Arrangement.spacedBy(itemGap),
+        horizontalArrangement = Arrangement.spacedBy(itemGap),
         maxItemsInEachRow = MAX_ITEMS_PER_LINE
     ) {
         options.forEachIndexed { index, option ->
@@ -161,7 +162,7 @@ private fun OutOfStockChip(
 
     Box(
         modifier = modifier
-            .heightIn(min = Theme.spacing.spacing40)
+            .heightIn(min = LocalTheme.current.spacing.spacing40)
             .border(
                 width = CHIP_BORDER,
                 color = c.neutrals200,
@@ -194,7 +195,7 @@ private fun OutOfStockChip(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = BELL_INSET, end = BELL_INSET)
-                .size(Theme.iconSize.medium)
+                .size(LocalTheme.current.sizing.icon.medium)
         )
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
@@ -39,21 +40,25 @@ fun PageIndicator(
     val c = LocalTheme.current.color.button
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing.spacing8, alignment = Alignment.CenterHorizontally)
+        horizontalArrangement = Arrangement.spacedBy(
+            space = LocalTheme.current.spacing.spacing8,
+            alignment = Alignment.CenterHorizontally
+        )
     ) {
         repeat(itemCount) { index ->
             if (index == currentItem) {
                 Dot(
-                    width = Theme.spacing.spacing12,
-                    height = Theme.spacing.spacing6,
+                    // 6dp has no PrimitiveSpacing token — literal per the border-width carve-out
+                    width = LocalTheme.current.spacing.spacing12,
+                    height = 6.dp,
                     shape = RoundedCornerShape(percent = PILL_RADIUS),
                     color = c.primaryContentPrimaryDefault,
                     borderColor = c.primaryContentPrimaryDefault
                 )
             } else {
                 Dot(
-                    width = Theme.spacing.spacing6,
-                    height = Theme.spacing.spacing6,
+                    width = 6.dp,
+                    height = 6.dp,
                     shape = CircleShape,
                     color = c.primaryBackgroundPrimaryDisabled,
                     borderColor = null

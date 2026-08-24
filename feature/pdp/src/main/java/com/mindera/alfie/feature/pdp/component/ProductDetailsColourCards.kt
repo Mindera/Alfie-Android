@@ -53,6 +53,7 @@ internal fun ProductDetailsColourCards(
     val c = LocalTheme.current.primitive.colors
     var itemWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
+    val itemGap = LocalTheme.current.spacing.spacing8
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -63,17 +64,17 @@ internal fun ProductDetailsColourCards(
         FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = Theme.spacing.spacing8)
+                .padding(top = LocalTheme.current.spacing.spacing8)
                 .onSizeChanged { size ->
                     val sumSpacings = with(density) {
-                        Theme.spacing.spacing8.toPx() * (MAX_ITEMS_PER_LINE - 1)
+                        itemGap.toPx() * (MAX_ITEMS_PER_LINE - 1)
                     }
                     itemWidth = with(density) {
                         ((size.width - sumSpacings) / MAX_ITEMS_PER_LINE).toDp()
                     }
                 },
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
+            verticalArrangement = Arrangement.spacedBy(itemGap),
+            horizontalArrangement = Arrangement.spacedBy(itemGap),
             maxItemsInEachRow = MAX_ITEMS_PER_LINE
         ) {
             state.details.colors.forEach { color ->
@@ -115,12 +116,12 @@ private fun ColourCard(
                     Modifier
                 }
             )
-            .padding(Theme.spacing.spacing8),
+            .padding(LocalTheme.current.spacing.spacing8),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(Theme.spacing.spacing20)
+                .size(LocalTheme.current.spacing.spacing20)
                 .border(
                     width = LocalTheme.current.primitive.border.weightDefault,
                     color = c.neutrals300,
@@ -132,7 +133,7 @@ private fun ColourCard(
             text = color.id,
             style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
-            modifier = Modifier.padding(top = Theme.spacing.spacing8)
+            modifier = Modifier.padding(top = LocalTheme.current.spacing.spacing8)
         )
     }
 }

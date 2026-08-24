@@ -99,12 +99,12 @@ private fun ColourSummary(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(Theme.spacing.spacing24),
+            modifier = Modifier.size(LocalTheme.current.spacing.spacing24),
             contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(Theme.spacing.spacing20)
+                    .size(LocalTheme.current.spacing.spacing20)
                     .border(
                         width = LocalTheme.current.primitive.border.weightDefault,
                         color = c.neutrals300,
@@ -117,7 +117,7 @@ private fun ColourSummary(
             text = remainingLabel,
             style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
-            modifier = Modifier.width(Theme.spacing.spacing24)
+            modifier = Modifier.width(LocalTheme.current.spacing.spacing24)
         )
     }
 }
