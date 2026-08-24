@@ -15,15 +15,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 // Pagination (Design System, screens file PDP gallery): 6×6 dots in
 // button/primary/background-primary-disabled, the selected page a wider 12×6 pill in
 // button/primary/content-primary-default with a 1px stroke of the same colour, 8px apart.
-private val DOT_SIZE = 6.dp
-private val EXTENDED_DOT_WIDTH = 12.dp
+private val DOT_SIZE = Theme.spacing.spacing6
+private val EXTENDED_DOT_WIDTH = Theme.spacing.spacing12
 private const val PILL_RADIUS = 50
 
 /**

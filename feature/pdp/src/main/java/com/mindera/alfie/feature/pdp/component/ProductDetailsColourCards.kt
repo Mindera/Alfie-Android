@@ -22,14 +22,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
-import com.mindera.alfie.designsystem.component.swatch.SwatchType
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.pdp.R
@@ -44,9 +42,9 @@ private const val MAX_ITEMS_PER_LINE = 3
 // surface/background-terciary-stroked circle as the info-block colour summary.
 private val CARD_BORDER = 1.dp
 private val CARD_BORDER_SELECTED = 2.dp
-private val CARD_SWATCH_SIZE = 20.dp
-private val CARD_INNER_PADDING = 8.dp
-private val CARD_GAP = 8.dp
+private val CARD_SWATCH_SIZE = Theme.spacing.spacing20
+private val CARD_INNER_PADDING = Theme.spacing.spacing8
+private val CARD_GAP = Theme.spacing.spacing8
 private const val DISABLED_ALPHA = 0.5F
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -140,9 +138,4 @@ private fun ColourCard(
             modifier = Modifier.padding(top = Theme.spacing.spacing8)
         )
     }
-}
-
-private fun SwatchType.swatchColor(): Color = when (this) {
-    is SwatchType.PlainColor -> color
-    is SwatchType.Image -> Color.Transparent
 }

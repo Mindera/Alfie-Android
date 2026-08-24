@@ -14,11 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.component.price.Price
 import com.mindera.alfie.designsystem.component.price.PriceSize
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
@@ -29,9 +27,9 @@ import com.mindera.alfie.feature.pdp.R
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 // Product Colors Selector (screens file): 20dp swatch with a 1px surface/background-terciary
 // stroke inside a 24dp tappable box, then a 24dp-wide "+N" counter in body/medium.
-private val SUMMARY_SWATCH_SIZE = 20.dp
-private val SUMMARY_BOX_SIZE = 24.dp
-private val SUMMARY_COUNTER_WIDTH = 24.dp
+private val SUMMARY_SWATCH_SIZE = Theme.spacing.spacing20
+private val SUMMARY_BOX_SIZE = Theme.spacing.spacing24
+private val SUMMARY_COUNTER_WIDTH = Theme.spacing.spacing24
 
 @Composable
 internal fun ProductDetailsInfo(
@@ -125,10 +123,4 @@ private fun ColourSummary(
             modifier = Modifier.width(SUMMARY_COUNTER_WIDTH)
         )
     }
-}
-
-private fun SwatchType?.swatchColor(): Color = when (this) {
-    is SwatchType.PlainColor -> color
-    is SwatchType.Image -> Color.Transparent
-    null -> Color.Transparent
 }
