@@ -21,8 +21,6 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 // Pagination (Design System, screens file PDP gallery): 6×6 dots in
 // button/primary/background-primary-disabled, the selected page a wider 12×6 pill in
 // button/primary/content-primary-default with a 1px stroke of the same colour, 8px apart.
-private val DOT_SIZE = Theme.spacing.spacing6
-private val EXTENDED_DOT_WIDTH = Theme.spacing.spacing12
 private const val PILL_RADIUS = 50
 
 /**
@@ -46,16 +44,16 @@ fun PageIndicator(
         repeat(itemCount) { index ->
             if (index == currentItem) {
                 Dot(
-                    width = EXTENDED_DOT_WIDTH,
-                    height = DOT_SIZE,
+                    width = Theme.spacing.spacing12,
+                    height = Theme.spacing.spacing6,
                     shape = RoundedCornerShape(percent = PILL_RADIUS),
                     color = c.primaryContentPrimaryDefault,
                     borderColor = c.primaryContentPrimaryDefault
                 )
             } else {
                 Dot(
-                    width = DOT_SIZE,
-                    height = DOT_SIZE,
+                    width = Theme.spacing.spacing6,
+                    height = Theme.spacing.spacing6,
                     shape = CircleShape,
                     color = c.primaryBackgroundPrimaryDisabled,
                     borderColor = null

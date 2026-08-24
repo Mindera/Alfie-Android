@@ -42,9 +42,6 @@ private const val MAX_ITEMS_PER_LINE = 3
 // surface/background-terciary-stroked circle as the info-block colour summary.
 private val CARD_BORDER = 1.dp
 private val CARD_BORDER_SELECTED = 2.dp
-private val CARD_SWATCH_SIZE = Theme.spacing.spacing20
-private val CARD_INNER_PADDING = Theme.spacing.spacing8
-private val CARD_GAP = Theme.spacing.spacing8
 private const val DISABLED_ALPHA = 0.5F
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -69,14 +66,14 @@ internal fun ProductDetailsColourCards(
                 .padding(top = Theme.spacing.spacing8)
                 .onSizeChanged { size ->
                     val sumSpacings = with(density) {
-                        CARD_GAP.toPx() * (MAX_ITEMS_PER_LINE - 1)
+                        Theme.spacing.spacing8.toPx() * (MAX_ITEMS_PER_LINE - 1)
                     }
                     itemWidth = with(density) {
                         ((size.width - sumSpacings) / MAX_ITEMS_PER_LINE).toDp()
                     }
                 },
-            verticalArrangement = Arrangement.spacedBy(CARD_GAP),
-            horizontalArrangement = Arrangement.spacedBy(CARD_GAP),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8),
             maxItemsInEachRow = MAX_ITEMS_PER_LINE
         ) {
             state.details.colors.forEach { color ->
@@ -118,12 +115,12 @@ private fun ColourCard(
                     Modifier
                 }
             )
-            .padding(CARD_INNER_PADDING),
+            .padding(Theme.spacing.spacing8),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .size(CARD_SWATCH_SIZE)
+                .size(Theme.spacing.spacing20)
                 .border(
                     width = LocalTheme.current.primitive.border.weightDefault,
                     color = c.neutrals300,

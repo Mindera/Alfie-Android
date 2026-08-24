@@ -27,9 +27,6 @@ import com.mindera.alfie.feature.pdp.R
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 // Product Colors Selector (screens file): 20dp swatch with a 1px surface/background-terciary
 // stroke inside a 24dp tappable box, then a 24dp-wide "+N" counter in body/medium.
-private val SUMMARY_SWATCH_SIZE = Theme.spacing.spacing20
-private val SUMMARY_BOX_SIZE = Theme.spacing.spacing24
-private val SUMMARY_COUNTER_WIDTH = Theme.spacing.spacing24
 
 @Composable
 internal fun ProductDetailsInfo(
@@ -102,12 +99,12 @@ private fun ColourSummary(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
-            modifier = Modifier.size(SUMMARY_BOX_SIZE),
+            modifier = Modifier.size(Theme.spacing.spacing24),
             contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(SUMMARY_SWATCH_SIZE)
+                    .size(Theme.spacing.spacing20)
                     .border(
                         width = LocalTheme.current.primitive.border.weightDefault,
                         color = c.neutrals300,
@@ -120,7 +117,7 @@ private fun ColourSummary(
             text = remainingLabel,
             style = LocalTheme.current.typography.body.medium,
             color = c.neutrals800,
-            modifier = Modifier.width(SUMMARY_COUNTER_WIDTH)
+            modifier = Modifier.width(Theme.spacing.spacing24)
         )
     }
 }

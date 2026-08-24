@@ -49,7 +49,6 @@ private const val MAX_ITEMS_PER_LINE = 3
 // 1px border/soft stroke; selection is a heavier border, never a fill; out-of-stock chips
 // dim the label to content/terciary and cross it with a border/soft diagonal falling
 // left-to-right, the notification bell inset 3px from the top-trailing corner.
-private val CHIP_HEIGHT = Theme.spacing.spacing40
 private val CHIP_BORDER = 1.dp
 private val CHIP_BORDER_SELECTED = 2.dp
 private val BELL_INSET = 3.dp
@@ -162,7 +161,7 @@ private fun OutOfStockChip(
 
     Box(
         modifier = modifier
-            .heightIn(min = CHIP_HEIGHT)
+            .heightIn(min = Theme.spacing.spacing40)
             .border(
                 width = CHIP_BORDER,
                 color = c.neutrals200,
