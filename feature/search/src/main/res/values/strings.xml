@@ -2,4 +2,5 @@
 <resources>
     <string name="your_recent_searches">Your Recent Searches</string>
     <string name="clear">Clear</string>
+    <string name="remove_recent_search">Remove %1$s from recent searches</string>
 </resources>

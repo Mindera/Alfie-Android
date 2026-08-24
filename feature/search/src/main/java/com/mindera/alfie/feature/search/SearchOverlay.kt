@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,7 +39,6 @@ import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_REMOVE_ITEM
 import com.mindera.alfie.core.ui.test.SEARCH_RECENT_SEARCH_TITLE
 import com.mindera.alfie.designsystem.component.overlay.OverlayLayout
 import com.mindera.alfie.designsystem.icons.AlfieIcons
-import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.search.model.SearchEvent
 import com.mindera.alfie.feature.search.model.SearchEvent.OnClearRecentSearches
@@ -100,12 +100,12 @@ private fun ContentOverlaySearch(
     onSearchEvent: ClickEventOneArg<SearchEvent>,
     recentSearches: List<RecentSearch>
 ) {
-    if (recentSearches.isNotEmpty()) {
-        RecentSearchesPanel(
-            onSearchEvent = onSearchEvent,
-            recentSearches = recentSearches
-        )
-    }
+    // The panel always occupies the overlay so the Surface behind it stays full-bleed —
+    // an empty list renders as blank space rather than letting the scrim show through.
+    RecentSearchesPanel(
+        onSearchEvent = onSearchEvent,
+        recentSearches = recentSearches
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -118,12 +118,15 @@ private fun RecentSearchesPanel(
         modifier = Modifier.fillMaxSize(),
         state = rememberLazyListState(),
         contentPadding = PaddingValues(
-            top = Theme.spacing.spacing16,
-            start = Theme.spacing.spacing16,
-            end = Theme.spacing.spacing16
+            top = LocalTheme.current.spacing.spacing16,
+            start = LocalTheme.current.spacing.spacing16,
+            end = LocalTheme.current.spacing.spacing16,
+            bottom = LocalTheme.current.spacing.spacing8
         )
     ) {
-        item { RecentSearchesTitle(onSearchEvent = onSearchEvent) }
+        if (recentSearches.isNotEmpty()) {
+            item { RecentSearchesTitle(onSearchEvent = onSearchEvent) }
+        }
         items(
             items = recentSearches,
             key = { it.searchTerm }
@@ -139,11 +142,11 @@ private fun RecentSearchesPanel(
 
 @Composable
 private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
-    val c = LocalTheme.current.color.content
+    val c = LocalTheme.current.color
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = Theme.spacing.spacing8),
+            .padding(bottom = LocalTheme.current.spacing.spacing8),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -151,19 +154,18 @@ private fun RecentSearchesTitle(onSearchEvent: ClickEventOneArg<SearchEvent>) {
             modifier = Modifier.testTag(SEARCH_RECENT_SEARCH_TITLE),
             text = stringResource(R.string.your_recent_searches),
             style = LocalTheme.current.typography.heading.xSmall,
-            color = c.contentPrimary
+            color = c.content.contentPrimary
         )
-        Box(
+        // Figma "Link": link/medium (Medium 510) underlined in link-primary, flush at the
+        // content inset. Figma sizes the link as bare text; Role.Button keeps TalkBack honest.
+        Text(
             modifier = Modifier
                 .testTag(SEARCH_CLEAR_RECENT_SEARCH)
-                .clickable { onSearchEvent(OnClearRecentSearches) }
-        ) {
-            Text(
-                text = stringResource(R.string.clear),
-                style = LocalTheme.current.typography.body.mediumBold.copy(textDecoration = TextDecoration.Underline),
-                color = c.contentPrimary
-            )
-        }
+                .clickable(role = Role.Button) { onSearchEvent(OnClearRecentSearches) },
+            text = stringResource(R.string.clear),
+            style = LocalTheme.current.typography.link.medium.copy(textDecoration = TextDecoration.Underline),
+            color = c.link.linkPrimaryDefault
+        )
     }
 }
 
@@ -174,6 +176,7 @@ private fun RecentSearchItem(
     modifier: Modifier = Modifier
 ) {
     val c = LocalTheme.current.color.content
+    val sizing = LocalTheme.current.sizing.icon
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -188,7 +191,7 @@ private fun RecentSearchItem(
         ) {
             Text(
                 modifier = Modifier
-                    .padding(vertical = Theme.spacing.spacing8)
+                    .padding(vertical = LocalTheme.current.spacing.spacing8)
                     .weight(1f),
                 text = recentSearch.searchTerm,
                 style = LocalTheme.current.typography.body.medium,
@@ -198,14 +201,17 @@ private fun RecentSearchItem(
             )
             IconButton(
                 modifier = Modifier
-                    .size(Theme.iconSize.large)
+                    .size(sizing.large)
                     .testTag(SEARCH_RECENT_SEARCH_REMOVE_ITEM),
                 onClick = { onSearchEvent(OnDeleteRecentSearch(recentSearch)) }
             ) {
                 Icon(
                     painter = painterResource(id = AlfieIcons.Close),
-                    modifier = Modifier.size(Theme.iconSize.medium),
-                    contentDescription = null
+                    modifier = Modifier.size(sizing.medium),
+                    contentDescription = stringResource(
+                        R.string.remove_recent_search,
+                        recentSearch.searchTerm
+                    )
                 )
             }
         }

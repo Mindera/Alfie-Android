@@ -48,7 +48,7 @@ import com.mindera.alfie.core.ui.test.SEARCH_CLEAR_BUTTON
 import com.mindera.alfie.core.ui.test.SEARCH_INPUT
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.defaultFadeIn
-import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
 internal fun SearchTextField(
@@ -79,7 +79,7 @@ internal fun SearchTextField(
     Surface(
         modifier = modifier,
         color = if (isSearchOpen) colorSpec.selectedColor else colorSpec.unselectedColor,
-        shape = Theme.shape.extraSmall,
+        shape = type.shape(),
         border = BorderStroke(
             width = 1.dp,
             color = if (isSearchOpen) colorSpec.selectedBorderColor else colorSpec.unselectedBorderColor
@@ -155,12 +155,7 @@ private fun DecorationBox(
     val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
-            .padding(
-                start = type.startPadding,
-                end = type.endPadding,
-                top = type.verticalPadding,
-                bottom = type.verticalPadding
-            )
+            .padding(type.contentPadding())
             .indication(
                 interactionSource = interactionSource,
                 indication = ripple(bounded = false)
@@ -181,7 +176,7 @@ private fun DecorationBox(
             innerTextField()
         }
 
-        Spacer(modifier = Modifier.width(Theme.spacing.spacing8))
+        Spacer(modifier = Modifier.width(type.iconGap()))
 
         AnimatedContent(
             targetState = searchState.searchTerm.isNotNullOrBlank(),
@@ -193,7 +188,7 @@ private fun DecorationBox(
             if (it) {
                 IconButton(
                     modifier = Modifier
-                        .size(Theme.iconSize.medium)
+                        .size(LocalTheme.current.sizing.icon.medium)
                         .testTag(SEARCH_CLEAR_BUTTON),
                     onClick = {
                         searchState.updateSearchTerm("")
