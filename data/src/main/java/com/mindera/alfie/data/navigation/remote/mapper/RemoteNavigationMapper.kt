@@ -6,14 +6,14 @@ import com.mindera.alfie.repository.navigation.model.NavItemType
 import java.net.URI
 
 /**
- * Maps the BFF `mainMenu` tree onto navigation entities.
+ * Maps the BFF `menu` tree onto navigation entities.
  *
  * Apollo generates a distinct type per nesting level (`Item` / `Item1` / `Item2`), so each level
  * gets a thin adapter over the shared [navigationEntry] builder. The query caps nesting at three
  * levels (Shopify's menu depth limit), so the deepest level has no children to convert.
  */
 internal fun MainMenuQuery.Data.toEntity(): List<NavigationEntryEntity> =
-    mainMenu.items.mapNotNull { it.toEntity() }
+    menu.items.mapNotNull { it.toEntity() }
 
 private fun MainMenuQuery.Item.toEntity(): NavigationEntryEntity? = navigationEntry(
     title = title,

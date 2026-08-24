@@ -48,6 +48,7 @@ fun Gallery(
     constraint: DimensionConstraint,
     modifier: Modifier = Modifier,
     isWishlisted: Boolean = false,
+    showWishlistButton: Boolean = true,
     startPosition: Int = 0,
     isLoading: Boolean = false,
     isFullscreen: Boolean = false,
@@ -89,6 +90,7 @@ fun Gallery(
         EndlessGallery(
             gallery = gallery,
             isWishlisted = isWishlisted,
+            showWishlistButton = showWishlistButton,
             startPosition = selectedIndex,
             isZoomable = false,
             onPositionChange = onPositionChange,
@@ -141,7 +143,7 @@ fun Gallery(
                     modifier = Modifier
                         .offset { offsetState }
                         .onGloballyPositioned {
-                            val verticalCenter = constraints.maxHeight / 2
+                            val verticalCenter = this.constraints.maxHeight / 2
                             val middle = it.size.height / 2
                             val yOffset = verticalCenter - middle
 

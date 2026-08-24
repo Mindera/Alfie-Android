@@ -1,35 +1,19 @@
 package com.mindera.alfie.feature.pdp.component
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextDecoration
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.component.sizingbutton.INVALID_INDEX
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonGroup
-import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.pdp.R
@@ -39,8 +23,6 @@ import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import kotlinx.collections.immutable.toImmutableList
 
-private val MIN_SIZE_MODAL_PICKER_BOX_HEIGHT = 44.dp
-
 @Composable
 internal fun ProductDetailsSize(
     state: ProductDetailsUIState.Data,
@@ -48,17 +30,13 @@ internal fun ProductDetailsSize(
 ) {
     val isLoading = state is ProductDetailsUIState.Data.Loading
 
-    Spacer(modifier = Modifier.height(Theme.spacing.spacing24))
     if (isLoading) {
         LoadingPlaceholder()
     } else {
         when (val sizeSectionUI = state.details.sizeSectionUI) {
             SizeSectionUI.NoSize -> Unit
-            SizeSectionUI.SingleSize -> SingleSize()
-            is SizeSectionUI.SizeOnly -> SizeOnly(sizeOnly = sizeSectionUI)
-            is SizeSectionUI.SizeModalPicker -> SizeModalPicker(sizeModalPicker = sizeSectionUI) { sizeUI ->
-                onEvent(ProductDetailsEvent.OnSizeSelect(sizeUI))
-            }
+            SizeSectionUI.SingleSize -> SingleSize(customText = stringResource(id = R.string.product_details_one_size_label))
+            is SizeSectionUI.SizeOnly -> SingleSize(customText = sizeSectionUI.sizeUI.properties.text)
             is SizeSectionUI.SizeSelector -> SizeSelector(sizeSelector = sizeSectionUI) { sizeUI ->
                 onEvent(ProductDetailsEvent.OnSizeSelect(sizeUI))
             }
@@ -67,96 +45,61 @@ internal fun ProductDetailsSize(
 }
 
 @Composable
-private fun SizeModalPicker(
-    sizeModalPicker: SizeSectionUI.SizeModalPicker,
-    onSizeSelected: ClickEventOneArg<SizeUI>
-) {
-    val c = LocalTheme.current.primitive.colors
-    val title = sizeModalPicker.selectedSize?.properties?.text ?: stringResource(id = R.string.product_details_size_field_placeholder_text)
-    var showModal by remember { mutableStateOf(false) }
-    val color = if (sizeModalPicker.selectedSize != null) c.neutrals800 else c.neutrals500
-
-    Row(
-        modifier = Modifier
-            .border(
-                width = 2.dp,
-                color = c.neutrals100,
-                shape = Theme.shape.extraSmall
-            )
-            .padding(horizontal = Theme.spacing.spacing16)
-            .fillMaxWidth()
-            .defaultMinSize(minHeight = MIN_SIZE_MODAL_PICKER_BOX_HEIGHT)
-            .clickable { showModal = true },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier
-                .weight(1F)
-                .padding(vertical = Theme.spacing.spacing12),
-            text = title,
-            style = LocalTheme.current.typography.body.medium,
-            color = color
-        )
-
-        Icon(
-            painter = painterResource(id = AlfieIcons.ChevronDown),
-            modifier = Modifier.size(Theme.iconSize.small),
-            tint = color,
-            contentDescription = null
-        )
-    }
-
-    if (showModal) {
-        ProductDetailsSizeModalPicker(
-            sizes = sizeModalPicker.sizes,
-            selectedSize = sizeModalPicker.selectedSize,
-            onSizeClick = { sizeUI ->
-                onSizeSelected(sizeUI)
-                showModal = false
-            },
-            onDismiss = { showModal = false }
-        )
-    }
-}
-
-@Composable
 private fun SizeSelector(
     sizeSelector: SizeSectionUI.SizeSelector,
     onSizeSelected: ClickEventOneArg<SizeUI>
 ) {
+    SizeSectionHeader()
+    Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
+
     val sizes = sizeSelector.sizes
     val selectedIndex = sizes.indexOfFirst { it.id == sizeSelector.selectedSize?.id }
 
     SizingButtonGroup(
-        options = sizeSelector.sizes.map { it.properties }.toImmutableList(),
+        options = sizes.map { it.properties }.toImmutableList(),
         selectedIndex = selectedIndex,
         onSelectedOption = { index ->
             if (index != INVALID_INDEX) {
-                val selectedSizeUI = sizeSelector.sizes[index]
+                val selectedSizeUI = sizes[index]
                 onSizeSelected(selectedSizeUI)
             }
         }
     )
 }
 
+// Section Heading (screens file): "Select Your Size" in heading/x-small on the leading edge,
+// the Size Guide link trailing — body/medium-bold with a 1px underline in the same #111 as
+// its text. Inert by design: the destination is still to be agreed (iOS ships it inert too).
 @Composable
-private fun SingleSize() {
+private fun SizeSectionHeader() {
     val c = LocalTheme.current.primitive.colors
-    val text = getSizeText(customText = stringResource(id = R.string.product_details_one_size_label))
 
-    Text(
-        text = text,
-        color = c.neutrals800
-    )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = R.string.product_details_select_your_size),
+            style = LocalTheme.current.typography.heading.xSmall,
+            color = c.neutrals800,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = stringResource(id = R.string.product_details_size_guide),
+            style = LocalTheme.current.typography.body.mediumBold,
+            color = c.neutrals800,
+            textDecoration = TextDecoration.Underline
+        )
+    }
 }
 
 @Composable
-private fun SizeOnly(sizeOnly: SizeSectionUI.SizeOnly) {
+private fun SingleSize(customText: String) {
     val c = LocalTheme.current.primitive.colors
-    val text = getSizeText(customText = sizeOnly.sizeUI.properties.text)
 
     Text(
-        text = text,
+        text = stringResource(id = R.string.product_details_single_size, customText),
+        style = LocalTheme.current.typography.body.medium,
         color = c.neutrals800
     )
 }
@@ -172,31 +115,4 @@ private fun LoadingPlaceholder() {
             ),
         text = ""
     )
-}
-
-@Composable
-private fun getSizeText(customText: String): AnnotatedString {
-    val styleBold = LocalTheme.current.typography.body.mediumBold
-    val styleNormal = LocalTheme.current.typography.body.medium
-    return buildAnnotatedString {
-        withStyle(
-            style = SpanStyle(
-                fontSize = styleBold.fontSize,
-                fontFamily = styleBold.fontFamily,
-                fontWeight = styleBold.fontWeight
-            )
-        ) {
-            append(stringResource(id = R.string.product_details_size_label))
-        }
-        append(" ")
-        withStyle(
-            style = SpanStyle(
-                fontSize = styleNormal.fontSize,
-                fontFamily = styleNormal.fontFamily,
-                fontWeight = styleNormal.fontWeight
-            )
-        ) {
-            append(customText)
-        }
-    }
 }

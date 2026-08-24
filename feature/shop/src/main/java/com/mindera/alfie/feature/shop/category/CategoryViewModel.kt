@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Root of the Shop main menu (level 1). Loads the top level of the BFF `mainMenu` tree; deeper
+ * Root of the Shop main menu (level 1). Loads the top level of the BFF `menu` tree; deeper
  * levels are served by [CategoryEntryViewModel], which resolves children by parent id.
  */
 @HiltViewModel

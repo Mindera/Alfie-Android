@@ -15,7 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Pins the `mainMenu` → entity contract. Ported from the iOS suite (Alfie-iOS PR #99,
+ * Pins the `menu` → entity contract. Ported from the iOS suite (Alfie-iOS PR #99,
  * `MainMenuConverterTests`) so both platforms resolve collection handles identically, plus a case
  * for the host-only-url defect that shipped there.
  */

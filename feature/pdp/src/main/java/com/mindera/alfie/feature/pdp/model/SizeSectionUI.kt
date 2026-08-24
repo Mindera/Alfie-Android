@@ -12,12 +12,6 @@ internal sealed interface SizeSectionUI {
         val selectedSize: SizeUI? = null
     ) : SizeSectionUI
 
-    @Stable
-    data class SizeModalPicker(
-        val sizes: ImmutableList<SizeUI>,
-        val selectedSize: SizeUI? = null
-    ) : SizeSectionUI
-
     data object SingleSize : SizeSectionUI
 
     @Stable
