@@ -85,7 +85,7 @@ fun SearchOverlay(
         isOpen = isOpen,
         onDismiss = onDismiss,
         overlayContent = {
-            ContentOverlaySearch(
+            RecentSearchesPanel(
                 onSearchEvent = viewModel::handleEvent,
                 recentSearches = recentSearches
             )
@@ -95,25 +95,14 @@ fun SearchOverlay(
     )
 }
 
-@Composable
-private fun ContentOverlaySearch(
-    onSearchEvent: ClickEventOneArg<SearchEvent>,
-    recentSearches: List<RecentSearch>
-) {
-    // The panel always occupies the overlay so the Surface behind it stays full-bleed —
-    // an empty list renders as blank space rather than letting the scrim show through.
-    RecentSearchesPanel(
-        onSearchEvent = onSearchEvent,
-        recentSearches = recentSearches
-    )
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun RecentSearchesPanel(
     onSearchEvent: ClickEventOneArg<SearchEvent>,
     recentSearches: List<RecentSearch>
 ) {
+    // The panel always occupies the overlay so the Surface behind it stays full-bleed —
+    // an empty list renders as blank space rather than letting the scrim show through.
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = rememberLazyListState(),
@@ -121,7 +110,7 @@ private fun RecentSearchesPanel(
             top = LocalTheme.current.spacing.spacing16,
             start = LocalTheme.current.spacing.spacing16,
             end = LocalTheme.current.spacing.spacing16,
-            bottom = LocalTheme.current.spacing.spacing8
+            bottom = LocalTheme.current.spacing.spacing16
         )
     ) {
         if (recentSearches.isNotEmpty()) {
@@ -180,7 +169,7 @@ private fun RecentSearchItem(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onSearchEvent(OnRecentSearchClick(recentSearch)) }
+            .clickable(role = Role.Button) { onSearchEvent(OnRecentSearchClick(recentSearch)) }
     ) {
         Row(
             modifier = Modifier
@@ -220,8 +209,17 @@ private fun RecentSearchItem(
 
 @Preview(showBackground = true, backgroundColor = 0xffffff)
 @Composable
-private fun ContentOverlayRecentSearchesPreview() {
-    ContentOverlaySearch(
+private fun RecentSearchesPanelEmptyPreview() {
+    RecentSearchesPanel(
+        onSearchEvent = {},
+        recentSearches = emptyList()
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xffffff)
+@Composable
+private fun RecentSearchesPanelPreview() {
+    RecentSearchesPanel(
         onSearchEvent = {},
         recentSearches = listOf(
             RecentSearch.Query(searchTerm = "Recent #1"),
