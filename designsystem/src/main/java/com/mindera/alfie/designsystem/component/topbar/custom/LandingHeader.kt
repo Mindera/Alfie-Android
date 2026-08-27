@@ -1,17 +1,10 @@
 package com.mindera.alfie.designsystem.component.topbar.custom
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -19,7 +12,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.testTag
@@ -28,21 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.test.HOME_TITLE_HEADER
-import com.mindera.alfie.core.ui.test.SEARCH_BACK_BUTTON
 import com.mindera.alfie.designsystem.R
-import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.standardAccelerate
-import com.mindera.alfie.designsystem.component.divider.DividerType
-import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
-import com.mindera.alfie.designsystem.component.searchbar.SearchState
-import com.mindera.alfie.designsystem.component.searchbar.SearchTextField
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarActions
-import com.mindera.alfie.designsystem.component.topbar.component.DefaultNavigationIcon
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Greeting
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Logo
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
@@ -62,7 +46,7 @@ fun TopBarScope.LandingHeader(
             type = type,
             isSearchMode = searchState.isSearchOpen
         )
-        Search(searchState = searchState)
+        SearchHeader(searchState = searchState)
     }
 }
 
@@ -131,64 +115,6 @@ private fun LogoTopBar(type: Logo) {
             .height(LocalTheme.current.sizing.icon.small)
             .testTag(HOME_TITLE_HEADER)
     )
-}
-
-@Composable
-private fun TopBarScope.Search(
-    searchState: SearchState
-) {
-    val theme = LocalTheme.current
-    val isSearchMode = searchState.isSearchOpen
-    val searchFieldStartPadding by animateDpAsState(
-        targetValue = if (isSearchMode) theme.spacing.spacing0 else theme.spacing.spacing16,
-        animationSpec = standardAccelerate(),
-        label = "search field padding"
-    )
-
-    Column {
-        Row(
-            modifier = Modifier
-                .run {
-                    if (isSearchMode) {
-                        this.height(64.dp)
-                    } else {
-                        this
-                    }
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            DefaultNavigationIcon(
-                modifier = Modifier
-                    .size(48.dp)
-                    .testTag(SEARCH_BACK_BUTTON),
-                isVisible = isSearchMode,
-                enterTransition = fadeIn() + expandIn(standardAccelerate()),
-                exitTransition = shrinkOut(standardAccelerate()) + fadeOut(),
-                onNavigationClick = {
-                    searchState.updateSearchState(false)
-                }
-            )
-            SearchTextField(
-                state = searchState,
-                isEnabled = isSearchMode,
-                modifier = Modifier
-                    .padding(
-                        start = searchFieldStartPadding,
-                        end = theme.spacing.spacing16
-                    ),
-                onClick = {
-                    searchState.updateSearchState(true)
-                }
-            )
-        }
-        DefaultVisibilityAnimation(
-            isVisible = isSearchMode,
-            enterTransition = fadeIn(standardAccelerate()),
-            exitTransition = fadeOut(standardAccelerate())
-        ) {
-            HorizontalDivider(dividerType = DividerType.Solid1Mono100)
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

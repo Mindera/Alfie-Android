@@ -1,5 +1,6 @@
 package com.mindera.alfie.feature.shop.category
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.theme.Theme
+import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.shop.R
 import com.mindera.alfie.feature.shop.category.model.CategoryEntryUI
 import com.mindera.alfie.feature.shop.category.model.CategoryEvent
@@ -54,7 +56,12 @@ private fun ShopCategoriesScreenContent(
     categoryUiState: CategoryUIState.Data,
     onEvent: ClickEventOneArg<CategoryEvent>
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    // Figma's "Menu Items" frame (node I671:78533;1:737) insets the list by spacing/spacing-md,
+    // which is what separates the first row from the search band above it.
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = LocalTheme.current.spacing.spacing16)
+    ) {
         categoryItems(
             entries = categoryUiState.entries,
             isPlaceholder = categoryUiState.isLoading,

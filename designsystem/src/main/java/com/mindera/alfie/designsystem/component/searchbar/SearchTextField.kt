@@ -1,8 +1,6 @@
 package com.mindera.alfie.designsystem.component.searchbar
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
@@ -47,7 +45,6 @@ import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.SEARCH_CLEAR_BUTTON
 import com.mindera.alfie.core.ui.test.SEARCH_INPUT
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
-import com.mindera.alfie.designsystem.animation.defaultFadeIn
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 @Composable
@@ -152,16 +149,31 @@ private fun DecorationBox(
     searchState: SearchState,
     innerTextField: @Composable () -> Unit
 ) {
+    val iconSize = LocalTheme.current.sizing.icon.medium
     val interactionSource = remember { MutableInteractionSource() }
+    val hasTerm = searchState.searchTerm.isNotNullOrBlank()
+
     Row(
         modifier = Modifier
-            .padding(type.contentPadding())
+            .padding(type.contentPadding(hasClearButton = hasTerm))
             .indication(
                 interactionSource = interactionSource,
                 indication = ripple(bounded = false)
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Figma keeps the magnifier as a fixed leading affordance in every state — idle, focused
+        // and focused-with-a-term. The clear button is a separate trailing one that only appears
+        // once there is something to clear.
+        Icon(
+            modifier = Modifier.size(iconSize),
+            painter = painterResource(id = type.searchIcon),
+            tint = Color.Unspecified,
+            contentDescription = null
+        )
+
+        Spacer(modifier = Modifier.width(type.iconGap()))
+
         Box(
             modifier = Modifier.weight(1F)
         ) {
@@ -176,35 +188,24 @@ private fun DecorationBox(
             innerTextField()
         }
 
-        Spacer(modifier = Modifier.width(type.iconGap()))
-
-        AnimatedContent(
-            targetState = searchState.searchTerm.isNotNullOrBlank(),
-            transitionSpec = {
-                defaultFadeIn() togetherWith fadeOut()
-            },
-            label = "SearchIconClearAnimation"
+        DefaultVisibilityAnimation(
+            isVisible = hasTerm,
+            enterTransition = fadeIn()
         ) {
-            if (it) {
-                IconButton(
-                    modifier = Modifier
-                        .size(LocalTheme.current.sizing.icon.medium)
-                        .testTag(SEARCH_CLEAR_BUTTON),
-                    onClick = {
-                        searchState.updateSearchTerm("")
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(id = type.clearIcon),
-                        contentDescription = null,
-                        tint = Color.Unspecified
-                    )
+            IconButton(
+                modifier = Modifier
+                    .padding(start = type.iconGap())
+                    .size(type.clearButtonSize())
+                    .testTag(SEARCH_CLEAR_BUTTON),
+                onClick = {
+                    searchState.updateSearchTerm("")
                 }
-            } else {
+            ) {
                 Icon(
-                    painter = painterResource(id = type.searchIcon),
-                    tint = Color.Unspecified,
-                    contentDescription = null
+                    modifier = Modifier.size(iconSize),
+                    painter = painterResource(id = type.clearIcon),
+                    contentDescription = null,
+                    tint = Color.Unspecified
                 )
             }
         }
