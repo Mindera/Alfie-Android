@@ -8,7 +8,6 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +42,9 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
  * Home and Shop level 1 both render this, so the two entry points cannot drift apart.
  *
  * Tapping the field flips [SearchState.isSearchOpen]; the app shell turns that into the full
- * search overlay, and the band then grows a back affordance and a bottom divider.
+ * search overlay, and the band becomes the Figma "Header" of the Search page (node
+ * `I673:87056;1:11344`) — same 48dp box, with a back affordance ahead of the field and a divider
+ * under it.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,28 +54,32 @@ fun TopBarScope.SearchHeader(
 ) {
     val theme = LocalTheme.current
     val isSearchMode = searchState.isSearchOpen
-    // The back button takes over the leading inset in search mode, so the field slides flush
-    // against it rather than keeping its own screen margin.
-    val searchFieldStartPadding by animateDpAsState(
-        targetValue = if (isSearchMode) theme.spacing.spacing0 else theme.spacing.spacing16,
+    // The back button slot is 40dp around a 24dp glyph, so 8dp of the band's own inset already
+    // sits inside it: dropping the leading inset from 16 to 8 in search mode lands the glyph on
+    // Figma's 16dp margin and the field's left edge on its x=48 (node I673:87056;1:11344).
+    val leadingInset by animateDpAsState(
+        targetValue = if (isSearchMode) theme.spacing.spacing8 else theme.spacing.spacing16,
         animationSpec = standardAccelerate(),
-        label = "search field padding"
+        label = "search band leading inset"
     )
 
     // The band paints its own surface: while the search overlay is open it sits above the scrim,
     // which would otherwise show through (Figma renders the header opaque over the results).
     Column(modifier = modifier.background(topBarColors.containerColor)) {
         Row(
-            modifier = if (isSearchMode) {
-                Modifier.height(theme.spacing.spacing64)
-            } else {
-                Modifier.padding(vertical = theme.spacing.spacing4)
-            },
+            modifier = Modifier.padding(
+                start = leadingInset,
+                end = theme.spacing.spacing16,
+                top = theme.spacing.spacing4,
+                bottom = theme.spacing.spacing4
+            ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             DefaultNavigationIcon(
+                // 40dp — the field's own height, which keeps the band at 48dp in both states.
+                // The 32dp button and 24dp glyph inside come from the shared component.
                 modifier = Modifier
-                    .size(theme.spacing.spacing48)
+                    .size(theme.sizing.icon.xlarge)
                     .testTag(SEARCH_BACK_BUTTON),
                 isVisible = isSearchMode,
                 enterTransition = fadeIn() + expandIn(standardAccelerate()),
@@ -86,11 +91,6 @@ fun TopBarScope.SearchHeader(
             SearchTextField(
                 state = searchState,
                 isEnabled = isSearchMode,
-                modifier = Modifier
-                    .padding(
-                        start = searchFieldStartPadding,
-                        end = theme.spacing.spacing16
-                    ),
                 onClick = {
                     searchState.updateSearchState(true)
                 }
