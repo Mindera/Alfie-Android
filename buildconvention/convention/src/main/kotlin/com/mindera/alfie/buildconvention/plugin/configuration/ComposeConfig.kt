@@ -9,24 +9,30 @@ import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_TR
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_UI
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.MATERIAL
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.MATERIAL3
-import com.mindera.alfie.buildconvention.dependency.KotlinDependency.KOTLIN_COMPILER_EXTENSION
+import com.mindera.alfie.buildconvention.dependency.KotlinDependency.COMPOSE_COMPILER
 import com.mindera.alfie.buildconvention.extension.implementation
 import com.mindera.alfie.buildconvention.extension.lib
 import com.mindera.alfie.buildconvention.extension.libs
-import com.mindera.alfie.buildconvention.extension.version
+import com.mindera.alfie.buildconvention.extension.plugin
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 internal fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+    // Since Kotlin 2.0 the Compose compiler ships as a Kotlin compiler plugin instead of
+    // AGP's composeOptions.kotlinCompilerExtensionVersion, and is versioned with Kotlin.
+    pluginManager.apply(libs.plugin(COMPOSE_COMPILER))
+
+    extensions.configure<ComposeCompilerGradlePluginExtension> {
+        reportsDestination.set(layout.buildDirectory.dir("compose_metrics"))
+        metricsDestination.set(layout.buildDirectory.dir("compose_metrics"))
+    }
+
     commonExtension.apply {
         buildFeatures {
             compose = true
-        }
-
-        composeOptions {
-            // https://developer.android.com/jetpack/androidx/releases/compose-kotlin#pre-release_kotlin_compatibility
-            kotlinCompilerExtensionVersion = libs.version(KOTLIN_COMPILER_EXTENSION)
         }
 
         dependencies {

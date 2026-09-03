@@ -3,10 +3,12 @@ package com.mindera.alfie.buildconvention.plugin.configuration
 import com.mindera.alfie.buildconvention.AppConfig
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion.VERSION_17
-import org.gradle.api.plugins.ExtensionAware
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
-internal fun configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
     commonExtension.apply {
         compileSdk = AppConfig.compileSdk
 
@@ -18,13 +20,12 @@ internal fun configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *,
             sourceCompatibility = VERSION_17
             targetCompatibility = VERSION_17
         }
+    }
 
-        kotlinOptions {
-            jvmTarget = VERSION_17.toString()
+    // android.kotlinOptions is deprecated: configure the Kotlin plugin directly instead.
+    extensions.configure<KotlinAndroidProjectExtension> {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-}
-
-fun CommonExtension<*, *, *, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
-    (this as ExtensionAware).extensions.configure("kotlinOptions", block)
 }
