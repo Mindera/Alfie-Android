@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.hilt) apply false
-    alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
@@ -22,15 +21,15 @@ dependencies {
     detektPlugins(libs.detekt.compose)
 }
 
-val versionNameConfig by extra { "0.8.1" }
-val versionCodeConfig by extra { 9 }
+extra.set("versionNameConfig", "0.8.1")
+extra.set("versionCodeConfig", 9)
 
-val detektAutoFix by tasks.registering(DetektCreateBaselineTask::class) {
+tasks.register<DetektCreateBaselineTask>("detektAutoFix") {
     setup()
     autoCorrect = true
 }
 
-val detektProjectBaseline by tasks.registering(DetektCreateBaselineTask::class) {
+tasks.register<DetektCreateBaselineTask>("detektProjectBaseline") {
     setup()
 }
 

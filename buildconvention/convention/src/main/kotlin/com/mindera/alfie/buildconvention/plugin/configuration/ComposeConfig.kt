@@ -20,7 +20,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
-internal fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+internal fun Project.configureCompose(commonExtension: CommonExtension) {
     // Since Kotlin 2.0 the Compose compiler ships as a Kotlin compiler plugin instead of
     // AGP's composeOptions.kotlinCompilerExtensionVersion, and is versioned with Kotlin.
     pluginManager.apply(libs.plugin(COMPOSE_COMPILER))
@@ -30,21 +30,17 @@ internal fun Project.configureCompose(commonExtension: CommonExtension<*, *, *, 
         metricsDestination.set(layout.buildDirectory.dir("compose_metrics"))
     }
 
-    commonExtension.apply {
-        buildFeatures {
-            compose = true
-        }
+    commonExtension.buildFeatures.compose = true
 
-        dependencies {
-            implementation(libs.lib(COMPOSE))
-            implementation(libs.lib(COMPOSE_TOOLING))
-            implementation(libs.lib(COMPOSE_TOOLING_PREVIEW))
-            implementation(libs.lib(COMPOSE_UI))
-            implementation(libs.lib(COMPOSE_RUNTIME))
-            implementation(libs.lib(COMPOSE_TRACING))
-            implementation(libs.lib(COMPOSE_ANIMATION))
-            implementation(libs.lib(MATERIAL))
-            implementation(libs.lib(MATERIAL3))
-        }
+    dependencies {
+        implementation(libs.lib(COMPOSE))
+        implementation(libs.lib(COMPOSE_TOOLING))
+        implementation(libs.lib(COMPOSE_TOOLING_PREVIEW))
+        implementation(libs.lib(COMPOSE_UI))
+        implementation(libs.lib(COMPOSE_RUNTIME))
+        implementation(libs.lib(COMPOSE_TRACING))
+        implementation(libs.lib(COMPOSE_ANIMATION))
+        implementation(libs.lib(MATERIAL))
+        implementation(libs.lib(MATERIAL3))
     }
 }

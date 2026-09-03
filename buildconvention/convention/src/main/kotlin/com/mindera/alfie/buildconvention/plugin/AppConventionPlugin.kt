@@ -8,7 +8,6 @@ import com.mindera.alfie.buildconvention.dependency.AndroidDependency.LIFECYCLE_
 import com.mindera.alfie.buildconvention.dependency.AndroidDependency.LIFECYCLE_VIEW_MODEL
 import com.mindera.alfie.buildconvention.dependency.AndroidDependency.LIFECYCLE_VIEW_MODEL_COMPOSE
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_ACTIVITY
-import com.mindera.alfie.buildconvention.dependency.KotlinDependency.KOTLIN_ANDROID
 import com.mindera.alfie.buildconvention.dependency.KotlinDependency.KOVER
 import com.mindera.alfie.buildconvention.dependency.TestDependency.ANDROID_JUNIT5
 import com.mindera.alfie.buildconvention.dependency.ThirdPartyDependency.DETEKT
@@ -45,7 +44,6 @@ internal class AppConventionPlugin : Plugin<Project> {
                 apply(libs.plugin(ANDROID_APPLICATION))
                 apply(libs.plugin(ANDROID_JUNIT5))
                 apply(libs.plugin(DETEKT))
-                apply(libs.plugin(KOTLIN_ANDROID))
                 apply(libs.plugin(KOVER))
                 apply(HiltConventionPlugin.ID)
             }

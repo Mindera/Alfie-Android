@@ -8,15 +8,16 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
-internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+// AGP 9 made CommonExtension non-generic and exposes its blocks as plain properties;
+// the block form (defaultConfig { }, compileOptions { }) now only exists on the
+// concrete ApplicationExtension/LibraryExtension types.
+internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension) {
     commonExtension.apply {
         compileSdk = AppConfig.compileSdk
 
-        defaultConfig {
-            minSdk = AppConfig.minSdk
-        }
+        defaultConfig.minSdk = AppConfig.minSdk
 
-        compileOptions {
+        compileOptions.apply {
             sourceCompatibility = VERSION_17
             targetCompatibility = VERSION_17
         }
