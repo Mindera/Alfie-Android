@@ -394,6 +394,12 @@ Located in `designsystem/src/main/java/com/mindera/alfie/designsystem/component/
 - **ViewModels**: `@HiltViewModel` annotation
 - **Modules**: `@Module` with `@InstallIn` annotation
 - **Injection**: Constructor injection preferred
+- **Annotation processing**: KSP, never kapt. AGP 9 ships its own Kotlin support
+  and hard-errors if the `org.jetbrains.kotlin.kapt` plugin is applied, so a new
+  processor is wired with `ksp(...)` (see `HiltConventionPlugin`, and
+  `data/database` for Room). Other Kotlin plugins such as `kotlin-parcelize` are
+  unaffected — it is `kapt` and `org.jetbrains.kotlin.android` specifically that
+  AGP 9 rejects.
 
 ### Module Patterns
 
@@ -791,6 +797,10 @@ Follow Gitflow:
 - `[ALFIE-456] Fix crash on empty cart`
 - `[ALFIE-789] Update dependencies`
 
+**Exception — automated commits**: Dependabot has no ticket to reference, so its
+commits use `chore(deps): ...` (configured in `.github/dependabot.yml`). The
+ticket-ID format applies to human-authored commits.
+
 ---
 
 ## Things to AVOID
@@ -808,6 +818,7 @@ Follow Gitflow:
 ❌ Skip code reviews  
 ❌ Commit with lint errors  
 ❌ Use `!!` (null assertion) without proper justification  
+❌ Add a `kapt` dependency or apply the kapt plugin (AGP 9 rejects it — use KSP)  
 
 ---
 
@@ -880,19 +891,20 @@ Alfie-Android/
 ### Key Dependencies
 
 - **Jetpack Compose**: Modern declarative UI (BOM 2025.01.01)
-- **Apollo Kotlin**: GraphQL client (v4.0.0-beta.4)
-- **Hilt**: Dependency injection (v2.51)
+- **Apollo Kotlin**: GraphQL client (v4.4.3)
+- **Hilt**: Dependency injection (v2.60.1)
 - **Compose Destinations**: Type-safe navigation (v1.10.0)
 - **Kotlin Coroutines**: Async programming (v1.7.3)
 - **Glide Compose**: Image loading (v1.0.0-beta01)
 - **Firebase**: Analytics, Crashlytics, Remote Config (BOM 32.7.3)
 - **DataStore**: Preferences storage (v1.1.2)
-- **Room**: Local database (if needed)
+- **Room**: Local database (v2.8.4)
 - **Timber**: Logging (latest)
 - **MockK**: Testing mocks (v1.13.8)
 - **JUnit 5**: Test framework (v5.10.0)
-- **Detekt**: Static analysis (v1.23.7)
-- **Kover**: Code coverage (v0.7.6)
+- **Detekt**: Static analysis (v1.23.8)
+- **Kover**: Code coverage (v0.9.9)
+- **KSP**: Annotation processing (v2.3.11)
 
 ---
 
@@ -946,9 +958,12 @@ Alfie-Android/
 
 - **Min SDK**: 26 (Android 8.0 Oreo)
 - **Target SDK**: Latest stable
-- **Kotlin Version**: 1.9.22
-- **Compose Compiler**: 1.5.10
+- **Kotlin Version**: 2.4.10
+- **Compose Compiler**: the `org.jetbrains.kotlin.plugin.compose` plugin, versioned
+  with Kotlin (AGP's `composeOptions.kotlinCompilerExtensionVersion` no longer exists)
 - **JVM Target**: 17
+- **Gradle**: 9.7.1
+- **Android Gradle Plugin**: 9.4.0
 - **Build System**: Gradle with Kotlin DSL
 - **Version Naming**: Semantic versioning (M.m.p format)
 - **Mock Server**: Available for development/testing
