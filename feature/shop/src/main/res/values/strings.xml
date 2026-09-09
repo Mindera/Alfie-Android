@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="shop_screen_title">Shop</string>
 
     <string name="shop_error_cannot_load_categories_list">Cannot load Categories list</string>
     <string name="shop_error_not_found">Content not found</string>

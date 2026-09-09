@@ -49,10 +49,18 @@ enum class SearchTextType(
  * Field geometry per variant, read from the new token system. Only `Soft` is used in
  * production (search field spec: 4dp radius, start 8 / end 16 padding, 8dp text↔icon
  * gap); the other three exist for the debug catalog and keep their legacy pill look.
+ *
+ * [hasClearButton] follows the Figma "Search (Active)" field (node `I673:87056;1:11346`):
+ * once the clear button appears it owns the end inset — a 40dp tertiary button flush with the
+ * border — so the field drops its own end and vertical padding. The field is 40dp tall either
+ * way (8 + 24 + 8 without the button, the button's own 40 with it).
  */
 @Composable
-fun SearchTextType.contentPadding(): PaddingValues {
+fun SearchTextType.contentPadding(hasClearButton: Boolean = false): PaddingValues {
     val spacing = LocalTheme.current.spacing
+    if (this == SearchTextType.Soft && hasClearButton) {
+        return PaddingValues(start = spacing.spacing8)
+    }
     return when (this) {
         SearchTextType.Light -> PaddingValues(
             start = spacing.spacing12,
@@ -97,6 +105,16 @@ fun SearchTextType.iconGap(): Dp = when (this) {
     else -> 6.dp
 }
 
+/**
+ * Tap target of the trailing clear affordance. `Soft` matches the Figma tertiary button that
+ * hosts the glyph (40dp box around a 24dp icon); the catalog variants keep the bare icon.
+ */
+@Composable
+fun SearchTextType.clearButtonSize(): Dp = when (this) {
+    SearchTextType.Soft -> LocalTheme.current.sizing.icon.xlarge
+    else -> LocalTheme.current.sizing.icon.medium
+}
+
 /** Composable accessor — all search types currently use body.medium. */
 val SearchTextType.textStyle: TextStyle
     @Composable get() = LocalTheme.current.typography.body.medium
@@ -124,14 +142,17 @@ fun SearchTextType.colorSpec(): SearchTextColorSpec {
             selectedColor = primitive.neutrals700,
             unselectedColor = primitive.neutrals700
         )
+        // Idle is the landing-screen entry point (Figma "Search", node I671:78533;17:15275): a
+        // flat foreground-primary fill with no stroke. Focusing it turns the field into the white,
+        // border/soft-outlined input of the Search page (node I673:87055;1:11326).
         SearchTextType.Soft -> SearchTextColorSpec(
             textColor = semantic.content.contentPrimary,
             cursorColor = semantic.content.contentPrimary,
-            unselectedBorderColor = semantic.border.soft,
+            unselectedBorderColor = primitive.transparent,
             selectedBorderColor = semantic.border.soft,
             placeholderTextColor = semantic.content.contentTerciary,
             selectedColor = semantic.surface.backgroundPrimary,
-            unselectedColor = semantic.surface.backgroundPrimary
+            unselectedColor = semantic.surface.foregroundPrimary
         )
         SearchTextType.SoftLarge -> SearchTextColorSpec(
             textColor = primitive.neutrals500,
