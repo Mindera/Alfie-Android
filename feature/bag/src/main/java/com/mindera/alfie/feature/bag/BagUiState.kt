@@ -1,8 +1,7 @@
 package com.mindera.alfie.feature.bag
 
 import androidx.compose.runtime.Stable
-import com.mindera.alfie.feature.bag.models.BagProductUi
-import kotlinx.collections.immutable.ImmutableList
+import com.mindera.alfie.feature.bag.models.BagContentUi
 
 @Stable
 internal sealed interface BagUiState {
@@ -11,7 +10,7 @@ internal sealed interface BagUiState {
 
         data object Loading : Data
 
-        data class Loaded(val bag: ImmutableList<BagProductUi>) : Data
+        data class Loaded(val content: BagContentUi) : Data
 
         data object Empty : Data
     }

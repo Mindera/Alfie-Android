@@ -108,7 +108,7 @@ class ProductDetailsUIFactoryTest {
         // Make all "steel" variants unavailable.
         val updatedVariants = product.variants.map { entry ->
             val color = entry.options.firstOrNull { it.name.equals("color", ignoreCase = true) }?.value
-            entry.copy(available = color != "steel")
+            entry.copy(availableQuantity = if (color != "steel") 1 else 0)
         }
         val updatedProduct = product.copy(variants = updatedVariants)
         var result = uiFactory(updatedProduct)

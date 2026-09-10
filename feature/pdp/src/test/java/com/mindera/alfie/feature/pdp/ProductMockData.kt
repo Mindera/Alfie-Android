@@ -41,7 +41,7 @@ internal fun variant(
         VariantOption(name = "size", value = size)
     ),
     media = listOf(image1, image2),
-    available = available
+    availableQuantity = if (available) 1 else 0
 )
 
 internal val product = Product(
