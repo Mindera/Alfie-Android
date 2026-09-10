@@ -6,7 +6,7 @@ This document provides project-specific context and guidelines for GitHub Copilo
 
 ## Project Overview
 
-Alfie is a native Android e-commerce application built with Jetpack Compose (minSdk 26) following Clean Architecture with MVVM pattern and modular structure. The app fetches data from a GraphQL BFF API using Apollo Kotlin and includes features like product browsing, search, wishlist, and bag functionality.
+Alfie is a native Android e-commerce application built with Jetpack Compose (minSdk 29) following Clean Architecture with MVVM pattern and modular structure. The app fetches data from a GraphQL BFF API using Apollo Kotlin and includes features like product browsing, search, wishlist, and bag functionality.
 
 ---
 
@@ -965,8 +965,9 @@ Alfie-Android/
 
 ## Additional Context
 
-- **Min SDK**: 26 (Android 8.0 Oreo)
-- **Target SDK**: Latest stable
+- **Min SDK**: 29 (Android 10)
+- **Target SDK**: 34 (Android 14)
+- **Compile SDK**: 35 (Android 15)
 - **Kotlin Version**: 2.4.10
 - **Compose Compiler**: the `org.jetbrains.kotlin.plugin.compose` plugin, versioned
   with Kotlin (AGP's `composeOptions.kotlinCompilerExtensionVersion` no longer exists)
