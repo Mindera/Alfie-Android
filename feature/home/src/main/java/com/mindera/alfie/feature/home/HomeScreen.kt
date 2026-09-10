@@ -60,7 +60,10 @@ internal fun HomeScreen(
         searchState = rememberSearchState(),
         actions = actions.toImmutableList()
     ) {
-        LandingHeader(type = LandingHeaderType.Logo())
+        LandingHeader(
+            type = LandingHeaderType.Logo(),
+            onScanClick = { navigator.navigate(directionProvider.fromScreen(Screen.Scanner)) }
+        )
     }
     HomeScreenContent(state = state)
 }

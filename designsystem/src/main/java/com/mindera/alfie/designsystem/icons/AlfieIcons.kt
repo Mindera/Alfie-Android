@@ -83,6 +83,7 @@ object AlfieIcons {
     val Refine = R.drawable.ic_refine
     val Refund = R.drawable.ic_refund
     val Return = R.drawable.ic_return
+    val Scan = R.drawable.ic_scan
     val Search = R.drawable.ic_search
     val Settings = R.drawable.ic_settings
     val Share = R.drawable.ic_share

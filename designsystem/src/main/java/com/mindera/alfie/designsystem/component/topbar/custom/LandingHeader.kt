@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.HOME_TITLE_HEADER
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
@@ -60,7 +61,8 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun TopBarScope.LandingHeader(
     type: LandingHeaderType,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScanClick: ClickEvent? = null
 ) {
     val searchState = state.getSearchState() ?: return
     val theme = LocalTheme.current
@@ -73,7 +75,8 @@ fun TopBarScope.LandingHeader(
             searchState = searchState,
             // The column gap and the frame's bottom padding, which the band owns while idle.
             idleTopPadding = theme.spacing.spacing24,
-            idleBottomPadding = theme.spacing.spacing16
+            idleBottomPadding = theme.spacing.spacing16,
+            onScanClick = onScanClick
         )
     }
 }
@@ -277,4 +280,22 @@ private fun LandingHeaderGreetingPreview() {
             topBarColors = TopAppBarDefaults.topAppBarColors()
         ).LandingHeader(type = Greeting("User", "Member since: 1838"))
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+private fun LandingHeaderWithScanPreview() {
+    val topBarState = TopBarState(
+        title = TopBarTitle.Custom(rememberSearchState()) {},
+        showNavigationIcon = true
+    )
+
+    TopBarScopeInstance(
+        state = topBarState,
+        topBarColors = TopAppBarDefaults.topAppBarColors()
+    ).LandingHeader(
+        type = Greeting("User", "Member since: 1838"),
+        onScanClick = { }
+    )
 }

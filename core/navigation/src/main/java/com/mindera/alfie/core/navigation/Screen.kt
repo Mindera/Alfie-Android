@@ -25,6 +25,8 @@ sealed interface Screen {
 
     data class ProductList(val args: ProductListNavArgs) : Screen
 
+    data object Scanner : Screen
+
     data class Shop(val args: ShopNavArgs) : Screen
 
     data class WebView(val args: WebViewNavArgs) : Screen

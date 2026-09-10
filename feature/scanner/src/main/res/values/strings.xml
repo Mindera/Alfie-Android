@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="scanner_hint">Point the camera at a barcode</string>
+    <string name="scanner_close_content_description">Close the scanner</string>
+
+    <string name="scanner_camera_unavailable_title">Camera unavailable</string>
+    <string name="scanner_camera_unavailable_subtitle">This device\'s camera can\'t be used for scanning right now.</string>
+
+    <string name="scanner_permission_rationale_title">Camera access needed</string>
+    <string name="scanner_permission_rationale_subtitle">Scanning a barcode needs the camera. Nothing is recorded or saved.</string>
+    <string name="scanner_permission_allow">Allow camera</string>
+
+    <string name="scanner_permission_denied_title">Camera access is off</string>
+    <string name="scanner_permission_denied_subtitle">Turn the camera on in Settings to scan barcodes.</string>
+    <string name="scanner_permission_open_settings">Open settings</string>
+
+    <string name="scanner_close">Close</string>
+</resources>
