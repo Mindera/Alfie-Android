@@ -1,6 +1,6 @@
 import com.mindera.alfie.buildconvention.AppConfig
 import com.mindera.alfie.buildconvention.extension.implementation
-import com.mindera.alfie.buildconvention.extension.kapt
+import com.mindera.alfie.buildconvention.extension.ksp
 import com.mindera.alfie.buildconvention.module.ProjectModule
 
 plugins {
@@ -19,7 +19,7 @@ android {
 dependencies {
     implementation(libs.room)
     implementation(libs.room.runtime)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.coroutines.test)

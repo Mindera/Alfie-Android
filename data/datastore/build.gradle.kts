@@ -8,14 +8,10 @@ plugins {
 
 android {
     defaultConfig {
-        consumerProguardFiles("consumer-proguard-rules.pro")
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     namespace = AppConfig.applicationId + ".data.datastore"
-}
-
-kapt {
-    correctErrorTypes = true
 }
 
 // Setup protobuf configuration, generating lite Java and Kotlin classes
@@ -26,10 +22,10 @@ protobuf {
     generateProtoTasks {
         all().forEach { task ->
             task.builtins {
-                val java by registering {
+                register("java") {
                     option("lite")
                 }
-                val kotlin by registering {
+                register("kotlin") {
                     option("lite")
                 }
             }

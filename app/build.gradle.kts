@@ -12,8 +12,8 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-val versionNameConfig: String by rootProject.extra
-val versionCodeConfig: Int by rootProject.extra
+val versionNameConfig = rootProject.extra["versionNameConfig"] as String
+val versionCodeConfig = rootProject.extra["versionCodeConfig"] as Int
 
 android {
     defaultConfig {

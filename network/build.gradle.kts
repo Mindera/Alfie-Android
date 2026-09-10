@@ -29,7 +29,7 @@ android {
 
 dependencies {
     api(libs.apollo)
-    testApi(libs.apollo.testing)
+    testImplementation(libs.apollo.testing)
 
     implementation(project(ProjectModule.debug))
     implementation(project(ProjectModule.coreEnvironment))
