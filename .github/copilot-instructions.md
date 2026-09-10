@@ -779,14 +779,23 @@ Use this checklist for systematic feature implementation:
 
 ### Branch Strategy
 
-Follow Gitflow:
-- `main` - Production releases
-- `develop` - Integration branch
+`main` is the only long-lived branch — there is no `develop`. Work branches off
+`main` and returns to it by pull request. `deploy_beta.yml` runs
+`fastlane deploy_beta` on every push to `main`, so merging ships a Firebase beta.
+
+- `main` - Integration and releases
 - `feature/*` - New features
-- `bugfix/*` - Bug fixes (non-urgent)
-- `hotfix/*` - Urgent production fixes
-- `release/*` - Release preparation (format: `release/Alfie-M.m.p`)
-- `chore/*` - Maintenance tasks
+- `fix/*` - Bug fixes
+- `chore/*` - Maintenance, tooling, dependency upgrades
+- `dependabot/*` - Opened by Dependabot; don't push to these by hand
+
+**Naming**: `<prefix>/<TICKET-ID>-<short-description>`, e.g.
+`feature/ALFMOB-449-home-highlights`. Work without a ticket uses a descriptive
+slug instead, e.g. `chore/gradle-agp-kotlin-upgrade`.
+
+There is no `release/*` or `hotfix/*` flow and no release tags: an urgent fix is
+an ordinary PR to `main`. Some older remote branches use other prefixes (`dev/*`,
+`task/*`) or bare names — historical, not a second convention to follow.
 
 ### Commit Convention
 
