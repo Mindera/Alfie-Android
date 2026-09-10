@@ -20,8 +20,8 @@ import java.util.concurrent.Executors
  * Uses [LifecycleCameraController] rather than a raw `ProcessCameraProvider`: binding to the
  * lifecycle is what makes teardown automatic — the camera is released on `ON_STOP` and rebound on
  * `ON_START`, so backgrounding the app mid-scan does not leave the device held or crash on
- * return. (`ProcessCameraProvider.awaitInstance` would be the other route, but it only exists
- * from CameraX 1.5.0 and this project is pinned to 1.4.x by AGP 8.3.2.)
+ * return. The controller resolves the provider itself while still exposing the two things this
+ * screen depends on: the backpressure strategy, and attaching or detaching the analyzer.
  *
  * [isActive] gates the analyzer, not the preview: once a barcode has won, frames stop being
  * handed to ML Kit while the image stays on screen through the navigation transition.

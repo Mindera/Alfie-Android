@@ -6,8 +6,8 @@ androidx-splash = "1.0.1"
 androidx-test-ext-junit = "1.2.1"
 apollo = "4.4.3"
 appcompat = "1.7.0"
-# Pinned to the 1.4.x line: 1.5.x requires AGP 8.6.0+ and this build is on AGP 8.3.2.
-camera = "1.4.2"
+# Highest CameraX line for compileSdk 35; 1.6.x declares minCompileSdk 36.
+camera = "1.5.3"
 browser = "1.8.0"
 chucker = "4.0.0"
 compose = "2025.01.01"
