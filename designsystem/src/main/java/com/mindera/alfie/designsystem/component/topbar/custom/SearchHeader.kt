@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.test.SEARCH_BACK_BUTTON
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.standardAccelerate
@@ -45,15 +46,22 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
  * search overlay, and the band becomes the Figma "Header" of the Search page (node
  * `I673:87056;1:11344`) — same 48dp box, with a back affordance ahead of the field and a divider
  * under it.
+ *
+ * [onScanClick] is opt-in: passing it trails the field with a barcode-scanner affordance. Home
+ * opts in; Shop level 1 renders the same band without one, so the two entry points stay distinct
+ * without needing two components.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarScope.SearchHeader(
     searchState: SearchState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onScanClick: ClickEvent? = null
 ) {
     val theme = LocalTheme.current
     val isSearchMode = searchState.isSearchOpen
+    // The scanner steps aside for the search overlay: in search mode the field owns the full band.
+    val isScanVisible = onScanClick != null && !isSearchMode
     // The back button slot is 40dp around a 24dp glyph, so 8dp of the band's own inset already
     // sits inside it: dropping the leading inset from 16 to 8 in search mode lands the glyph on
     // Figma's 16dp margin and the field's left edge on its x=48 (node I673:87056;1:11344).
@@ -91,10 +99,26 @@ fun TopBarScope.SearchHeader(
             SearchTextField(
                 state = searchState,
                 isEnabled = isSearchMode,
+                // weight(1f) keeps the field's own fillMaxWidth() from measuring the trailing
+                // scan slot at zero width. Layout-neutral when there is no scan icon.
+                modifier = Modifier.weight(1f),
                 onClick = {
                     searchState.updateSearchState(true)
                 }
             )
+            if (onScanClick != null) {
+                ScanIconButton(
+                    onClick = onScanClick,
+                    // The band's Row already owns the 16dp end inset, so the icon only adds the
+                    // 8dp field gap — which collapses with it when search mode opens.
+                    modifier = Modifier
+                        .padding(start = theme.spacing.spacing8)
+                        .size(theme.sizing.icon.xlarge),
+                    isVisible = isScanVisible,
+                    enterTransition = fadeIn() + expandIn(standardAccelerate()),
+                    exitTransition = shrinkOut(standardAccelerate()) + fadeOut()
+                )
+            }
         }
         DefaultVisibilityAnimation(
             isVisible = isSearchMode,

@@ -8,6 +8,7 @@ import com.mindera.alfie.feature.debug.destinations.DebugScreenDestination
 import com.mindera.alfie.feature.home.destinations.HomeScreenDestination
 import com.mindera.alfie.feature.pdp.destinations.ProductDetailsScreenDestination
 import com.mindera.alfie.feature.plp.destinations.ProductListScreenDestination
+import com.mindera.alfie.feature.scanner.destinations.ScannerScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopCategoryScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopScreenDestination
 import com.mindera.alfie.feature.webview.destinations.WebViewScreenDestination
@@ -34,6 +35,7 @@ class NavGraphs @Inject constructor(
             HomeScreenDestination,
             ProductDetailsScreenDestination,
             ProductListScreenDestination,
+            ScannerScreenDestination,
             ShopScreenDestination,
             WebViewScreenDestination,
             WishlistScreenDestination

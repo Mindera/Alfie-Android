@@ -9,6 +9,7 @@ import com.mindera.alfie.feature.debug.destinations.DebugScreenDestination
 import com.mindera.alfie.feature.home.destinations.HomeScreenDestination
 import com.mindera.alfie.feature.pdp.destinations.ProductDetailsScreenDestination
 import com.mindera.alfie.feature.plp.destinations.ProductListScreenDestination
+import com.mindera.alfie.feature.scanner.destinations.ScannerScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopCategoryScreenDestination
 import com.mindera.alfie.feature.shop.destinations.ShopScreenDestination
 import com.mindera.alfie.feature.webview.destinations.WebViewScreenDestination
@@ -27,6 +28,7 @@ class DirectionProviderImpl @Inject constructor() : DirectionProvider {
         is Screen.Home -> HomeScreenDestination
         is Screen.ProductDetails -> ProductDetailsScreenDestination(screen.args)
         is Screen.ProductList -> ProductListScreenDestination(screen.args)
+        is Screen.Scanner -> ScannerScreenDestination
         is Screen.Shop -> ShopScreenDestination(screen.args)
         is Screen.WebView -> WebViewScreenDestination(screen.args)
         is Screen.Wishlist -> WishlistScreenDestination(screen.args)

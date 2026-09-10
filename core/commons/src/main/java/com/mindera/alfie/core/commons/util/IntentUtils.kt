@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.Settings
 import timber.log.Timber
 
 object IntentUtils {
@@ -69,6 +70,25 @@ object IntentUtils {
             // If Google Play app is not installed, we will try to open a web browser
             intent.data = Uri.parse(webUrl)
             context.startActivity(intent)
+        }
+    }
+
+    /**
+     * Opens this app's entry in system Settings.
+     *
+     * The escape hatch for a permanently denied runtime permission: once the OS stops showing the
+     * permission dialog, Settings is the only place the user can grant it.
+     */
+    fun openAppSettings(context: Context) {
+        val intent = Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", context.packageName, null)
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        try {
+            context.startActivity(intent)
+        } catch (exception: ActivityNotFoundException) {
+            Timber.e(exception)
         }
     }
 }

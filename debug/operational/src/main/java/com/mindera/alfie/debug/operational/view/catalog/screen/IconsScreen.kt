@@ -61,6 +61,7 @@ private val actionIcons = listOf(
     AlfieIcons.Add,
     AlfieIcons.LegacyRefresh,
     AlfieIcons.LegacyReload,
+    AlfieIcons.Scan,
     AlfieIcons.Search,
     AlfieIcons.Settings,
     AlfieIcons.Share,

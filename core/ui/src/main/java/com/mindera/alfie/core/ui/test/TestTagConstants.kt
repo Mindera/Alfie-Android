@@ -3,6 +3,7 @@ package com.mindera.alfie.core.ui.test
 // TOP BAR / TOOLBAR
 const val HOME_TITLE_HEADER = "title-header"
 const val HOME_SEARCH_BUTTON = "search-btn"
+const val HOME_SCAN_BUTTON = "scan-btn"
 const val HOME_SETTINGS_BUTTON = "settings-btn"
 const val HOME_ACCOUNT_BUTTON = "account-btn"
 const val SHARE_BUTTON = "share-btn"

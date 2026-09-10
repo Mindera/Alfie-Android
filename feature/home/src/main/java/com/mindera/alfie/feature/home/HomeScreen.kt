@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mindera.alfie.core.commons.string.StringResource
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.Screen
+import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.debug.runner.LocalDebugComposeRunner
@@ -61,7 +62,10 @@ internal fun HomeScreen(
         searchState = rememberSearchState(),
         actions = actions.toImmutableList()
     ) {
-        SetupTopBar(homeUI = (state as? HomeUIState.Loaded)?.homeUI)
+        SetupTopBar(
+            homeUI = (state as? HomeUIState.Loaded)?.homeUI,
+            onScanClick = { navigator.navigate(directionProvider.fromScreen(Screen.Scanner)) }
+        )
     }
     HomeScreenContent(state = state)
 }
@@ -88,7 +92,10 @@ private fun HomeLoaded(homeUI: HomeUI) {
 }
 
 @Composable
-private fun TopBarScope.SetupTopBar(homeUI: HomeUI?) {
+private fun TopBarScope.SetupTopBar(
+    homeUI: HomeUI?,
+    onScanClick: ClickEvent
+) {
     val type = if (homeUI?.userName != null) {
         LandingHeaderType.Greeting(
             userName = homeUI.userName,
@@ -98,7 +105,10 @@ private fun TopBarScope.SetupTopBar(homeUI: HomeUI?) {
         LandingHeaderType.Logo()
     }
 
-    LandingHeader(type = type)
+    LandingHeader(
+        type = type,
+        onScanClick = onScanClick
+    )
 }
 
 @Preview(showBackground = true)
