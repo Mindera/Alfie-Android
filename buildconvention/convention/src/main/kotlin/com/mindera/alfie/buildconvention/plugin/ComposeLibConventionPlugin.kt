@@ -1,7 +1,7 @@
 package com.mindera.alfie.buildconvention.plugin
 
 import com.mindera.alfie.buildconvention.plugin.configuration.configureCompose
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.getByType

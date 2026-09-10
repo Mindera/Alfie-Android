@@ -11,7 +11,7 @@ import com.mindera.alfie.buildconvention.extension.libs
 import com.mindera.alfie.buildconvention.extension.projectImplementation
 import com.mindera.alfie.buildconvention.module.ProjectModule
 import com.mindera.alfie.buildconvention.plugin.configuration.configureCompose
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

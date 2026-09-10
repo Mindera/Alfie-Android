@@ -1,6 +1,6 @@
 package com.mindera.alfie.buildconvention.extension
 
-import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
@@ -37,27 +37,21 @@ fun DependencyHandler.debugImplementation(vararg dependencies: String) {
     }
 }
 
-fun DependencyHandler.kapt(vararg dependencies: Provider<MinimalExternalModuleDependency>) {
+fun DependencyHandler.ksp(vararg dependencies: Provider<MinimalExternalModuleDependency>) {
     dependencies.forEach { dependency ->
-        add("kapt", dependency)
+        add("ksp", dependency)
     }
 }
 
-fun DependencyHandler.kapt(vararg dependencies: String) {
+fun DependencyHandler.ksp(vararg dependencies: String) {
     dependencies.forEach { dependency ->
-        add("kapt", dependency)
+        add("ksp", dependency)
     }
 }
 
 fun DependencyHandler.compileOnly(vararg dependencies: String) {
     dependencies.forEach { dependency ->
         add("compileOnly", dependency)
-    }
-}
-
-fun DependencyHandler.kaptAndroidTest(vararg dependencies: String) {
-    dependencies.forEach { dependency ->
-        add("kaptAndroidTest", dependency)
     }
 }
 
@@ -73,7 +67,7 @@ fun DependencyHandler.testImplementation(vararg dependencies: Provider<MinimalEx
     }
 }
 
-fun DependencyHandler.testImplementation(vararg dependencies: Project) {
+fun DependencyHandler.testImplementation(vararg dependencies: Dependency) {
     dependencies.forEach { dependency ->
         add("testImplementation", dependency)
     }
@@ -97,7 +91,7 @@ fun DependencyHandler.androidTestImplementation(vararg dependencies: Provider<Mi
     }
 }
 
-fun DependencyHandler.androidTestImplementation(vararg dependencies: Project) {
+fun DependencyHandler.androidTestImplementation(vararg dependencies: Dependency) {
     dependencies.forEach { dependency ->
         add("androidTestImplementation", dependency)
     }

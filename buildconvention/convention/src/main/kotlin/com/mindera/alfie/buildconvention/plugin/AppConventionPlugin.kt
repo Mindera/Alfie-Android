@@ -8,7 +8,6 @@ import com.mindera.alfie.buildconvention.dependency.AndroidDependency.LIFECYCLE_
 import com.mindera.alfie.buildconvention.dependency.AndroidDependency.LIFECYCLE_VIEW_MODEL
 import com.mindera.alfie.buildconvention.dependency.AndroidDependency.LIFECYCLE_VIEW_MODEL_COMPOSE
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_ACTIVITY
-import com.mindera.alfie.buildconvention.dependency.KotlinDependency.KOTLIN_ANDROID
 import com.mindera.alfie.buildconvention.dependency.KotlinDependency.KOVER
 import com.mindera.alfie.buildconvention.dependency.TestDependency.ANDROID_JUNIT5
 import com.mindera.alfie.buildconvention.dependency.ThirdPartyDependency.DETEKT
@@ -27,7 +26,7 @@ import com.mindera.alfie.buildconvention.plugin.configuration.configureCompose
 import com.mindera.alfie.buildconvention.plugin.configuration.configureKotlinAndroid
 import com.mindera.alfie.buildconvention.plugin.configuration.configureUnitTest
 import com.android.build.api.dsl.ApplicationExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverReportExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -45,7 +44,6 @@ internal class AppConventionPlugin : Plugin<Project> {
                 apply(libs.plugin(ANDROID_APPLICATION))
                 apply(libs.plugin(ANDROID_JUNIT5))
                 apply(libs.plugin(DETEKT))
-                apply(libs.plugin(KOTLIN_ANDROID))
                 apply(libs.plugin(KOVER))
                 apply(HiltConventionPlugin.ID)
             }
@@ -66,47 +64,49 @@ internal class AppConventionPlugin : Plugin<Project> {
                 }
             }
 
-            extensions.configure<KoverReportExtension> {
-                filters {
-                    excludes {
-                        annotatedBy(
-                            "androidx.compose.runtime.Composable", // Compose
-                            "dagger.Module", // Hilt
-                            "*Generated*", // Hilt
-                            "androidx.room.Dao" // Room
-                        )
-                        packages(
-                            "*.destinations", // Compose Destinations
-                            "*.navtype", // Compose Destinations
-                            "*.graphql*", // GraphQL
-                            "*.designsystem*",
-                            "*.core.ui*",
-                            "*.core.sync*",
-                            "*.component",
-                            "*.debug*",
-                            "*.log",
-                            "*.dispatcher",
-                            "com.mindera.alfie.navigation"
-                        )
-                        classes(
-                            "*ComposableSingletons*", // Compose
-                            "*_*", // Hilt
-                            "*.DestinationsKt", // Compose Destinations
-                            "*NavArgsGetters*", // Compose Destinations
-                            "*Application*",
-                            "*Activity*",
-                            "*Intent*",
-                            "*.BuildConfig",
-                            "*Deeplinks*", // Tested on androidTest
-                            "*Database", // Room
-                            "*Dao", // Room
-                            "*Dao$*", // Room
-                            "*Proto", // Proto DataStore
-                            "*Proto$*", // Proto DataStore
-                            "*ProtoKt", // Proto DataStore
-                            "*ProtoKt$*", // Proto DataStore
-                            "*ProtoKtKt" // Proto DataStore
-                        )
+            extensions.configure<KoverProjectExtension> {
+                reports {
+                    filters {
+                        excludes {
+                            annotatedBy(
+                                "androidx.compose.runtime.Composable", // Compose
+                                "dagger.Module", // Hilt
+                                "*Generated*", // Hilt
+                                "androidx.room.Dao" // Room
+                            )
+                            packages(
+                                "*.destinations", // Compose Destinations
+                                "*.navtype", // Compose Destinations
+                                "*.graphql*", // GraphQL
+                                "*.designsystem*",
+                                "*.core.ui*",
+                                "*.core.sync*",
+                                "*.component",
+                                "*.debug*",
+                                "*.log",
+                                "*.dispatcher",
+                                "com.mindera.alfie.navigation"
+                            )
+                            classes(
+                                "*ComposableSingletons*", // Compose
+                                "*_*", // Hilt
+                                "*.DestinationsKt", // Compose Destinations
+                                "*NavArgsGetters*", // Compose Destinations
+                                "*Application*",
+                                "*Activity*",
+                                "*Intent*",
+                                "*.BuildConfig",
+                                "*Deeplinks*", // Tested on androidTest
+                                "*Database", // Room
+                                "*Dao", // Room
+                                "*Dao$*", // Room
+                                "*Proto", // Proto DataStore
+                                "*Proto$*", // Proto DataStore
+                                "*ProtoKt", // Proto DataStore
+                                "*ProtoKt$*", // Proto DataStore
+                                "*ProtoKtKt" // Proto DataStore
+                            )
+                        }
                     }
                 }
             }

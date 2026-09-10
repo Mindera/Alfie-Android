@@ -1,0 +1,48 @@
+# Dependabot's own `reviewers` config option no longer exists, so the review
+# request is made here instead. This also labels major bumps, which Dependabot
+# does not distinguish on its own.
+name: Dependabot PR Triage
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  triage:
+    # Dependabot's PRs only — every other PR is left alone.
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Dependabot Metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Request Review
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr edit "$PR_URL" --add-reviewer hoangnhatdrk
+
+      # update-type is a single value for an ungrouped PR and a comma-separated
+      # list for a grouped one, so match on substring rather than equality.
+      - name: Label Major Bumps As Breaking
+        if: contains(steps.metadata.outputs.update-type, 'version-update:semver-major')
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # --force makes this idempotent and self-bootstrapping: gh pr edit
+          # fails outright if the label does not already exist in the repo.
+          gh label create breaking-change \
+            --color d93f0b \
+            --description "Major version bump - check the release notes for breaking changes" \
+            --force
+          gh pr edit "$PR_URL" --add-label breaking-change

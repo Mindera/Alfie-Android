@@ -11,6 +11,7 @@ repositories {
 dependencies {
     compileOnly(libs.android.gradleTools)
     compileOnly(libs.detekt.gradlePlugin)
+    compileOnly(libs.kotlin.composeGradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.kover.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)

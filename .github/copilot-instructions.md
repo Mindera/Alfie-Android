@@ -6,7 +6,7 @@ This document provides project-specific context and guidelines for GitHub Copilo
 
 ## Project Overview
 
-Alfie is a native Android e-commerce application built with Jetpack Compose (minSdk 26) following Clean Architecture with MVVM pattern and modular structure. The app fetches data from a GraphQL BFF API using Apollo Kotlin and includes features like product browsing, search, wishlist, and bag functionality.
+Alfie is a native Android e-commerce application built with Jetpack Compose (minSdk 29) following Clean Architecture with MVVM pattern and modular structure. The app fetches data from a GraphQL BFF API using Apollo Kotlin and includes features like product browsing, search, wishlist, and bag functionality.
 
 ---
 
@@ -394,6 +394,12 @@ Located in `designsystem/src/main/java/com/mindera/alfie/designsystem/component/
 - **ViewModels**: `@HiltViewModel` annotation
 - **Modules**: `@Module` with `@InstallIn` annotation
 - **Injection**: Constructor injection preferred
+- **Annotation processing**: KSP, never kapt. AGP 9 ships its own Kotlin support
+  and hard-errors if the `org.jetbrains.kotlin.kapt` plugin is applied, so a new
+  processor is wired with `ksp(...)` (see `HiltConventionPlugin`, and
+  `data/database` for Room). Other Kotlin plugins such as `kotlin-parcelize` are
+  unaffected — it is `kapt` and `org.jetbrains.kotlin.android` specifically that
+  AGP 9 rejects.
 
 ### Module Patterns
 
@@ -773,14 +779,23 @@ Use this checklist for systematic feature implementation:
 
 ### Branch Strategy
 
-Follow Gitflow:
-- `main` - Production releases
-- `develop` - Integration branch
+`main` is the only long-lived branch — there is no `develop`. Work branches off
+`main` and returns to it by pull request. `deploy_beta.yml` runs
+`fastlane deploy_beta` on every push to `main`, so merging ships a Firebase beta.
+
+- `main` - Integration and releases
 - `feature/*` - New features
-- `bugfix/*` - Bug fixes (non-urgent)
-- `hotfix/*` - Urgent production fixes
-- `release/*` - Release preparation (format: `release/Alfie-M.m.p`)
-- `chore/*` - Maintenance tasks
+- `fix/*` - Bug fixes
+- `chore/*` - Maintenance, tooling, dependency upgrades
+- `dependabot/*` - Opened by Dependabot; don't push to these by hand
+
+**Naming**: `<prefix>/<TICKET-ID>-<short-description>`, e.g.
+`feature/ALFMOB-449-home-highlights`. Work without a ticket uses a descriptive
+slug instead, e.g. `chore/gradle-agp-kotlin-upgrade`.
+
+There is no `release/*` or `hotfix/*` flow and no release tags: an urgent fix is
+an ordinary PR to `main`. Some older remote branches use other prefixes (`dev/*`,
+`task/*`) or bare names — historical, not a second convention to follow.
 
 ### Commit Convention
 
@@ -790,6 +805,10 @@ Follow Gitflow:
 - `[ALFIE-123] Add product details screen`
 - `[ALFIE-456] Fix crash on empty cart`
 - `[ALFIE-789] Update dependencies`
+
+**Exception — automated commits**: Dependabot has no ticket to reference, so its
+commits use `chore(deps): ...` (configured in `.github/dependabot.yml`). The
+ticket-ID format applies to human-authored commits.
 
 ---
 
@@ -808,6 +827,7 @@ Follow Gitflow:
 ❌ Skip code reviews  
 ❌ Commit with lint errors  
 ❌ Use `!!` (null assertion) without proper justification  
+❌ Add a `kapt` dependency or apply the kapt plugin (AGP 9 rejects it — use KSP)  
 
 ---
 
@@ -880,19 +900,20 @@ Alfie-Android/
 ### Key Dependencies
 
 - **Jetpack Compose**: Modern declarative UI (BOM 2025.01.01)
-- **Apollo Kotlin**: GraphQL client (v4.0.0-beta.4)
-- **Hilt**: Dependency injection (v2.51)
+- **Apollo Kotlin**: GraphQL client (v4.4.3)
+- **Hilt**: Dependency injection (v2.60.1)
 - **Compose Destinations**: Type-safe navigation (v1.10.0)
 - **Kotlin Coroutines**: Async programming (v1.7.3)
 - **Glide Compose**: Image loading (v1.0.0-beta01)
 - **Firebase**: Analytics, Crashlytics, Remote Config (BOM 32.7.3)
 - **DataStore**: Preferences storage (v1.1.2)
-- **Room**: Local database (if needed)
+- **Room**: Local database (v2.8.4)
 - **Timber**: Logging (latest)
 - **MockK**: Testing mocks (v1.13.8)
 - **JUnit 5**: Test framework (v5.10.0)
-- **Detekt**: Static analysis (v1.23.7)
-- **Kover**: Code coverage (v0.7.6)
+- **Detekt**: Static analysis (v1.23.8)
+- **Kover**: Code coverage (v0.9.9)
+- **KSP**: Annotation processing (v2.3.11)
 
 ---
 
@@ -944,11 +965,15 @@ Alfie-Android/
 
 ## Additional Context
 
-- **Min SDK**: 26 (Android 8.0 Oreo)
-- **Target SDK**: Latest stable
-- **Kotlin Version**: 1.9.22
-- **Compose Compiler**: 1.5.10
+- **Min SDK**: 29 (Android 10)
+- **Target SDK**: 34 (Android 14)
+- **Compile SDK**: 35 (Android 15)
+- **Kotlin Version**: 2.4.10
+- **Compose Compiler**: the `org.jetbrains.kotlin.plugin.compose` plugin, versioned
+  with Kotlin (AGP's `composeOptions.kotlinCompilerExtensionVersion` no longer exists)
 - **JVM Target**: 17
+- **Gradle**: 9.7.1
+- **Android Gradle Plugin**: 9.4.0
 - **Build System**: Gradle with Kotlin DSL
 - **Version Naming**: Semantic versioning (M.m.p format)
 - **Mock Server**: Available for development/testing

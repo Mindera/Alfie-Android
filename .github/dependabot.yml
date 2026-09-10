@@ -1,0 +1,63 @@
+# Weekly dependency update PRs.
+#
+# Every version in this project lives in gradle/libs.versions.toml, which
+# Dependabot reads natively, so the catalog is the only manifest it needs. It
+# also runs Gradle to bump the wrapper (gradle-wrapper.properties, gradlew,
+# gradlew.bat, gradle-wrapper.jar).
+#
+# Release notes, changelogs and commit lists are added to the PR body by
+# Dependabot itself — there is no option to switch that on. It resolves them
+# from each dependency's pom.xml, so a dependency that omits its SCM metadata
+# gets a PR without those sections. Breaking changes are surfaced separately by
+# .github/workflows/dependabot-triage.yml, which labels major bumps.
+version: 2
+
+updates:
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Lisbon
+    open-pull-requests-limit: 10
+    assignees:
+      - hoangnhatdrk
+    labels:
+      - dependencies
+      - gradle
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Minor and patch bumps travel together as one PR to review. Major bumps
+      # are deliberately left ungrouped so each one arrives on its own, with its
+      # own release notes and the breaking-change label.
+      gradle-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Lisbon
+    open-pull-requests-limit: 5
+    assignees:
+      - hoangnhatdrk
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      actions-minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch

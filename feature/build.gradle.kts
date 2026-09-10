@@ -1,6 +1,5 @@
 import com.mindera.alfie.buildconvention.AppConfig
 import com.mindera.alfie.buildconvention.module.ProjectModule
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(buildConvention.plugins.compose)
@@ -22,17 +21,4 @@ dependencies {
 
     implementation(libs.destinations.core)
     implementation(libs.hilt.navigation)
-}
-
-subprojects {
-    tasks.withType<KotlinCompile>().all {
-        kotlinOptions.freeCompilerArgs += listOf(
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-                    project.buildDir.absolutePath + "/compose_metrics",
-            "-P",
-            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-                    project.buildDir.absolutePath + "/compose_metrics"
-        )
-    }
 }
