@@ -39,6 +39,27 @@ updates:
           - minor
           - patch
 
+    ignore:
+      # CameraX is held at the 1.5.x line by compileSdk 35 (buildconvention AppConfig.kt).
+      # camera-* 1.6.x refuses to build with "requires libraries and applications that depend on
+      # it to compile against version 36 or later of the Android APIs" — verified against 1.6.2.
+      # Raise compileSdk to 36 first, then drop this entry. Patch bumps within 1.5.x still come
+      # through, since those are the ones that cannot hit the ceiling.
+      - dependency-name: "androidx.camera:*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-major
+
+      # Not a build blocker — barcode-scanning is already at the newest version (17.3.0). It is
+      # held back because it ships a bundled native model, and the decode path is the one part of
+      # the scanner that neither CI nor an emulator can exercise: it needs a real camera pointed
+      # at a real barcode. So model-changing bumps should be taken deliberately and smoke-tested
+      # on a device, not auto-merged. Patch bumps still come through and warrant that same check.
+      - dependency-name: "com.google.mlkit:barcode-scanning"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-major
+
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

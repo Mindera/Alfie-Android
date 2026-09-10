@@ -25,6 +25,16 @@ import java.util.concurrent.Executors
  *
  * [isActive] gates the analyzer, not the preview: once a barcode has won, frames stop being
  * handed to ML Kit while the image stays on screen through the navigation transition.
+ *
+ * Known, benign: entering the scanner opens the camera twice —
+ * `OPENING → OPEN → CLOSING → OPENING → OPEN`, the second open landing ~300ms in, alongside a
+ * second "Surface requested by Preview". [PreviewView]'s surface is recreated once during initial
+ * layout, which invalidates the Preview use case and makes CameraX rebind. It is not caused by
+ * this file's ordering: attaching the analyzer before [LifecycleCameraController.bindToLifecycle],
+ * attaching the preview surface before it, and swapping
+ * [PreviewView.ImplementationMode.COMPATIBLE] for `PERFORMANCE` were each measured and all three
+ * produce the identical five transitions. Don't re-chase it from here — the cost is one extra
+ * camera open on entry, and removing it means not letting `PreviewView` own the surface.
  */
 @Composable
 internal fun CameraPreview(
