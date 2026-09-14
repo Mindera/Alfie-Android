@@ -14,7 +14,6 @@ import com.mindera.alfie.repository.bag.BagProduct
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.product.model.Variant
 import com.mindera.alfie.repository.product.model.colorOptionValue
-import com.mindera.alfie.repository.product.model.resolveDefaultVariant
 import com.mindera.alfie.repository.product.model.sizeOptionValue
 import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
@@ -55,8 +54,12 @@ internal class BagUiFactory @Inject constructor() {
         )
     }
 
+    // No fallback to the default variant: the bag line is identified by (productId, variantSku), so
+    // substituting another variant would show its image, options and price under the saved line's
+    // SKU — and feed the wrong number into the total. An unknown SKU resolves to null, which renders
+    // the line as unavailable.
     private fun Product.variantFor(variantSku: String): Variant? =
-        variants.firstOrNull { it.sku == variantSku } ?: resolveDefaultVariant()
+        variants.firstOrNull { it.sku == variantSku }
 
     private fun BagLine.toBagProductUi(
         onProductClick: ClickEventOneArg<String>

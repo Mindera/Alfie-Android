@@ -49,7 +49,9 @@ fun InlineMessage(
             text = message,
             style = theme.typography.label.small,
             color = theme.color.content.contentPrimary,
-            modifier = Modifier.fillMaxWidth()
+            // Figma gives the message `flex-[1_0_0]`: it takes what is left after the icon and gap.
+            // fillMaxWidth() would claim the whole row and push the tail past the right edge.
+            modifier = Modifier.weight(1f)
         )
     }
 }

@@ -93,6 +93,31 @@ internal class BagViewModelTest {
     }
 
     @Test
+    fun `WHEN only some products fail to load THEN show the error state rather than a short bag`() = runTest {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(bagProducts)) }
+        // The first product loads, the second does not.
+        coEvery { getProductUseCase(bagProducts[0].productId) } returns UseCaseResult.Success(products[0])
+        coEvery { getProductUseCase(bagProducts[1].productId) } returns UseCaseResult.Error(mockk())
+        coEvery {
+            bagUiFactory(
+                bagProducts = bagProducts,
+                products = listOf(products[0]),
+                onProductClick = any()
+            )
+        } returns singleLineBagContentUi
+
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            delay(300)
+            val result = awaitItem()
+            assertEquals(BagUiState.Error, result)
+
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
     fun `WHEN the bag itself is empty THEN show the empty state`() = runTest {
         coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(emptyList())) }
         coEvery {

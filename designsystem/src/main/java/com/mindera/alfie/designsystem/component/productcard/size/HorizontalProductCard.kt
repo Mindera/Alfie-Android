@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -50,6 +51,9 @@ private val IMAGE_WIDTH = 114.333.dp
 
 // Figma draws the overflow control as a fixed 32dp square (node 3659:49291).
 private val OVERFLOW_BUTTON_SIZE = 32.dp
+
+// Android's minimum touch target, applied to the overflow control without changing its drawn size.
+private val OVERFLOW_TOUCH_TARGET_SIZE = 48.dp
 
 // Unavailable rows dim their image to 50% (node 673:90047). Theme.alpha has no 50% step.
 private const val UNAVAILABLE_IMAGE_ALPHA = .5f
@@ -266,6 +270,8 @@ private fun QuantityAndPrice(
         Price(
             item = productCard.price,
             size = PriceSize.Medium,
+            // The price dims with the rest of the row when the variant is unavailable (node 673:90047).
+            overrideColor = contentColor,
             modifier = Modifier
                 .shimmer(
                     isShimmering = isLoading,
@@ -284,20 +290,25 @@ private fun OverflowButton(
     val theme = LocalTheme.current
     Box(
         contentAlignment = Alignment.Center,
-        // Figma fixes this control at 32dp, which is under the 48dp minimum touch target.
-        // minimumInteractiveComponentSize() would fix that but inflates the reported size to 48dp
-        // and narrows the product details column, so the design wins here and the touch target is
-        // raised separately — the same call PR #39 made for the Clear link (ALFMOB-507).
-        modifier = Modifier
-            .size(OVERFLOW_BUTTON_SIZE)
-            .clickable(role = Role.Button, onClick = onClick)
+        // Figma fixes the drawn control at 32dp, which is under the 48dp minimum touch target — and
+        // this button is the only tap route to the swipe actions, so it has to be comfortably
+        // hittable. requiredSize ignores the parent's constraints, so the touch area grows to 48dp
+        // while the row still reserves Figma's 32dp and the layout is unchanged.
+        modifier = Modifier.size(OVERFLOW_BUTTON_SIZE)
     ) {
-        Icon(
-            painter = painterResource(id = AlfieIcons.More),
-            contentDescription = stringResource(id = R.string.product_card_more_options_a11y),
-            tint = contentColor,
-            modifier = Modifier.size(theme.sizing.icon.medium)
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .requiredSize(OVERFLOW_TOUCH_TARGET_SIZE)
+                .clickable(role = Role.Button, onClick = onClick)
+        ) {
+            Icon(
+                painter = painterResource(id = AlfieIcons.More),
+                contentDescription = stringResource(id = R.string.product_card_more_options_a11y),
+                tint = contentColor,
+                modifier = Modifier.size(theme.sizing.icon.medium)
+            )
+        }
     }
 }
 

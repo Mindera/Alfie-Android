@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -49,24 +50,28 @@ fun Price(
     item: PriceType,
     size: PriceSize,
     modifier: Modifier = Modifier,
-    orientation: PriceOrientation = PriceOrientation.Horizontal
+    orientation: PriceOrientation = PriceOrientation.Horizontal,
+    overrideColor: Color? = null
 ) {
     when (item) {
         is PriceType.Default -> PriceDefault(
             price = item,
             size = size,
+            overrideColor = overrideColor,
             modifier = modifier
         )
         is PriceType.Range -> PriceRange(
             price = item,
             size = size,
             orientation = orientation,
+            overrideColor = overrideColor,
             modifier = modifier
         )
         is PriceType.Sale -> PriceSale(
             price = item,
             size = size,
             orientation = orientation,
+            overrideColor = overrideColor,
             modifier = modifier
         )
     }
@@ -76,13 +81,14 @@ fun Price(
 private fun PriceDefault(
     price: PriceType.Default,
     size: PriceSize,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    overrideColor: Color? = null
 ) {
     Text(
         modifier = modifier,
         text = price.price,
         style = size.valueStyle(),
-        color = LocalTheme.current.color.content.contentPrimary
+        color = overrideColor ?: LocalTheme.current.color.content.contentPrimary
     )
 }
 
@@ -91,11 +97,13 @@ private fun PriceSale(
     price: PriceType.Sale,
     size: PriceSize,
     orientation: PriceOrientation,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    overrideColor: Color? = null
 ) {
     // The DS uses content/content-primary for the sale price — there is no error/red treatment.
-    val fullPriceStyle = size.wasPriceStyle()
-    val salePriceStyle = size.valueStyle().copy(color = LocalTheme.current.color.content.contentPrimary)
+    val fullPriceStyle = size.wasPriceStyle().let { style -> overrideColor?.let { style.copy(color = it) } ?: style }
+    val salePriceStyle = size.valueStyle()
+        .copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
     when (orientation) {
         PriceOrientation.Horizontal -> SaleHorizontal(
             modifier = modifier,
@@ -117,14 +125,16 @@ private fun PriceRange(
     price: PriceType.Range,
     size: PriceSize,
     orientation: PriceOrientation,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    overrideColor: Color? = null
 ) {
-    val style = size.valueStyle().copy(color = LocalTheme.current.color.content.contentPrimary)
+    val style = size.valueStyle().copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
     when (orientation) {
         PriceOrientation.Horizontal -> RangeHorizontal(
             modifier = modifier,
             price = price,
-            style = style
+            style = style,
+            separatorColor = overrideColor
         )
         PriceOrientation.Vertical -> RangeVertical(
             modifier = modifier,
@@ -211,7 +221,8 @@ private fun RangeVertical(
 private fun RangeHorizontal(
     price: PriceType.Range,
     style: TextStyle,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    separatorColor: Color? = null
 ) {
     // The DS renders the bounds bold and the separator at regular weight, so this cannot collapse
     // into a single Text. Gap is spacing/spacing-xxs.
@@ -223,7 +234,7 @@ private fun RangeHorizontal(
         Text(
             text = PRICE_RANGE_SEPARATOR,
             style = LocalTheme.current.typography.body.medium,
-            color = LocalTheme.current.color.content.contentPrimary
+            color = separatorColor ?: LocalTheme.current.color.content.contentPrimary
         )
         Text(text = price.endPrice, style = style)
     }

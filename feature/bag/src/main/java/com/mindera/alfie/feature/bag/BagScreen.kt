@@ -154,11 +154,13 @@ private fun BagList(
                 }
             }
         }
-        // Checkout is deferred to the Themed web surfaces story, so the CTA is rendered without a
-        // destination rather than pointed somewhere the design has not specified.
+        // Checkout is deferred to the Themed web surfaces story and the app has no checkout
+        // destination yet, so the CTA is disabled rather than left enabled and inert — a primary
+        // button that silently does nothing on tap is worse than one that reads as unavailable.
         BagSummary(
             summary = content.summary,
-            onContinueClick = { }
+            onContinueClick = { },
+            isContinueEnabled = false
         )
     }
 }

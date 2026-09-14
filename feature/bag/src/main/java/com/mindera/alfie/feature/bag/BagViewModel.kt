@@ -68,11 +68,14 @@ internal class BagViewModel @Inject constructor(
                             products = getBagProductDetails(bagProducts),
                             onProductClick = { handle -> openProduct(handle) }
                         )
+                        // One line per distinct variant; anything missing means a product fetch
+                        // failed. Publishing what did load would show a short bag under a total
+                        // that silently undercounts what the user owes, so surface the retry
+                        // instead — including the case where nothing loaded at all.
+                        val expectedLines = bagProducts.distinct().size
                         _state.value = when {
                             bagProducts.isEmpty() -> BagUiState.Data.Empty
-                            // Entries exist but none could be mapped, so every product fetch failed.
-                            // Telling the user their bag is empty would be a lie; offer a retry.
-                            content.items.isEmpty() -> BagUiState.Error
+                            content.items.size < expectedLines -> BagUiState.Error
                             else -> BagUiState.Data.Loaded(content)
                         }
                     },

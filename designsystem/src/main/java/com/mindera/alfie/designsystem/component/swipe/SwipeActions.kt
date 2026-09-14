@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -73,13 +75,24 @@ fun SwipeActions(
     }
 
     var revealWidthPx by remember { mutableIntStateOf(0) }
+    // While the row is shut the panels sit behind opaque content, but they would still be focusable
+    // and activatable by TalkBack and switch access. Gate them on the row actually being revealed —
+    // targetValue covers the drag that is still settling open.
+    val isRevealed by remember(state) {
+        derivedStateOf {
+            state.draggableState.currentValue == SwipeActionsAnchor.Open ||
+                state.draggableState.targetValue == SwipeActionsAnchor.Open
+        }
+    }
 
     Box(modifier = modifier) {
         // matchParentSize keeps the backdrop out of the Box's own sizing, so the row is as tall as
         // the content and fillMaxHeight below stays bounded inside a lazy list item.
         Box(
             contentAlignment = Alignment.CenterEnd,
-            modifier = Modifier.matchParentSize()
+            modifier = Modifier
+                .matchParentSize()
+                .then(if (isRevealed) Modifier else Modifier.clearAndSetSemantics { })
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(LocalTheme.current.spacing.spacing4),
@@ -99,6 +112,7 @@ fun SwipeActions(
                 actions.forEach { action ->
                     SwipeActionPanel(
                         action = action,
+                        isEnabled = isRevealed,
                         onClick = {
                             action.onClick()
                             state.close()
@@ -131,6 +145,7 @@ fun SwipeActions(
 @Composable
 private fun SwipeActionPanel(
     action: SwipeAction,
+    isEnabled: Boolean,
     onClick: () -> Unit
 ) {
     val theme = LocalTheme.current
@@ -146,7 +161,7 @@ private fun SwipeActionPanel(
             .width(ACTION_PANEL_WIDTH)
             .fillMaxHeight()
             .background(action.type.backgroundColor())
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(enabled = isEnabled, role = Role.Button, onClick = onClick)
             .padding(
                 horizontal = theme.spacing.spacing16,
                 vertical = theme.spacing.spacing8

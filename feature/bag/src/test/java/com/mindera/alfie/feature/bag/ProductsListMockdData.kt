@@ -134,3 +134,8 @@ internal val emptyBagContentUi = BagContentUi(
     items = persistentListOf(),
     summary = BagSummaryUi(totalFormatted = "")
 )
+
+internal val singleLineBagContentUi = BagContentUi(
+    items = persistentListOf(bagProductUi[0]),
+    summary = BagSummaryUi(totalFormatted = "$100.00")
+)

@@ -34,7 +34,8 @@ import com.mindera.alfie.feature.bag.models.BagSummaryUi
 internal fun BagSummary(
     summary: BagSummaryUi,
     onContinueClick: ClickEvent,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isContinueEnabled: Boolean = true
 ) {
     val theme = LocalTheme.current
     Column(modifier = modifier.background(theme.color.surface.backgroundPrimary)) {
@@ -76,6 +77,7 @@ internal fun BagSummary(
                 buttonSize = ButtonSize.Medium,
                 text = stringResource(id = R.string.bag_continue_cta),
                 onClick = onContinueClick,
+                isEnabled = isContinueEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag(BAG_CONTINUE_CTA)

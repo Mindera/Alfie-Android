@@ -128,6 +128,28 @@ class BagUiFactoryTest {
     }
 
     @Test
+    fun `invoke - WHEN the saved sku is gone THEN the line is unavailable rather than another variant`() = runTest {
+        // The product still loads, but no longer offers the variant the bag holds.
+        val renamedSku = products.map { product ->
+            product.copy(variants = product.variants.map { it.copy(sku = "some-other-sku") })
+        }
+
+        val content = uiFactory(
+            bagProducts = bagProducts,
+            products = renamedSku,
+            onProductClick = { }
+        )
+
+        val line = content.items[0].productCardData
+        assertFalse(line.isAvailable)
+        assertEquals(BagItemNotice.Unavailable, content.items[0].notice)
+        // Nothing from the substituted variant leaks into the line, and it adds nothing to the total.
+        assertEquals("", line.reference)
+        assertEquals("", line.color)
+        assertEquals("", content.summary.totalFormatted)
+    }
+
+    @Test
     fun `invoke - WHEN a product has no variants THEN the line is unavailable and says so`() = runTest {
         val variantless = products.map { it.copy(variants = emptyList()) }
 
