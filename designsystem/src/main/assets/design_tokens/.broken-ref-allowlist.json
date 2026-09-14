@@ -1,7 +1,4 @@
 {
-  "missingTargets": [
-    "typography-font-weight-regular",
-    "typography-font-weight-medium"
-  ],
-  "fix_strategy": "Define in .primitives.alfie-theme.tokens.json (regular: 400, medium: 500). Remove entries when fix lands."
+  "missingTargets": [],
+  "fix_strategy": "Resolved: the in-house figma-plugin/ exporter includes FONT_STYLE-scoped primitives that the third-party Design Token Exporter plugin filtered out, so typography-font-weight-regular/medium are no longer missing."
 }

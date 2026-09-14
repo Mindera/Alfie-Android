@@ -6,7 +6,9 @@
     { "file": "screen-size.wide-(xl).tokens.json",  "token": "typography-font-family-brand" },
     { "file": "system.ios.tokens.json",             "token": "typography-font-family-system-brand" },
     { "file": "system.android.tokens.json",         "token": "typography-font-family-system-brand" },
-    { "file": "system.web.tokens.json",             "token": "typography-font-family-system-brand" }
+    { "file": "system.web.tokens.json",             "token": "typography-font-family-system-brand" },
+    { "file": "sizing.selfridges-theme.tokens.json","token": "border-border-weight-default" },
+    { "file": "sizing.selfridges-theme.tokens.json","token": "border-border-weight-heavy" }
   ],
   "upstream_issue": "Figma plugin: Design Token Exporter — file when reproducible"
 }

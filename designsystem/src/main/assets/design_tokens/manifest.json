@@ -9,8 +9,8 @@
     },
     ".primitives": {
       "modes": {
-        "alfie-theme": [
-          ".primitives.alfie-theme.tokens.json"
+        "selfridges-theme": [
+          ".primitives.selfridges-theme.tokens.json"
         ]
       }
     },
@@ -32,8 +32,8 @@
     },
     "sizing": {
       "modes": {
-        "alfie-theme": [
-          "sizing.alfie-theme.tokens.json"
+        "selfridges-theme": [
+          "sizing.selfridges-theme.tokens.json"
         ]
       }
     },
@@ -52,18 +52,15 @@
     },
     "theme": {
       "modes": {
-        "alfie-theme": [
-          "theme.alfie-theme.tokens.json"
-        ],
-        "new-brand-theme": [
-          "theme.new-brand-theme.tokens.json"
+        "selfridges-theme": [
+          "theme.selfridges-theme.tokens.json"
         ]
       }
     },
     "typography": {
       "modes": {
-        "alfie-theme": [
-          "typography.alfie-theme.tokens.json"
+        "selfridges-theme": [
+          "typography.selfridges-theme.tokens.json"
         ]
       }
     }

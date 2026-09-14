@@ -37,6 +37,7 @@ interface ColorContent {
     val contentPrimary: Color
     val contentPrimaryActive: Color
     val contentPrimaryDisabled: Color
+    val contentSecondary: Color
     val contentTerciary: Color
 }
 
@@ -44,6 +45,7 @@ interface ColorContent {
 interface ColorBorder {
     val medium: Color
     val soft: Color
+    val strong: Color
 }
 
 @Immutable
@@ -103,11 +105,13 @@ class DefaultColors(private val primitive: Primitives) : Colors {
         override val contentPrimary = primitive.colors.neutrals800
         override val contentPrimaryActive = primitive.colors.neutrals0
         override val contentPrimaryDisabled = primitive.colors.neutrals400
+        override val contentSecondary = primitive.colors.neutrals700
         override val contentTerciary = primitive.colors.neutrals500
     }
     override val border = object : ColorBorder {
-        override val medium = primitive.colors.neutrals400
+        override val medium = primitive.colors.neutrals300
         override val soft = primitive.colors.neutrals200
+        override val strong = primitive.colors.neutrals400
     }
     override val button = object : ColorButton {
         override val destructiveBackgroundDestructiveDefault = surface.backgroundDestructive
@@ -116,11 +120,11 @@ class DefaultColors(private val primitive: Primitives) : Colors {
         override val destructiveContentDestructiveDisabled = primitive.colors.neutrals500
         override val destructiveStrokeDestructiveDefault = surface.backgroundDestructive
         override val destructiveStrokeDestructiveDisabled = primitive.colors.neutrals300
-        override val primaryBackgroundPrimaryDefault = primitive.colors.brand500
+        override val primaryBackgroundPrimaryDefault = primitive.colors.brandSelfridges500
         override val primaryBackgroundPrimaryDisabled = primitive.colors.neutrals300
-        override val primaryContentPrimaryDefault = primitive.colors.neutrals0
+        override val primaryContentPrimaryDefault = primitive.colors.neutrals700
         override val primaryContentPrimaryDisabled = primitive.colors.neutrals500
-        override val primaryStrokePrimaryDefault = primitive.colors.brand500
+        override val primaryStrokePrimaryDefault = primitive.colors.brandSelfridges500
         override val primaryStrokePrimaryDisabled = primitive.colors.neutrals300
         override val secondaryBackgroundSecondaryDefault = primitive.colors.transparent
         override val secondaryBackgroundSecondaryDisabled = primitive.colors.transparent

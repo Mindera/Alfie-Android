@@ -25,7 +25,6 @@ interface Primitives {
 @Immutable
 interface PrimitiveColors {
     val brand0: Color
-    val brand02Color3: Color
     val brand100: Color
     val brand200: Color
     val brand300: Color
@@ -35,16 +34,16 @@ interface PrimitiveColors {
     val brand700: Color
     val brand800: Color
     val brand900: Color
-    val brandNewBrand0: Color
-    val brandNewBrand100: Color
-    val brandNewBrand200: Color
-    val brandNewBrand300: Color
-    val brandNewBrand400: Color
-    val brandNewBrand500: Color
-    val brandNewBrand600: Color
-    val brandNewBrand700: Color
-    val brandNewBrand800: Color
-    val brandNewBrand900: Color
+    val brandSelfridges0: Color
+    val brandSelfridges100: Color
+    val brandSelfridges200: Color
+    val brandSelfridges300: Color
+    val brandSelfridges400: Color
+    val brandSelfridges500: Color
+    val brandSelfridges600: Color
+    val brandSelfridges700: Color
+    val brandSelfridges800: Color
+    val brandSelfridges900: Color
     val neutrals0: Color
     val neutrals100: Color
     val neutrals200: Color
@@ -156,7 +155,6 @@ interface PrimitiveBorder {
 object LightPrimitives : Primitives {
     override val colors = object : PrimitiveColors {
         override val brand0 = Color(0xFFFFFFFF)
-        override val brand02Color3 = Color(0xFF7A5B00)
         override val brand100 = Color(0xFFF7F7F7)
         override val brand200 = Color(0xFFE9E9E9)
         override val brand300 = Color(0xFFCDCDCD)
@@ -166,16 +164,16 @@ object LightPrimitives : Primitives {
         override val brand700 = Color(0xFF2B2B2B)
         override val brand800 = Color(0xFF111111)
         override val brand900 = Color(0xFF06080A)
-        override val brandNewBrand0 = Color(0xFFFFFFFF)
-        override val brandNewBrand100 = Color(0xFFFFFBE5)
-        override val brandNewBrand200 = Color(0xFFFFF5B8)
-        override val brandNewBrand300 = Color(0xFFFFE88A)
-        override val brandNewBrand400 = Color(0xFFFFDE5C)
-        override val brandNewBrand500 = Color(0xFFFFD100)
-        override val brandNewBrand600 = Color(0xFFDBB000)
-        override val brandNewBrand700 = Color(0xFFB89000)
-        override val brandNewBrand800 = Color(0xFF947100)
-        override val brandNewBrand900 = Color(0xFF7A5B00)
+        override val brandSelfridges0 = Color(0xFFFFFFFF)
+        override val brandSelfridges100 = Color(0xFFFFFBE5)
+        override val brandSelfridges200 = Color(0xFFFFF5B8)
+        override val brandSelfridges300 = Color(0xFFFFE88A)
+        override val brandSelfridges400 = Color(0xFFFFDE5C)
+        override val brandSelfridges500 = Color(0xFFFFD100)
+        override val brandSelfridges600 = Color(0xFFDBB000)
+        override val brandSelfridges700 = Color(0xFFB89000)
+        override val brandSelfridges800 = Color(0xFF947100)
+        override val brandSelfridges900 = Color(0xFF7A5B00)
         override val neutrals0 = Color(0xFFFFFFFF)
         override val neutrals100 = Color(0xFFF7F7F7)
         override val neutrals200 = Color(0xFFE9E9E9)
@@ -230,10 +228,7 @@ object LightPrimitives : Primitives {
     override val typography = object : PrimitiveTypography {
         override val fontFamily = object : PrimitiveFontFamilies {
             override val brand: FontFamily = FontFamily(
-                Font(R.font.libre_baskerville_regular, FontWeight.Normal),
-                Font(R.font.libre_baskerville_medium, FontWeight.W500),
-                Font(R.font.libre_baskerville_semibold, FontWeight.W600),
-                Font(R.font.libre_baskerville_bold, FontWeight.Bold),
+                Font(R.font.avalon_regular, FontWeight.Normal),
             )
             override val primaryAndroid: FontFamily = FontFamily(
                 Font(R.font.roboto_regular, FontWeight.Normal),

@@ -1,11 +1,15 @@
 {
   "border-medium": {
     "$type": "color",
-    "$value": "{colours-neutrals-400}"
+    "$value": "{colours-neutrals-300}"
   },
   "border-soft": {
     "$type": "color",
     "$value": "{colours-neutrals-200}"
+  },
+  "border-strong": {
+    "$type": "color",
+    "$value": "{colours-neutrals-400}"
   },
   "button-destructive-background-destructive-default": {
     "$type": "color",
@@ -33,7 +37,7 @@
   },
   "button-primary-background-primary-default": {
     "$type": "color",
-    "$value": "{colours-brand-new-brand-500}"
+    "$value": "{colours-brand-selfridges-500}"
   },
   "button-primary-background-primary-disabled": {
     "$type": "color",
@@ -41,7 +45,7 @@
   },
   "button-primary-content-primary-default": {
     "$type": "color",
-    "$value": "{colours-neutrals-0}"
+    "$value": "{colours-neutrals-700}"
   },
   "button-primary-content-primary-disabled": {
     "$type": "color",
@@ -49,7 +53,7 @@
   },
   "button-primary-stroke-primary-default": {
     "$type": "color",
-    "$value": "{colours-brand-new-brand-500}"
+    "$value": "{colours-brand-selfridges-500}"
   },
   "button-primary-stroke-primary-disabled": {
     "$type": "color",
@@ -130,6 +134,10 @@
   "content-content-primary-disabled": {
     "$type": "color",
     "$value": "{colours-neutrals-400}"
+  },
+  "content-content-secondary": {
+    "$type": "color",
+    "$value": "{colours-neutrals-700}"
   },
   "content-content-terciary": {
     "$type": "color",

@@ -10,6 +10,13 @@
       "value": 1
     }
   },
+  "border-border-weight-heavy": {
+    "$type": "dimension",
+    "$value": {
+      "unit": "px",
+      "value": 4
+    }
+  },
   "colours-brand-0": {
     "$type": "color",
     "$value": {
@@ -18,17 +25,6 @@
         1,
         1,
         1
-      ]
-    }
-  },
-  "colours-brand-02-color-3": {
-    "$type": "color",
-    "$value": {
-      "colorSpace": "srgb",
-      "components": [
-        0.478431,
-        0.356863,
-        0
       ]
     }
   },
@@ -131,7 +127,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-0": {
+  "colours-brand-selfridges-0": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -142,7 +138,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-100": {
+  "colours-brand-selfridges-100": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -153,7 +149,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-200": {
+  "colours-brand-selfridges-200": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -164,7 +160,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-300": {
+  "colours-brand-selfridges-300": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -175,7 +171,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-400": {
+  "colours-brand-selfridges-400": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -186,7 +182,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-500": {
+  "colours-brand-selfridges-500": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -197,7 +193,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-600": {
+  "colours-brand-selfridges-600": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -208,7 +204,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-700": {
+  "colours-brand-selfridges-700": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -219,7 +215,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-800": {
+  "colours-brand-selfridges-800": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -230,7 +226,7 @@
       ]
     }
   },
-  "colours-brand-new-brand-900": {
+  "colours-brand-selfridges-900": {
     "$type": "color",
     "$value": {
       "colorSpace": "srgb",
@@ -688,7 +684,7 @@
   },
   "typography-font-family-brand": {
     "$type": "fontFamily",
-    "$value": "Libre Baskerville"
+    "$value": "Avalon"
   },
   "typography-font-family-primary-android": {
     "$type": "fontFamily",

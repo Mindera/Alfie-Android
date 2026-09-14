@@ -1,0 +1,85 @@
+{
+  "border-border-weight-default": {
+    "$type": "dimension",
+    "$value": "{border-border-weight-default}"
+  },
+  "border-border-weight-heavy": {
+    "$type": "dimension",
+    "$value": "{border-border-weight-heavy}"
+  },
+  "icons-icon-large": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-32}"
+  },
+  "icons-icon-medium": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-24}"
+  },
+  "icons-icon-small": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-16}"
+  },
+  "icons-icon-xlarge": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-40}"
+  },
+  "interactive-small-padding-left-right": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-8}"
+  },
+  "interactive-small-padding-top-bottom": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-8}"
+  },
+  "radius-rounded": {
+    "$type": "dimension",
+    "$value": {
+      "unit": "px",
+      "value": 1000
+    }
+  },
+  "radius-soft": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-4}"
+  },
+  "radius-strong": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-16}"
+  },
+  "spacing-spacing-2xl": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-40}"
+  },
+  "spacing-spacing-2xs": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-4}"
+  },
+  "spacing-spacing-3xs": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-2}"
+  },
+  "spacing-spacing-lg": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-24}"
+  },
+  "spacing-spacing-md": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-16}"
+  },
+  "spacing-spacing-none": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-0}"
+  },
+  "spacing-spacing-sm": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-12}"
+  },
+  "spacing-spacing-xl": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-32}"
+  },
+  "spacing-spacing-xs": {
+    "$type": "dimension",
+    "$value": "{spacing-spacing-8}"
+  }
+}
