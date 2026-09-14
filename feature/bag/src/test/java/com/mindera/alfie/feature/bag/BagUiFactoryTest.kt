@@ -128,6 +128,20 @@ class BagUiFactoryTest {
     }
 
     @Test
+    fun `invoke - WHEN a product has no variants THEN the line is unavailable and says so`() = runTest {
+        val variantless = products.map { it.copy(variants = emptyList()) }
+
+        val content = uiFactory(
+            bagProducts = bagProducts,
+            products = variantless,
+            onProductClick = { }
+        )
+
+        assertFalse(content.items[0].productCardData.isAvailable)
+        assertEquals(BagItemNotice.Unavailable, content.items[0].notice)
+    }
+
+    @Test
     fun `invoke - WHEN a product failed to load THEN its line is skipped instead of throwing`() = runTest {
         val withUnknown = bagProducts + BagProduct(productId = "missing-product", variantSku = "missing")
 

@@ -69,12 +69,36 @@ internal class BagViewModelTest {
     }
 
     @Test
-    fun `WHEN the grouped bag has no items THEN update the state with the empty state`() = runTest {
-        givenBagLoads()
+    fun `WHEN the bag has entries but no product could be loaded THEN show the error state, not empty`() = runTest {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(bagProducts)) }
+        // Every product fetch fails, so the factory maps nothing.
+        coEvery { getProductUseCase(any()) } returns UseCaseResult.Error(mockk())
         coEvery {
             bagUiFactory(
                 bagProducts = bagProducts,
-                products = products,
+                products = emptyList(),
+                onProductClick = any()
+            )
+        } returns emptyBagContentUi
+
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            delay(300)
+            val result = awaitItem()
+            assertEquals(BagUiState.Error, result)
+
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `WHEN the bag itself is empty THEN show the empty state`() = runTest {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(emptyList())) }
+        coEvery {
+            bagUiFactory(
+                bagProducts = emptyList(),
+                products = emptyList(),
                 onProductClick = any()
             )
         } returns emptyBagContentUi

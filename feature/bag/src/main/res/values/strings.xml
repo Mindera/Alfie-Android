@@ -9,6 +9,7 @@
     <string name="bag_item_unavailable">Sorry, this item is not available anymore. Add it to your wishlist in case it gets back in stock.</string>
     <string name="bag_item_save">Save</string>
     <string name="bag_item_remove">Remove</string>
+    <string name="bag_item_saved">Saved to your wishlist</string>
     <string name="bag_item_save_a11y">Save %1$s to your wishlist</string>
     <string name="bag_item_remove_a11y">Remove %1$s from your bag</string>
     <plurals name="bag_item_low_stock">

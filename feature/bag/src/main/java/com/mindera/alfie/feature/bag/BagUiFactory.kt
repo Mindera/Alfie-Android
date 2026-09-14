@@ -82,12 +82,15 @@ internal class BagUiFactory @Inject constructor() {
     )
 
     private fun Variant?.toNotice(): BagItemNotice? = when {
-        this == null -> null
-        availableQuantity <= 0 -> BagItemNotice.Unavailable
+        // A line with no resolvable variant is rendered unavailable by `isAvailable`, so it needs
+        // the notice too — otherwise the row is dimmed with nothing explaining why.
+        this == null || availableQuantity <= 0 -> BagItemNotice.Unavailable
         availableQuantity <= LOW_STOCK_THRESHOLD -> BagItemNotice.LowStock(remaining = availableQuantity)
         else -> null
     }
 
+    // Assumes one currency across the bag: the amounts are summed raw and formatted with the first
+    // line's code. The catalogue is single-currency today; revisit if that ever stops being true.
     private fun List<BagLine>.toSummary(): BagSummaryUi {
         val total = sumOf { line -> (line.variant?.price?.amount?.amount ?: .0) * line.quantity }
         val currencyCode = firstNotNullOfOrNull { line -> line.variant?.price?.amount?.currencyCode }

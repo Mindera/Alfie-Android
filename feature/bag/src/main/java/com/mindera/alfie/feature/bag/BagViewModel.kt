@@ -68,10 +68,12 @@ internal class BagViewModel @Inject constructor(
                             products = getBagProductDetails(bagProducts),
                             onProductClick = { handle -> openProduct(handle) }
                         )
-                        _state.value = if (content.items.isEmpty()) {
-                            BagUiState.Data.Empty
-                        } else {
-                            BagUiState.Data.Loaded(content)
+                        _state.value = when {
+                            bagProducts.isEmpty() -> BagUiState.Data.Empty
+                            // Entries exist but none could be mapped, so every product fetch failed.
+                            // Telling the user their bag is empty would be a lie; offer a retry.
+                            content.items.isEmpty() -> BagUiState.Error
+                            else -> BagUiState.Data.Loaded(content)
                         }
                     },
                     onError = {
@@ -122,7 +124,14 @@ internal class BagViewModel @Inject constructor(
     internal fun onSaveClicked(bagProduct: BagProduct) {
         viewModelScope.launch {
             addToWishlistUseCase(bagProduct.productId).doOnResult(
-                onSuccess = { },
+                onSuccess = {
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Success,
+                            message = context.getString(R.string.bag_item_saved)
+                        )
+                    )
+                },
                 onError = {
                     showSnackbar(
                         SnackbarCustomVisuals(
