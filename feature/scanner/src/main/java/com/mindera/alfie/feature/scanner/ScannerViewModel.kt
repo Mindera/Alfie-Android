@@ -59,15 +59,17 @@ internal class ScannerViewModel @Inject constructor(
     }
 
     private fun onBarcodeDetected(rawValue: String) {
-        val handle = rawValue.trim()
-        if (handle.isEmpty()) return
+        val scanned = rawValue.trim()
+        if (scanned.isEmpty()) return
         if (!hasNavigated.compareAndSet(false, true)) return
 
         _state.update { ScannerUIState.Detected }
 
-        // The scanned value is passed straight through as the PDP handle. Barcodes are not
-        // product slugs, so a real EAN will usually land on PDP's not-found state until the BFF
-        // exposes a barcode lookup — see the feature plan.
+        // DEMO: the scan itself is real — ML Kit decoded `scanned` off an actual barcode and the
+        // single-fire gate above still applies — but the handle is substituted. See
+        // DEMO_PRODUCT_HANDLE for why, and remove both to restore the pass-through.
+        Timber.i("Scanned '%s'; opening demo product '%s'", scanned, DEMO_PRODUCT_HANDLE)
+        val handle = DEMO_PRODUCT_HANDLE
         navigateTo(
             screen = Screen.ProductDetails(args = productDetailsNavArgs(handle = handle)),
             navOptions = {
@@ -92,5 +94,24 @@ internal class ScannerViewModel @Inject constructor(
     @VisibleForTesting
     internal fun releaseScanner() {
         barcodeScanner.close()
+    }
+
+    internal companion object {
+        /**
+         * DEMO ONLY — delete this, and the substitution in [onBarcodeDetected], before any of
+         * this goes near main.
+         *
+         * The BFF cannot resolve a barcode: its whole Query root keys products by handle/slug or
+         * free-text search, and `barcodes` exists only as an output field on ProductVariant. So a
+         * real EAN scanned off a physical product resolves to nothing and lands on PDP's
+         * not-found state — which makes the feature impossible to show end to end. Pinning a
+         * known in-stock handle makes the full flow demo-able: scan, navigate, browse variants,
+         * add to bag.
+         *
+         * "t-shirt" is the richest fixture on the local BFF — 9 variants with stock on all of
+         * them, 3 colours x 3 sizes, 2 gallery images and a default variant — so the PDP has
+         * something to show rather than rendering a bare single-variant product.
+         */
+        const val DEMO_PRODUCT_HANDLE = "t-shirt"
     }
 }

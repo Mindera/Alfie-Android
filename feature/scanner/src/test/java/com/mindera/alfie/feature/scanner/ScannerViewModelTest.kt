@@ -34,19 +34,41 @@ internal class ScannerViewModelTest {
         uiEventEmitterDelegate = UIEventEmitterDelegate()
     )
 
+    // DEMO: the scanned value is deliberately discarded in favour of a known in-stock handle,
+    // because the BFF cannot resolve a barcode. Restore the pass-through assertions alongside
+    // ScannerViewModel.DEMO_PRODUCT_HANDLE.
     @Test
-    fun `handleEvent - WHEN a barcode is detected THEN navigates to the PDP with it as the handle`() =
+    fun `handleEvent - WHEN a barcode is detected THEN navigates to the demo product`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.uiEvent.test {
+            viewModel.handleEvent(ScannerEvent.OnBarcodeDetected(BARCODE))
+
+            val event = assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
+            // Only the screen is compared: NavigateToScreen carries a navOptions lambda, so
+            // whole-event equality would compare function identity and always fail.
+            assertEquals(
+                Screen.ProductDetails(
+                    args = productDetailsNavArgs(handle = ScannerViewModel.DEMO_PRODUCT_HANDLE)
+                ),
+                event.screen
+            )
+        }
+    }
+
+    @Test
+    fun `handleEvent - WHEN an unrelated barcode is scanned THEN it still opens the demo product`() =
         runTest {
             val viewModel = viewModel()
 
             viewModel.uiEvent.test {
-                viewModel.handleEvent(ScannerEvent.OnBarcodeDetected(BARCODE))
+                viewModel.handleEvent(ScannerEvent.OnBarcodeDetected("not-a-real-slug-0000"))
 
                 val event = assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
-                // Only the screen is compared: NavigateToScreen carries a navOptions lambda, so
-                // whole-event equality would compare function identity and always fail.
                 assertEquals(
-                    Screen.ProductDetails(args = productDetailsNavArgs(handle = BARCODE)),
+                    Screen.ProductDetails(
+                        args = productDetailsNavArgs(handle = ScannerViewModel.DEMO_PRODUCT_HANDLE)
+                    ),
                     event.screen
                 )
             }
@@ -77,7 +99,9 @@ internal class ScannerViewModelTest {
 
             val event = assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
             assertEquals(
-                Screen.ProductDetails(args = productDetailsNavArgs(handle = BARCODE)),
+                Screen.ProductDetails(
+                    args = productDetailsNavArgs(handle = ScannerViewModel.DEMO_PRODUCT_HANDLE)
+                ),
                 event.screen
             )
             expectNoEvents()
@@ -85,18 +109,14 @@ internal class ScannerViewModelTest {
     }
 
     @Test
-    fun `handleEvent - WHEN the barcode has surrounding whitespace THEN the handle is trimmed`() =
+    fun `handleEvent - WHEN the barcode is padded with whitespace THEN it still counts as a scan`() =
         runTest {
             val viewModel = viewModel()
 
             viewModel.uiEvent.test {
                 viewModel.handleEvent(ScannerEvent.OnBarcodeDetected("  $BARCODE  "))
 
-                val event = assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
-                assertEquals(
-                    Screen.ProductDetails(args = productDetailsNavArgs(handle = BARCODE)),
-                    event.screen
-                )
+                assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
             }
         }
 
@@ -121,11 +141,7 @@ internal class ScannerViewModelTest {
                 viewModel.handleEvent(ScannerEvent.OnBarcodeDetected("   "))
                 viewModel.handleEvent(ScannerEvent.OnBarcodeDetected(BARCODE))
 
-                val event = assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
-                assertEquals(
-                    Screen.ProductDetails(args = productDetailsNavArgs(handle = BARCODE)),
-                    event.screen
-                )
+                assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
             }
         }
 
