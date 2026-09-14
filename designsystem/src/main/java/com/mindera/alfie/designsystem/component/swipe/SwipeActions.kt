@@ -44,20 +44,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.roundToInt
 
-// Figma gives each hidden button a fixed 100dp width (nodes 3911:82892 / 3911:82893). It is a panel
-// width rather than a spacing step, so it has no primitive token.
-private val ACTION_PANEL_WIDTH = 100.dp
-
-/** Settle positions of a [SwipeActions] row. */
-enum class SwipeActionsAnchor { Closed, Open }
-
 /**
- * Horizontal swipe-to-reveal row — Figma "Hidden Buttons" (node `3911:82891`), used by the Bag line
- * item to expose Save and Remove.
+ * Horizontal swipe-to-reveal row.
  *
  * [content] slides left to uncover [actions], which are laid out end-aligned at the row's full
- * height with a `spacing/spacing-2xs` gutter. The row settles Open or Closed and stays there, and
- * closes itself once an action fires. Pass [state] to also open it from a button.
+ * height. The row settles Open or Closed and stays there, and closes itself once an action fires.
+ * Pass [state] to also open it from a button.
  *
  * Distinct from [SwipeAnchored], which drags vertically with a partial anchor for `BottomCard`.
  */
@@ -150,7 +142,6 @@ private fun SwipeActionPanel(
 ) {
     val theme = LocalTheme.current
     val contentColor = action.type.contentColor()
-    // Figma strokes each panel in its own background colour, so the border is a visual no-op.
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(
@@ -158,7 +149,8 @@ private fun SwipeActionPanel(
             alignment = Alignment.CenterVertically
         ),
         modifier = Modifier
-            .width(ACTION_PANEL_WIDTH)
+            // Panel width is fixed so every action reads the same regardless of label length.
+            .width(100.dp)
             .fillMaxHeight()
             .background(action.type.backgroundColor())
             .clickable(enabled = isEnabled, role = Role.Button, onClick = onClick)

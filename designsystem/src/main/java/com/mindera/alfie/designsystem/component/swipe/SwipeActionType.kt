@@ -4,15 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
-/**
- * Visual variants of a [SwipeAction] panel, mirroring the Figma "Button (Vertical)" variants used by
- * the Bag row's hidden buttons (node `3911:82891`).
- */
+/** Visual variants of a [SwipeAction] panel. */
 enum class SwipeActionType {
-    /** Transparent panel with primary content — Figma `button/terciary/background-terciary-default`. */
+    /** Transparent panel with primary content. */
     Neutral,
 
-    /** Filled destructive panel — Figma `button/destructive/background-destructive-default`. */
+    /** Filled destructive panel. */
     Destructive
 }
 

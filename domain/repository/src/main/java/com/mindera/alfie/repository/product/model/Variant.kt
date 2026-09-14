@@ -13,9 +13,8 @@ data class Variant(
     val options: List<VariantOption>,
     val media: List<Media.Image>,
     /**
-     * Units the BFF reports in stock for this variant (`inventory.available`). The Bag screen needs
-     * the count itself — not just "in stock" — to decide whether to surface the low-stock message,
-     * so this is stored and [available] is derived from it rather than the other way round.
+     * Units the BFF reports in stock for this variant. Stored as the count rather than a boolean so
+     * callers that need to know how many are left can, with [available] derived from it.
      */
     val availableQuantity: Int
 ) {

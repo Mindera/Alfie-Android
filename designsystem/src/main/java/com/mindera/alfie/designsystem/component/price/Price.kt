@@ -23,9 +23,8 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 private const val PRICE_RANGE_SEPARATOR = "-"
 
 /**
- * Every live price value renders bold — in the Design System (component set `3457:17306`) bold is not
- * a variant, it is the only treatment, and there is no red anywhere in the component. The struck
- * through was-price is the sole exception, in `content/content-terciary`.
+ * Every live price value renders bold — bold is not a variant, it is the only treatment, and there
+ * is no red anywhere in this component. The struck-through was-price is the sole exception.
  *
  * Note the DS has **no size axis**; [PriceSize] is an Android-only extension kept because
  * `HorizontalProductCard` needs a denser row. `Medium` is the DS size.

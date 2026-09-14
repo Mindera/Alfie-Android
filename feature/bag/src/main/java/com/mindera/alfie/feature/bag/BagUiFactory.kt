@@ -19,8 +19,8 @@ import kotlinx.collections.immutable.toImmutableList
 import javax.inject.Inject
 
 /**
- * At or below this many units left, the line surfaces the low-stock notice. Figma shows the message
- * reading "Only 2 items left!" but does not state the threshold, so this is a product assumption.
+ * At or below this many units left, the line surfaces the low-stock notice. The threshold is an
+ * assumption — the design shows the message but does not say when it appears.
  */
 internal const val LOW_STOCK_THRESHOLD = 5
 

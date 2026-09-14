@@ -19,8 +19,7 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 /**
- * Inline, non-dismissible notice attached to the content it describes — Figma "Inline Message"
- * (node `3689:31814`), used on the Bag line item for low-stock and unavailable-item copy.
+ * Inline, non-dismissible notice attached to the content it describes.
  *
  * Icon and text are top-aligned so a wrapping message keeps the icon on its first line.
  */
@@ -49,8 +48,8 @@ fun InlineMessage(
             text = message,
             style = theme.typography.label.small,
             color = theme.color.content.contentPrimary,
-            // Figma gives the message `flex-[1_0_0]`: it takes what is left after the icon and gap.
-            // fillMaxWidth() would claim the whole row and push the tail past the right edge.
+            // Takes what is left after the icon and gap; fillMaxWidth() would claim the whole row
+            // and push the tail past the right edge.
             modifier = Modifier.weight(1f)
         )
     }

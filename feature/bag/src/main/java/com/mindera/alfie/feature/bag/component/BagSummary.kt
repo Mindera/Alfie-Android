@@ -27,8 +27,7 @@ import com.mindera.alfie.feature.bag.R
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
 
 /**
- * Totals and checkout call to action pinned below the bag list — Figma "Purchase Summary"
- * (node `44:93925`): a soft top rule, the total, the shipping note, then a full-width primary CTA.
+ * Totals and checkout call to action, pinned below the bag list.
  */
 @Composable
 internal fun BagSummary(

@@ -1,7 +1,7 @@
 package com.mindera.alfie.feature.bag.models
 
 /**
- * Stock notice attached to a bag line — Figma "Inline Message" states (node `673:90047`).
+ * Stock notice attached to a bag line.
  *
  * Kept as a type rather than a formatted string so the factory stays free of Android resources and
  * the copy (including the low-stock plural) is resolved where a composition context exists.

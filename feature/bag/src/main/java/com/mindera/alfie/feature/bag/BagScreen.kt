@@ -49,8 +49,8 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
 
-// Figma shows three line items on the populated frame; the loading state stands in with the same
-// number of shimmering rows so the screen does not jump when the data lands.
+// Enough rows to fill the space a typical bag occupies, so the screen does not jump when the data
+// lands.
 private const val LOADING_PLACEHOLDER_COUNT = 3
 
 @Destination
@@ -66,10 +66,9 @@ internal fun BagScreen(
     val viewModel: BagViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Figma's Header (node 1:27215) centres the title and carries no actions. The Wishlist and
-    // Account shortcuts drop off: both are in the bottom bar, so nothing becomes unreachable.
-    // The back button Figma draws is deliberately not wired up — Bag is only ever reached as a root
-    // tab, so navigateUp() would pop the user out of the tab rather than go back.
+    // No actions: Wishlist and Account are both in the bottom bar, so nothing becomes unreachable.
+    // No navigation icon either — Bag is only ever reached as a root tab, so navigateUp() would pop
+    // the user out of the tab rather than go back.
     topBarState.textTopBar(
         title = stringResource(R.string.bag_screen_title),
         showNavigationIcon = false,
@@ -132,7 +131,7 @@ private fun BagList(
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             // No horizontal content padding: the swipe panels have to reach the screen edge, so the
-            // Figma 16dp margin is applied to each row's content instead.
+            // margin is applied to each row's content instead.
             verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing8),
             modifier = Modifier.weight(1f)
         ) {
@@ -165,7 +164,7 @@ private fun BagList(
     }
 }
 
-/** One bag row — Figma "Horizontal Product Card" (node `3004:3910`) plus its swipe actions. */
+/** One bag row: the product card, its stock notice, and the actions revealed by swiping. */
 @Composable
 private fun BagLineItem(
     item: BagProductUi,

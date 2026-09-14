@@ -121,8 +121,8 @@ internal class BagViewModel @Inject constructor(
     }
 
     /**
-     * Adds the product to the wishlist and leaves the bag untouched — the design exposes Save and
-     * Remove as separate actions, so Save is not a move.
+     * Adds the product to the wishlist and leaves the bag untouched: Save and Remove are separate
+     * actions, so saving is not a move.
      */
     internal fun onSaveClicked(bagProduct: BagProduct) {
         viewModelScope.launch {

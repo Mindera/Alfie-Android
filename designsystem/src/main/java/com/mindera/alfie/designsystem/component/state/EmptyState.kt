@@ -20,12 +20,9 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 /**
- * Full-area icon + message empty state — the modern Figma "Empty States" pattern, measured from the
- * empty Bag frame (node `673:90050`): a `sizing/icon/medium` glyph, `spacing/spacing-md` gap and an
- * unemphasised `body/medium` message, centred on both axes.
+ * Full-area empty state: an icon above a single line of copy, centred on both axes.
  *
  * Distinct from [StateMessage], which leads with a bold title and carries a subtitle and an action.
- * Use this where the design shows an icon and a single line of copy.
  */
 @Composable
 fun EmptyState(

@@ -28,17 +28,15 @@ sealed interface ProductCardType {
     val onRemoveClick: ClickEvent?
 
     /**
-     * Bag line item — Figma "Horizontal Product Card" (node `3004:3910`).
+     * Row-shaped card: image alongside the product's details, quantity and price.
      *
-     * [brand] is carried for the [ProductCardType] contract but is not drawn: the modern card leads
-     * with the product name and follows it with the variant reference, colour and size.
+     * [brand] is carried for the [ProductCardType] contract but is not drawn — this layout leads
+     * with the product name.
      *
-     * @param reference variant reference shown as "Ref. <value>".
-     * @param quantity units of this variant in the bag. Bag entries are one-per-unit, so a line
-     * stands for every unit of the same variant.
-     * @param isAvailable when false the row is dimmed to `content/content-terciary` per the
-     * unavailable-item state (node `673:90047`).
-     * @param onOverflowClick backs the trailing overflow button.
+     * @param reference variant reference, shown prefixed with "Ref.". Blank hides the row.
+     * @param quantity how many of this variant the row stands for.
+     * @param isAvailable when false the whole row is greyed out.
+     * @param onOverflowClick backs the trailing overflow button. Null hides it.
      */
     data class Horizontal(
         override val image: ImageUI,

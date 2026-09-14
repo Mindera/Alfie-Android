@@ -9,16 +9,10 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.designsystem.animation.standardAccelerate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-private const val HALF = .5f
-
-// Fling velocity above which the row settles to the far anchor, matching SwipeAnchored's threshold.
-private val VELOCITY_THRESHOLD: Dp = 125.dp
 
 /**
  * Hoisted state for a [SwipeActions] row, so the reveal can also be driven by a tap rather than only
@@ -59,8 +53,9 @@ fun rememberSwipeActionsState(): SwipeActionsState {
                 initialValue = SwipeActionsAnchor.Closed,
                 snapAnimationSpec = standardAccelerate(),
                 decayAnimationSpec = decayAnimationSpec,
-                positionalThreshold = { distance -> distance * HALF },
-                velocityThreshold = { with(density) { VELOCITY_THRESHOLD.toPx() } }
+                // Past halfway, or flung hard enough, the row settles to the far anchor.
+                positionalThreshold = { distance -> distance / 2 },
+                velocityThreshold = { with(density) { 125.dp.toPx() } }
             ),
             scope = scope
         )

@@ -44,34 +44,18 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import kotlinx.collections.immutable.persistentListOf
 
-// Figma pins the image at 114.333 x 152.444 with `shrink-0` and lets the info column absorb the rest
-// of the row (node 3004:3795). 152.444 / 114.333 is exactly 4:3, so the width alone drives the height
-// through Ratio.RATIO3x4 — and with it the row height, which the info column then stretches to.
-private val IMAGE_WIDTH = 114.333.dp
-
-// Figma draws the overflow control as a fixed 32dp square (node 3659:49291).
-private val OVERFLOW_BUTTON_SIZE = 32.dp
-
-// Android's minimum touch target, applied to the overflow control without changing its drawn size.
-private val OVERFLOW_TOUCH_TARGET_SIZE = 48.dp
-
-// Unavailable rows dim their image to 50% (node 673:90047). Theme.alpha has no 50% step.
-private const val UNAVAILABLE_IMAGE_ALPHA = .5f
-
 /**
- * Bag line item — Figma "Horizontal Product Card" (node `3004:3910`).
+ * Product card laid out as a row: a fixed-width image, then the product's details, quantity and
+ * price filling the rest of the width.
  *
- * The info column is stretched to the image's height, which is why the row is measured at
- * [IntrinsicSize.Min].
+ * The image's aspect ratio sets the row height and the info column stretches to match, which is why
+ * the row is measured at [IntrinsicSize.Min].
  *
- * D1: Figma sets the info column to `justify-between`, pinning the price to the image's bottom edge.
- * That assumes the four detail rows the mocks always show. Real catalogue entries include
- * single-variant products with no colour, size or reference, where the rule leaves ~105dp of dead
- * space mid-card. The block is centred instead, so a row reads the same whether the product
- * carries one detail line or four.
+ * The info column is centred rather than spread to the row's full height. Products vary in how many
+ * detail rows they have — a single-variant product may have nothing but a name — and spreading the
+ * content strands the name at the top with a large gap above the price.
  *
- * The card does not draw [ProductCardType.Horizontal.brand]: the modern design leads with the
- * product name and follows it with the variant reference, colour and size.
+ * [ProductCardType.Horizontal.brand] is not drawn: this layout leads with the product name.
  */
 @Composable
 internal fun HorizontalProductCard(
@@ -80,7 +64,7 @@ internal fun HorizontalProductCard(
     isLoading: Boolean = false
 ) {
     val theme = LocalTheme.current
-    // Unavailable rows drop every value to content/content-terciary (node 673:90047).
+    // An unavailable product is greyed out wholesale — image, text and price alike.
     val contentColor = if (productCard.isAvailable) {
         theme.color.content.contentPrimary
     } else {
@@ -101,9 +85,11 @@ internal fun HorizontalProductCard(
         Image(
             imageUI = productCard.image,
             ratio = Ratio.RATIO3x4,
-            alpha = if (productCard.isAvailable) DefaultAlpha else UNAVAILABLE_IMAGE_ALPHA,
+            alpha = if (productCard.isAvailable) DefaultAlpha else Theme.alpha.alpha50,
             modifier = Modifier
-                .width(IMAGE_WIDTH)
+                // Fixed, so the 3:4 ratio decides the row height and the info column absorbs
+                // whatever width is left.
+                .width(114.333.dp)
                 .background(theme.color.surface.foregroundPrimary)
                 .shimmer(isShimmering = isLoading)
                 .testTag(productCard.imageTestTag)
@@ -166,8 +152,8 @@ private fun ProductInfo(
                             .testTag(productCard.referenceTestTag)
                     )
                 }
-                // Single-variant products (beauty, fragrance) carry no colour or size options, and a
-                // bare "Color:" with nothing after it reads as broken. Drop the row instead.
+                // Single-variant products carry no colour or size option, and a bare "Color:" with
+                // nothing after it reads as broken. Drop the row instead.
                 if (productCard.color.isNotBlank() || isLoading) {
                     LabelledValue(
                         label = stringResource(id = R.string.product_card_color),
@@ -273,8 +259,7 @@ private fun QuantityAndPrice(
                 style = theme.typography.body.medium,
                 color = contentColor
             )
-            // Editing the quantity is designed in the Figma section titled "Edit Quantity - To
-            // discuss" (node 615:95163), so the affordance is drawn but not yet wired up.
+            // Presentational for now — picking a quantity is not implemented yet.
             Icon(
                 painter = painterResource(id = AlfieIcons.ChevronDown),
                 contentDescription = null,
@@ -285,7 +270,6 @@ private fun QuantityAndPrice(
         Price(
             item = productCard.price,
             size = PriceSize.Medium,
-            // The price dims with the rest of the row when the variant is unavailable (node 673:90047).
             overrideColor = contentColor,
             modifier = Modifier
                 .shimmer(
@@ -305,16 +289,15 @@ private fun OverflowButton(
     val theme = LocalTheme.current
     Box(
         contentAlignment = Alignment.Center,
-        // Figma fixes the drawn control at 32dp, which is under the 48dp minimum touch target — and
-        // this button is the only tap route to the swipe actions, so it has to be comfortably
-        // hittable. requiredSize ignores the parent's constraints, so the touch area grows to 48dp
-        // while the row still reserves Figma's 32dp and the layout is unchanged.
-        modifier = Modifier.size(OVERFLOW_BUTTON_SIZE)
+        modifier = Modifier.size(theme.sizing.icon.large)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .requiredSize(OVERFLOW_TOUCH_TARGET_SIZE)
+                // The control is drawn smaller than the minimum touch target. requiredSize ignores
+                // the parent's constraints, so the touch area grows without the row reserving more
+                // space for it or the layout shifting.
+                .requiredSize(theme.spacing.spacing48)
                 .clickable(role = Role.Button, onClick = onClick)
         ) {
             Icon(
