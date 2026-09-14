@@ -61,8 +61,14 @@ private const val UNAVAILABLE_IMAGE_ALPHA = .5f
 /**
  * Bag line item — Figma "Horizontal Product Card" (node `3004:3910`).
  *
- * The info column is stretched to the image's height so the product header sits at the top and the
- * quantity/price row at the bottom, which is why the row is measured at [IntrinsicSize.Min].
+ * The info column is stretched to the image's height, which is why the row is measured at
+ * [IntrinsicSize.Min].
+ *
+ * D1: Figma sets the info column to `justify-between`, pinning the price to the image's bottom edge.
+ * That assumes the four detail rows the mocks always show. Real catalogue entries include
+ * single-variant products with no colour, size or reference, where the rule leaves ~105dp of dead
+ * space mid-card. The block is centred instead, so a row reads the same whether the product
+ * carries one detail line or four.
  *
  * The card does not draw [ProductCardType.Horizontal.brand]: the modern design leads with the
  * product name and follows it with the variant reference, colour and size.
@@ -122,7 +128,10 @@ private fun ProductInfo(
 ) {
     val theme = LocalTheme.current
     Column(
-        verticalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(
+            space = theme.spacing.spacing8,
+            alignment = Alignment.CenterVertically
+        ),
         modifier = modifier
     ) {
         Row(verticalAlignment = Alignment.Top) {
@@ -157,22 +166,28 @@ private fun ProductInfo(
                             .testTag(productCard.referenceTestTag)
                     )
                 }
-                LabelledValue(
-                    label = stringResource(id = R.string.product_card_color),
-                    value = productCard.color,
-                    contentColor = contentColor,
-                    isLoading = isLoading,
-                    shimmerScale = Theme.scale.scale30,
-                    modifier = Modifier.testTag(productCard.colorTestTag)
-                )
-                LabelledValue(
-                    label = stringResource(id = R.string.product_card_size),
-                    value = productCard.size,
-                    contentColor = contentColor,
-                    isLoading = isLoading,
-                    shimmerScale = Theme.scale.scale20,
-                    modifier = Modifier.testTag(productCard.sizeTestTag)
-                )
+                // Single-variant products (beauty, fragrance) carry no colour or size options, and a
+                // bare "Color:" with nothing after it reads as broken. Drop the row instead.
+                if (productCard.color.isNotBlank() || isLoading) {
+                    LabelledValue(
+                        label = stringResource(id = R.string.product_card_color),
+                        value = productCard.color,
+                        contentColor = contentColor,
+                        isLoading = isLoading,
+                        shimmerScale = Theme.scale.scale30,
+                        modifier = Modifier.testTag(productCard.colorTestTag)
+                    )
+                }
+                if (productCard.size.isNotBlank() || isLoading) {
+                    LabelledValue(
+                        label = stringResource(id = R.string.product_card_size),
+                        value = productCard.size,
+                        contentColor = contentColor,
+                        isLoading = isLoading,
+                        shimmerScale = Theme.scale.scale20,
+                        modifier = Modifier.testTag(productCard.sizeTestTag)
+                    )
+                }
             }
             if (isLoading.not() && productCard.onOverflowClick != null) {
                 OverflowButton(
