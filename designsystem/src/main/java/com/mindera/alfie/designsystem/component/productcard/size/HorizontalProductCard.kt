@@ -270,7 +270,9 @@ private fun QuantityAndPrice(
         Price(
             item = productCard.price,
             size = PriceSize.Medium,
-            overrideColor = contentColor,
+            // Only unavailable rows override the colour — otherwise this would flatten the
+            // struck-through was-price on a sale row to the primary content colour.
+            overrideColor = contentColor.takeIf { productCard.isAvailable.not() },
             modifier = Modifier
                 .shimmer(
                     isShimmering = isLoading,

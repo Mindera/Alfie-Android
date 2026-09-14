@@ -128,6 +128,28 @@ class BagUiFactoryTest {
     }
 
     @Test
+    fun `invoke - WHEN a slug and sku split differently THEN the line keys stay distinct`() = runTest {
+        // Joined plainly, ("a-b", "c") and ("a", "b-c") both flatten to "a-b-c" — a duplicate key.
+        val entries = listOf(
+            BagProduct(productId = "a-b", variantSku = "c"),
+            BagProduct(productId = "a", variantSku = "b-c")
+        )
+        val catalogue = listOf(
+            products[0].copy(slug = "a-b", variants = products[0].variants.map { it.copy(sku = "c") }),
+            products[0].copy(slug = "a", variants = products[0].variants.map { it.copy(sku = "b-c") })
+        )
+
+        val content = uiFactory(
+            bagProducts = entries,
+            products = catalogue,
+            onProductClick = { }
+        )
+
+        assertEquals(2, content.items.size)
+        assertEquals(2, content.items.map { it.id }.toSet().size)
+    }
+
+    @Test
     fun `invoke - WHEN the saved sku is gone THEN the line is unavailable rather than another variant`() = runTest {
         // The product still loads, but no longer offers the variant the bag holds.
         val renamedSku = products.map { product ->

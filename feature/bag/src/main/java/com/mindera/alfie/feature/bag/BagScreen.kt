@@ -200,9 +200,10 @@ private fun BagLineItem(
         )
     }
     // The overflow button gives the same two actions a tap path — swipe-only actions are out of
-    // reach for switch-access and keyboard users.
+    // reach for switch-access and keyboard users. It toggles so that path can also dismiss the row
+    // without committing to Save or Remove.
     val card = remember(item.productCardData, swipeState) {
-        item.productCardData.copy(onOverflowClick = swipeState::open)
+        item.productCardData.copy(onOverflowClick = swipeState::toggle)
     }
 
     SwipeActions(

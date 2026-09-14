@@ -64,8 +64,10 @@ internal class BagUiFactory @Inject constructor() {
     private fun BagLine.toBagProductUi(
         onProductClick: ClickEventOneArg<String>
     ) = BagProductUi(
-        // Quantity is grouped per variant, so the SKU has to be part of the list key.
-        id = "${bagProduct.productId}-${bagProduct.variantSku}",
+        // Quantity is grouped per variant, so the SKU has to be part of the list key. Length-prefixed
+        // because both halves may contain the separator: joining them plainly lets ("a-b", "c") and
+        // ("a", "b-c") collapse to the same key, which the list rejects as a duplicate.
+        id = "${bagProduct.productId.length}:${bagProduct.productId}:${bagProduct.variantSku}",
         bagProduct = bagProduct,
         notice = variant.toNotice(),
         productCardData = ProductCardType.Horizontal(

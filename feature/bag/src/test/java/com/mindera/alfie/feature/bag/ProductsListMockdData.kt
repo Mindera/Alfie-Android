@@ -92,7 +92,7 @@ internal val bagProducts = listOf(
 
 internal val bagProductUi = persistentListOf(
     BagProductUi(
-        id = "123456-product-variant1",
+        id = "14:123456-product:variant1",
         bagProduct = bagProducts[0],
         notice = BagItemNotice.LowStock(remaining = 1),
         productCardData = ProductCardType.Horizontal(
@@ -108,7 +108,7 @@ internal val bagProductUi = persistentListOf(
         )
     ),
     BagProductUi(
-        id = "654321-product-variant11",
+        id = "14:654321-product:variant11",
         bagProduct = bagProducts[1],
         notice = null,
         productCardData = ProductCardType.Horizontal(

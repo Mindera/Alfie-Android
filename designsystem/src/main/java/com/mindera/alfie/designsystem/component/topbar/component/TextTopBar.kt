@@ -31,6 +31,10 @@ private val PADDING_END_DEFAULT = Theme.spacing.spacing16 - Theme.spacing.spacin
 // Mirrors the navigation icon on the opposite side.
 private val PADDING_ICON_EQUIVALENT = Theme.iconSize.large
 private val PADDING_END_ICON_EQUIVALENT = Theme.iconSize.large - Theme.spacing.spacing12
+
+// A single action sits in a wider slot than the navigation icon, leaving the title slot lopsided;
+// this makes up the difference so the title lands on the screen's centre rather than the slot's.
+private val PADDING_START_BACK_ONE_ICON = Theme.spacing.spacing16
 private val PADDING_START_NO_BACK_ONE_ICON = 24.dp // 8 + 16 (default)
 private val PADDING_START_NO_BACK_TWO_ICONS = 56.dp // 32 (icon) + 8 + 16 (default)
 private val PADDING_END_NO_BACK_WITH_ICONS = 8.dp // to avoid overlap with actions
@@ -88,6 +92,9 @@ private fun TopBarScope.CenterTopBar(
         state.showNavigationIcon && isSearchOpen.not() && state.actions.size > 1 -> Modifier
             .fillMaxWidth()
             .padding(start = PADDING_ICON_EQUIVALENT)
+        state.showNavigationIcon && isSearchOpen.not() && state.actions.size == 1 -> Modifier
+            .fillMaxWidth()
+            .padding(start = PADDING_START_BACK_ONE_ICON)
         else -> Modifier.fillMaxWidth()
     }
 
