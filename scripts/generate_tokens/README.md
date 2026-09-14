@@ -31,7 +31,7 @@ git -C ../Alfie-Mobile-Design-Tokens checkout main && git -C ../Alfie-Mobile-Des
 
 # 2. Copy updated JSON files into the app repo
 cp ../Alfie-Mobile-Design-Tokens/design-tokens/*.json \
-   ../Alfie-Mobile-Design-Tokens/design-tokens/.primitives.alfie-theme.tokens.json \
+   ../Alfie-Mobile-Design-Tokens/design-tokens/.primitives.*.tokens.json \
    ../Alfie-Mobile-Design-Tokens/design-tokens/.documentation.mode-1.tokens.json \
    ../Alfie-Mobile-Design-Tokens/.cycle-allowlist.json \
    ../Alfie-Mobile-Design-Tokens/.broken-ref-allowlist.json \
@@ -60,6 +60,25 @@ All files land in `com.mindera.alfie.designsystem.tokens` alongside `NewTheme.kt
 | `Spacing.kt` | `Spacing` | All spacing values in `Dp` |
 | `Sizing.kt` | `Sizing` | Icon sizes, radii, and interactive paddings in `Dp`/`RoundedCornerShape` |
 
+## Brand mode
+
+The four brand-scoped collections — `.primitives`, `theme`, `sizing`, `typography` — are named
+after the Figma brand mode (`.primitives.<mode>.tokens.json`), and that mode is renamed whenever
+the brand is (`alfie-theme` → `selfridges-theme`). The generator reads the current name out of
+`manifest.json` rather than hardcoding one, and prints it on each run:
+
+```
+  Brand mode: selfridges-theme
+```
+
+Two consequences when a rename lands:
+
+- The glob in step 2 copies the new files, but the **previous brand's files stay behind**. Delete
+  any file in `assets/design_tokens/` that `manifest.json` no longer references — they are dead
+  weight and mislead the next reader.
+- The generator fails loudly if `manifest.json` lists more than one mode for those collections; a
+  genuinely multi-brand export needs it taught which brand to emit.
+
 ## Token resolution
 
 The generator resolves tokens using the **Android / Small-screen** platform profile:
@@ -67,4 +86,14 @@ The generator resolves tokens using the **Android / Small-screen** platform prof
 - Screen size: `screen-size.small-(s).tokens.json`
 - Allow-listed cycles and broken refs are handled per `.cycle-allowlist.json` / `.broken-ref-allowlist.json`.
 
-Font families are currently placeholder `FontFamily.Default` — see `TODO(fonts):` comments in the generated files.
+### Fonts
+
+`designsystem/src/main/assets/font/` is **gitignored** — it is a local staging area, not a
+committed source. Each family needs its own folder named after the font family (spaces →
+underscores) containing `static/<Family>-<Weight>.ttf`, e.g. `Avalon/static/Avalon-Regular.ttf`.
+The generator imports those into `designsystem/src/main/res/font/` and emits the `FontFamily`
+code; only the imported `res/font` copies are committed.
+
+This means **a fresh clone cannot run the generator** until the staging folders are populated —
+get the TTFs from design. Only the weights the typography styles actually reference are required;
+the rest of the standard set is imported opportunistically and skipped silently when absent.

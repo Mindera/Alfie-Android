@@ -54,6 +54,39 @@ def _load(path):
         return json.load(f)
 
 
+def brand_token_file(manifest, collection, tokens_dir):
+    """Path to the file backing a brand-scoped `collection`, per manifest.json.
+
+    The Figma export names these files after the brand mode — `.primitives.<mode>.tokens.json`,
+    `theme.<mode>.tokens.json` and so on — and renames them whenever the brand does
+    (alfie-theme -> selfridges-theme). Reading the name out of the manifest keeps this script
+    working across those renames instead of pinning one brand's name in four places.
+
+    Only single-mode collections go through here. `screen-size` and `system` are multi-mode and
+    are chosen deliberately elsewhere (Android / Small-screen), not by whatever the export lists.
+    """
+    modes = manifest.get("collections", {}).get(collection, {}).get("modes", {})
+    if len(modes) != 1:
+        raise SystemExit(
+            f"✗ manifest.json: expected exactly one mode for collection '{collection}', "
+            f"found {sorted(modes) or 'none'}. A multi-brand export needs this script taught "
+            f"which brand to emit."
+        )
+    (mode, files), = modes.items()
+    if len(files) != 1:
+        raise SystemExit(
+            f"✗ manifest.json: expected exactly one file for '{collection}' mode '{mode}', "
+            f"found {files}"
+        )
+    path = tokens_dir / files[0]
+    if not path.exists():
+        raise SystemExit(
+            f"✗ manifest.json references '{files[0]}' for '{collection}', but it is not in "
+            f"{tokens_dir}. Re-copy the export."
+        )
+    return path, mode
+
+
 def _load_tokens(path):
     """Load a token file, returning only non-doc entries that have a $value."""
     raw = _load(path)
@@ -1064,10 +1097,17 @@ def main():
 
     print(f"Loading tokens from {tokens_dir} …")
 
-    primitives = _load_tokens(tokens_dir / ".primitives.alfie-theme.tokens.json")
-    theme_colors = _load_tokens(tokens_dir / "theme.alfie-theme.tokens.json")
-    sizing = _load_tokens(tokens_dir / "sizing.alfie-theme.tokens.json")
-    typo_tokens = _load_tokens(tokens_dir / "typography.alfie-theme.tokens.json")
+    manifest = _load(tokens_dir / "manifest.json")
+    primitives_path, brand = brand_token_file(manifest, ".primitives", tokens_dir)
+    theme_path, _ = brand_token_file(manifest, "theme", tokens_dir)
+    sizing_path, _ = brand_token_file(manifest, "sizing", tokens_dir)
+    typo_path, _ = brand_token_file(manifest, "typography", tokens_dir)
+    print(f"  Brand mode: {brand}")
+
+    primitives = _load_tokens(primitives_path)
+    theme_colors = _load_tokens(theme_path)
+    sizing = _load_tokens(sizing_path)
+    typo_tokens = _load_tokens(typo_path)
 
     styles_raw_full = _load(tokens_dir / "typography.styles.tokens.json")
     styles_raw = {
