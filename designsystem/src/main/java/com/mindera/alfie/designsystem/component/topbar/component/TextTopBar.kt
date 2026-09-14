@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -22,8 +23,17 @@ import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
-private val PADDING_END_DEFAULT = 16.dp
+// TopAppBar insets the title slot 16dp at the start, and BasicTopBar already pads the whole bar
+// 12dp at the end — so only 4dp more is needed to balance the two and land the title dead centre.
+// Using 16dp here double-counted that end padding and pushed centred titles 6dp to the left.
+private val PADDING_END_DEFAULT = 4.dp
+
+// Start padding that mirrors the 32dp navigation icon when actions sit on the other side.
 private val PADDING_ICON_EQUIVALENT = Theme.iconSize.large
+
+// The end-side equivalent: the same 32dp mirror, less the 12dp BasicTopBar already pads the bar by
+// — the same double-count PADDING_END_DEFAULT had, which left the title 6dp off centre.
+private val PADDING_END_ICON_EQUIVALENT = Theme.iconSize.large - Theme.spacing.spacing12
 private val PADDING_START_NO_BACK_ONE_ICON = 24.dp // 8 + 16 (default)
 private val PADDING_START_NO_BACK_TWO_ICONS = 56.dp // 32 (icon) + 8 + 16 (default)
 private val PADDING_END_NO_BACK_WITH_ICONS = 8.dp // to avoid overlap with actions
@@ -65,7 +75,7 @@ private fun TopBarScope.CenterTopBar(
             .padding(end = PADDING_END_DEFAULT)
         state.showNavigationIcon && state.actions.isEmpty() -> Modifier
             .fillMaxWidth()
-            .padding(end = PADDING_ICON_EQUIVALENT)
+            .padding(end = PADDING_END_ICON_EQUIVALENT)
         state.showNavigationIcon.not() && isSearchOpen.not() && state.actions.size == 1 -> Modifier
             .fillMaxWidth()
             .padding(
@@ -98,8 +108,12 @@ private fun TopBarScope.CenterTopBar(
                     .fillMaxWidth()
                     .testTag(HOME_TITLE_HEADER),
                 text = title.title,
-                style = LocalTheme.current.typography.body.large,
-                textAlign = TextAlign.Center
+                // Figma's shared Header (node 1:27215) titles in heading/x-small, nowrap + ellipsis.
+                style = LocalTheme.current.typography.heading.xSmall,
+                color = LocalTheme.current.color.content.contentPrimary,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

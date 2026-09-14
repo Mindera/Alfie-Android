@@ -19,8 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.mindera.alfie.core.navigation.DirectionProvider
-import com.mindera.alfie.core.navigation.Screen
-import com.mindera.alfie.core.navigation.arguments.wishlist.wishlistNavArgs
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.test.BAG_EMPTY_STATE
@@ -38,7 +36,6 @@ import com.mindera.alfie.designsystem.component.swipe.SwipeActionType
 import com.mindera.alfie.designsystem.component.swipe.SwipeActions
 import com.mindera.alfie.designsystem.component.swipe.rememberSwipeActionsState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
-import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.icons.AlfieIcons
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
@@ -69,20 +66,15 @@ internal fun BagScreen(
     val viewModel: BagViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val actions = persistentListOf(
-        TopBarAction.WishList { navigator.navigate(directionProvider.fromScreen(Screen.Wishlist(args = wishlistNavArgs()))) },
-        TopBarAction.Account { navigator.navigate(directionProvider.fromScreen(Screen.Account)) }
-    )
-
-    // The header is app-shell territory (ALFMOB-448) and still carries the Wishlist and Account
-    // entry points, so its configuration is left alone here. The Figma frame instead shows a centred
-    // title with a back arrow and no actions — raised for design/product rather than changed, since
-    // dropping two navigation entry points is a behaviour change, not a restyle.
+    // Figma's Header (node 1:27215) centres the title and carries no actions. The Wishlist and
+    // Account shortcuts drop off: both are in the bottom bar, so nothing becomes unreachable.
+    // The back button Figma draws is deliberately not wired up — Bag is only ever reached as a root
+    // tab, so navigateUp() would pop the user out of the tab rather than go back.
     topBarState.textTopBar(
         title = stringResource(R.string.bag_screen_title),
         showNavigationIcon = false,
-        isLeftAligned = true,
-        actions = actions
+        isLeftAligned = false,
+        actions = persistentListOf()
     )
     bottomBarState.showBottomBar()
 
