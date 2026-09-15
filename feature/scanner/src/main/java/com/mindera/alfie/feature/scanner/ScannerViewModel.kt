@@ -27,7 +27,7 @@ internal class ScannerViewModel @Inject constructor(
     uiEventEmitterDelegate: UIEventEmitterDelegate
 ) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
 
-    private val _state = MutableStateFlow<ScannerUIState>(ScannerUIState.Scanning)
+    private val _state = MutableStateFlow<ScannerUIState>(ScannerUIState.Scanning())
     val state = _state.asStateFlow()
 
     /**
@@ -55,7 +55,30 @@ internal class ScannerViewModel @Inject constructor(
             is ScannerEvent.OnBarcodeDetected -> onBarcodeDetected(event.rawValue)
             ScannerEvent.OnCloseClick -> navigateBack()
             ScannerEvent.OnCameraError -> onCameraError()
+            ScannerEvent.OnTorchToggle -> updateScanning { it.copy(isTorchOn = !it.isTorchOn) }
+            ScannerEvent.OnEnterManuallyClick -> updateScanning { it.copy(manualEntry = "") }
+            ScannerEvent.OnManualEntryDismiss -> updateScanning { it.copy(manualEntry = null) }
+            is ScannerEvent.OnManualBarcodeChange ->
+                updateScanning { it.copy(manualEntry = event.value) }
+            ScannerEvent.OnManualBarcodeSubmit -> onManualSubmit()
         }
+    }
+
+    /** No-op once the screen has left [ScannerUIState.Scanning] — a late tap must not revive it. */
+    private fun updateScanning(transform: (ScannerUIState.Scanning) -> ScannerUIState.Scanning) {
+        _state.update { current ->
+            if (current is ScannerUIState.Scanning) transform(current) else current
+        }
+    }
+
+    /**
+     * A typed barcode is treated exactly like a scanned one — same trimming, same single-fire
+     * gate — so the manual path cannot double-navigate alongside a camera hit that lands in the
+     * same moment.
+     */
+    private fun onManualSubmit() {
+        val typed = (_state.value as? ScannerUIState.Scanning)?.manualEntry ?: return
+        onBarcodeDetected(typed)
     }
 
     private fun onBarcodeDetected(rawValue: String) {

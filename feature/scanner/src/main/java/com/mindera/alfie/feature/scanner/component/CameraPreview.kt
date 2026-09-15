@@ -40,6 +40,7 @@ import java.util.concurrent.Executors
 internal fun CameraPreview(
     analyzer: ImageAnalysis.Analyzer,
     isActive: Boolean,
+    isTorchOn: Boolean,
     modifier: Modifier = Modifier,
     onBindFailure: (Throwable) -> Unit = {}
 ) {
@@ -82,6 +83,12 @@ internal fun CameraPreview(
         } else {
             controller.clearImageAnalysisAnalyzer()
         }
+    }
+
+    LaunchedEffect(isTorchOn) {
+        // Only meaningful once bound, and a no-op on a device with no flash unit — so this is
+        // deliberately not gated on hasFlashUnit(); CameraX ignores it rather than throwing.
+        controller.enableTorch(isTorchOn)
     }
 
     DisposableEffect(Unit) {

@@ -33,6 +33,7 @@ import com.mindera.alfie.designsystem.component.state.StateMessageAction
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.scanner.component.CameraPreview
+import com.mindera.alfie.feature.scanner.component.ManualBarcodeSheet
 import com.mindera.alfie.feature.scanner.component.ScannerCloseButton
 import com.mindera.alfie.feature.scanner.component.ScannerOverlay
 import com.mindera.alfie.feature.scanner.model.ScannerErrorType
@@ -83,21 +84,39 @@ private fun ScannerScreenContent(
 ) {
     when (state) {
         is ScannerUIState.Error -> ScannerError(type = state.type, onEvent = onEvent)
-        ScannerUIState.Scanning,
-        ScannerUIState.Detected -> Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(LocalTheme.current.primitive.colors.neutrals900)
-        ) {
-            CameraPreview(
-                analyzer = analyzer,
-                // Frames stop reaching ML Kit the moment a barcode wins, while the preview
-                // stays on screen through the navigation transition.
-                isActive = state == ScannerUIState.Scanning,
-                modifier = Modifier.fillMaxSize(),
-                onBindFailure = { onEvent(ScannerEvent.OnCameraError) }
-            )
-            ScannerOverlay(onCloseClick = { onEvent(ScannerEvent.OnCloseClick) })
+        is ScannerUIState.Scanning,
+        ScannerUIState.Detected -> {
+            val scanning = state as? ScannerUIState.Scanning
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(LocalTheme.current.primitive.colors.neutrals900)
+            ) {
+                CameraPreview(
+                    analyzer = analyzer,
+                    // Frames stop reaching ML Kit the moment a barcode wins, while the preview
+                    // stays on screen through the navigation transition.
+                    isActive = scanning != null,
+                    isTorchOn = scanning?.isTorchOn == true,
+                    modifier = Modifier.fillMaxSize(),
+                    onBindFailure = { onEvent(ScannerEvent.OnCameraError) }
+                )
+                ScannerOverlay(
+                    isTorchOn = scanning?.isTorchOn == true,
+                    onBackClick = { onEvent(ScannerEvent.OnCloseClick) },
+                    onTorchClick = { onEvent(ScannerEvent.OnTorchToggle) },
+                    onEnterManuallyClick = { onEvent(ScannerEvent.OnEnterManuallyClick) }
+                )
+            }
+
+            scanning?.manualEntry?.let { typed ->
+                ManualBarcodeSheet(
+                    value = typed,
+                    onValueChange = { onEvent(ScannerEvent.OnManualBarcodeChange(it)) },
+                    onSubmit = { onEvent(ScannerEvent.OnManualBarcodeSubmit) },
+                    onDismiss = { onEvent(ScannerEvent.OnManualEntryDismiss) }
+                )
+            }
         }
     }
 }
