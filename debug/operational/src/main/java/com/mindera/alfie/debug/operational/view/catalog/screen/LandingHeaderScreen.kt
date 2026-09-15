@@ -15,7 +15,6 @@ import com.mindera.alfie.debug.operational.view.catalog.util.SwitchItem
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBar
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
-import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeader
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType
 import com.mindera.alfie.designsystem.component.topbar.rememberTopBarState
@@ -32,10 +31,6 @@ internal fun LandingHeaderScreen(
 
     var isLogged by remember { mutableStateOf(true) }
     val landingPageTopBarState = rememberTopBarState()
-    val actions = persistentListOf(
-        TopBarAction.Account {}
-    )
-
     val type = if (isLogged) {
         LandingHeaderType.Greeting(
             userName = "Alfie",
@@ -47,7 +42,7 @@ internal fun LandingHeaderScreen(
 
     landingPageTopBarState.customTopBar(
         searchState = rememberSearchState(),
-        actions = actions
+        actions = persistentListOf()
     ) {
         LandingHeader(type = type)
     }
