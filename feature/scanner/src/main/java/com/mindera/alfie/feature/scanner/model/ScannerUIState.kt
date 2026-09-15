@@ -2,8 +2,14 @@ package com.mindera.alfie.feature.scanner.model
 
 internal sealed interface ScannerUIState {
 
-    /** Camera is live and the analyzer is consuming frames. */
-    data object Scanning : ScannerUIState
+    /**
+     * Camera is live. [isTorchOn] drives both the CameraX torch and the header toggle; the manual
+     * entry sheet is open when [manualEntry] is non-null, and carries the text typed so far.
+     */
+    data class Scanning(
+        val isTorchOn: Boolean = false,
+        val manualEntry: String? = null
+    ) : ScannerUIState
 
     /**
      * A barcode won the single-fire race and navigation is in flight. Terminal for this screen:

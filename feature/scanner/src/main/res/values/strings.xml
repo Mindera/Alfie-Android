@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="scanner_hint">Point the camera at a barcode</string>
+    <string name="scanner_title">Scan barcode</string>
+    <string name="scanner_hint">Focus on the barcode auto-scan or enter it manually to identify items.</string>
+    <string name="scanner_enter_manually">Enter barcode manually</string>
+    <string name="scanner_manual_placeholder">Barcode</string>
+
+    <string name="scanner_back_content_description">Back</string>
     <string name="scanner_close_content_description">Close the scanner</string>
+    <string name="scanner_torch_on_content_description">Turn the light on</string>
+    <string name="scanner_torch_off_content_description">Turn the light off</string>
 
     <string name="scanner_camera_unavailable_title">Camera unavailable</string>
     <string name="scanner_camera_unavailable_subtitle">This device\'s camera can\'t be used for scanning right now.</string>

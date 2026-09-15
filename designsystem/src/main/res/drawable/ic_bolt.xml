@@ -1,0 +1,17 @@
+<!--
+  Transcribed from the Figma export (node I3349:28094;4526:109832;4488:48597) — a stroked
+  glyph, unlike the filled icons around it, so it keeps strokeWidth/cap/join rather than
+  fillColor. Base colour follows the set's #111111 convention; call sites tint it.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M4,13.4546L14.1818,2.5455L12,10.5455H20L9.8182,21.4546L12,13.4546H4Z"
+        android:strokeColor="#111111"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

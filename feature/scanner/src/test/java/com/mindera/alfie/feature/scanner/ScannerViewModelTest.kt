@@ -202,8 +202,91 @@ internal class ScannerViewModelTest {
         }
 
     @Test
-    fun `state - WHEN created THEN starts scanning`() {
-        assertEquals(ScannerUIState.Scanning, viewModel().state.value)
+    fun `state - WHEN created THEN starts scanning with the torch off and no manual entry`() {
+        assertEquals(ScannerUIState.Scanning(), viewModel().state.value)
+    }
+
+    @Test
+    fun `handleEvent - WHEN the torch is toggled THEN it flips and flips back`() {
+        val viewModel = viewModel()
+
+        viewModel.handleEvent(ScannerEvent.OnTorchToggle)
+        assertEquals(ScannerUIState.Scanning(isTorchOn = true), viewModel.state.value)
+
+        viewModel.handleEvent(ScannerEvent.OnTorchToggle)
+        assertEquals(ScannerUIState.Scanning(isTorchOn = false), viewModel.state.value)
+    }
+
+    @Test
+    fun `handleEvent - WHEN manual entry is opened typed and dismissed THEN state follows`() {
+        val viewModel = viewModel()
+
+        viewModel.handleEvent(ScannerEvent.OnEnterManuallyClick)
+        assertEquals(ScannerUIState.Scanning(manualEntry = ""), viewModel.state.value)
+
+        viewModel.handleEvent(ScannerEvent.OnManualBarcodeChange(BARCODE))
+        assertEquals(ScannerUIState.Scanning(manualEntry = BARCODE), viewModel.state.value)
+
+        viewModel.handleEvent(ScannerEvent.OnManualEntryDismiss)
+        assertEquals(ScannerUIState.Scanning(manualEntry = null), viewModel.state.value)
+    }
+
+    @Test
+    fun `handleEvent - WHEN a barcode is typed and submitted THEN it navigates like a scan`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.uiEvent.test {
+                viewModel.handleEvent(ScannerEvent.OnEnterManuallyClick)
+                viewModel.handleEvent(ScannerEvent.OnManualBarcodeChange(BARCODE))
+                viewModel.handleEvent(ScannerEvent.OnManualBarcodeSubmit)
+
+                val event = assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
+                assertEquals(
+                    Screen.ProductDetails(
+                        args = productDetailsNavArgs(handle = ScannerViewModel.DEMO_PRODUCT_HANDLE)
+                    ),
+                    event.screen
+                )
+            }
+        }
+
+    @Test
+    fun `handleEvent - WHEN manual entry is submitted empty THEN nothing is emitted`() = runTest {
+        val viewModel = viewModel()
+
+        viewModel.uiEvent.test {
+            viewModel.handleEvent(ScannerEvent.OnEnterManuallyClick)
+            viewModel.handleEvent(ScannerEvent.OnManualBarcodeSubmit)
+
+            expectNoEvents()
+        }
+    }
+
+    // The camera can win while the sheet is open; the single-fire gate is shared, so the typed
+    // value must not produce a second navigation.
+    @Test
+    fun `handleEvent - WHEN a scan already navigated THEN a later manual submit is ignored`() =
+        runTest {
+            val viewModel = viewModel()
+
+            viewModel.uiEvent.test {
+                viewModel.handleEvent(ScannerEvent.OnBarcodeDetected(BARCODE))
+                assertIs<UIEvent.Base.NavigateToScreen>(awaitItem())
+
+                viewModel.handleEvent(ScannerEvent.OnManualBarcodeSubmit)
+                expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `handleEvent - WHEN the torch is toggled after detection THEN state does not revive`() {
+        val viewModel = viewModel()
+
+        viewModel.handleEvent(ScannerEvent.OnBarcodeDetected(BARCODE))
+        viewModel.handleEvent(ScannerEvent.OnTorchToggle)
+
+        assertEquals(ScannerUIState.Detected, viewModel.state.value)
     }
 
     @Test
