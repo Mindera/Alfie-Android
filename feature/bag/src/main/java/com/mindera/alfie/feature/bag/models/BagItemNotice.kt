@@ -8,7 +8,7 @@ package com.mindera.alfie.feature.bag.models
  */
 sealed interface BagItemNotice {
 
-    /** Fewer than the low-stock threshold left. */
+    /** Stock has reached the low-stock threshold or dropped below it. */
     data class LowStock(val remaining: Int) : BagItemNotice
 
     /** The variant is out of stock; the row also renders dimmed. */

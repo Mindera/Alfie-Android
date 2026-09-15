@@ -25,8 +25,13 @@ class SwipeActionsState internal constructor(
     private val scope: CoroutineScope
 ) {
 
+    /**
+     * Whether the actions are showing. True while the row is still settling open as well as once it
+     * has, so a tap part-way through the animation reverses it instead of starting another one.
+     */
     val isOpen: Boolean
-        get() = draggableState.currentValue == SwipeActionsAnchor.Open
+        get() = draggableState.currentValue == SwipeActionsAnchor.Open ||
+            draggableState.targetValue == SwipeActionsAnchor.Open
 
     fun open() {
         scope.launch { draggableState.animateTo(SwipeActionsAnchor.Open) }

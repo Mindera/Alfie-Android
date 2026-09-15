@@ -70,12 +70,7 @@ fun SwipeActions(
     // While the row is shut the panels sit behind opaque content, but they would still be focusable
     // and activatable by TalkBack and switch access. Gate them on the row actually being revealed —
     // targetValue covers the drag that is still settling open.
-    val isRevealed by remember(state) {
-        derivedStateOf {
-            state.draggableState.currentValue == SwipeActionsAnchor.Open ||
-                state.draggableState.targetValue == SwipeActionsAnchor.Open
-        }
-    }
+    val isRevealed by remember(state) { derivedStateOf { state.isOpen } }
 
     Box(modifier = modifier) {
         // matchParentSize keeps the backdrop out of the Box's own sizing, so the row is as tall as
