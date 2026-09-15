@@ -44,14 +44,16 @@ internal fun ManualBarcodeSheet(
         onDismiss = onDismiss,
         onNavigationClick = onDismiss,
         isFullscreen = false,
+        wrapContentHeight = true,
         modifier = modifier
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = theme.spacing.spacing16,
-                    vertical = theme.spacing.spacing24
+                    start = theme.spacing.spacing16,
+                    end = theme.spacing.spacing16,
+                    bottom = theme.spacing.spacing24
                 )
         ) {
             TextField(
