@@ -41,6 +41,11 @@ const val PRODUCT_NAME = "product-name"
 const val PRODUCT_COLOR = "product-color"
 const val PRODUCT_SIZE = "product-size"
 const val PRODUCT_PRICE_COMPONENT = "product-price-component"
+const val PRODUCT_REFERENCE = "product-reference"
+const val PRODUCT_QUANTITY = "product-quantity"
+const val BAG_TOTAL = "bag-total"
+const val BAG_CONTINUE_CTA = "bag-continue-cta"
+const val BAG_EMPTY_STATE = "bag-empty-state"
 
 // SEGMENTED CONTROLS
 const val SEGMENTED_CONTROL = "segmented-control"

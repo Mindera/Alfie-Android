@@ -39,7 +39,7 @@ private fun ProductVariantFragment.toDomain(): Variant = Variant(
     ),
     options = optionValues.map { VariantOption(name = it.name, value = it.value) },
     media = media?.mapNotNull { it?.imageFragment?.toDomain() }.orEmpty(),
-    available = (inventory?.available ?: 0) > 0
+    availableQuantity = inventory?.available ?: 0
 )
 
 private fun MoneyFragment.toDomain(): Money = Money(

@@ -1,17 +1,22 @@
 package com.mindera.alfie.feature.bag
 
+import android.content.Context
 import app.cash.turbine.test
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
+import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
-import com.mindera.alfie.domain.usecase.bag.RemoveFromBagUseCase
+import com.mindera.alfie.domain.usecase.bag.RemoveAllFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
+import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
+import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -30,7 +35,13 @@ internal class BagViewModelTest {
     private lateinit var getProductUseCase: GetProductUseCase
 
     @RelaxedMockK
-    private lateinit var removeFromBagUseCase: RemoveFromBagUseCase
+    private lateinit var removeAllFromBagUseCase: RemoveAllFromBagUseCase
+
+    @RelaxedMockK
+    private lateinit var addToBagUseCase: AddToBagUseCase
+
+    @RelaxedMockK
+    private lateinit var addToWishlistUseCase: AddToWishlistUseCase
 
     @RelaxedMockK
     private lateinit var bagUiFactory: BagUiFactory
@@ -38,33 +49,97 @@ internal class BagViewModelTest {
     @RelaxedMockK
     private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
 
-    @Test
-    fun `WHEN getBagList returns a success THEN update the state with the correct product list`() = runTest {
-        coEvery { getBagUseCase() } returns flow {
-            println("getBagUseCase emitted: $bagProducts")
-            emit(UseCaseResult.Success(bagProducts))
-        }
-        coEvery { getProductUseCase(any()) } answers {
-            val productId = firstArg<String>()
-            val product = products.find { it.slug == productId }
-            if (product != null) UseCaseResult.Success(product) else UseCaseResult.Error(mockk())
-        }
+    @RelaxedMockK
+    private lateinit var context: Context
 
+    @Test
+    fun `WHEN getBagList returns a success THEN update the state with the correct bag content`() = runTest {
+        givenBagLoads()
         coEvery {
             bagUiFactory(
                 bagProducts = bagProducts,
                 products = products,
-                onRemoveClick = any(),
                 onProductClick = any()
             )
-        } returns bagProductUi
+        } returns bagContentUi
 
         val viewModel = buildViewModel()
 
         viewModel.state.test {
             delay(300)
             val result = awaitItem()
-            assertEquals(BagUiState.Data.Loaded(bagProductUi.toImmutableList()), result)
+            assertEquals(BagUiState.Data.Loaded(bagContentUi), result)
+
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `WHEN the bag has entries but no product could be loaded THEN show the error state, not empty`() = runTest {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(bagProducts)) }
+        // Every product fetch fails, so the factory maps nothing.
+        coEvery { getProductUseCase(any()) } returns UseCaseResult.Error(mockk())
+        coEvery {
+            bagUiFactory(
+                bagProducts = bagProducts,
+                products = emptyList(),
+                onProductClick = any()
+            )
+        } returns emptyBagContentUi
+
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            delay(300)
+            val result = awaitItem()
+            assertEquals(BagUiState.Error, result)
+
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `WHEN only some products fail to load THEN show the error state rather than a short bag`() = runTest {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(bagProducts)) }
+        // The first product loads, the second does not.
+        coEvery { getProductUseCase(bagProducts[0].productId) } returns UseCaseResult.Success(products[0])
+        coEvery { getProductUseCase(bagProducts[1].productId) } returns UseCaseResult.Error(mockk())
+        coEvery {
+            bagUiFactory(
+                bagProducts = bagProducts,
+                products = listOf(products[0]),
+                onProductClick = any()
+            )
+        } returns singleLineBagContentUi
+
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            delay(300)
+            val result = awaitItem()
+            assertEquals(BagUiState.Error, result)
+
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `WHEN the bag itself is empty THEN show the empty state`() = runTest {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(emptyList())) }
+        coEvery {
+            bagUiFactory(
+                bagProducts = emptyList(),
+                products = emptyList(),
+                onProductClick = any()
+            )
+        } returns emptyBagContentUi
+
+        val viewModel = buildViewModel()
+
+        viewModel.state.test {
+            delay(300)
+            val result = awaitItem()
+            assertEquals(BagUiState.Data.Empty, result)
 
             cancelAndConsumeRemainingEvents()
         }
@@ -84,11 +159,106 @@ internal class BagViewModelTest {
         }
     }
 
-    private fun buildViewModel() = BagViewModel(
+    @Test
+    fun `onRemoveClicked - clears every unit of the line`() = runTest {
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
+        val viewModel = buildViewModel()
+
+        viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 1)
+
+        coVerify(exactly = 1) { removeAllFromBagUseCase(bagProducts[0]) }
+    }
+
+    @Test
+    fun `onRemoveClicked - WHEN the removal succeeds THEN undo restores every unit`() = runTest {
+        // A swipe clears the whole line in one gesture, so the undo has to put back as many units
+        // as the line held — not the single entry a remove call names.
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
+        val emitter = UIEventEmitterDelegate()
+        val viewModel = buildViewModel(emitter = emitter)
+
+        viewModel.uiEvent.test {
+            viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 3)
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Success, visuals.type)
+            visuals.onActionClick()
+            delay(300)
+
+            coVerify(exactly = 3) {
+                addToBagUseCase(
+                    productId = bagProducts[0].productId,
+                    variantSku = bagProducts[0].variantSku
+                )
+            }
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onRemoveClicked - WHEN the removal fails THEN it says so instead of failing silently`() = runTest {
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Error(mockk())
+        val emitter = UIEventEmitterDelegate()
+        val viewModel = buildViewModel(emitter = emitter)
+
+        viewModel.uiEvent.test {
+            viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 1)
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Error, visuals.type)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onSaveClicked - adds the product to the wishlist and leaves the bag alone`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.onSaveClicked(bagProducts[0])
+
+        coVerify(exactly = 1) { addToWishlistUseCase(bagProducts[0].productId) }
+        coVerify(exactly = 0) { removeAllFromBagUseCase(any()) }
+    }
+
+    @Test
+    fun `WHEN the same product is in the bag twice THEN its details are fetched once`() = runTest {
+        val duplicated = listOf(bagProducts[0], bagProducts[0], bagProducts[1])
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(duplicated)) }
+        coEvery { getProductUseCase(any()) } answers {
+            val productId = firstArg<String>()
+            products.find { it.slug == productId }
+                ?.let { UseCaseResult.Success(it) }
+                ?: UseCaseResult.Error(mockk())
+        }
+
+        buildViewModel()
+        delay(300)
+
+        coVerify(exactly = 1) { getProductUseCase(bagProducts[0].productId) }
+        coVerify(exactly = 1) { getProductUseCase(bagProducts[1].productId) }
+    }
+
+    private fun givenBagLoads() {
+        coEvery { getBagUseCase() } returns flow { emit(UseCaseResult.Success(bagProducts)) }
+        coEvery { getProductUseCase(any()) } answers {
+            val productId = firstArg<String>()
+            products.find { it.slug == productId }
+                ?.let { UseCaseResult.Success(it) }
+                ?: UseCaseResult.Error(mockk())
+        }
+    }
+
+    // The snackbar tests need the events the delegate actually emits, so they pass a real one.
+    private fun buildViewModel(
+        emitter: UIEventEmitterDelegate = uiEventEmitterDelegate
+    ) = BagViewModel(
         getBagUseCase = getBagUseCase,
         bagUiFactory = bagUiFactory,
         getProductUseCase = getProductUseCase,
-        removeFromBagUseCase = removeFromBagUseCase,
-        uiEventEmitterDelegate = uiEventEmitterDelegate
+        removeAllFromBagUseCase = removeAllFromBagUseCase,
+        addToBagUseCase = addToBagUseCase,
+        addToWishlistUseCase = addToWishlistUseCase,
+        context = context,
+        uiEventEmitterDelegate = emitter
     )
 }

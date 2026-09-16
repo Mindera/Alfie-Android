@@ -2,7 +2,10 @@ package com.mindera.alfie.feature.bag
 
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
+import com.mindera.alfie.feature.bag.models.BagContentUi
+import com.mindera.alfie.feature.bag.models.BagItemNotice
 import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagSummaryUi
 import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.repository.bag.BagProduct
 import com.mindera.alfie.repository.product.model.Price
@@ -47,7 +50,7 @@ internal val products = listOf(
                     VariantOption(name = "size", value = "M")
                 ),
                 media = listOf(variant1Image),
-                available = true
+                availableQuantity = 1
             )
         )
     ),
@@ -76,7 +79,7 @@ internal val products = listOf(
                     VariantOption(name = "size", value = "M")
                 ),
                 media = listOf(variant1Image),
-                available = true
+                availableQuantity = 10
             )
         )
     )
@@ -89,25 +92,50 @@ internal val bagProducts = listOf(
 
 internal val bagProductUi = persistentListOf(
     BagProductUi(
-        id = "123456-product",
+        id = "14:123456-product:variant1",
+        bagProduct = bagProducts[0],
+        notice = BagItemNotice.LowStock(remaining = 1),
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product name",
-            price = PriceType.Range(startPrice = "$100", endPrice = "$200"),
+            price = PriceType.Sale(fullPrice = "$200", salePrice = "$100"),
             image = variant1Image.toImageUI(),
             color = "blue",
-            size = "M"
+            size = "M",
+            reference = "variant1",
+            quantity = 1,
+            isAvailable = true
         )
     ),
     BagProductUi(
-        id = "654321-product",
+        id = "14:654321-product:variant11",
+        bagProduct = bagProducts[1],
+        notice = null,
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
             name = "Product 2",
             price = PriceType.Default(price = "$100"),
             image = variant1Image.toImageUI(),
             color = "blue",
-            size = "M"
+            size = "M",
+            reference = "variant11",
+            quantity = 1,
+            isAvailable = true
         )
     )
+)
+
+internal val bagContentUi = BagContentUi(
+    items = bagProductUi,
+    summary = BagSummaryUi(totalFormatted = "$200.00")
+)
+
+internal val emptyBagContentUi = BagContentUi(
+    items = persistentListOf(),
+    summary = BagSummaryUi(totalFormatted = "")
+)
+
+internal val singleLineBagContentUi = BagContentUi(
+    items = persistentListOf(bagProductUi[0]),
+    summary = BagSummaryUi(totalFormatted = "$100.00")
 )

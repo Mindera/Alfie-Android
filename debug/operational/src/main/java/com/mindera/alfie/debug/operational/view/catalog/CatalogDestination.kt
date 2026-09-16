@@ -11,9 +11,11 @@ import com.mindera.alfie.debug.operational.view.destinations.DateFieldScreenDest
 import com.mindera.alfie.debug.operational.view.destinations.DividerScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.DotsIndicatorScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.ElevationShadowingScreenDestination
+import com.mindera.alfie.debug.operational.view.destinations.EmptyStateScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.FixedTabScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.GalleryScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.IconsScreenDestination
+import com.mindera.alfie.debug.operational.view.destinations.InlineMessageScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.InputScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.LandingHeaderScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.LoadingScreenDestination
@@ -34,6 +36,7 @@ import com.mindera.alfie.debug.operational.view.destinations.SnackbarScreenDesti
 import com.mindera.alfie.debug.operational.view.destinations.SortByScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.SpacingScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.SwatchScreenDestination
+import com.mindera.alfie.debug.operational.view.destinations.SwipeActionsScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.SwitchScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.TagScreenDestination
 import com.mindera.alfie.debug.operational.view.destinations.TitleHeaderScreenDestination
@@ -55,7 +58,9 @@ internal enum class CatalogDestination(
     DateScreen(DateFieldScreenDestination, "Date Picker"),
     DividerScreen(DividerScreenDestination, "Dividers"),
     ElevationShadowingScreen(ElevationShadowingScreenDestination, "Elevation/Shadowing"),
+    EmptyStateScreen(EmptyStateScreenDestination, "Empty State"),
     Icons(IconsScreenDestination, "Icons"),
+    InlineMessageScreen(InlineMessageScreenDestination, "Inline Message"),
     Input(InputScreenDestination, "Input"),
     LandingHeaderScreen(LandingHeaderScreenDestination, "Landing Page Header"),
     LoadingScreen(LoadingScreenDestination, "Loading"),
@@ -78,6 +83,7 @@ internal enum class CatalogDestination(
     SortByScreen(SortByScreenDestination, "Sort By Component"),
     SpacingScreen(SpacingScreenDestination, "Spacing"),
     Swatch(SwatchScreenDestination, "Swatches"),
+    SwipeActionsScreen(SwipeActionsScreenDestination, "Swipe Actions"),
     SwitchScreen(SwitchScreenDestination, "Switch"),
     TabIntrinsicScreen(ScrollableTabScreenDestination, "Tab (Intrinsic Width)"),
     TabFixedScreen(FixedTabScreenDestination, "Tab (Fixed Width)"),

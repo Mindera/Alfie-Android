@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.event.ClickEvent
@@ -22,8 +23,18 @@ import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
-private val PADDING_END_DEFAULT = 16.dp
+// TopAppBar insets the title slot at the start, and BasicTopBar already pads the whole bar at the
+// end. These balance the two so a centred title lands dead centre; both subtract that existing end
+// padding, which earlier values double-counted and so pushed centred titles off to the left.
+private val PADDING_END_DEFAULT = Theme.spacing.spacing16 - Theme.spacing.spacing12
+
+// Mirrors the navigation icon on the opposite side.
 private val PADDING_ICON_EQUIVALENT = Theme.iconSize.large
+private val PADDING_END_ICON_EQUIVALENT = Theme.iconSize.large - Theme.spacing.spacing12
+
+// A single action sits in a wider slot than the navigation icon, leaving the title slot lopsided;
+// this makes up the difference so the title lands on the screen's centre rather than the slot's.
+private val PADDING_START_BACK_ONE_ICON = Theme.spacing.spacing16
 private val PADDING_START_NO_BACK_ONE_ICON = 24.dp // 8 + 16 (default)
 private val PADDING_START_NO_BACK_TWO_ICONS = 56.dp // 32 (icon) + 8 + 16 (default)
 private val PADDING_END_NO_BACK_WITH_ICONS = 8.dp // to avoid overlap with actions
@@ -65,7 +76,7 @@ private fun TopBarScope.CenterTopBar(
             .padding(end = PADDING_END_DEFAULT)
         state.showNavigationIcon && state.actions.isEmpty() -> Modifier
             .fillMaxWidth()
-            .padding(end = PADDING_ICON_EQUIVALENT)
+            .padding(end = PADDING_END_ICON_EQUIVALENT)
         state.showNavigationIcon.not() && isSearchOpen.not() && state.actions.size == 1 -> Modifier
             .fillMaxWidth()
             .padding(
@@ -81,6 +92,9 @@ private fun TopBarScope.CenterTopBar(
         state.showNavigationIcon && isSearchOpen.not() && state.actions.size > 1 -> Modifier
             .fillMaxWidth()
             .padding(start = PADDING_ICON_EQUIVALENT)
+        state.showNavigationIcon && isSearchOpen.not() && state.actions.size == 1 -> Modifier
+            .fillMaxWidth()
+            .padding(start = PADDING_START_BACK_ONE_ICON)
         else -> Modifier.fillMaxWidth()
     }
 
@@ -98,8 +112,11 @@ private fun TopBarScope.CenterTopBar(
                     .fillMaxWidth()
                     .testTag(HOME_TITLE_HEADER),
                 text = title.title,
-                style = LocalTheme.current.typography.body.large,
-                textAlign = TextAlign.Center
+                style = LocalTheme.current.typography.heading.xSmall,
+                color = LocalTheme.current.color.content.contentPrimary,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

@@ -12,8 +12,14 @@ data class Variant(
     val price: Price,
     val options: List<VariantOption>,
     val media: List<Media.Image>,
-    val available: Boolean
-)
+    /**
+     * Units the BFF reports in stock for this variant. Stored as the count rather than a boolean so
+     * callers that need to know how many are left can, with [available] derived from it.
+     */
+    val availableQuantity: Int
+) {
+    val available: Boolean get() = availableQuantity > 0
+}
 
 /** Value of this variant's colour option ("color"/"colour"), or null when it has none. */
 val Variant.colorOptionValue: String?

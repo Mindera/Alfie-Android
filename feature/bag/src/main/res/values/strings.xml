@@ -1,4 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="bag_screen_title">Bag</string>
+    <string name="bag_total">Total</string>
+    <string name="bag_shipping_note">Shipping and taxes are calculated in checkout.</string>
+    <string name="bag_continue_cta">Continue</string>
+    <string name="bag_empty_message">Your bag is empty.</string>
+    <string name="bag_error_message">We couldn\'t load your bag.</string>
+    <string name="bag_error_retry">Try again</string>
+    <string name="bag_item_unavailable">Sorry, this item is not available anymore. Add it to your wishlist in case it gets back in stock.</string>
+    <string name="bag_item_save">Save</string>
+    <string name="bag_item_remove">Remove</string>
+    <string name="bag_item_saved">Saved to your wishlist</string>
+    <string name="bag_item_removed">Removed from your bag</string>
+    <string name="bag_item_removed_undo">Undo</string>
+    <string name="bag_item_remove_error">We couldn\'t remove that item.</string>
+    <string name="bag_item_save_a11y">Save %1$s to your wishlist</string>
+    <string name="bag_item_remove_a11y">Remove %1$s from your bag</string>
+    <plurals name="bag_item_low_stock">
+        <item quantity="one">Only %1$d item left!</item>
+        <item quantity="other">Only %1$d items left!</item>
+    </plurals>
+    <plurals name="bag_item_exceeds_stock">
+        <item quantity="one">Only %1$d item left — fewer than your bag holds.</item>
+        <item quantity="other">Only %1$d items left — fewer than your bag holds.</item>
+    </plurals>
 </resources>
