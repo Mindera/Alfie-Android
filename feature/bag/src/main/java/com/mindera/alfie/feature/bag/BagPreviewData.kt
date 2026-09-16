@@ -61,7 +61,10 @@ internal val previewBagContent = BagContentUi(
                 reference = "0283/764",
                 color = "Cream",
                 price = "£82.00"
-            ).copy(quantity = 2)
+            ).copy(quantity = 2),
+            // Two units against one in stock, so the preview shows the notice next to the quantity
+            // it contradicts.
+            notice = BagItemNotice.ExceedsStock(remaining = 1)
         ),
         previewItem(
             productId = "wide-leg-jeans",

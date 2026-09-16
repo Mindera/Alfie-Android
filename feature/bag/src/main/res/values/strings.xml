@@ -10,10 +10,17 @@
     <string name="bag_item_save">Save</string>
     <string name="bag_item_remove">Remove</string>
     <string name="bag_item_saved">Saved to your wishlist</string>
+    <string name="bag_item_removed">Removed from your bag</string>
+    <string name="bag_item_removed_undo">Undo</string>
+    <string name="bag_item_remove_error">We couldn\'t remove that item.</string>
     <string name="bag_item_save_a11y">Save %1$s to your wishlist</string>
     <string name="bag_item_remove_a11y">Remove %1$s from your bag</string>
     <plurals name="bag_item_low_stock">
         <item quantity="one">Only %1$d item left!</item>
         <item quantity="other">Only %1$d items left!</item>
+    </plurals>
+    <plurals name="bag_item_exceeds_stock">
+        <item quantity="one">Only %1$d item left — fewer than your bag holds.</item>
+        <item quantity="other">Only %1$d items left — fewer than your bag holds.</item>
     </plurals>
 </resources>

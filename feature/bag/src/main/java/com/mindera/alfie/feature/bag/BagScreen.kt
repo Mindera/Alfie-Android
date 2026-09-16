@@ -86,7 +86,7 @@ internal fun BagScreen(
 
     BagScreenContent(
         state = state,
-        onRemoveClick = viewModel::onRemoveClicked,
+        onRemoveClick = { line -> viewModel.onRemoveClicked(line.bagProduct, line.productCardData.quantity) },
         onSaveClick = viewModel::onSaveClicked,
         onRetryClick = viewModel::onRetry
     )
@@ -95,7 +95,7 @@ internal fun BagScreen(
 @Composable
 private fun BagScreenContent(
     state: BagUiState,
-    onRemoveClick: ClickEventOneArg<BagProduct>,
+    onRemoveClick: ClickEventOneArg<BagProductUi>,
     onSaveClick: ClickEventOneArg<BagProduct>,
     onRetryClick: ClickEvent
 ) {
@@ -124,7 +124,7 @@ private fun BagScreenContent(
 @Composable
 private fun BagList(
     content: BagContentUi,
-    onRemoveClick: ClickEventOneArg<BagProduct>,
+    onRemoveClick: ClickEventOneArg<BagProductUi>,
     onSaveClick: ClickEventOneArg<BagProduct>
 ) {
     val theme = LocalTheme.current
@@ -168,7 +168,7 @@ private fun BagList(
 @Composable
 private fun BagLineItem(
     item: BagProductUi,
-    onRemoveClick: ClickEventOneArg<BagProduct>,
+    onRemoveClick: ClickEventOneArg<BagProductUi>,
     onSaveClick: ClickEventOneArg<BagProduct>
 ) {
     val theme = LocalTheme.current
@@ -182,7 +182,7 @@ private fun BagLineItem(
 
     // onRemoveClick/onSaveClick are deliberately not keys: bound method references are new
     // objects on every recomposition, which would defeat the memoisation for no behaviour gain.
-    val actions = remember(item.bagProduct, saveLabel, removeLabel, saveDescription, removeDescription) {
+    val actions = remember(item, saveLabel, removeLabel, saveDescription, removeDescription) {
         persistentListOf(
             SwipeAction(
                 icon = AlfieIcons.Wishlist,
@@ -195,7 +195,7 @@ private fun BagLineItem(
                 label = removeLabel,
                 contentDescription = removeDescription,
                 type = SwipeActionType.Destructive,
-                onClick = { onRemoveClick(item.bagProduct) }
+                onClick = { onRemoveClick(item) }
             )
         )
     }
@@ -229,6 +229,11 @@ private fun BagLineItem(
 private fun BagItemNotice.message(): String = when (this) {
     is BagItemNotice.LowStock -> pluralStringResource(
         id = R.plurals.bag_item_low_stock,
+        count = remaining,
+        remaining
+    )
+    is BagItemNotice.ExceedsStock -> pluralStringResource(
+        id = R.plurals.bag_item_exceeds_stock,
         count = remaining,
         remaining
     )

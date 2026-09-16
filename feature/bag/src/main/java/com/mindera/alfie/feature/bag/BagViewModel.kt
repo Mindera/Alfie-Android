@@ -8,6 +8,7 @@ import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
+import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
 import com.mindera.alfie.domain.usecase.bag.RemoveAllFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
@@ -34,6 +35,7 @@ import com.mindera.alfie.designsystem.R as DesignR
 internal class BagViewModel @Inject constructor(
     private val getBagUseCase: GetBagUseCase,
     private val removeAllFromBagUseCase: RemoveAllFromBagUseCase,
+    private val addToBagUseCase: AddToBagUseCase,
     private val addToWishlistUseCase: AddToWishlistUseCase,
     private val getProductUseCase: GetProductUseCase,
     private val bagUiFactory: BagUiFactory,
@@ -113,10 +115,49 @@ internal class BagViewModel @Inject constructor(
         )
     }
 
-    /** Clears the whole line: a bag row stands for every unit of that variant. */
-    internal fun onRemoveClicked(bagProduct: BagProduct) {
+    /**
+     * Clears the whole line: a bag row stands for every unit of that variant.
+     *
+     * A horizontal swipe reaches this in one gesture, so the result is not discarded the way the
+     * Wishlist's remove discards it — a failure would otherwise be silent after the row has already
+     * animated shut, and a success would be indistinguishable from a mis-aimed drag. [quantity] is
+     * what the undo puts back.
+     */
+    internal fun onRemoveClicked(bagProduct: BagProduct, quantity: Int) {
         viewModelScope.launch {
-            removeAllFromBagUseCase(bagProduct)
+            removeAllFromBagUseCase(bagProduct).doOnResult(
+                onSuccess = {
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Success,
+                            message = context.getString(R.string.bag_item_removed),
+                            actionLabel = context.getString(R.string.bag_item_removed_undo),
+                            onActionClick = { undoRemove(bagProduct = bagProduct, quantity = quantity) }
+                        )
+                    )
+                },
+                onError = {
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Error,
+                            message = context.getString(R.string.bag_item_remove_error)
+                        )
+                    )
+                }
+            )
+        }
+    }
+
+    // The bag stores one entry per unit, so restoring a line means adding each unit back. The
+    // entries are equal, so order does not matter and the line regroups as it was.
+    private fun undoRemove(bagProduct: BagProduct, quantity: Int) {
+        viewModelScope.launch {
+            repeat(quantity) {
+                addToBagUseCase(
+                    productId = bagProduct.productId,
+                    variantSku = bagProduct.variantSku
+                )
+            }
         }
     }
 

@@ -136,7 +136,10 @@ private fun ProductInfo(
                         )
                         .testTag(productCard.nameTestTag)
                 )
-                if (productCard.reference.isNotBlank()) {
+                // Blank values drop their row, but never while loading: the placeholder card carries
+                // no values at all, and skipping them would shimmer fewer lines than the loaded card
+                // draws.
+                if (productCard.reference.isNotBlank() || isLoading) {
                     Text(
                         text = stringResource(id = R.string.product_card_reference, productCard.reference),
                         style = theme.typography.label.small,
@@ -153,7 +156,7 @@ private fun ProductInfo(
                     )
                 }
                 // Single-variant products carry no colour or size option, and a bare "Color:" with
-                // nothing after it reads as broken. Drop the row instead.
+                // nothing after it reads as broken.
                 if (productCard.color.isNotBlank() || isLoading) {
                     LabelledValue(
                         label = stringResource(id = R.string.product_card_color),

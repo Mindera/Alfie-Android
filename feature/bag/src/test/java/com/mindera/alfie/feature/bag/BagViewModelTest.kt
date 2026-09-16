@@ -3,11 +3,14 @@ package com.mindera.alfie.feature.bag
 import android.content.Context
 import app.cash.turbine.test
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
+import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
 import com.mindera.alfie.domain.usecase.bag.RemoveAllFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
+import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -33,6 +36,9 @@ internal class BagViewModelTest {
 
     @RelaxedMockK
     private lateinit var removeAllFromBagUseCase: RemoveAllFromBagUseCase
+
+    @RelaxedMockK
+    private lateinit var addToBagUseCase: AddToBagUseCase
 
     @RelaxedMockK
     private lateinit var addToWishlistUseCase: AddToWishlistUseCase
@@ -155,11 +161,53 @@ internal class BagViewModelTest {
 
     @Test
     fun `onRemoveClicked - clears every unit of the line`() = runTest {
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
         val viewModel = buildViewModel()
 
-        viewModel.onRemoveClicked(bagProducts[0])
+        viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 1)
 
         coVerify(exactly = 1) { removeAllFromBagUseCase(bagProducts[0]) }
+    }
+
+    @Test
+    fun `onRemoveClicked - WHEN the removal succeeds THEN undo restores every unit`() = runTest {
+        // A swipe clears the whole line in one gesture, so the undo has to put back as many units
+        // as the line held — not the single entry a remove call names.
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
+        val emitter = UIEventEmitterDelegate()
+        val viewModel = buildViewModel(emitter = emitter)
+
+        viewModel.uiEvent.test {
+            viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 3)
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Success, visuals.type)
+            visuals.onActionClick()
+            delay(300)
+
+            coVerify(exactly = 3) {
+                addToBagUseCase(
+                    productId = bagProducts[0].productId,
+                    variantSku = bagProducts[0].variantSku
+                )
+            }
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onRemoveClicked - WHEN the removal fails THEN it says so instead of failing silently`() = runTest {
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Error(mockk())
+        val emitter = UIEventEmitterDelegate()
+        val viewModel = buildViewModel(emitter = emitter)
+
+        viewModel.uiEvent.test {
+            viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 1)
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Error, visuals.type)
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
     @Test
@@ -200,13 +248,17 @@ internal class BagViewModelTest {
         }
     }
 
-    private fun buildViewModel() = BagViewModel(
+    // The snackbar tests need the events the delegate actually emits, so they pass a real one.
+    private fun buildViewModel(
+        emitter: UIEventEmitterDelegate = uiEventEmitterDelegate
+    ) = BagViewModel(
         getBagUseCase = getBagUseCase,
         bagUiFactory = bagUiFactory,
         getProductUseCase = getProductUseCase,
         removeAllFromBagUseCase = removeAllFromBagUseCase,
+        addToBagUseCase = addToBagUseCase,
         addToWishlistUseCase = addToWishlistUseCase,
         context = context,
-        uiEventEmitterDelegate = uiEventEmitterDelegate
+        uiEventEmitterDelegate = emitter
     )
 }

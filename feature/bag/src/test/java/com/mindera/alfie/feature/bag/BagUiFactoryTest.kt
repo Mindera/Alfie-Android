@@ -168,7 +168,29 @@ class BagUiFactoryTest {
         // Nothing from the substituted variant leaks into the line, and it adds nothing to the total.
         assertEquals("", line.reference)
         assertEquals("", line.color)
-        assertEquals("", content.summary.totalFormatted)
+        // The currency still resolves off the product, so the summary reads "$0.00" rather than
+        // drawing the "Total" label against an empty string.
+        assertEquals("${'$'}0.00", content.summary.totalFormatted)
+    }
+
+    @Test
+    fun `invoke - WHEN the bag holds more units than are in stock THEN the notice says so`() = runTest {
+        // Two units of a variant with one left: "Only 1 item left!" under "Quantity: 2" would read
+        // as if nothing were wrong.
+        val twoOfTheSame = listOf(bagProducts[0], bagProducts[0])
+
+        val content = uiFactory(
+            bagProducts = twoOfTheSame,
+            products = products,
+            onProductClick = { }
+        )
+
+        assertEquals(2, content.items[0].productCardData.quantity)
+        assertEquals(BagItemNotice.ExceedsStock(remaining = 1), content.items[0].notice)
+        // Still available and still charged in full — the total has to agree with the row's own
+        // arithmetic, and the notice carries the problem.
+        assertTrue(content.items[0].productCardData.isAvailable)
+        assertEquals("${'$'}200.00", content.summary.totalFormatted)
     }
 
     @Test

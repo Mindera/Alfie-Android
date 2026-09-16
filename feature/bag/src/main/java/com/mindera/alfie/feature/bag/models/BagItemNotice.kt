@@ -11,6 +11,13 @@ sealed interface BagItemNotice {
     /** Stock has reached the low-stock threshold or dropped below it. */
     data class LowStock(val remaining: Int) : BagItemNotice
 
+    /**
+     * The bag holds more units than are in stock; [remaining] is what is actually left. The line
+     * stays available and is still charged in full — the total has to agree with the quantity the
+     * row shows — so this notice is what tells the user the line cannot be fulfilled as it stands.
+     */
+    data class ExceedsStock(val remaining: Int) : BagItemNotice
+
     /** The variant is out of stock; the row also renders dimmed. */
     data object Unavailable : BagItemNotice
 }
