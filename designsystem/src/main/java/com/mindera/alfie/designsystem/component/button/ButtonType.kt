@@ -21,59 +21,70 @@ data class ButtonColorSpec(
     val disabledBorder: Color
 )
 
+/**
+ * Button colours come from the theme's component tokens, not from the raw palette, so a brand swap
+ * in the token layer reaches buttons without touching this file. The token set gives one `content`
+ * token per variant, so text and icon share it.
+ *
+ * `terciary` is the design system's spelling of the token group; the [ButtonType] entry stays
+ * `Tertiary`. [ButtonType.Underlined] has no `button-*` group and maps onto the `link` tokens.
+ */
 @Composable
 fun ButtonType.colorSpec(): ButtonColorSpec {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
+    val button = theme.color.button
+    val link = theme.color.link
+    val transparent = theme.primitive.colors.transparent
     return when (this) {
         ButtonType.Primary -> ButtonColorSpec(
-            background = c.neutrals800,
-            text = c.neutrals0,
-            icon = c.neutrals0,
-            border = c.neutrals800,
-            disabledBackground = c.neutrals300,
-            disabledText = c.neutrals500,
-            disabledIcon = c.neutrals500,
-            disabledBorder = c.neutrals300
+            background = button.primaryBackgroundPrimaryDefault,
+            text = button.primaryContentPrimaryDefault,
+            icon = button.primaryContentPrimaryDefault,
+            border = button.primaryStrokePrimaryDefault,
+            disabledBackground = button.primaryBackgroundPrimaryDisabled,
+            disabledText = button.primaryContentPrimaryDisabled,
+            disabledIcon = button.primaryContentPrimaryDisabled,
+            disabledBorder = button.primaryStrokePrimaryDisabled
         )
         ButtonType.Secondary -> ButtonColorSpec(
-            background = c.transparent,
-            text = c.neutrals800,
-            icon = c.neutrals900,
-            border = c.neutrals900,
-            disabledBackground = c.transparent,
-            disabledText = c.neutrals500,
-            disabledIcon = c.neutrals500,
-            disabledBorder = c.neutrals500
+            background = button.secondaryBackgroundSecondaryDefault,
+            text = button.secondaryContentSecondaryDefault,
+            icon = button.secondaryContentSecondaryDefault,
+            border = button.secondaryStrokeSecondaryDefault,
+            disabledBackground = button.secondaryBackgroundSecondaryDisabled,
+            disabledText = button.secondaryContentSecondaryDisabled,
+            disabledIcon = button.secondaryContentSecondaryDisabled,
+            disabledBorder = button.secondaryStrokeSecondaryDisabled
         )
         ButtonType.Tertiary -> ButtonColorSpec(
-            background = c.transparent,
-            text = c.neutrals800,
-            icon = c.neutrals900,
-            border = c.transparent,
-            disabledBackground = c.transparent,
-            disabledText = c.neutrals400,
-            disabledIcon = c.neutrals500,
-            disabledBorder = c.transparent
+            background = button.terciaryBackgroundTerciaryDefault,
+            text = button.terciaryContentTerciaryDefault,
+            icon = button.terciaryContentTerciaryDefault,
+            border = button.terciaryStrokeTerciaryDefault,
+            disabledBackground = button.terciaryBackgroundTerciaryDisabled,
+            disabledText = button.terciaryContentTerciaryDisabled,
+            disabledIcon = button.terciaryContentTerciaryDisabled,
+            disabledBorder = button.terciaryStrokeTerciaryDisabled
         )
         ButtonType.Destructive -> ButtonColorSpec(
-            background = c.semanticError600,
-            text = c.neutrals0,
-            icon = c.neutrals0,
-            border = c.semanticError600,
-            disabledBackground = c.neutrals300,
-            disabledText = c.neutrals500,
-            disabledIcon = c.neutrals500,
-            disabledBorder = c.neutrals300
+            background = button.destructiveBackgroundDestructiveDefault,
+            text = button.destructiveContentDestructiveDefault,
+            icon = button.destructiveContentDestructiveDefault,
+            border = button.destructiveStrokeDestructiveDefault,
+            disabledBackground = button.destructiveBackgroundDestructiveDisabled,
+            disabledText = button.destructiveContentDestructiveDisabled,
+            disabledIcon = button.destructiveContentDestructiveDisabled,
+            disabledBorder = button.destructiveStrokeDestructiveDisabled
         )
         ButtonType.Underlined -> ButtonColorSpec(
-            background = c.transparent,
-            text = c.neutrals800,
-            icon = c.neutrals800,
-            border = c.transparent,
-            disabledBackground = c.transparent,
-            disabledText = c.neutrals400,
-            disabledIcon = c.neutrals400,
-            disabledBorder = c.transparent
+            background = transparent,
+            text = link.linkPrimaryDefault,
+            icon = link.linkPrimaryDefault,
+            border = transparent,
+            disabledBackground = transparent,
+            disabledText = link.linkPrimaryDisabled,
+            disabledIcon = link.linkPrimaryDisabled,
+            disabledBorder = transparent
         )
     }
 }
