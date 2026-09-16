@@ -1,38 +1,61 @@
 package com.mindera.alfie.designsystem.component.topbar.custom
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.test.HOME_TITLE_HEADER
 import com.mindera.alfie.designsystem.R
+import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.standardAccelerate
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarActions
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Greeting
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Logo
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
+import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import kotlinx.collections.immutable.persistentListOf
 
+/**
+ * The level-1 landing header — Figma Home (node `672:80414`, frames `172:57031` / `262:40635`).
+ *
+ * Idle it is a 145dp block: `screen-size/margin` (16) of padding around a centred column of the
+ * 160x49 brand wordmark, a `spacing/spacing-lg` (24) gap, and the 40dp search field. No divider —
+ * the content below starts flush against it.
+ *
+ * Opening search collapses the branding away and tightens [SearchHeader] to its 48dp band, so the
+ * header becomes the Search page header and matches the one Shop shows.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarScope.LandingHeader(
@@ -40,96 +63,218 @@ fun TopBarScope.LandingHeader(
     modifier: Modifier = Modifier
 ) {
     val searchState = state.getSearchState() ?: return
+    val theme = LocalTheme.current
 
+    // `containerColor` resolves to neutrals0 — the same colour as surface/background-primary in
+    // Figma — and keeps the scope's isDarkTheme handling and parity with SearchHeader.
     Column(modifier = modifier.background(topBarColors.containerColor)) {
-        LandingHeaderContent(
-            type = type,
-            isSearchMode = searchState.isSearchOpen
+        LandingHeaderBranding(type = type, isVisible = !searchState.isSearchOpen)
+        SearchHeader(
+            searchState = searchState,
+            // The column gap and the frame's bottom padding, which the band owns while idle.
+            idleTopPadding = theme.spacing.spacing24,
+            idleBottomPadding = theme.spacing.spacing16
         )
-        SearchHeader(searchState = searchState)
     }
 }
 
+/**
+ * The branding row above the field. Its top padding lives inside the animation so that it
+ * collapses together with the wordmark — search mode then lands on exactly the 48dp band.
+ */
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun TopBarScope.LandingHeaderContent(
+private fun TopBarScope.LandingHeaderBranding(
     type: LandingHeaderType,
-    isSearchMode: Boolean
+    isVisible: Boolean
 ) {
     val theme = LocalTheme.current
-    TopAppBar(
-        title = {
+    DefaultVisibilityAnimation(
+        isVisible = isVisible,
+        // Anchored to the top: the defaults expand from and shrink towards Bottom, which collapses
+        // the wordmark into the edge nearest the search field instead of sliding it up out of the
+        // way behind the band that stays put.
+        enterTransition = fadeIn(standardAccelerate()) +
+            expandVertically(standardAccelerate(), expandFrom = Alignment.Top),
+        exitTransition = shrinkVertically(standardAccelerate(), shrinkTowards = Alignment.Top) +
+            fadeOut(standardAccelerate())
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = theme.spacing.spacing16,
+                    end = theme.spacing.spacing16,
+                    top = theme.spacing.spacing16
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            // The title and the actions are siblings in one Box rather than the measured slots the
+            // old TopAppBar gave them, so nothing stops an unbounded title running underneath the
+            // icons. Reserving the actions' width on *both* sides keeps the title centred on the
+            // screen — which is what Figma asks of the wordmark — while capping how wide it can
+            // grow. With no actions this is 0dp and the layout is exactly the Figma block.
+            var actionsWidth by remember { mutableStateOf(0.dp) }
+            val titleModifier = Modifier.padding(horizontal = actionsWidth)
             when (type) {
-                is Greeting -> GreetingTopBar(type)
-                is Logo -> LogoTopBar(type)
+                is Logo -> BrandLogo(type = type, modifier = titleModifier)
+                is Greeting -> GreetingTopBar(greetingType = type, modifier = titleModifier)
             }
-        },
-        actions = { TopBarActions(animateVisibility = false) },
-        colors = topBarColors,
-        modifier = Modifier
-            .padding(end = theme.spacing.spacing12)
-            .animateContentSize(standardAccelerate())
-            .layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints)
-                val height = if (isSearchMode) 0 else placeable.height
+            // Empty in release builds — the design has no header actions — so this measures 0x0
+            // and the header is exactly the Figma block. Debug builds put the debug entry point
+            // here, inside the 16dp margin and within the wordmark's own 49dp, costing no height.
+            val density = LocalDensity.current
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .onSizeChanged { size ->
+                        actionsWidth = with(density) { size.width.toDp() }
+                    }
+            ) {
+                TopBarActions(animateVisibility = false)
+            }
+        }
+    }
+}
 
-                layout(
-                    width = placeable.width,
-                    height = height
-                ) {
-                    placeable.placeRelative(IntOffset.Zero)
-                }
-            }
+/**
+ * The stacked MINDERA / ALFIE wordmark, Figma `doc_branding` (160x49).
+ *
+ * Deliberately unsized: `brand_logo` carries that intrinsic size, and Material3 [Icon] only falls
+ * back to its own 24dp default when the painter's intrinsic size is unspecified. Same treatment
+ * as the startup screen.
+ */
+@Composable
+private fun BrandLogo(
+    type: Logo,
+    modifier: Modifier = Modifier
+) {
+    Icon(
+        painter = painterResource(id = type.icon),
+        contentDescription = type.contentDescription,
+        tint = LocalTheme.current.color.content.contentPrimary,
+        modifier = modifier.testTag(HOME_TITLE_HEADER)
     )
 }
 
 @Composable
 private fun GreetingTopBar(
-    greetingType: Greeting
+    greetingType: Greeting,
+    modifier: Modifier = Modifier
 ) {
-    val c = LocalTheme.current.primitive.colors
-    Column(modifier = Modifier.testTag(HOME_TITLE_HEADER)) {
+    val theme = LocalTheme.current
+    Column(
+        modifier = modifier.testTag(HOME_TITLE_HEADER),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(
             text = stringResource(id = R.string.top_bar_greeting, greetingType.userName),
-            style = LocalTheme.current.typography.heading.medium,
-            color = c.neutrals900,
+            style = theme.typography.heading.medium,
+            color = theme.primitive.colors.neutrals900,
+            textAlign = TextAlign.Center,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
         greetingType.subtitle?.let {
             Text(
                 text = it,
-                style = LocalTheme.current.typography.body.small,
-                color = c.neutrals500
+                style = theme.typography.body.small,
+                color = theme.primitive.colors.neutrals500,
+                textAlign = TextAlign.Center
             )
         }
     }
 }
 
+/** Idle Home header — the 145dp Figma block: 16 + 49 + 24 + 40 + 16. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
-private fun LogoTopBar(type: Logo) {
-    Icon(
-        painter = painterResource(id = type.icon),
-        contentDescription = type.contentDescription,
-        modifier = Modifier
-            .height(LocalTheme.current.sizing.icon.small)
-            .testTag(HOME_TITLE_HEADER)
-    )
+private fun LandingHeaderIdlePreview() {
+    Theme {
+        val searchState = rememberSearchState()
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Logo())
+    }
 }
 
+/** Search mode — branding collapsed, leaving the 48dp band with its back button and divider. */
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun LandingHeaderPreview() {
-    val topBarState = TopBarState(
-        title = TopBarTitle.Custom(rememberSearchState()) {},
-        showNavigationIcon = true
-    )
+private fun LandingHeaderSearchModePreview() {
+    Theme {
+        val searchState = rememberSearchState().apply { updateSearchState(true) }
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Logo())
+    }
+}
 
-    TopBarScopeInstance(
-        state = topBarState,
-        topBarColors = TopAppBarDefaults.topAppBarColors()
-    ).LandingHeader(
-        type = Greeting("User", "Member since: 1838")
-    )
+/**
+ * Debug builds only: the header with an action in the end slot. Release renders no actions, so this
+ * is the one arrangement the Figma block itself never shows — and the one where the title and the
+ * icons share a container.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun LandingHeaderWithActionPreview() {
+    Theme {
+        val searchState = rememberSearchState()
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false,
+                actions = persistentListOf(TopBarAction.Account(onClick = {}))
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Logo())
+    }
+}
+
+/**
+ * The greeting branch with an action — a long name has to ellipsise before the icons rather than
+ * run underneath them.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun LandingHeaderGreetingWithActionPreview() {
+    Theme {
+        val searchState = rememberSearchState()
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false,
+                actions = persistentListOf(TopBarAction.Account(onClick = {}))
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Greeting("Bartholomew Fitzwilliam-Harrington", "Member since: 1838"))
+    }
+}
+
+/** The legacy greeting branch — no Figma counterpart, kept rendering for the debug catalog. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun LandingHeaderGreetingPreview() {
+    Theme {
+        val searchState = rememberSearchState()
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Greeting("User", "Member since: 1838"))
+    }
 }

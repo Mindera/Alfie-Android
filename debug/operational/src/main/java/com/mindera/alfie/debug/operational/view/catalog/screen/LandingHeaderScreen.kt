@@ -32,10 +32,6 @@ internal fun LandingHeaderScreen(
 
     var isLogged by remember { mutableStateOf(true) }
     val landingPageTopBarState = rememberTopBarState()
-    val actions = persistentListOf(
-        TopBarAction.Account {}
-    )
-
     val type = if (isLogged) {
         LandingHeaderType.Greeting(
             userName = "Alfie",
@@ -47,7 +43,10 @@ internal fun LandingHeaderScreen(
 
     landingPageTopBarState.customTopBar(
         searchState = rememberSearchState(),
-        actions = actions
+        // Home itself renders no actions, but the header's end slot is what debug builds put their
+        // entry point in — so the catalog keeps one action, which is the only way to see that
+        // arrangement outside a debug build of Home.
+        actions = persistentListOf(TopBarAction.Account(onClick = {}))
     ) {
         LandingHeader(type = type)
     }
