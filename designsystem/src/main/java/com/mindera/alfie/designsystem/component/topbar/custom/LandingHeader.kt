@@ -14,14 +14,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.mindera.alfie.core.ui.test.HOME_TITLE_HEADER
 import com.mindera.alfie.designsystem.R
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
@@ -29,6 +36,7 @@ import com.mindera.alfie.designsystem.animation.standardAccelerate
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
+import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarActions
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Greeting
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType.Logo
@@ -36,6 +44,7 @@ import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScopeInstance
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * The level-1 landing header — Figma Home (node `672:80414`, frames `172:57031` / `262:40635`).
@@ -81,8 +90,13 @@ private fun TopBarScope.LandingHeaderBranding(
     val theme = LocalTheme.current
     DefaultVisibilityAnimation(
         isVisible = isVisible,
-        enterTransition = fadeIn(standardAccelerate()) + expandVertically(standardAccelerate()),
-        exitTransition = shrinkVertically(standardAccelerate()) + fadeOut(standardAccelerate())
+        // Anchored to the top: the defaults expand from and shrink towards Bottom, which collapses
+        // the wordmark into the edge nearest the search field instead of sliding it up out of the
+        // way behind the band that stays put.
+        enterTransition = fadeIn(standardAccelerate()) +
+            expandVertically(standardAccelerate(), expandFrom = Alignment.Top),
+        exitTransition = shrinkVertically(standardAccelerate(), shrinkTowards = Alignment.Top) +
+            fadeOut(standardAccelerate())
     ) {
         Box(
             modifier = Modifier
@@ -94,14 +108,28 @@ private fun TopBarScope.LandingHeaderBranding(
                 ),
             contentAlignment = Alignment.Center
         ) {
+            // The title and the actions are siblings in one Box rather than the measured slots the
+            // old TopAppBar gave them, so nothing stops an unbounded title running underneath the
+            // icons. Reserving the actions' width on *both* sides keeps the title centred on the
+            // screen — which is what Figma asks of the wordmark — while capping how wide it can
+            // grow. With no actions this is 0dp and the layout is exactly the Figma block.
+            var actionsWidth by remember { mutableStateOf(0.dp) }
+            val titleModifier = Modifier.padding(horizontal = actionsWidth)
             when (type) {
-                is Logo -> BrandLogo(type)
-                is Greeting -> GreetingTopBar(type)
+                is Logo -> BrandLogo(type = type, modifier = titleModifier)
+                is Greeting -> GreetingTopBar(greetingType = type, modifier = titleModifier)
             }
             // Empty in release builds — the design has no header actions — so this measures 0x0
             // and the header is exactly the Figma block. Debug builds put the debug entry point
             // here, inside the 16dp margin and within the wordmark's own 49dp, costing no height.
-            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+            val density = LocalDensity.current
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .onSizeChanged { size ->
+                        actionsWidth = with(density) { size.width.toDp() }
+                    }
+            ) {
                 TopBarActions(animateVisibility = false)
             }
         }
@@ -116,22 +144,26 @@ private fun TopBarScope.LandingHeaderBranding(
  * as the startup screen.
  */
 @Composable
-private fun BrandLogo(type: Logo) {
+private fun BrandLogo(
+    type: Logo,
+    modifier: Modifier = Modifier
+) {
     Icon(
         painter = painterResource(id = type.icon),
         contentDescription = type.contentDescription,
         tint = LocalTheme.current.color.content.contentPrimary,
-        modifier = Modifier.testTag(HOME_TITLE_HEADER)
+        modifier = modifier.testTag(HOME_TITLE_HEADER)
     )
 }
 
 @Composable
 private fun GreetingTopBar(
-    greetingType: Greeting
+    greetingType: Greeting,
+    modifier: Modifier = Modifier
 ) {
     val theme = LocalTheme.current
     Column(
-        modifier = Modifier.testTag(HOME_TITLE_HEADER),
+        modifier = modifier.testTag(HOME_TITLE_HEADER),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -184,6 +216,49 @@ private fun LandingHeaderSearchModePreview() {
             ),
             topBarColors = TopAppBarDefaults.topAppBarColors()
         ).LandingHeader(type = Logo())
+    }
+}
+
+/**
+ * Debug builds only: the header with an action in the end slot. Release renders no actions, so this
+ * is the one arrangement the Figma block itself never shows — and the one where the title and the
+ * icons share a container.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun LandingHeaderWithActionPreview() {
+    Theme {
+        val searchState = rememberSearchState()
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false,
+                actions = persistentListOf(TopBarAction.Account(onClick = {}))
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Logo())
+    }
+}
+
+/**
+ * The greeting branch with an action — a long name has to ellipsise before the icons rather than
+ * run underneath them.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+private fun LandingHeaderGreetingWithActionPreview() {
+    Theme {
+        val searchState = rememberSearchState()
+        TopBarScopeInstance(
+            state = TopBarState(
+                title = TopBarTitle.Custom(searchState) {},
+                showNavigationIcon = false,
+                actions = persistentListOf(TopBarAction.Account(onClick = {}))
+            ),
+            topBarColors = TopAppBarDefaults.topAppBarColors()
+        ).LandingHeader(type = Greeting("Bartholomew Fitzwilliam-Harrington", "Member since: 1838"))
     }
 }
 

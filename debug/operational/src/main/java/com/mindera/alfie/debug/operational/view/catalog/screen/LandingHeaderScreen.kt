@@ -15,6 +15,7 @@ import com.mindera.alfie.debug.operational.view.catalog.util.SwitchItem
 import com.mindera.alfie.designsystem.component.searchbar.rememberSearchState
 import com.mindera.alfie.designsystem.component.topbar.TopBar
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
+import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeader
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType
 import com.mindera.alfie.designsystem.component.topbar.rememberTopBarState
@@ -42,7 +43,10 @@ internal fun LandingHeaderScreen(
 
     landingPageTopBarState.customTopBar(
         searchState = rememberSearchState(),
-        actions = persistentListOf()
+        // Home itself renders no actions, but the header's end slot is what debug builds put their
+        // entry point in — so the catalog keeps one action, which is the only way to see that
+        // arrangement outside a debug build of Home.
+        actions = persistentListOf(TopBarAction.Account(onClick = {}))
     ) {
         LandingHeader(type = type)
     }
