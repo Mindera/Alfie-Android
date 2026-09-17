@@ -2,9 +2,11 @@ package com.mindera.alfie.data.product.repository
 
 import com.mindera.alfie.data.product.mapper.toDomain
 import com.mindera.alfie.data.product.service.ProductService
+import com.mindera.alfie.data.productlist.mapper.toDomain
 import com.mindera.alfie.data.toRepositoryResult
 import com.mindera.alfie.repository.product.ProductRepository
 import com.mindera.alfie.repository.product.model.Product
+import com.mindera.alfie.repository.productlist.model.ProductListEntry
 import com.mindera.alfie.repository.result.RepositoryResult
 import javax.inject.Inject
 
@@ -17,6 +19,16 @@ internal class ProductRepositoryImpl @Inject constructor(
             .mapCatching { data ->
                 data.productDetails?.productFragment?.toDomain()
                     ?: error("productDetails was null for handle=$handle")
+            }
+            .toRepositoryResult()
+
+    override suspend fun getRelatedProducts(
+        handle: String,
+        limit: Int
+    ): RepositoryResult<List<ProductListEntry>> =
+        productService.getRelatedProducts(handle = handle, limit = limit)
+            .mapCatching { data ->
+                data.relatedProducts.map { it.productListEntryFragment.toDomain() }
             }
             .toRepositoryResult()
 }

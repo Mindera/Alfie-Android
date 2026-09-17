@@ -50,7 +50,7 @@ import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.core.ui.util.stringResource
-import com.mindera.alfie.designsystem.component.accordion.Accordion
+import com.mindera.alfie.designsystem.component.accordion.AccordionGroup
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.button.Button
 import com.mindera.alfie.designsystem.component.button.ButtonSize
@@ -59,6 +59,7 @@ import com.mindera.alfie.designsystem.component.gallery.Gallery
 import com.mindera.alfie.designsystem.component.image.ratio.DimensionConstraint.ParentWidth
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio.RATIO3x4
 import com.mindera.alfie.designsystem.component.price.PriceType
+import com.mindera.alfie.designsystem.component.productcard.ProductCard
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonProperties
 import com.mindera.alfie.designsystem.component.sizingbutton.SizingButtonState
@@ -80,6 +81,7 @@ import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
 import com.mindera.alfie.feature.pdp.model.ProductDetailsShareInfo
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUI
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
+import com.mindera.alfie.feature.pdp.model.RelatedProductsUIState
 import com.mindera.alfie.feature.pdp.model.ShareEvent
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.pdp.model.SizeUI
@@ -90,6 +92,9 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import com.mindera.alfie.feature.R as FeatureR
+
+/** screen-size/columns — the recommendations grid is two columns at phone width. */
+private const val RELATED_PRODUCTS_COLUMNS = 2
 
 @Destination(navArgsDelegate = ProductDetailsNavArgs::class)
 @Composable
@@ -103,6 +108,7 @@ internal fun ProductDetailsScreen(
 ) {
     val viewModel: ProductDetailsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val relatedProducts by viewModel.relatedProducts.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val actions = remember {
@@ -139,6 +145,7 @@ internal fun ProductDetailsScreen(
     when (state) {
         is ProductDetailsUIState.Data -> ProductDetailsScreenContent(
             state = state as ProductDetailsUIState.Data,
+            relatedProducts = relatedProducts,
             onEvent = viewModel::handleEvent
         )
         is ProductDetailsUIState.Error -> ProductDetailsScreenError(
@@ -158,7 +165,8 @@ internal fun ProductDetailsScreen(
 @Composable
 private fun ProductDetailsScreenContent(
     state: ProductDetailsUIState.Data,
-    onEvent: ClickEventOneArg<ProductDetailsEvent>
+    onEvent: ClickEventOneArg<ProductDetailsEvent>,
+    relatedProducts: RelatedProductsUIState = RelatedProductsUIState.Hidden
 ) {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
@@ -221,6 +229,49 @@ private fun ProductDetailsScreenContent(
                 state = state,
                 onEvent = onEvent
             )
+            // Card clicks and the wishlist toggle are bound by the UI factory, so this section
+            // needs no event callback of its own.
+            ProductDetailsRelatedProducts(relatedProducts = relatedProducts)
+        }
+    }
+}
+
+/**
+ * "You might also like" (Recommendations): the section title then a two-column grid of the same
+ * vertical product card the PLP uses — 8dp column gutter, 16dp row gap, inside the screen margin.
+ *
+ * Built from Rows rather than a LazyVerticalGrid because the whole PDP is already one
+ * `verticalScroll` column, and nesting a lazy grid on the same axis is not allowed.
+ */
+@Composable
+private fun ProductDetailsRelatedProducts(relatedProducts: RelatedProductsUIState) {
+    if (relatedProducts !is RelatedProductsUIState.Loaded) return
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)) {
+        Text(
+            text = stringResource(id = R.string.product_details_you_might_also_like),
+            style = LocalTheme.current.typography.body.mediumBold,
+            color = LocalTheme.current.color.content.contentPrimary
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.spacing16)) {
+            relatedProducts.items.chunked(RELATED_PRODUCTS_COLUMNS).forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing.spacing8)
+                ) {
+                    row.forEach { item ->
+                        ProductCard(
+                            modifier = Modifier.weight(1f),
+                            productCardType = item.productCardData,
+                            isWishlisted = item.isWishlisted
+                        )
+                    }
+                    // Keeps a lone trailing card at column width instead of letting it stretch.
+                    repeat(RELATED_PRODUCTS_COLUMNS - row.size) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+            }
         }
     }
 }
@@ -406,28 +457,22 @@ private fun ProductDetailsSections(
 ) {
     val c = LocalTheme.current.primitive.colors
     val isLoading = state is ProductDetailsUIState.Data.Loading
-    val sections = state.details.sections
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-        sections.forEach { section ->
-            val title = stringResource(resource = section.title)
-            Accordion(
-                title = if (isLoading) "" else title,
-                content = {
-                    Text(
-                        text = stringResource(id = R.string.product_details_section_view_link, title),
-                        style = LocalTheme.current.typography.body.mediumBold,
-                        color = c.neutrals800,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier
-                            .clipToBounds()
-                            .clickable { onEvent(ProductDetailsEvent.OnSectionClick(section)) }
-                            .padding(vertical = Theme.spacing.spacing8)
-                            .shimmer(isShimmering = isLoading)
-                    )
-                }
-            )
-        }
+    AccordionGroup(
+        items = state.details.sections,
+        title = { section -> if (isLoading) "" else stringResource(resource = section.title) }
+    ) { section ->
+        val title = stringResource(resource = section.title)
+        Text(
+            text = stringResource(id = R.string.product_details_section_view_link, title),
+            style = LocalTheme.current.typography.body.mediumBold,
+            color = c.neutrals800,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .clipToBounds()
+                .clickable { onEvent(ProductDetailsEvent.OnSectionClick(section)) }
+                .shimmer(isShimmering = isLoading)
+        )
     }
 }
 

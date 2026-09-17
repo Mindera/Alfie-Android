@@ -2,8 +2,10 @@ package com.mindera.alfie.data.product.repository
 
 import com.mindera.alfie.data.product.service.ProductService
 import com.mindera.alfie.graphql.bff.GetProductDetailsQuery
+import com.mindera.alfie.graphql.bff.GetRelatedProductsQuery
 import com.mindera.alfie.network.exception.GraphNetworkException
 import com.mindera.alfie.repository.product.model.Product
+import com.mindera.alfie.repository.productlist.model.ProductListEntry
 import com.mindera.alfie.repository.result.RepositoryResult
 import io.mockk.coEvery
 import io.mockk.every
@@ -59,6 +61,38 @@ internal class ProductRepositoryImplTest {
         )
 
         val result = subject.getProduct(handle = HANDLE)
+
+        assertIs<RepositoryResult.Error>(result)
+    }
+
+    @Test
+    fun `getRelatedProducts - WHEN result is success THEN repository returns success with mapped entries`() = runTest {
+        val mockData = mockk<GetRelatedProductsQuery.Data>(relaxed = true)
+        val mockEntry = mockk<GetRelatedProductsQuery.RelatedProduct>(relaxed = true)
+        every { mockData.relatedProducts } returns listOf(mockEntry)
+        every { mockEntry.productListEntryFragment.id } returns "r-1"
+        every { mockEntry.productListEntryFragment.slug } returns "related-slug"
+        every { mockEntry.productListEntryFragment.name } returns "Related Product"
+        every { mockEntry.productListEntryFragment.brandName } returns "Related Brand"
+        every { mockEntry.productListEntryFragment.primaryImage } returns null
+        every { mockEntry.productListEntryFragment.tags } returns null
+        coEvery { productService.getRelatedProducts(any(), any()) } returns Result.success(mockData)
+
+        val result = subject.getRelatedProducts(handle = HANDLE, limit = 8)
+
+        assertIs<RepositoryResult.Success<List<ProductListEntry>>>(result)
+        assertEquals(1, result.data.size)
+        assertEquals("r-1", result.data.first().id)
+        assertEquals("related-slug", result.data.first().slug)
+    }
+
+    @Test
+    fun `getRelatedProducts - WHEN result is failure THEN repository returns error`() = runTest {
+        coEvery { productService.getRelatedProducts(any(), any()) } returns Result.failure(
+            GraphNetworkException.UnexpectedException(message = "Error")
+        )
+
+        val result = subject.getRelatedProducts(handle = HANDLE, limit = 8)
 
         assertIs<RepositoryResult.Error>(result)
     }

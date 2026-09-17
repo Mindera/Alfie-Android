@@ -10,19 +10,27 @@ import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.webview.webViewNavArgs
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.core.ui.media.image.ImageUI
+import com.mindera.alfie.designsystem.component.price.PriceType
+import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
+import com.mindera.alfie.domain.usecase.product.GetRelatedProductsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import com.mindera.alfie.feature.pdp.factory.RelatedProductsUIFactory
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUI
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
+import com.mindera.alfie.feature.pdp.model.RelatedProductUI
+import com.mindera.alfie.feature.pdp.model.RelatedProductsUIState
 import com.mindera.alfie.feature.pdp.model.ShareEvent
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
+import com.mindera.alfie.repository.result.ErrorResult
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -30,6 +38,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -60,6 +69,12 @@ internal class ProductDetailsViewModelTest {
     private lateinit var productDetailsUIFactory: ProductDetailsUIFactory
 
     @RelaxedMockK
+    private lateinit var getRelatedProductsUseCase: GetRelatedProductsUseCase
+
+    @RelaxedMockK
+    private lateinit var relatedProductsUIFactory: RelatedProductsUIFactory
+
+    @RelaxedMockK
     private lateinit var analyticsManager: AnalyticsManager
 
     @RelaxedMockK
@@ -70,6 +85,16 @@ internal class ProductDetailsViewModelTest {
 
     private val productDetailsUI: ProductDetailsUI = mockk(relaxed = true)
 
+    private val relatedProduct = RelatedProductUI(
+        slug = "related-slug",
+        productCardData = ProductCardType.Vertical(
+            image = ImageUI(images = persistentListOf(), alt = ""),
+            brand = "Brand",
+            name = "Related product",
+            price = PriceType.Default(price = "£10")
+        )
+    )
+
     @BeforeEach
     fun setUp() {
         mockkStatic("com.mindera.alfie.feature.pdp.NavArgsGettersKt")
@@ -78,6 +103,9 @@ internal class ProductDetailsViewModelTest {
         coEvery { getProductUseCase(any()) } returns UseCaseResult.Success(product)
         coEvery { productDetailsUIFactory(any()) } returns productDetailsUI
         every { productDetailsUI.copy(isWishlisted = any()) } returns productDetailsUI
+
+        coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(emptyList())
+        coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf()
     }
 
     @Test
@@ -166,13 +194,51 @@ internal class ProductDetailsViewModelTest {
         }
     }
 
+    @Test
+    fun `init - GIVEN related products WHEN load succeeds THEN state is Loaded with the mapped cards`() = runTest {
+        coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(listOf(mockk(relaxed = true)))
+        coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf(relatedProduct)
+
+        val viewModel = buildViewModel()
+
+        viewModel.relatedProducts.test {
+            assertEquals(RelatedProductsUIState.Loaded(persistentListOf(relatedProduct)), awaitItem())
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `init - GIVEN related products WHEN load returns none THEN section is hidden`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.relatedProducts.test {
+            assertEquals(RelatedProductsUIState.Hidden, awaitItem())
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `init - GIVEN related products WHEN load fails THEN section is hidden and details are untouched`() = runTest {
+        coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Error(mockk<ErrorResult>(relaxed = true))
+
+        val viewModel = buildViewModel()
+
+        viewModel.relatedProducts.test {
+            assertEquals(RelatedProductsUIState.Hidden, awaitItem())
+            cancelAndConsumeRemainingEvents()
+        }
+        assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value)
+    }
+
     private fun buildViewModel() = ProductDetailsViewModel(
         addToBagUseCase = addToBagUseCase,
         getProductUseCase = getProductUseCase,
+        getRelatedProductsUseCase = getRelatedProductsUseCase,
         getWishlistIds = getWishlistIds,
         addToWishlistUseCase = addToWishlistUseCase,
         removeWishlistUseCase = removeWishlistUseCase,
         uiFactory = productDetailsUIFactory,
+        relatedProductsUIFactory = relatedProductsUIFactory,
         analyticsManager = analyticsManager,
         savedStateHandle = savedStateHandle,
         uiEventEmitterDelegate = UIEventEmitterDelegate(),

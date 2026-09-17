@@ -17,7 +17,7 @@ internal fun ProductListResponseFragment.toDomain() = ProductList(
     )
 )
 
-private fun ProductListEntryFragment.toDomain() = ProductListEntry(
+internal fun ProductListEntryFragment.toDomain() = ProductListEntry(
     id = id,
     slug = slug,
     name = name,
