@@ -10,6 +10,16 @@ type Barcode {
   value: String!
 }
 
+type BarcodeMatch {
+  id: ID!
+
+  name: String!
+
+  slug: String!
+
+  variantId: ID
+}
+
 """
 The `Boolean` scalar type represents `true` or `false`.
 """
@@ -60,6 +70,8 @@ type CartItem {
 
   sku: String
 
+  slug: String
+
   variantId: String
 }
 
@@ -87,6 +99,12 @@ type CartTotals {
   subtotal: Money!
 }
 
+type CategoryPriceRange {
+  maxVariantPrice: Money!
+
+  minVariantPrice: Money!
+}
+
 input CreateCartInput {
   customerAccessToken: String
 
@@ -99,6 +117,28 @@ type Dimensions {
   length: Float
 
   width: Float
+}
+
+type Facet {
+  id: String!
+
+  label: String!
+
+  values: [FacetValue!]!
+}
+
+input FacetFilterInput {
+  facetId: String!
+
+  value: String!
+}
+
+type FacetValue {
+  count: Int!
+
+  label: String!
+
+  value: String!
 }
 
 """
@@ -149,6 +189,8 @@ type MenuItem {
 type Metafield {
   key: String!
 
+  namespace: String
+
   value: String!
 }
 
@@ -182,6 +224,10 @@ type Mutation {
   addToCart(input: AddToCartInput!): Cart!
 
   createCart(input: CreateCartInput!): Cart!
+
+  removeFromCart(cartId: String!, lineId: String!): Cart!
+
+  updateCart(input: UpdateCartInput!): Cart!
 }
 
 type OmniProduct {
@@ -245,6 +291,8 @@ type PageInfo {
 input ProductFilterInput {
   brandNames: [String!]
 
+  facets: [FacetFilterInput!]
+
   inventory: Boolean
 
   maxPrice: Float
@@ -257,6 +305,11 @@ input ProductFilterInput {
 }
 
 type ProductListResponse {
+  """
+  Facets available for this result set, narrowed by active filters. Excludes price — use categoryPriceRange for price bounds. Empty when the platform provides no facets.
+  """
+  filters: [Facet!]!
+
   pageInfo: PageInfo
 
   products: [OmniProduct!]!
@@ -329,11 +382,17 @@ type Query {
 
   cartCheckoutUrl(cartId: String!): String!
 
+  categoryPriceRange(collectionHandle: String!): CategoryPriceRange
+
   menu(handle: String! = "main-menu"): Menu!
+
+  productByBarcode(barcode: String!): BarcodeMatch
 
   productDetails(handle: String!, productMetafields: [MetafieldIdentifierInput!], variantMetafields: [MetafieldIdentifierInput!]): OmniProduct
 
   productList(after: String, collectionHandle: String!, filters: ProductFilterInput, limit: Int! = 25, sort: ProductSortEnum! = NEWEST): ProductListResponse!
+
+  relatedProducts(handle: String!, limit: Int! = 8): [OmniProduct!]!
 
   searchProducts(after: String, filters: ProductFilterInput, limit: Int! = 10, searchTerm: String!, sort: ProductSortEnum! = NEWEST): ProductListResponse!
 }
@@ -350,6 +409,28 @@ type Seo {
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 """
 scalar String
+
+input UpdateCartInput {
+  cartId: ID!
+
+  lines: [UpdateCartLineInput!]!
+}
+
+input UpdateCartLineInput {
+  id: ID!
+
+  """
+  Required by BigCommerce; ignored by Shopify.
+  """
+  productId: ID
+
+  quantity: Int!
+
+  """
+  Required by BigCommerce; ignored by Shopify.
+  """
+  variantId: ID
+}
 
 type VariantOption {
   name: String!
