@@ -82,7 +82,7 @@ internal class ProductDetailsViewModel @Inject constructor(
             ProductDetailsEvent.OnShareClick -> onShareClick()
             is ProductDetailsEvent.OnColorClick -> onColorSelected(event.index)
             is ProductDetailsEvent.OnSectionClick -> onSectionClick(event.item)
-            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick(event.productId)
+            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick(event.slug)
             is ProductDetailsEvent.OnSizeSelect -> onSizeSelect(event.sizeUI)
         }
     }
@@ -218,18 +218,18 @@ internal class ProductDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onFavoriteClick(productId: String) {
+    private fun onFavoriteClick(slug: String) {
         viewModelScope.launch {
-            val wasWishlisted = isWishlisted(productId) ?: return@launch
+            val wasWishlisted = isWishlisted(slug) ?: return@launch
 
-            setWishlisted(productId, !wasWishlisted)
+            setWishlisted(slug, !wasWishlisted)
 
-            val result = if (wasWishlisted) removeWishlistUseCase(productId) else addToWishlistUseCase(productId)
+            val result = if (wasWishlisted) removeWishlistUseCase(slug) else addToWishlistUseCase(slug)
 
             result.doOnResult(
                 onSuccess = {},
                 onError = {
-                    setWishlisted(productId, wasWishlisted)
+                    setWishlisted(slug, wasWishlisted)
                     showSnackbar(
                         SnackbarCustomVisuals(
                             type = SnackbarType.Error,

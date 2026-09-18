@@ -2,9 +2,7 @@ package com.mindera.alfie.feature.pdp.factory
 
 import com.mindera.alfie.core.commons.dispatcher.DispatcherProvider
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
-import com.mindera.alfie.designsystem.component.productcard.ProductCardType
-import com.mindera.alfie.feature.mappers.toImageUI
-import com.mindera.alfie.feature.mappers.toPriceType
+import com.mindera.alfie.feature.mappers.toVerticalProductCard
 import com.mindera.alfie.feature.pdp.model.RelatedProductUI
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
 import kotlinx.collections.immutable.ImmutableList
@@ -30,14 +28,9 @@ internal class RelatedProductsUIFactory @Inject constructor(
             RelatedProductUI(
                 slug = entry.slug,
                 isWishlisted = wishlistedSlugs.contains(entry.slug),
-                productCardData = ProductCardType.Vertical(
-                    brand = entry.brandName.orEmpty(),
-                    name = entry.name,
-                    price = entry.priceRange.toPriceType(),
-                    image = entry.primaryImage.toImageUI(),
-                    onClick = { onProductClick(entry.slug) },
-                    onFavoriteClick = { onFavoriteClick(entry.slug) },
-                    label = entry.tags.firstOrNull()
+                productCardData = entry.toVerticalProductCard(
+                    onProductClick = { onProductClick(entry.slug) },
+                    onFavoriteClick = { onFavoriteClick(entry.slug) }
                 )
             )
         }.toImmutableList()

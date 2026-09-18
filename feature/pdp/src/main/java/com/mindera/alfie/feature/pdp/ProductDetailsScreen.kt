@@ -468,9 +468,12 @@ private fun ProductDetailsSections(
             style = LocalTheme.current.typography.body.mediumBold,
             color = c.neutrals800,
             textDecoration = TextDecoration.Underline,
+            // Padding sits inside the clickable so the link keeps a ~36dp touch target;
+            // AccordionGroup's own closing inset is outside the Text and does not compensate.
             modifier = Modifier
                 .clipToBounds()
                 .clickable { onEvent(ProductDetailsEvent.OnSectionClick(section)) }
+                .padding(vertical = Theme.spacing.spacing8)
                 .shimmer(isShimmering = isLoading)
         )
     }

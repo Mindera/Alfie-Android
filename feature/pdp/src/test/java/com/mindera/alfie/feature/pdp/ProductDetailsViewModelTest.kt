@@ -44,6 +44,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -228,6 +229,48 @@ internal class ProductDetailsViewModelTest {
             cancelAndConsumeRemainingEvents()
         }
         assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value)
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnFavoriteClick on a recommendation THEN only that card flips`() = runTest {
+        coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(listOf(mockk(relaxed = true)))
+        coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf(relatedProduct)
+        coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+        every { productDetailsUI.slug } returns "main-product-slug"
+        val viewModel = buildViewModel()
+
+        viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick(relatedProduct.slug))
+
+        val loaded = assertIs<RelatedProductsUIState.Loaded>(viewModel.relatedProducts.value)
+        assertTrue(loaded.items.single().isWishlisted)
+        coVerify { addToWishlistUseCase(relatedProduct.slug) }
+        // The product itself carries a different slug, so its own wishlist flag is untouched.
+        coVerify(exactly = 0) { addToWishlistUseCase("main-product-slug") }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnFavoriteClick on a recommendation WHEN it fails THEN the card reverts`() = runTest {
+        coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(listOf(mockk(relaxed = true)))
+        coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf(relatedProduct)
+        coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Error(mockk(relaxed = true))
+        every { productDetailsUI.slug } returns "main-product-slug"
+        val viewModel = buildViewModel()
+
+        viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick(relatedProduct.slug))
+
+        val loaded = assertIs<RelatedProductsUIState.Loaded>(viewModel.relatedProducts.value)
+        assertFalse(loaded.items.single().isWishlisted)
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnFavoriteClick for an unknown slug THEN nothing is toggled`() = runTest {
+        every { productDetailsUI.slug } returns "main-product-slug"
+        val viewModel = buildViewModel()
+
+        viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick("slug-on-no-surface"))
+
+        coVerify(exactly = 0) { addToWishlistUseCase(any()) }
+        coVerify(exactly = 0) { removeWishlistUseCase(any()) }
     }
 
     private fun buildViewModel() = ProductDetailsViewModel(

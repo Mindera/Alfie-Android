@@ -46,6 +46,9 @@ private val DIVIDER = DividerType.Solid1Mono200
  *
  * Stacking these directly would double the hairline between neighbours — use [AccordionGroup]
  * for a run of rows, which draws each boundary exactly once.
+ *
+ * The row carries no horizontal padding of its own — callers supply the screen margin — and
+ * [isLarge] scales the vertical padding only.
  */
 @Composable
 fun Accordion(
@@ -175,7 +178,10 @@ private fun SectionContent(
         enter = fadeIn(animationSpec = tween()) + expandVertically(animationSpec = tween()),
         exit = fadeOut(animationSpec = tween()) + shrinkVertically(animationSpec = tween())
     ) {
-        // spacing/spacing-xs — the gap the design puts between the header row and its content.
+        // The design's 8dp header-to-content gap is already supplied by the header row's own
+        // bottom padding; this is the matching closing inset below the content, so an expanded
+        // row reads 8 | header | 8 | content | 8 exactly as interactive/small-padding-top-bottom
+        // plus spacing/spacing-xs specify.
         Column(modifier = Modifier.padding(bottom = Theme.spacing.spacing8)) {
             content()
         }
@@ -193,7 +199,7 @@ private fun AccordionGroupPreview() {
                 .padding(Theme.spacing.spacing16)
         ) {
             AccordionGroup(
-                items = persistentListOf("Size & Fit", "Materials & Care Guide", "Shippings and Returns"),
+                items = persistentListOf("Size & Fit", "Materials & Care Guide", "Shipping & Returns"),
                 title = { it }
             ) { item ->
                 Text(
