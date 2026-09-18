@@ -8,29 +8,34 @@ import com.mindera.alfie.core.analytics.AnalyticsManager
 import com.mindera.alfie.core.analytics.params.EmptyParams
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
+import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.webview.webViewNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
+import com.mindera.alfie.domain.usecase.product.GetRelatedProductsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistIdsUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import com.mindera.alfie.feature.mappers.toApiErrorType
 import com.mindera.alfie.feature.mappers.toEventErrorValue
+import com.mindera.alfie.feature.pdp.factory.RelatedProductsUIFactory
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState.Data.Loaded
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState.Data.Loading
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState.Error
+import com.mindera.alfie.feature.pdp.model.RelatedProductsUIState
 import com.mindera.alfie.feature.pdp.model.ShareEvent
 import com.mindera.alfie.feature.pdp.model.SizeUI
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -42,10 +47,12 @@ import com.mindera.alfie.designsystem.R as DesignR
 internal class ProductDetailsViewModel @Inject constructor(
     private val addToBagUseCase: AddToBagUseCase,
     private val getProductUseCase: GetProductUseCase,
+    private val getRelatedProductsUseCase: GetRelatedProductsUseCase,
     private val getWishlistIds: GetWishlistIdsUseCase,
     private val addToWishlistUseCase: AddToWishlistUseCase,
     private val removeWishlistUseCase: RemoveFromWishlistUseCase,
     private val uiFactory: ProductDetailsUIFactory,
+    private val relatedProductsUIFactory: RelatedProductsUIFactory,
     private val analyticsManager: AnalyticsManager,
     savedStateHandle: SavedStateHandle,
     uiEventEmitterDelegate: UIEventEmitterDelegate,
@@ -55,6 +62,9 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val _state = MutableStateFlow<ProductDetailsUIState>(Loading)
     val state = _state.asStateFlow()
 
+    private val _relatedProducts = MutableStateFlow<RelatedProductsUIState>(RelatedProductsUIState.Loading)
+    val relatedProducts = _relatedProducts.asStateFlow()
+
     private val _wishlistIds = MutableStateFlow<List<String>>(emptyList())
 
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
@@ -63,6 +73,7 @@ internal class ProductDetailsViewModel @Inject constructor(
     init {
         collectWishlistIds()
         loadDetails()
+        loadRelatedProducts()
     }
 
     fun handleEvent(event: ProductDetailsEvent) {
@@ -71,12 +82,15 @@ internal class ProductDetailsViewModel @Inject constructor(
             ProductDetailsEvent.OnShareClick -> onShareClick()
             is ProductDetailsEvent.OnColorClick -> onColorSelected(event.index)
             is ProductDetailsEvent.OnSectionClick -> onSectionClick(event.item)
-            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick(event.productId)
+            is ProductDetailsEvent.OnFavoriteClick -> onFavoriteClick(event.slug)
             is ProductDetailsEvent.OnSizeSelect -> onSizeSelect(event.sizeUI)
         }
     }
 
-    fun retry() = loadDetails()
+    fun retry() {
+        loadDetails()
+        loadRelatedProducts()
+    }
 
     private fun loadDetails() {
         viewModelScope.launch {
@@ -102,6 +116,37 @@ internal class ProductDetailsViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    /**
+     * Recommendations are fetched alongside the product rather than after it: they are an
+     * independent rail, so a failure here only hides the section and never touches [_state].
+     */
+    private fun loadRelatedProducts() {
+        viewModelScope.launch {
+            _relatedProducts.value = RelatedProductsUIState.Loading
+
+            getRelatedProductsUseCase(handle = handle).doOnResult(
+                onSuccess = { entries ->
+                    val items = relatedProductsUIFactory(
+                        entries = entries,
+                        wishlistedSlugs = _wishlistIds.value,
+                        onProductClick = ::navigateToProduct,
+                        onFavoriteClick = ::onFavoriteClick
+                    )
+                    _relatedProducts.value = if (items.isEmpty()) {
+                        RelatedProductsUIState.Hidden
+                    } else {
+                        RelatedProductsUIState.Loaded(items)
+                    }
+                },
+                onError = { _relatedProducts.value = RelatedProductsUIState.Hidden }
+            )
+        }
+    }
+
+    private fun navigateToProduct(productHandle: String) {
+        navigateTo(screen = Screen.ProductDetails(args = productDetailsNavArgs(handle = productHandle)))
     }
 
     private fun onColorSelected(index: Int) {
@@ -160,27 +205,31 @@ internal class ProductDetailsViewModel @Inject constructor(
                         else -> state
                     }
                 }
+                _relatedProducts.update { related ->
+                    (related as? RelatedProductsUIState.Loaded)?.let { loaded ->
+                        loaded.copy(
+                            items = loaded.items
+                                .map { it.copy(isWishlisted = wishlistIds.contains(it.slug)) }
+                                .toImmutableList()
+                        )
+                    } ?: related
+                }
             }
         }
     }
 
-    private fun onFavoriteClick(productId: String) {
+    private fun onFavoriteClick(slug: String) {
         viewModelScope.launch {
-            val loaded = (_state.value as? Loaded) ?: return@launch
-            val wasWishlisted = loaded.details.isWishlisted
+            val wasWishlisted = isWishlisted(slug) ?: return@launch
 
-            _state.update { state ->
-                (state as? Loaded)?.copy(details = state.details.copy(isWishlisted = !wasWishlisted)) ?: state
-            }
+            setWishlisted(slug, !wasWishlisted)
 
-            val result = if (wasWishlisted) removeWishlistUseCase(productId) else addToWishlistUseCase(productId)
+            val result = if (wasWishlisted) removeWishlistUseCase(slug) else addToWishlistUseCase(slug)
 
             result.doOnResult(
                 onSuccess = {},
                 onError = {
-                    _state.update { state ->
-                        (state as? Loaded)?.copy(details = state.details.copy(isWishlisted = wasWishlisted)) ?: state
-                    }
+                    setWishlisted(slug, wasWishlisted)
                     showSnackbar(
                         SnackbarCustomVisuals(
                             type = SnackbarType.Error,
@@ -191,6 +240,41 @@ internal class ProductDetailsViewModel @Inject constructor(
                     )
                 }
             )
+        }
+    }
+
+    /**
+     * The same slug can be shown by the product itself and by a recommendation card, so the
+     * current flag is read from whichever surface owns it. Null means the slug is on neither,
+     * i.e. there is nothing to toggle.
+     */
+    private fun isWishlisted(slug: String): Boolean? {
+        (_state.value as? Loaded)
+            ?.takeIf { it.details.slug == slug }
+            ?.let { return it.details.isWishlisted }
+
+        return (_relatedProducts.value as? RelatedProductsUIState.Loaded)
+            ?.items
+            ?.firstOrNull { it.slug == slug }
+            ?.isWishlisted
+    }
+
+    /** Optimistic toggle applied to every surface showing [slug]; reverted by the caller on error. */
+    private fun setWishlisted(slug: String, isWishlisted: Boolean) {
+        _state.update { state ->
+            (state as? Loaded)
+                ?.takeIf { it.details.slug == slug }
+                ?.copy(details = state.details.copy(isWishlisted = isWishlisted))
+                ?: state
+        }
+        _relatedProducts.update { related ->
+            (related as? RelatedProductsUIState.Loaded)?.let { loaded ->
+                loaded.copy(
+                    items = loaded.items
+                        .map { if (it.slug == slug) it.copy(isWishlisted = isWishlisted) else it }
+                        .toImmutableList()
+                )
+            } ?: related
         }
     }
 

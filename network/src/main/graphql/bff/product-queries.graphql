@@ -3,3 +3,9 @@ query GetProductDetails($handle: String!) {
         ...ProductFragment
     }
 }
+
+query GetRelatedProducts($handle: String!, $limit: Int!) {
+    relatedProducts(handle: $handle, limit: $limit) {
+        ...ProductListEntryFragment
+    }
+}
