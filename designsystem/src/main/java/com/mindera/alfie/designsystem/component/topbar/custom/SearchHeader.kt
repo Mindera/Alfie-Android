@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.mindera.alfie.core.ui.test.SEARCH_BACK_BUTTON
 import com.mindera.alfie.designsystem.animation.DefaultVisibilityAnimation
 import com.mindera.alfie.designsystem.animation.standardAccelerate
@@ -45,12 +46,20 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
  * search overlay, and the band becomes the Figma "Header" of the Search page (node
  * `I673:87056;1:11344`) — same 48dp box, with a back affordance ahead of the field and a divider
  * under it.
+ *
+ * Search mode always tightens to the 4dp vertical rhythm above, but the *idle* insets belong to
+ * the call site, because the field sits in a different container on each level-1 screen:
+ * Shop keeps the 48dp band ([idleTopPadding]/[idleBottomPadding] both `spacing4`), while
+ * [LandingHeader] passes the Home header's column gap (24) and frame padding (16) from Figma
+ * node `672:80414`.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarScope.SearchHeader(
     searchState: SearchState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    idleTopPadding: Dp = LocalTheme.current.spacing.spacing4,
+    idleBottomPadding: Dp = LocalTheme.current.spacing.spacing4
 ) {
     val theme = LocalTheme.current
     val isSearchMode = searchState.isSearchOpen
@@ -62,6 +71,19 @@ fun TopBarScope.SearchHeader(
         animationSpec = standardAccelerate(),
         label = "search band leading inset"
     )
+    // Idle insets are the call site's (see KDoc); search mode always collapses to the 48dp band,
+    // so Home's header and the Search page header end up the same box. Shop's targets never
+    // change, so these settle immediately and animate nothing there.
+    val topInset by animateDpAsState(
+        targetValue = if (isSearchMode) theme.spacing.spacing4 else idleTopPadding,
+        animationSpec = standardAccelerate(),
+        label = "search band top inset"
+    )
+    val bottomInset by animateDpAsState(
+        targetValue = if (isSearchMode) theme.spacing.spacing4 else idleBottomPadding,
+        animationSpec = standardAccelerate(),
+        label = "search band bottom inset"
+    )
 
     // The band paints its own surface: while the search overlay is open it sits above the scrim,
     // which would otherwise show through (Figma renders the header opaque over the results).
@@ -70,8 +92,8 @@ fun TopBarScope.SearchHeader(
             modifier = Modifier.padding(
                 start = leadingInset,
                 end = theme.spacing.spacing16,
-                top = theme.spacing.spacing4,
-                bottom = theme.spacing.spacing4
+                top = topInset,
+                bottom = bottomInset
             ),
             verticalAlignment = Alignment.CenterVertically
         ) {

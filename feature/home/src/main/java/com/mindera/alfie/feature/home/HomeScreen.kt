@@ -24,7 +24,6 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarState
 import com.mindera.alfie.designsystem.component.topbar.action.TopBarAction
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeader
 import com.mindera.alfie.designsystem.component.topbar.custom.LandingHeaderType
-import com.mindera.alfie.designsystem.component.topbar.scope.TopBarScope
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.feature.home.model.HomeUI
 import com.mindera.alfie.feature.home.model.HomeUIState
@@ -46,22 +45,22 @@ internal fun HomeScreen(
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    // The header carries no actions of its own — Figma node 672:80414 is the wordmark alone, and
+    // Account reaches the same destination from the bottom bar. Debug builds keep their entry
+    // point, which LandingHeader tucks into the header's own margin.
     val actions = buildList {
         LocalDebugComposeRunner.current {
             add(
                 TopBarAction.Debug { navigator.navigate(directionProvider.fromScreen(Screen.Debug)) }
             )
         }
-        add(
-            TopBarAction.Account { navigator.navigate(directionProvider.fromScreen(Screen.Account)) }
-        )
     }
 
     topBarState.customTopBar(
         searchState = rememberSearchState(),
         actions = actions.toImmutableList()
     ) {
-        SetupTopBar(homeUI = (state as? HomeUIState.Loaded)?.homeUI)
+        LandingHeader(type = LandingHeaderType.Logo())
     }
     HomeScreenContent(state = state)
 }
@@ -85,20 +84,6 @@ private fun HomeLoaded(homeUI: HomeUI) {
     ) {
         Highlights(items = homeUI.highlights)
     }
-}
-
-@Composable
-private fun TopBarScope.SetupTopBar(homeUI: HomeUI?) {
-    val type = if (homeUI?.userName != null) {
-        LandingHeaderType.Greeting(
-            userName = homeUI.userName,
-            subtitle = homeUI.membershipDate
-        )
-    } else {
-        LandingHeaderType.Logo()
-    }
-
-    LandingHeader(type = type)
 }
 
 @Preview(showBackground = true)
