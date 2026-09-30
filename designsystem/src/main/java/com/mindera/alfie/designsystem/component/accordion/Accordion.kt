@@ -152,8 +152,8 @@ private fun SectionHeader(
             style = theme.typography.heading.xSmall,
             color = theme.color.content.contentPrimary
         )
-        // The design specifies the collapsed "+" only; "−" for the expanded state follows the
-        // plus/minus affordance and reuses the design system's existing Minus glyph.
+        // "+" collapsed, "−" expanded. The design draws only the collapsed state; the expanded
+        // "−" is confirmed with design and reuses the design system's existing Minus glyph.
         Crossfade(
             targetState = isExpanded,
             animationSpec = tween(ICON_ANIMATION_TIME),
