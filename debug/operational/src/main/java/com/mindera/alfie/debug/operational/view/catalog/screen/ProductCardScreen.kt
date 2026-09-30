@@ -103,7 +103,10 @@ private fun mockProductsXSmall() = listOf(
             price = "$ 390.00"
         ),
         color = "Worn Blue",
-        size = "29 in"
+        size = "29 in",
+        reference = "0283/764",
+        quantity = 2,
+        onOverflowClick = {}
     ),
     ProductCardType.Horizontal(
         image = ImageUI(
@@ -117,7 +120,9 @@ private fun mockProductsXSmall() = listOf(
             endPrice = "$ 529.00"
         ),
         color = "Worn Blue",
-        size = "29 in"
+        size = "29 in",
+        reference = "0273/234",
+        onOverflowClick = {}
     ),
     ProductCardType.Horizontal(
         image = ImageUI(
@@ -131,7 +136,10 @@ private fun mockProductsXSmall() = listOf(
             salePrice = "$ 300.00"
         ),
         color = "Lunar Red",
-        size = "No Size"
+        size = "No Size",
+        reference = "0187/978",
+        isAvailable = false,
+        onOverflowClick = {}
     )
 )
 

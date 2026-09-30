@@ -46,7 +46,7 @@ internal val products = listOf(
                     VariantOption(name = "size", value = "M")
                 ),
                 media = listOf(variantImage),
-                available = true
+                availableQuantity = 1
             )
         )
     ),
@@ -72,7 +72,7 @@ internal val products = listOf(
                 ),
                 options = emptyList(),
                 media = listOf(variantImageNoAlt),
-                available = true
+                availableQuantity = 1
             )
         )
     )

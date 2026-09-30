@@ -15,7 +15,7 @@ class ProductExtensionsTest {
         price = Price(amount = stubMoney, was = null),
         options = emptyList(),
         media = emptyList(),
-        available = available
+        availableQuantity = if (available) 1 else 0
     )
 
     private fun makeProduct(
