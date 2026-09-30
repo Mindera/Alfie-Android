@@ -8,7 +8,7 @@ import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
-import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
+import com.mindera.alfie.domain.usecase.bag.AddAllToBagUseCase
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
 import com.mindera.alfie.domain.usecase.bag.RemoveAllFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
@@ -35,7 +35,7 @@ import com.mindera.alfie.designsystem.R as DesignR
 internal class BagViewModel @Inject constructor(
     private val getBagUseCase: GetBagUseCase,
     private val removeAllFromBagUseCase: RemoveAllFromBagUseCase,
-    private val addToBagUseCase: AddToBagUseCase,
+    private val addAllToBagUseCase: AddAllToBagUseCase,
     private val addToWishlistUseCase: AddToWishlistUseCase,
     private val getProductUseCase: GetProductUseCase,
     private val bagUiFactory: BagUiFactory,
@@ -48,6 +48,9 @@ internal class BagViewModel @Inject constructor(
     internal val state = _state.asStateFlow()
 
     private var bagJob: Job? = null
+
+    // The last bag the repository emitted, so a removed line's position is known for its undo.
+    private var latestBag: List<BagProduct> = emptyList()
 
     init {
         getBagList()
@@ -65,6 +68,7 @@ internal class BagViewModel @Inject constructor(
             getBagUseCase().collectLatest { result ->
                 result.doOnResult(
                     onSuccess = { bagProducts ->
+                        latestBag = bagProducts
                         val content = bagUiFactory(
                             bagProducts = bagProducts,
                             products = getBagProductDetails(bagProducts),
@@ -121,9 +125,10 @@ internal class BagViewModel @Inject constructor(
      * A horizontal swipe reaches this in one gesture, so the result is not discarded the way the
      * Wishlist's remove discards it — a failure would otherwise be silent after the row has already
      * animated shut, and a success would be indistinguishable from a mis-aimed drag. [quantity] is
-     * what the undo puts back.
+     * what the undo puts back, at the position the line's first unit held.
      */
     internal fun onRemoveClicked(bagProduct: BagProduct, quantity: Int) {
+        val index = latestBag.indexOf(bagProduct).takeIf { it >= 0 } ?: latestBag.size
         viewModelScope.launch {
             removeAllFromBagUseCase(bagProduct).doOnResult(
                 onSuccess = {
@@ -132,7 +137,7 @@ internal class BagViewModel @Inject constructor(
                             type = SnackbarType.Success,
                             message = context.getString(R.string.bag_item_removed),
                             actionLabel = context.getString(R.string.bag_item_removed_undo),
-                            onActionClick = { undoRemove(bagProduct = bagProduct, quantity = quantity) }
+                            onActionClick = { undoRemove(bagProduct = bagProduct, quantity = quantity, index = index) }
                         )
                     )
                 },
@@ -148,16 +153,22 @@ internal class BagViewModel @Inject constructor(
         }
     }
 
-    // The bag stores one entry per unit, so restoring a line means adding each unit back. The
-    // entries are equal, so order does not matter and the line regroups as it was.
-    private fun undoRemove(bagProduct: BagProduct, quantity: Int) {
+    // Restores the whole line in one write and in its old place, so the row reappears where it was
+    // and the bag reloads once. A failure is surfaced for the same reason the remove's is: the row
+    // would otherwise just not come back.
+    private fun undoRemove(bagProduct: BagProduct, quantity: Int, index: Int) {
         viewModelScope.launch {
-            repeat(quantity) {
-                addToBagUseCase(
-                    productId = bagProduct.productId,
-                    variantSku = bagProduct.variantSku
-                )
-            }
+            addAllToBagUseCase(bagProduct = bagProduct, quantity = quantity, index = index).doOnResult(
+                onSuccess = { },
+                onError = {
+                    showSnackbar(
+                        SnackbarCustomVisuals(
+                            type = SnackbarType.Error,
+                            message = context.getString(R.string.bag_item_restore_error)
+                        )
+                    )
+                }
+            )
         }
     }
 

@@ -47,22 +47,24 @@ internal fun BagSummary(
             )
         ) {
             Column {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.bag_total),
-                        style = theme.typography.body.mediumBold,
-                        color = theme.color.content.contentPrimary
-                    )
-                    Text(
-                        text = summary.totalFormatted,
-                        style = theme.typography.body.mediumBold,
-                        color = theme.color.content.contentPrimary,
-                        modifier = Modifier.testTag(BAG_TOTAL)
-                    )
+                summary.totalFormatted?.let { total ->
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.bag_total),
+                            style = theme.typography.body.mediumBold,
+                            color = theme.color.content.contentPrimary
+                        )
+                        Text(
+                            text = total,
+                            style = theme.typography.body.mediumBold,
+                            color = theme.color.content.contentPrimary,
+                            modifier = Modifier.testTag(BAG_TOTAL)
+                        )
+                    }
                 }
                 Text(
                     text = stringResource(id = R.string.bag_shipping_note),

@@ -5,7 +5,7 @@ import app.cash.turbine.test
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
-import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
+import com.mindera.alfie.domain.usecase.bag.AddAllToBagUseCase
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
 import com.mindera.alfie.domain.usecase.bag.RemoveAllFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
@@ -38,7 +38,7 @@ internal class BagViewModelTest {
     private lateinit var removeAllFromBagUseCase: RemoveAllFromBagUseCase
 
     @RelaxedMockK
-    private lateinit var addToBagUseCase: AddToBagUseCase
+    private lateinit var addAllToBagUseCase: AddAllToBagUseCase
 
     @RelaxedMockK
     private lateinit var addToWishlistUseCase: AddToWishlistUseCase
@@ -170,10 +170,11 @@ internal class BagViewModelTest {
     }
 
     @Test
-    fun `onRemoveClicked - WHEN the removal succeeds THEN undo restores every unit`() = runTest {
+    fun `onRemoveClicked - WHEN the removal succeeds THEN undo restores every unit in one write`() = runTest {
         // A swipe clears the whole line in one gesture, so the undo has to put back as many units
         // as the line held — not the single entry a remove call names.
         coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
+        coEvery { addAllToBagUseCase(any(), any(), any()) } returns UseCaseResult.Success(true)
         val emitter = UIEventEmitterDelegate()
         val viewModel = buildViewModel(emitter = emitter)
 
@@ -185,12 +186,45 @@ internal class BagViewModelTest {
             visuals.onActionClick()
             delay(300)
 
-            coVerify(exactly = 3) {
-                addToBagUseCase(
-                    productId = bagProducts[0].productId,
-                    variantSku = bagProducts[0].variantSku
-                )
-            }
+            coVerify(exactly = 1) { addAllToBagUseCase(bagProduct = bagProducts[0], quantity = 3, index = any()) }
+            expectNoEvents()
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onRemoveClicked - undo puts the line back where it was rather than at the bottom`() = runTest {
+        givenBagLoads()
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
+        coEvery { addAllToBagUseCase(any(), any(), any()) } returns UseCaseResult.Success(true)
+        val emitter = UIEventEmitterDelegate()
+        val viewModel = buildViewModel(emitter = emitter)
+        delay(300)
+
+        viewModel.uiEvent.test {
+            // The first line of the bag: appending would bring it back last.
+            viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 1)
+            (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
+            delay(300)
+
+            coVerify(exactly = 1) { addAllToBagUseCase(bagProduct = bagProducts[0], quantity = 1, index = 0) }
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onRemoveClicked - WHEN the undo fails THEN it says so instead of failing silently`() = runTest {
+        coEvery { removeAllFromBagUseCase(any()) } returns UseCaseResult.Success(true)
+        coEvery { addAllToBagUseCase(any(), any(), any()) } returns UseCaseResult.Error(mockk())
+        val emitter = UIEventEmitterDelegate()
+        val viewModel = buildViewModel(emitter = emitter)
+
+        viewModel.uiEvent.test {
+            viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 3)
+            (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Error, visuals.type)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -256,7 +290,7 @@ internal class BagViewModelTest {
         bagUiFactory = bagUiFactory,
         getProductUseCase = getProductUseCase,
         removeAllFromBagUseCase = removeAllFromBagUseCase,
-        addToBagUseCase = addToBagUseCase,
+        addAllToBagUseCase = addAllToBagUseCase,
         addToWishlistUseCase = addToWishlistUseCase,
         context = context,
         uiEventEmitterDelegate = emitter

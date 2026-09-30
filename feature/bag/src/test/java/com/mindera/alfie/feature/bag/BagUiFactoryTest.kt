@@ -169,7 +169,7 @@ class BagUiFactoryTest {
         assertEquals("", line.reference)
         assertEquals("", line.color)
         // The currency still resolves off the product, so the summary reads "$0.00" rather than
-        // drawing the "Total" label against an empty string.
+        // leaving the total out.
         assertEquals("${'$'}0.00", content.summary.totalFormatted)
     }
 
@@ -229,6 +229,26 @@ class BagUiFactoryTest {
         )
 
         assertTrue(content.items.isEmpty())
-        assertEquals("", content.summary.totalFormatted)
+        assertNull(content.summary.totalFormatted)
+    }
+
+    @Test
+    fun `invoke - WHEN no line resolves a variant and no product has a price range THEN the total is null`() = runTest {
+        // Neither source offers a currency, so there is nothing to format — the summary leaves the
+        // total out rather than drawing the "Total" label against an empty string.
+        val unpriceable = products.map { product ->
+            product.copy(
+                variants = product.variants.map { it.copy(sku = "some-other-sku") },
+                priceRange = null
+            )
+        }
+
+        val content = uiFactory(
+            bagProducts = bagProducts,
+            products = unpriceable,
+            onProductClick = { }
+        )
+
+        assertNull(content.summary.totalFormatted)
     }
 }

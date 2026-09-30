@@ -132,7 +132,7 @@ internal val bagContentUi = BagContentUi(
 
 internal val emptyBagContentUi = BagContentUi(
     items = persistentListOf(),
-    summary = BagSummaryUi(totalFormatted = "")
+    summary = BagSummaryUi(totalFormatted = null)
 )
 
 internal val singleLineBagContentUi = BagContentUi(

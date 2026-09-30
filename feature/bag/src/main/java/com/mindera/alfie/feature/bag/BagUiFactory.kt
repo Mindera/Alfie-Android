@@ -109,13 +109,11 @@ internal class BagUiFactory @Inject constructor() {
     private fun List<BagLine>.toSummary(): BagSummaryUi {
         val total = sumOf { line -> (line.variant?.price?.amount?.amount ?: .0) * line.quantity }
         // Currency comes from the product's range when no variant resolved, so a bag of gone SKUs
-        // still formats a zero total rather than drawing the "Total" label against an empty string.
+        // still formats a zero total. With neither, there is nothing to format and the total is null.
         val currencyCode = firstNotNullOfOrNull { line -> line.variant?.price?.amount?.currencyCode }
             ?: firstNotNullOfOrNull { line -> line.product.priceRange?.low?.currencyCode }
         return BagSummaryUi(
-            totalFormatted = currencyCode
-                ?.let { code -> formatMoney(amount = total, currencyCode = code) }
-                .orEmpty()
+            totalFormatted = currencyCode?.let { code -> formatMoney(amount = total, currencyCode = code) }
         )
     }
 

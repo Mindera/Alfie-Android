@@ -64,6 +64,48 @@ internal class BagRepositoryImplTest {
         }
     }
 
+    @Test
+    fun `addAllToBag - inserts every unit at the index in one write`() = runTest {
+        val subject = BagRepositoryImpl()
+        subject.addToBag(jeans)
+
+        subject.getBag().test {
+            assertEquals(listOf(jeans), awaitItem().dataOrNull())
+
+            subject.addAllToBag(shirt, quantity = 3, index = 0)
+
+            assertEquals(listOf(shirt, shirt, shirt, jeans), awaitItem().dataOrNull())
+            expectNoEvents()
+        }
+    }
+
+    @Test
+    fun `addAllToBag - undoes removeAllFromBag without moving the line`() = runTest {
+        val subject = BagRepositoryImpl()
+        subject.addToBag(shirt)
+        subject.addToBag(jeans)
+        subject.addToBag(shirt)
+
+        subject.removeAllFromBag(shirt)
+        subject.addAllToBag(shirt, quantity = 2, index = 0)
+
+        subject.getBag().test {
+            assertEquals(listOf(shirt, shirt, jeans), awaitItem().dataOrNull())
+        }
+    }
+
+    @Test
+    fun `addAllToBag - WHEN the index is out of bounds THEN it is clamped`() = runTest {
+        val subject = BagRepositoryImpl()
+        subject.addToBag(jeans)
+
+        subject.addAllToBag(shirt, quantity = 1, index = 5)
+
+        subject.getBag().test {
+            assertEquals(listOf(jeans, shirt), awaitItem().dataOrNull())
+        }
+    }
+
     private fun RepositoryResult<List<BagProduct>>.dataOrNull(): List<BagProduct> {
         assertIs<RepositoryResult.Success<List<BagProduct>>>(this)
         return data

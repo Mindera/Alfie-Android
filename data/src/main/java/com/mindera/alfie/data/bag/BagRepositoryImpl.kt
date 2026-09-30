@@ -36,4 +36,11 @@ class BagRepositoryImpl @Inject constructor() : BagRepository {
         _bag.value = _bag.value.filterNot { it == bagProduct }
         return RepositoryResult.Success(true)
     }
+
+    override fun addAllToBag(bagProduct: BagProduct, quantity: Int, index: Int): RepositoryResult<Boolean> {
+        _bag.value = _bag.value.toMutableList().apply {
+            addAll(index.coerceIn(0, size), List(quantity) { bagProduct })
+        }
+        return RepositoryResult.Success(true)
+    }
 }

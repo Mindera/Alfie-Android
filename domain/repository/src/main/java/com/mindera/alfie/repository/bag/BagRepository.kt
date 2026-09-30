@@ -19,4 +19,12 @@ interface BagRepository {
      * on each one.
      */
     fun removeAllFromBag(bagProduct: BagProduct): RepositoryResult<Boolean>
+
+    /**
+     * Inserts [quantity] units of [bagProduct] at [index] in one write — the inverse of
+     * [removeAllFromBag], backing the Bag screen's undo. The screen orders lines by their first
+     * entry, so inserting where the line's first unit sat puts it back in place, where appending
+     * would move it to the bottom. [index] is clamped to the bag's bounds.
+     */
+    fun addAllToBag(bagProduct: BagProduct, quantity: Int, index: Int): RepositoryResult<Boolean>
 }
