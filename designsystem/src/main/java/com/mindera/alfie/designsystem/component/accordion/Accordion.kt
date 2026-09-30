@@ -119,7 +119,8 @@ private fun AccordionRow(
         )
         SectionContent(
             content = content,
-            isExpanded = isExpanded
+            isExpanded = isExpanded,
+            isLarge = isLarge
         )
     }
 }
@@ -171,18 +172,20 @@ private fun SectionHeader(
 @Composable
 private fun SectionContent(
     content: @Composable () -> Unit,
-    isExpanded: Boolean
+    isExpanded: Boolean,
+    isLarge: Boolean
 ) {
     AnimatedVisibility(
         visible = isExpanded,
         enter = fadeIn(animationSpec = tween()) + expandVertically(animationSpec = tween()),
         exit = fadeOut(animationSpec = tween()) + shrinkVertically(animationSpec = tween())
     ) {
-        // The design's 8dp header-to-content gap is already supplied by the header row's own
-        // bottom padding; this is the matching closing inset below the content, so an expanded
-        // row reads 8 | header | 8 | content | 8 exactly as interactive/small-padding-top-bottom
-        // plus spacing/spacing-xs specify.
-        Column(modifier = Modifier.padding(bottom = Theme.spacing.spacing8)) {
+        // The header-to-content gap is already supplied by the header row's own bottom padding;
+        // this is the matching closing inset below the content, scaled with it, so an expanded
+        // row reads 8 | header | 8 | content | 8 (16s when [isLarge]) — the default size being
+        // interactive/small-padding-top-bottom plus spacing/spacing-xs.
+        val bottomPadding = if (isLarge) Theme.spacing.spacing16 else Theme.spacing.spacing8
+        Column(modifier = Modifier.padding(bottom = bottomPadding)) {
             content()
         }
     }

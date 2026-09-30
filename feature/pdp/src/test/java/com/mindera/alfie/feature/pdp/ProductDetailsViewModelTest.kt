@@ -10,6 +10,7 @@ import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.webview.webViewNavArgs
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
@@ -23,11 +24,13 @@ import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import com.mindera.alfie.feature.pdp.factory.RelatedProductsUIFactory
 import com.mindera.alfie.feature.pdp.model.ProductDetailsEvent
 import com.mindera.alfie.feature.pdp.model.ProductDetailsSectionItem
+import com.mindera.alfie.feature.pdp.model.ProductDetailsShareInfo
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUI
 import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState
 import com.mindera.alfie.feature.pdp.model.RelatedProductUI
 import com.mindera.alfie.feature.pdp.model.RelatedProductsUIState
 import com.mindera.alfie.feature.pdp.model.ShareEvent
+import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.result.ErrorResult
@@ -94,6 +97,22 @@ internal class ProductDetailsViewModelTest {
             name = "Related product",
             price = PriceType.Default(price = "£10")
         )
+    )
+
+    private val realProductDetailsUI = ProductDetailsUI(
+        id = "main-product-id",
+        brand = "Brand",
+        name = "Main product",
+        slug = "main-product-slug",
+        description = "",
+        price = PriceType.Default(price = "£20"),
+        colors = persistentListOf(),
+        variants = persistentListOf(),
+        isSelectionSoldOut = false,
+        sections = persistentListOf(),
+        shareInfo = ProductDetailsShareInfo.EMPTY,
+        gallery = GalleryUI.EMPTY,
+        sizeSectionUI = SizeSectionUI.NoSize
     )
 
     @BeforeEach
@@ -236,7 +255,8 @@ internal class ProductDetailsViewModelTest {
         coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(listOf(mockk(relaxed = true)))
         coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf(relatedProduct)
         coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
-        every { productDetailsUI.slug } returns "main-product-slug"
+        // A real instance, so a flip of the product's own flag would be visible in the state.
+        coEvery { productDetailsUIFactory(any()) } returns realProductDetailsUI
         val viewModel = buildViewModel()
 
         viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick(relatedProduct.slug))
@@ -244,8 +264,7 @@ internal class ProductDetailsViewModelTest {
         val loaded = assertIs<RelatedProductsUIState.Loaded>(viewModel.relatedProducts.value)
         assertTrue(loaded.items.single().isWishlisted)
         coVerify { addToWishlistUseCase(relatedProduct.slug) }
-        // The product itself carries a different slug, so its own wishlist flag is untouched.
-        coVerify(exactly = 0) { addToWishlistUseCase("main-product-slug") }
+        assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isWishlisted)
     }
 
     @Test
@@ -264,6 +283,8 @@ internal class ProductDetailsViewModelTest {
 
     @Test
     fun `handleEvent - GIVEN OnFavoriteClick for an unknown slug THEN nothing is toggled`() = runTest {
+        coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(listOf(mockk(relaxed = true)))
+        coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf(relatedProduct)
         every { productDetailsUI.slug } returns "main-product-slug"
         val viewModel = buildViewModel()
 
