@@ -71,7 +71,10 @@ internal class BagUiFactory @Inject constructor() {
         bagProduct = bagProduct,
         notice = toNotice(),
         productCardData = ProductCardType.Horizontal(
-            image = variant?.media?.firstOrNull().toImageUI(),
+            // Variants often carry no media of their own, so a resolved variant falls back to the
+            // product's images the way the PDP gallery does. An unresolved line keeps the empty
+            // image: the product's photo may show a colour the shopper did not pick.
+            image = variant?.let { it.media.firstOrNull() ?: product.images.firstOrNull() }.toImageUI(),
             brand = product.brandName.orEmpty(),
             name = product.name,
             // The variant's own price, not the product's range: a bag line is one specific variant,
