@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="wishlist_empty_message">Your wishlist is empty.</string>
+    <string name="wishlist_empty_subtitle">Tap this icon in the products you like to see them here.</string>
+    <string name="wishlist_error_message">We couldn\'t load your wishlist.</string>
+    <string name="wishlist_error_retry">Try again</string>
+    <string name="wishlist_item_removed">Removed.</string>
+    <string name="wishlist_item_removed_undo">Undo</string>
+</resources>

@@ -20,7 +20,8 @@ import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
 /**
- * Full-area empty state: an icon above a single line of copy, centred on both axes.
+ * Full-area empty state: an icon above the copy, centred on both axes. [subtitle] adds a secondary
+ * line in the tertiary colour, 4 dp below [message].
  *
  * Distinct from [StateMessage], which leads with a bold title and carries a subtitle and an action.
  */
@@ -28,7 +29,8 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 fun EmptyState(
     message: String,
     @DrawableRes icon: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    subtitle: String? = null
 ) {
     val theme = LocalTheme.current
     Column(
@@ -50,13 +52,28 @@ fun EmptyState(
             tint = theme.color.content.contentPrimary,
             modifier = Modifier.size(theme.sizing.icon.medium)
         )
-        Text(
-            text = message,
-            style = theme.typography.body.medium,
-            color = theme.color.content.contentPrimary,
-            textAlign = TextAlign.Center,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing4),
             modifier = Modifier.fillMaxWidth()
-        )
+        ) {
+            Text(
+                text = message,
+                style = theme.typography.body.medium,
+                color = theme.color.content.contentPrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            subtitle?.let {
+                Text(
+                    text = it,
+                    style = theme.typography.body.medium,
+                    color = theme.color.content.contentTerciary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }
 
@@ -67,6 +84,18 @@ private fun EmptyStatePreview() {
         EmptyState(
             message = "Your bag is empty.",
             icon = AlfieIcons.Bag
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun EmptyStateWithSubtitlePreview() {
+    Theme {
+        EmptyState(
+            message = "Your wishlist is empty.",
+            subtitle = "Tap this icon in the products you like to see them here.",
+            icon = AlfieIcons.Wishlist
         )
     }
 }

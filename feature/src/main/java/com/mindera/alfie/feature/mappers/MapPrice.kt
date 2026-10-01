@@ -21,13 +21,16 @@ fun Price.toPriceType(): PriceType {
 fun PriceRange?.toPriceType(default: Price?): PriceType {
     val rangeHigh = this?.high
     val rangeLow = this?.low
-    return if (rangeHigh != null && rangeLow != null) {
-        PriceType.Range(
+    return when {
+        rangeHigh == null || rangeLow == null ->
+            PriceType.Default(price = default?.amount?.amountFormatted.orEmpty())
+        // A range whose ends match is a single price — the same collapse ProductListPriceRange
+        // applies. Drawn as a range it would read "£34.90 - £34.90".
+        rangeHigh == rangeLow -> PriceType.Default(price = rangeLow.amountFormatted)
+        else -> PriceType.Range(
             startPrice = rangeLow.amountFormatted,
             endPrice = rangeHigh.amountFormatted
         )
-    } else {
-        PriceType.Default(price = default?.amount?.amountFormatted.orEmpty())
     }
 }
 

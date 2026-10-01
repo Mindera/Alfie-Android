@@ -1,20 +1,25 @@
 package com.mindera.alfie.feature.bag
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
+import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.feature.wishlist.WishlistUIFactory
 import com.mindera.alfie.feature.wishlist.WishlistUiState
 import com.mindera.alfie.feature.wishlist.WishlistViewModel
 import com.mindera.alfie.repository.product.model.Product
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -37,7 +42,13 @@ internal class WishlistViewModelTest {
     private lateinit var removeFromWishlistUseCase: RemoveFromWishlistUseCase
 
     @RelaxedMockK
+    private lateinit var addToWishlistUseCase: AddToWishlistUseCase
+
+    @RelaxedMockK
     private lateinit var wishlistUiFactory: WishlistUIFactory
+
+    @RelaxedMockK
+    private lateinit var context: Context
 
     @RelaxedMockK
     private lateinit var uiEventEmitterDelegate: UIEventEmitterDelegate
@@ -141,15 +152,118 @@ internal class WishlistViewModelTest {
             }
         }
 
+    @Test
+    fun `WHEN a card's heart is tapped THEN the product is removed and a toast offers undo`() =
+        runTest {
+            val product = products.first()
+            val onRemoveClickSlot = slot<ClickEventOneArg<Product>>()
+            coEvery { getWishlistUseCase() } returns flow { emit(UseCaseResult.Success(products)) }
+            every { wishlistUiFactory(products, capture(onRemoveClickSlot), any(), any()) } returns wishListProductUi
+            coEvery { removeFromWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+            val emitter = UIEventEmitterDelegate()
+            val viewModel = buildViewModel(buildSavedStateHandle(), emitter)
+
+            viewModel.uiEvent.test {
+                onRemoveClickSlot.captured(product)
+
+                val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+                assertEquals(SnackbarType.Toast, visuals.type)
+                coVerify(exactly = 1) { removeFromWishlistUseCase(product.slug) }
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `WHEN undo is tapped on the toast THEN the product is wishlisted again`() =
+        runTest {
+            val product = products.first()
+            val onRemoveClickSlot = slot<ClickEventOneArg<Product>>()
+            coEvery { getWishlistUseCase() } returns flow { emit(UseCaseResult.Success(products)) }
+            every { wishlistUiFactory(products, capture(onRemoveClickSlot), any(), any()) } returns wishListProductUi
+            coEvery { removeFromWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+            coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+            val emitter = UIEventEmitterDelegate()
+            val viewModel = buildViewModel(buildSavedStateHandle(), emitter)
+
+            viewModel.uiEvent.test {
+                onRemoveClickSlot.captured(product)
+                (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
+
+                coVerify(exactly = 1) { addToWishlistUseCase(product.slug) }
+                expectNoEvents()
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `WHEN the removal fails THEN it says so instead of failing silently`() =
+        runTest {
+            val onRemoveClickSlot = slot<ClickEventOneArg<Product>>()
+            coEvery { getWishlistUseCase() } returns flow { emit(UseCaseResult.Success(products)) }
+            every { wishlistUiFactory(products, capture(onRemoveClickSlot), any(), any()) } returns wishListProductUi
+            coEvery { removeFromWishlistUseCase(any()) } returns UseCaseResult.Error(mockk())
+            val emitter = UIEventEmitterDelegate()
+            val viewModel = buildViewModel(buildSavedStateHandle(), emitter)
+
+            viewModel.uiEvent.test {
+                onRemoveClickSlot.captured(products.first())
+
+                assertEquals(SnackbarType.Error, (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.type)
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `WHEN the undo fails THEN it says so instead of failing silently`() =
+        runTest {
+            val onRemoveClickSlot = slot<ClickEventOneArg<Product>>()
+            coEvery { getWishlistUseCase() } returns flow { emit(UseCaseResult.Success(products)) }
+            every { wishlistUiFactory(products, capture(onRemoveClickSlot), any(), any()) } returns wishListProductUi
+            coEvery { removeFromWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+            coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Error(mockk())
+            val emitter = UIEventEmitterDelegate()
+            val viewModel = buildViewModel(buildSavedStateHandle(), emitter)
+
+            viewModel.uiEvent.test {
+                onRemoveClickSlot.captured(products.first())
+                (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
+
+                assertEquals(SnackbarType.Error, (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.type)
+                cancelAndConsumeRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `WHEN retry is tapped after an error THEN the wishlist loads again`() =
+        runTest {
+            coEvery { getWishlistUseCase() } returnsMany listOf(
+                flow { emit(UseCaseResult.Error(mockk())) },
+                flow { emit(UseCaseResult.Success(products)) }
+            )
+            every { wishlistUiFactory(products, any(), any(), any()) } returns wishListProductUi
+            val viewModel = buildViewModel(buildSavedStateHandle())
+            assertEquals(WishlistUiState.Error, viewModel.state.value)
+
+            viewModel.onRetry()
+
+            assertEquals(WishlistUiState.Data.Loaded(wishListProductUi), viewModel.state.value)
+        }
+
     private fun buildSavedStateHandle() = mockk<SavedStateHandle>(relaxed = true).also {
         every { it.get<Boolean>("launchFromTop") } returns false
     }
 
-    private fun buildViewModel(savedStateHandle: SavedStateHandle) = WishlistViewModel(
+    // The snackbar tests need the events the delegate actually emits, so they pass a real one.
+    private fun buildViewModel(
+        savedStateHandle: SavedStateHandle,
+        emitter: UIEventEmitterDelegate = uiEventEmitterDelegate
+    ) = WishlistViewModel(
         getWishlistUseCase = getWishlistUseCase,
         removeFromWishlist = removeFromWishlistUseCase,
+        addToWishlist = addToWishlistUseCase,
         wishlistUiFactory = wishlistUiFactory,
+        context = context,
         savedStateHandle = savedStateHandle,
-        uiEventEmitterDelegate = uiEventEmitterDelegate
+        uiEventEmitterDelegate = emitter
     )
 }

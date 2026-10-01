@@ -14,12 +14,16 @@ data class SnackbarColorSpec(
 enum class SnackbarType {
     Info,
     Success,
-    Error
+    Error,
+
+    /** The DS Toast — drawn full width on the bottom navigation by [Toast], not as a [Snackbar]. */
+    Toast
 }
 
 @Composable
 fun SnackbarType.colorSpec(): SnackbarColorSpec {
-    val c = LocalTheme.current.primitive.colors
+    val theme = LocalTheme.current
+    val c = theme.primitive.colors
     return when (this) {
         SnackbarType.Info -> SnackbarColorSpec(
             backgroundColor = c.neutrals700,
@@ -32,6 +36,10 @@ fun SnackbarType.colorSpec(): SnackbarColorSpec {
         SnackbarType.Error -> SnackbarColorSpec(
             backgroundColor = c.semanticError100,
             contentColor = c.semanticError800
+        )
+        SnackbarType.Toast -> SnackbarColorSpec(
+            backgroundColor = theme.color.content.contentPrimary,
+            contentColor = theme.color.content.contentInvertedPrimary
         )
     }
 }

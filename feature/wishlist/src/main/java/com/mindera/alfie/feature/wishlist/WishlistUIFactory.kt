@@ -42,9 +42,12 @@ class WishlistUIFactory @Inject constructor() {
             brand = product.brandName.orEmpty(),
             name = product.name,
             price = product.priceRange.toPriceType(defaultVariant?.price),
-            image = defaultVariant?.media?.firstOrNull().toImageUI(),
+            // Variants often carry no media of their own, so fall back to the product's images the
+            // way the PDP gallery does — otherwise the card draws the empty-image placeholder.
+            image = (defaultVariant?.media?.firstOrNull() ?: product.images.firstOrNull()).toImageUI(),
             onClick = onClick,
-            onRemoveClick = onRemoveClick,
+            // Every card here is wishlisted, so its heart is the remove control.
+            onFavoriteClick = onRemoveClick,
             addToBagClick = onAddToBagClick
         )
     }
