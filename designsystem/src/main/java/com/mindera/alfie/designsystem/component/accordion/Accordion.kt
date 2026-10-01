@@ -53,10 +53,10 @@ private val DIVIDER = DividerType.Solid1Mono200
 @Composable
 fun Accordion(
     title: String,
-    content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     isLarge: Boolean = false,
-    isEnabled: Boolean = true
+    isEnabled: Boolean = true,
+    content: @Composable () -> Unit
 ) {
     Column(modifier = modifier) {
         HorizontalDivider(dividerType = DIVIDER)
@@ -79,10 +79,10 @@ fun Accordion(
 @Composable
 fun <T> AccordionGroup(
     items: ImmutableList<T>,
-    title: @Composable (T) -> String,
     modifier: Modifier = Modifier,
     isLarge: Boolean = false,
     isEnabled: Boolean = true,
+    title: @Composable (T) -> String,
     content: @Composable (T) -> Unit
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -102,9 +102,9 @@ fun <T> AccordionGroup(
 @Composable
 private fun AccordionRow(
     title: String,
-    content: @Composable () -> Unit,
     isLarge: Boolean,
-    isEnabled: Boolean
+    isEnabled: Boolean,
+    content: @Composable () -> Unit
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     val alpha = if (isEnabled) 1F else DISABLED_ALPHA
@@ -171,9 +171,9 @@ private fun SectionHeader(
 
 @Composable
 private fun SectionContent(
-    content: @Composable () -> Unit,
     isExpanded: Boolean,
-    isLarge: Boolean
+    isLarge: Boolean,
+    content: @Composable () -> Unit
 ) {
     AnimatedVisibility(
         visible = isExpanded,

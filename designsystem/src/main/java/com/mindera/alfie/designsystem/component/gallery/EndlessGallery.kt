@@ -37,11 +37,11 @@ private val GALLERY_INDICATOR_BOTTOM_PADDING = 12.dp
 @Composable
 internal fun EndlessGallery(
     gallery: GalleryUI,
-    isWishlisted: Boolean = false,
-    showWishlistButton: Boolean = true,
     startPosition: Int,
     isZoomable: Boolean,
     onPositionChange: (Int) -> Unit,
+    isWishlisted: Boolean = false,
+    showWishlistButton: Boolean = true,
     onFavoriteClick: ClickEvent = {},
     content: @Composable EndlessGalleryScope.() -> Unit
 ) {

@@ -25,17 +25,17 @@ private const val EXIT_TRANSITION_DURATION = 1000
 
 @Composable
 fun ListItemWithShimmering(
-    headlineContent: @Composable (Modifier) -> Unit,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     scale: Float = remember { Random.nextFloat(from = Theme.scale.scale40, until = Theme.scale.scale60) },
+    colors: ListItemColors = ListItemDefaults.colors(),
+    tonalElevation: Dp = ListItemDefaults.Elevation,
+    shadowElevation: Dp = ListItemDefaults.Elevation,
+    headlineContent: @Composable (Modifier) -> Unit,
     overlineContent: @Composable (() -> Unit)? = null,
     supportingContent: @Composable (() -> Unit)? = null,
     leadingContent: @Composable (() -> Unit)? = null,
-    trailingContent: @Composable (() -> Unit)? = null,
-    colors: ListItemColors = ListItemDefaults.colors(),
-    tonalElevation: Dp = ListItemDefaults.Elevation,
-    shadowElevation: Dp = ListItemDefaults.Elevation
+    trailingContent: @Composable (() -> Unit)? = null
 ) {
     ListItem(
         modifier = modifier,

@@ -40,10 +40,10 @@ private const val DEFAULT_PEEK_FRACTION = .66f
 
 @Composable
 fun BottomCard(
-    backLayer: @Composable BottomCardScope.() -> Unit,
-    frontLayer: @Composable BottomCardScope.() -> Unit,
     modifier: Modifier = Modifier,
     peekHeight: Dp = Dp.Unspecified,
+    backLayer: @Composable BottomCardScope.() -> Unit,
+    frontLayer: @Composable BottomCardScope.() -> Unit,
     bottomStickyLayer: @Composable BottomCardScope.() -> Unit = {}
 ) {
     val c = LocalTheme.current.primitive.colors
