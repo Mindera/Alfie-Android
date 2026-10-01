@@ -17,4 +17,5 @@
     <string name="product_details_colour_and_reference_a11y">%1$s, Ref. %2$s</string>
     <string name="product_details_section_view_link">View %1$s</string>
     <string name="product_details_wishlist_content_description">Wishlist</string>
+    <string name="product_details_you_might_also_like">You might also like</string>
 </resources>

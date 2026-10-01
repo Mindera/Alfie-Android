@@ -39,7 +39,12 @@ fun AccordionScreen(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(Theme.spacing.spacing8)
+            // Accordion carries no horizontal padding of its own, so the catalog supplies the
+            // same screen margin the real screens use.
+            .padding(
+                horizontal = Theme.spacing.spacing16,
+                vertical = Theme.spacing.spacing8
+            )
     ) {
         Text(
             modifier = Modifier.padding(Theme.spacing.spacing12),
