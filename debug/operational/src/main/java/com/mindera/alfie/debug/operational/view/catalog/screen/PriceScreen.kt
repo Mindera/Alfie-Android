@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.component.price.Price
-import com.mindera.alfie.designsystem.component.price.PriceOrientation
 import com.mindera.alfie.designsystem.component.price.PriceSize
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.topbar.TopBarState
@@ -56,30 +55,14 @@ internal fun PriceScreen(topBarState: TopBarState) {
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
         PriceSection(
-            title = "Price Range Small/Medium Horizontal",
-            priceType = prices[1],
-            orientation = PriceOrientation.Horizontal
+            title = "Price Range Small/Medium",
+            priceType = prices[1]
         )
         Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
 
         PriceSection(
-            title = "Price Range Small/Medium Vertical",
-            priceType = prices[1],
-            orientation = PriceOrientation.Vertical
-        )
-        Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
-
-        PriceSection(
-            title = "Price Sale Small/Medium Horizontal",
-            priceType = prices[2],
-            orientation = PriceOrientation.Horizontal
-        )
-        Spacer(modifier = Modifier.height(Theme.spacing.spacing16))
-
-        PriceSection(
-            title = "Price Sale Small/Medium Vertical",
-            priceType = prices[2],
-            orientation = PriceOrientation.Vertical
+            title = "Price Sale Small/Medium",
+            priceType = prices[2]
         )
 
         Spacer(modifier = Modifier.height(Theme.spacing.spacing48))
@@ -89,8 +72,7 @@ internal fun PriceScreen(topBarState: TopBarState) {
 @Composable
 private fun PriceSection(
     title: String,
-    priceType: PriceType,
-    orientation: PriceOrientation = PriceOrientation.Horizontal
+    priceType: PriceType
 ) {
     Column {
         Text(
@@ -103,14 +85,12 @@ private fun PriceSection(
         Row(modifier = Modifier.padding(Theme.spacing.spacing12)) {
             Price(
                 item = priceType,
-                size = PriceSize.Small,
-                orientation = orientation
+                size = PriceSize.Small
             )
             Spacer(modifier = Modifier.width(Theme.spacing.spacing24))
             Price(
                 item = priceType,
-                size = PriceSize.Medium,
-                orientation = orientation
+                size = PriceSize.Medium
             )
         }
     }

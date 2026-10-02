@@ -3,7 +3,7 @@ package com.mindera.alfie.feature.wishlist
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
-import com.mindera.alfie.feature.mappers.toImageUI
+import com.mindera.alfie.feature.mappers.cardImageFor
 import com.mindera.alfie.feature.mappers.toPriceType
 import com.mindera.alfie.feature.wishlist.models.WishlistProductUi
 import com.mindera.alfie.repository.product.model.Product
@@ -42,9 +42,10 @@ class WishlistUIFactory @Inject constructor() {
             brand = product.brandName.orEmpty(),
             name = product.name,
             price = product.priceRange.toPriceType(defaultVariant?.price),
-            image = defaultVariant?.media?.firstOrNull().toImageUI(),
+            image = product.cardImageFor(defaultVariant),
             onClick = onClick,
-            onRemoveClick = onRemoveClick,
+            // Every card here is wishlisted, so its heart is the remove control.
+            onFavoriteClick = onRemoveClick,
             addToBagClick = onAddToBagClick
         )
     }

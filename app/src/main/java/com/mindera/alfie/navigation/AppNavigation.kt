@@ -134,7 +134,6 @@ fun AppNavigation(
                     onNavigationClick = { navController.navigateUp() }
                 )
             },
-            snackbarHost = { SnackbarCustomHost(snackbarHostState) },
             modifier = Modifier
                 .fillMaxSize()
                 .semantics { testTagsAsResourceId = true }
@@ -225,6 +224,10 @@ private fun BottomBarScaffold(
 
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
+        // Hosted here rather than on the outer Scaffold so snackbars stack above the bottom bar:
+        // the outer one has no bottomBar slot, so it anchored them to the screen edge, on top of the
+        // navigation. With the bar hidden they fall back to the bottom of the screen.
+        snackbarHost = { SnackbarCustomHost(snackbarCustomHostState) },
         bottomBar = {
             BottomBar(
                 state = bottomBarState,
