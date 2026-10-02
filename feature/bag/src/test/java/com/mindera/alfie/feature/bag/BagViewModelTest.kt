@@ -3,6 +3,7 @@ package com.mindera.alfie.feature.bag
 import android.content.Context
 import app.cash.turbine.test
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.bag.AddAllToBagUseCase
@@ -24,6 +25,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
 internal class BagViewModelTest {
@@ -182,7 +184,7 @@ internal class BagViewModelTest {
             viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 3)
 
             val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
-            assertEquals(SnackbarType.Success, visuals.type)
+            assertEquals(SnackbarType.Success, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
             visuals.onActionClick()
             delay(300)
 
@@ -224,7 +226,7 @@ internal class BagViewModelTest {
             (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
 
             val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
-            assertEquals(SnackbarType.Error, visuals.type)
+            assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -239,7 +241,7 @@ internal class BagViewModelTest {
             viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 1)
 
             val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
-            assertEquals(SnackbarType.Error, visuals.type)
+            assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
             cancelAndConsumeRemainingEvents()
         }
     }

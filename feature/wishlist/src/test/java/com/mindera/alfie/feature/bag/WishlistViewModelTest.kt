@@ -7,6 +7,7 @@ import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.test.CoroutineExtension
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
@@ -31,6 +32,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 @ExtendWith(MockKExtension::class, CoroutineExtension::class)
 internal class WishlistViewModelTest {
@@ -167,7 +169,7 @@ internal class WishlistViewModelTest {
                 onRemoveClickSlot.captured(product)
 
                 val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
-                assertEquals(SnackbarType.Toast, visuals.type)
+                assertIs<SnackbarCustomVisuals.Toast>(visuals)
                 coVerify(exactly = 1) { removeFromWishlistUseCase(product.slug) }
                 cancelAndConsumeRemainingEvents()
             }
@@ -208,7 +210,7 @@ internal class WishlistViewModelTest {
             viewModel.uiEvent.test {
                 onRemoveClickSlot.captured(products.first())
 
-                assertEquals(SnackbarType.Error, (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.type)
+                assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals).type)
                 cancelAndConsumeRemainingEvents()
             }
         }
@@ -228,7 +230,7 @@ internal class WishlistViewModelTest {
                 onRemoveClickSlot.captured(products.first())
                 (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
 
-                assertEquals(SnackbarType.Error, (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.type)
+                assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals).type)
                 cancelAndConsumeRemainingEvents()
             }
         }

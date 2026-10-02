@@ -91,11 +91,9 @@ class WishlistViewModel @Inject constructor(
             removeFromWishlist(product.slug).doOnResult(
                 onSuccess = {
                     showSnackbar(
-                        SnackbarCustomVisuals(
-                            type = SnackbarType.Toast,
+                        SnackbarCustomVisuals.Toast(
                             message = context.getString(R.string.wishlist_item_removed),
                             actionLabel = context.getString(R.string.wishlist_item_removed_undo),
-                            withDismissAction = false,
                             onActionClick = { undoRemove(product) }
                         )
                     )

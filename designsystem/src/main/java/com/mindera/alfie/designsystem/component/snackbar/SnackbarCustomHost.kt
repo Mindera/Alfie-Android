@@ -12,34 +12,33 @@ fun SnackbarCustomHost(snackbarCustomHostState: SnackbarCustomHostState) {
     SnackbarHost(
         hostState = snackbarCustomHostState.hostState,
         snackbar = { snackbarData ->
-            (snackbarData.visuals as? SnackbarCustomVisuals)?.let {
-                if (it.type == SnackbarType.Toast) {
-                    // The Toast spans the screen and sits flush on the bottom navigation, so it
-                    // skips the margins a floating snackbar is inset by.
-                    Toast(
-                        message = it.message,
-                        actionLabel = it.actionLabel,
-                        onActionClick = it.onActionClick,
+            when (val visuals = snackbarData.visuals) {
+                // The Toast spans the screen and sits flush on the bottom navigation, so it skips
+                // the margins a floating snackbar is inset by.
+                is SnackbarCustomVisuals.Toast -> Toast(
+                    message = visuals.message,
+                    actionLabel = visuals.actionLabel,
+                    onActionClick = visuals.onActionClick,
+                    onDismiss = { snackbarData.dismiss() }
+                )
+                is SnackbarCustomVisuals.Snackbar -> Box(
+                    modifier = Modifier
+                        .padding(bottom = Theme.spacing.spacing16)
+                        .padding(horizontal = Theme.spacing.spacing8)
+                ) {
+                    Snackbar(
+                        type = visuals.type,
+                        message = visuals.message,
+                        actionLabel = visuals.actionLabel,
+                        withDismissAction = visuals.withDismissAction,
+                        singleLine = visuals.singleLine,
+                        icon = visuals.icon,
+                        onActionClick = visuals.onActionClick,
                         onDismiss = { snackbarData.dismiss() }
                     )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .padding(bottom = Theme.spacing.spacing16)
-                            .padding(horizontal = Theme.spacing.spacing8)
-                    ) {
-                        Snackbar(
-                            type = it.type,
-                            message = it.message,
-                            actionLabel = it.actionLabel,
-                            withDismissAction = it.withDismissAction,
-                            singleLine = it.singleLine,
-                            icon = it.icon,
-                            onActionClick = it.onActionClick,
-                            onDismiss = { snackbarData.dismiss() }
-                        )
-                    }
                 }
+                // Only this module builds visuals for the host, so nothing else reaches it.
+                else -> Unit
             }
         }
     )

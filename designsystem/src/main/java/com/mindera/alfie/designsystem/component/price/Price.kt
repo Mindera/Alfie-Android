@@ -97,37 +97,6 @@ private fun PriceSale(
     val fullPriceStyle = size.wasPriceStyle().let { style -> overrideColor?.let { style.copy(color = it) } ?: style }
     val salePriceStyle = size.valueStyle()
         .copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
-    SaleHorizontal(
-        modifier = modifier,
-        price = price,
-        salePriceStyle = salePriceStyle,
-        fullPriceStyle = fullPriceStyle
-    )
-}
-
-@Composable
-private fun PriceRange(
-    price: PriceType.Range,
-    size: PriceSize,
-    modifier: Modifier = Modifier,
-    overrideColor: Color? = null
-) {
-    val style = size.valueStyle().copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
-    RangeHorizontal(
-        modifier = modifier,
-        price = price,
-        style = style,
-        separatorColor = overrideColor
-    )
-}
-
-@Composable
-private fun SaleHorizontal(
-    price: PriceType.Sale,
-    salePriceStyle: TextStyle,
-    fullPriceStyle: TextStyle,
-    modifier: Modifier = Modifier
-) {
     Row(modifier = modifier) {
         Text(
             text = price.salePrice,
@@ -142,12 +111,13 @@ private fun SaleHorizontal(
 }
 
 @Composable
-private fun RangeHorizontal(
+private fun PriceRange(
     price: PriceType.Range,
-    style: TextStyle,
+    size: PriceSize,
     modifier: Modifier = Modifier,
-    separatorColor: Color? = null
+    overrideColor: Color? = null
 ) {
+    val style = size.valueStyle().copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
     // The DS renders the bounds bold and the separator at regular weight, so this cannot collapse
     // into a single Text. Gap is spacing/spacing-xxs.
     Row(
@@ -158,7 +128,7 @@ private fun RangeHorizontal(
         Text(
             text = PRICE_RANGE_SEPARATOR,
             style = LocalTheme.current.typography.body.medium,
-            color = separatorColor ?: LocalTheme.current.color.content.contentPrimary
+            color = overrideColor ?: LocalTheme.current.color.content.contentPrimary
         )
         Text(text = price.endPrice, style = style)
     }
