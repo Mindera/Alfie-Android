@@ -38,6 +38,8 @@ jobs:
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # gh label create takes no URL, and there is no checkout to infer the repo from.
+          GH_REPO: ${{ github.repository }}
         run: |
           # --force makes this idempotent and self-bootstrapping: gh pr edit
           # fails outright if the label does not already exist in the repo.

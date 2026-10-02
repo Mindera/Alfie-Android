@@ -31,8 +31,8 @@ private const val PULL_TO_REFRESH_PROGRESS_MULTIPLIER = 100
 @Composable
 fun PullDownLayout(
     onRefresh: () -> Unit,
-    content: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
 ) {
     var pullDownIndicatorState by remember { mutableStateOf(PullDownIndicatorState.Default) }
 

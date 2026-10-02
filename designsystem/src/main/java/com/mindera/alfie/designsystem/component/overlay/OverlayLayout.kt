@@ -32,11 +32,11 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 fun OverlayLayout(
     isOpen: Boolean,
     onDismiss: () -> Unit,
-    overlayContent: @Composable () -> Unit,
-    content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     properties: OverlayProperties = OverlayProperties(),
-    alignment: Alignment = Alignment.TopCenter
+    alignment: Alignment = Alignment.TopCenter,
+    overlayContent: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     BackHandler(
         enabled = isOpen && properties.dismissOnBackPress,
