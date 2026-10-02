@@ -60,8 +60,8 @@ internal fun WishlistScreen(
     val viewModel: WishlistViewModel = hiltViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // TODO: sharing a wishlist has no defined behaviour yet. The icon is shown because the design
-    //  has it; wire it up once what gets shared (a link, the product list…) is decided.
+    // TODO(ALFMOB-548): sharing a wishlist has no defined behaviour yet. The icon is shown because
+    //  the design has it; wire it up once what gets shared (a link, the product list…) is decided.
     val actions = persistentListOf(TopBarAction.Share(onClick = { }))
     // As a root tab there is nothing to go back to — navigateUp() would pop the shopper out of the
     // tab — so the navigation icon only shows when the screen was pushed from elsewhere.
