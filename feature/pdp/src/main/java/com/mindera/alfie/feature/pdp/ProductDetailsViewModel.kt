@@ -231,7 +231,7 @@ internal class ProductDetailsViewModel @Inject constructor(
                 onError = {
                     setWishlisted(slug, wasWishlisted)
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
                             message = context.getString(
                                 if (wasWishlisted) DesignR.string.wishlist_error_remove_product else DesignR.string.wishlist_error_add_product

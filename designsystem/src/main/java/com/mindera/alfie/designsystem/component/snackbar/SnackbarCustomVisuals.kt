@@ -42,27 +42,3 @@ sealed interface SnackbarCustomVisuals : SnackbarVisuals {
         override val withDismissAction: Boolean = false
     }
 }
-
-/** Builds the common case, a [SnackbarCustomVisuals.Snackbar]. */
-@Suppress("FunctionNaming", "LongParameterList")
-fun SnackbarCustomVisuals(
-    type: SnackbarType,
-    message: String,
-    actionLabel: String? = null,
-    withDismissAction: Boolean = true,
-    singleLine: Boolean = true,
-    timeDuration: SnackbarTimeDuration = SHORT,
-    priority: SnackbarPriority = NORMAL,
-    @DrawableRes icon: Int? = null,
-    onActionClick: () -> Unit = {}
-): SnackbarCustomVisuals.Snackbar = SnackbarCustomVisuals.Snackbar(
-    type = type,
-    message = message,
-    actionLabel = actionLabel,
-    withDismissAction = withDismissAction,
-    singleLine = singleLine,
-    timeDuration = timeDuration,
-    priority = priority,
-    icon = icon,
-    onActionClick = onActionClick
-)

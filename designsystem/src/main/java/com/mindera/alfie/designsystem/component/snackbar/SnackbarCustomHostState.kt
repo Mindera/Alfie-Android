@@ -37,7 +37,7 @@ class SnackbarCustomHostState {
         action: () -> Unit = {}
     ) {
         showSnackbar(
-            SnackbarCustomVisuals(
+            SnackbarCustomVisuals.Snackbar(
                 type = type,
                 message = message,
                 actionLabel = actionLabel,

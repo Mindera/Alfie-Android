@@ -116,7 +116,7 @@ class WishlistViewModel @Inject constructor(
 
     private fun showError(message: Int) {
         showSnackbar(
-            SnackbarCustomVisuals(
+            SnackbarCustomVisuals.Snackbar(
                 type = SnackbarType.Error,
                 message = context.getString(message)
             )
