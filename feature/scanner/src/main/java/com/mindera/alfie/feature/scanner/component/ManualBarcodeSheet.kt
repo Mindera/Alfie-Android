@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.input.TextField
+import com.mindera.alfie.designsystem.component.input.TextFieldSupportComponent
 import com.mindera.alfie.designsystem.component.input.TextFieldType
 import com.mindera.alfie.designsystem.component.modal.BottomSheet
 import com.mindera.alfie.designsystem.tokens.LocalTheme
@@ -28,6 +29,9 @@ import com.mindera.alfie.feature.scanner.R
  *
  * The drawn iOS keyboard is mockup furniture; its "Search" key is expressed here as
  * [ImeAction.Search], which Android's own IME renders.
+ *
+ * [errorMessage] is shown on the field rather than in a snackbar: this sheet and its keyboard
+ * cover the snackbar, so a lookup that fails here has nowhere else the shopper would see it.
  */
 @Composable
 internal fun ManualBarcodeSheet(
@@ -35,7 +39,8 @@ internal fun ManualBarcodeSheet(
     onValueChange: ClickEventOneArg<String>,
     onSubmit: ClickEvent,
     onDismiss: ClickEvent,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    errorMessage: String? = null
 ) {
     val theme = LocalTheme.current
 
@@ -59,9 +64,10 @@ internal fun ManualBarcodeSheet(
             TextField(
                 value = value,
                 placeholder = stringResource(id = R.string.scanner_manual_placeholder),
-                type = TextFieldType.Default,
+                type = if (errorMessage == null) TextFieldType.Default else TextFieldType.Error,
                 onTextChange = onValueChange,
                 isMandatory = false,
+                supportComponent = errorMessage?.let { TextFieldSupportComponent(text = it) },
                 // Barcodes are digits, and the design's key reads "Search" rather than a newline.
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.None,

@@ -363,4 +363,45 @@ class ProductDetailsUIFactoryTest {
         assertEquals(PriceType.Sale(fullPrice = "£15.00", salePrice = "£12.00"), result.price)
         assertEquals("s2", result.productReference)
     }
+
+    // A scan names one variant; the PDP should open on it rather than on the product's default.
+    @Test
+    fun `invoke - WHEN a scanned variant is given THEN its colour and size start selected`() = runTest {
+        // "v3" is bone/12 AU, against a default variant of steel/10 AU.
+        val result = uiFactory(product = product, scannedVariantId = "v3")
+
+        assertEquals("bone", result.selectedColourName)
+        val sizeSelector = result.sizeSectionUI as SizeSectionUI.SizeSelector
+        assertEquals("12 AU", sizeSelector.selectedSize?.id)
+        // The CTA reads the selection, so a scan lands with something addable already chosen.
+        assertEquals("sku-bone-12", result.productReference)
+    }
+
+    @Test
+    fun `invoke - WHEN the scanned variant is out of stock THEN it is still the selection`() = runTest {
+        // "v2" is bone/11 AU and unavailable — the shopper scanned that exact tag, so showing
+        // something else would be a lie about what they are holding.
+        val result = uiFactory(product = product, scannedVariantId = "v2")
+
+        assertEquals("bone", result.selectedColourName)
+        assertEquals(
+            "11 AU",
+            (result.sizeSectionUI as SizeSectionUI.SizeSelector).selectedSize?.id
+        )
+    }
+
+    @Test
+    fun `invoke - WHEN the scanned variant is unknown THEN it falls back to the default variant`() = runTest {
+        val result = uiFactory(product = product, scannedVariantId = "not-a-variant")
+
+        assertEquals("steel", result.selectedColourName)
+        assertNull((result.sizeSectionUI as SizeSectionUI.SizeSelector).selectedSize)
+    }
+
+    @Test
+    fun `invoke - WHEN no variant is scanned THEN no size starts selected`() = runTest {
+        val result = uiFactory(product = product)
+
+        assertNull((result.sizeSectionUI as SizeSectionUI.SizeSelector).selectedSize)
+    }
 }

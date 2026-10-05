@@ -65,9 +65,19 @@ internal class ProductDetailsUIFactory @Inject constructor(
         )
     }
 
-    suspend operator fun invoke(product: Product): ProductDetailsUI = withContext(dispatcher.default()) {
+    /**
+     * [scannedVariantId] is the variant a barcode scan resolved to. When it matches one of
+     * [product]'s variants it stands in for the default variant throughout — colour, gallery,
+     * price and the preselected size chip all follow it, so the PDP opens on exactly the item
+     * whose tag was scanned. An unknown or null id falls back to [resolveDefaultVariant].
+     */
+    suspend operator fun invoke(
+        product: Product,
+        scannedVariantId: String? = null
+    ): ProductDetailsUI = withContext(dispatcher.default()) {
         val environment = environmentManager.current()
-        val defaultVariant = product.resolveDefaultVariant()
+        val scannedVariant = scannedVariantId?.let { id -> product.variants.firstOrNull { it.id == id } }
+        val defaultVariant = scannedVariant ?: product.resolveDefaultVariant()
         val colors = product.mapColors()
         val selectedColor = colors.findSelected(defaultVariant)
         val base = ProductDetailsUI(
@@ -89,7 +99,10 @@ internal class ProductDetailsUIFactory @Inject constructor(
                 price = defaultVariant?.price?.amount?.amountFormatted.orEmpty()
             ),
             gallery = product.galleryFor(selectedColor?.id, defaultVariant),
-            sizeSectionUI = product.variants.toSizeSectionUI(selectedColor)
+            sizeSectionUI = product.variants.toSizeSectionUI(
+                selectedColorUI = selectedColor,
+                preselected = scannedVariant
+            )
         )
         base.copy(price = base.displayVariant().toPriceType())
     }
@@ -104,7 +117,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
         val updated = details.copy(
             selectedColorUI = selectedColor,
             isSelectionSoldOut = details.variants.isSoldOut(colorId = selectedColor?.id),
-            sizeSectionUI = details.variants.toSizeSectionUI(selectedColor),
+            sizeSectionUI = details.variants.toSizeSectionUI(selectedColorUI = selectedColor),
             shareInfo = buildProductDetailsShareInfo(
                 brand = details.brand,
                 name = details.name,
@@ -251,7 +264,16 @@ internal class ProductDetailsUIFactory @Inject constructor(
         }
     }
 
-    private fun List<Variant>.toSizeSectionUI(selectedColorUI: ColorUI?): SizeSectionUI {
+    /**
+     * [preselected] is the scanned variant, when there was one: its size chip starts selected, so
+     * the PDP opens with the CTA already enabled rather than asking for a size the shopper has
+     * effectively already chosen. It is matched on size value rather than identity, because
+     * [distinctBy] may have collapsed it into a sibling that carries the same size.
+     */
+    private fun List<Variant>.toSizeSectionUI(
+        selectedColorUI: ColorUI?,
+        preselected: Variant? = null
+    ): SizeSectionUI {
         // Products can carry options beyond colour+size (e.g. "Sleeve length type"); collapse
         // those sibling variants into one chip per size, preferring an in-stock representative.
         val uniqueSizes = filter { it.colorOptionValue == selectedColorUI?.id }
@@ -264,7 +286,10 @@ internal class ProductDetailsUIFactory @Inject constructor(
             isSingleSize -> SizeSectionUI.SingleSize
             uniqueSizes.size == 1 -> SizeSectionUI.SizeOnly(sizeUI = uniqueSizes.first().toSizeUI())
             else -> SizeSectionUI.SizeSelector(
-                sizes = uniqueSizes.map { it.toSizeUI() }.toImmutableList()
+                sizes = uniqueSizes.map { it.toSizeUI() }.toImmutableList(),
+                selectedSize = preselected?.sizeOptionValue
+                    ?.let { size -> uniqueSizes.firstOrNull { it.sizeOptionValue == size } }
+                    ?.toSizeUI()
             )
         }
     }

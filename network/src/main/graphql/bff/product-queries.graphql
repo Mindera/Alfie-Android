@@ -4,6 +4,15 @@ query GetProductDetails($handle: String!) {
     }
 }
 
+query ProductByBarcode($barcode: String!) {
+    productByBarcode(barcode: $barcode) {
+        id
+        name
+        slug
+        variantId
+    }
+}
+
 query GetRelatedProducts($handle: String!, $limit: Int!) {
     relatedProducts(handle: $handle, limit: $limit) {
         ...ProductListEntryFragment

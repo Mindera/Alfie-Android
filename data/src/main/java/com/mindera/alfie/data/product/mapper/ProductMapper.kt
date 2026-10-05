@@ -1,10 +1,12 @@
 package com.mindera.alfie.data.product.mapper
 
 import com.mindera.alfie.core.commons.string.formatMoney
+import com.mindera.alfie.graphql.bff.ProductByBarcodeQuery
 import com.mindera.alfie.graphql.bff.fragment.ImageFragment
 import com.mindera.alfie.graphql.bff.fragment.MoneyFragment
 import com.mindera.alfie.graphql.bff.fragment.ProductFragment
 import com.mindera.alfie.graphql.bff.fragment.ProductVariantFragment
+import com.mindera.alfie.repository.product.model.BarcodeMatch
 import com.mindera.alfie.repository.product.model.Price
 import com.mindera.alfie.repository.product.model.PriceRange
 import com.mindera.alfie.repository.product.model.Product
@@ -12,6 +14,13 @@ import com.mindera.alfie.repository.product.model.Variant
 import com.mindera.alfie.repository.product.model.VariantOption
 import com.mindera.alfie.repository.shared.model.Media
 import com.mindera.alfie.repository.shared.model.Money
+
+internal fun ProductByBarcodeQuery.ProductByBarcode.toDomain(): BarcodeMatch = BarcodeMatch(
+    id = id,
+    name = name,
+    slug = slug,
+    variantId = variantId
+)
 
 internal fun ProductFragment.toDomain(): Product = Product(
     id = id,

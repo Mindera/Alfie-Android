@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -27,6 +29,8 @@ import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
+import com.mindera.alfie.designsystem.component.loading.LoadingSpinner
+import com.mindera.alfie.designsystem.component.loading.LoadingSpinnerSize
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.state.StateMessage
 import com.mindera.alfie.designsystem.component.state.StateMessageAction
@@ -85,8 +89,11 @@ private fun ScannerScreenContent(
     when (state) {
         is ScannerUIState.Error -> ScannerError(type = state.type, onEvent = onEvent)
         is ScannerUIState.Scanning,
-        ScannerUIState.Detected -> {
+        is ScannerUIState.Searching -> {
             val scanning = state as? ScannerUIState.Scanning
+            // Searching keeps rendering its own resume state, so the torch does not blink off
+            // while a lookup is in flight.
+            val chrome = scanning ?: (state as ScannerUIState.Searching).resume
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -95,18 +102,28 @@ private fun ScannerScreenContent(
                 CameraPreview(
                     analyzer = analyzer,
                     // Frames stop reaching ML Kit the moment a barcode wins, while the preview
-                    // stays on screen through the navigation transition.
+                    // stays on screen through the lookup and any navigation that follows.
                     isActive = scanning != null,
-                    isTorchOn = scanning?.isTorchOn == true,
+                    isTorchOn = chrome.isTorchOn,
                     modifier = Modifier.fillMaxSize(),
                     onBindFailure = { onEvent(ScannerEvent.OnCameraError) }
                 )
                 ScannerOverlay(
-                    isTorchOn = scanning?.isTorchOn == true,
+                    isTorchOn = chrome.isTorchOn,
                     onBackClick = { onEvent(ScannerEvent.OnCloseClick) },
                     onTorchClick = { onEvent(ScannerEvent.OnTorchToggle) },
                     onEnterManuallyClick = { onEvent(ScannerEvent.OnEnterManuallyClick) }
                 )
+                if (scanning == null) {
+                    val label = stringResource(id = R.string.scanner_searching_content_description)
+                    LoadingSpinner(
+                        size = LoadingSpinnerSize.Medium,
+                        color = LocalTheme.current.primitive.colors.neutrals0,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .semantics { contentDescription = label }
+                    )
+                }
             }
 
             scanning?.manualEntry?.let { typed ->
@@ -114,7 +131,9 @@ private fun ScannerScreenContent(
                     value = typed,
                     onValueChange = { onEvent(ScannerEvent.OnManualBarcodeChange(it)) },
                     onSubmit = { onEvent(ScannerEvent.OnManualBarcodeSubmit) },
-                    onDismiss = { onEvent(ScannerEvent.OnManualEntryDismiss) }
+                    onDismiss = { onEvent(ScannerEvent.OnManualEntryDismiss) },
+                    errorMessage = scanning.manualError
+                        ?.let { stringResource(id = it.messageRes()) }
                 )
             }
         }

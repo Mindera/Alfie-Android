@@ -1,22 +1,35 @@
 package com.mindera.alfie.feature.scanner
 
+import android.content.Context
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.camera.core.ImageAnalysis
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
+import com.mindera.alfie.domain.doOnResult
+import com.mindera.alfie.domain.usecase.product.GetProductByBarcodeUseCase
 import com.mindera.alfie.feature.scanner.analyzer.BarcodeImageAnalyzer
 import com.mindera.alfie.feature.scanner.destinations.ScannerScreenDestination
 import com.mindera.alfie.feature.scanner.model.ScannerErrorType
 import com.mindera.alfie.feature.scanner.model.ScannerEvent
+import com.mindera.alfie.feature.scanner.model.ScannerLookupError
 import com.mindera.alfie.feature.scanner.model.ScannerUIState
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
+import com.mindera.alfie.repository.product.model.BarcodeMatch
+import com.mindera.alfie.repository.result.ErrorResult
+import com.mindera.alfie.repository.result.ErrorType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -24,6 +37,8 @@ import javax.inject.Inject
 @HiltViewModel
 internal class ScannerViewModel @Inject constructor(
     private val barcodeScanner: BarcodeScanner,
+    private val getProductByBarcode: GetProductByBarcodeUseCase,
+    @ApplicationContext private val context: Context,
     uiEventEmitterDelegate: UIEventEmitterDelegate
 ) : ViewModel(), UIEventEmitter by uiEventEmitterDelegate {
 
@@ -44,11 +59,11 @@ internal class ScannerViewModel @Inject constructor(
 
     /**
      * The analyzer reports the same physical barcode on frame after frame, from a camera thread.
-     * This is a first-wins gate rather than a time-based debounce: the requirement is one
-     * navigation per scanner visit, and `compareAndSet` is what makes that safe off the main
-     * thread, where a plain `Boolean` would race.
+     * This gates the lookup to one in flight at a time: `compareAndSet` is what makes that safe
+     * off the main thread, where a plain `Boolean` would race. Unlike a scan that navigates away,
+     * a lookup that finds nothing releases the gate so the next code can be tried.
      */
-    private val hasNavigated = AtomicBoolean(false)
+    private val isResolving = AtomicBoolean(false)
 
     fun handleEvent(event: ScannerEvent) {
         when (event) {
@@ -56,10 +71,12 @@ internal class ScannerViewModel @Inject constructor(
             ScannerEvent.OnCloseClick -> navigateBack()
             ScannerEvent.OnCameraError -> onCameraError()
             ScannerEvent.OnTorchToggle -> updateScanning { it.copy(isTorchOn = !it.isTorchOn) }
-            ScannerEvent.OnEnterManuallyClick -> updateScanning { it.copy(manualEntry = "") }
-            ScannerEvent.OnManualEntryDismiss -> updateScanning { it.copy(manualEntry = null) }
+            ScannerEvent.OnEnterManuallyClick ->
+                updateScanning { it.copy(manualEntry = "", manualError = null) }
+            ScannerEvent.OnManualEntryDismiss ->
+                updateScanning { it.copy(manualEntry = null, manualError = null) }
             is ScannerEvent.OnManualBarcodeChange ->
-                updateScanning { it.copy(manualEntry = event.value) }
+                updateScanning { it.copy(manualEntry = event.value, manualError = null) }
             ScannerEvent.OnManualBarcodeSubmit -> onManualSubmit()
         }
     }
@@ -72,8 +89,8 @@ internal class ScannerViewModel @Inject constructor(
     }
 
     /**
-     * A typed barcode is treated exactly like a scanned one — same trimming, same single-fire
-     * gate — so the manual path cannot double-navigate alongside a camera hit that lands in the
+     * A typed barcode is treated exactly like a scanned one — same trimming, same single-flight
+     * gate — so the manual path cannot double-resolve alongside a camera hit that lands in the
      * same moment.
      */
     private fun onManualSubmit() {
@@ -82,23 +99,92 @@ internal class ScannerViewModel @Inject constructor(
     }
 
     private fun onBarcodeDetected(rawValue: String) {
-        val handle = rawValue.trim()
-        if (handle.isEmpty()) return
-        if (!hasNavigated.compareAndSet(false, true)) return
+        val scanned = rawValue.trim()
+        if (scanned.isEmpty()) return
+        if (!isResolving.compareAndSet(false, true)) return
 
-        _state.update { ScannerUIState.Detected }
+        // Only a live camera can start a lookup; an error state must not be pulled out of itself
+        // by a frame that was already in flight when it was entered.
+        val resume = _state.value as? ScannerUIState.Scanning
+        if (resume == null) {
+            isResolving.set(false)
+            return
+        }
 
-        // The scanned value is passed straight through as the PDP handle. Barcodes are not
-        // product slugs, so a real EAN will usually land on PDP's not-found state until the BFF
-        // exposes a barcode lookup — see the feature plan.
+        _state.update { ScannerUIState.Searching(resume = resume) }
+
+        viewModelScope.launch {
+            getProductByBarcode(barcode = scanned).doOnResult(
+                onSuccess = { match -> openProduct(match) },
+                onError = { error -> onLookupFailed(barcode = scanned, error = error, resume = resume) }
+            )
+        }
+    }
+
+    /**
+     * The scanned code identifies one specific variant, so it is carried to the PDP — the shopper
+     * scanned a size off a physical tag and should not have to pick it again. It is null when the
+     * BFF could not narrow the code to a single variant, and the PDP falls back to its default.
+     */
+    private fun openProduct(match: BarcodeMatch) {
+        Timber.i(
+            "Barcode resolved to '%s' (%s), variant %s",
+            match.slug,
+            match.name,
+            match.variantId ?: "unknown"
+        )
         navigateTo(
-            screen = Screen.ProductDetails(args = productDetailsNavArgs(handle = handle)),
+            screen = Screen.ProductDetails(
+                args = productDetailsNavArgs(
+                    handle = match.slug,
+                    variantId = match.variantId
+                )
+            ),
             navOptions = {
                 launchSingleTop = true
                 // Pop the camera and push the PDP in one transaction, so back from the PDP
                 // returns to Home rather than reopening the scanner.
                 popUpTo(ScannerScreenDestination.route) { inclusive = true }
             }
+        )
+    }
+
+    /**
+     * A code the catalogue does not carry is the common case, not a fault, so it gets its own copy
+     * — telling the shopper the scan worked and the product did not, rather than blaming the app.
+     * Either way the camera comes back, because the next thing they will do is scan again.
+     *
+     * Where the message goes depends on where the code came from. A snackbar is right for a
+     * camera scan, but the manual sheet and its keyboard cover the snackbar entirely, so a typed
+     * code is answered on the field itself instead.
+     */
+    private fun onLookupFailed(barcode: String, error: ErrorResult, resume: ScannerUIState.Scanning) {
+        Timber.w(error, "Lookup failed for barcode '%s' (%s)", barcode, error.type)
+
+        val lookupError = if (error.type == ErrorType.RESOURCE_NOT_FOUND) {
+            ScannerLookupError.NotFound
+        } else {
+            ScannerLookupError.LookupFailed
+        }
+        val isManual = resume.manualEntry != null
+
+        _state.update { current ->
+            when {
+                current !is ScannerUIState.Searching -> current
+                isManual -> resume.copy(manualError = lookupError)
+                else -> resume
+            }
+        }
+        isResolving.set(false)
+
+        if (isManual) return
+
+        showSnackbar(
+            SnackbarCustomVisuals(
+                type = SnackbarType.Error,
+                message = context.getString(lookupError.messageRes()),
+                singleLine = false
+            )
         )
     }
 
@@ -116,4 +202,11 @@ internal class ScannerViewModel @Inject constructor(
     internal fun releaseScanner() {
         barcodeScanner.close()
     }
+}
+
+/** The copy for a failed lookup, shared by the snackbar and the manual sheet's error text. */
+@StringRes
+internal fun ScannerLookupError.messageRes(): Int = when (this) {
+    ScannerLookupError.NotFound -> R.string.scanner_barcode_not_found
+    ScannerLookupError.LookupFailed -> R.string.scanner_barcode_lookup_failed
 }

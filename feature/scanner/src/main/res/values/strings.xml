@@ -10,6 +10,10 @@
     <string name="scanner_torch_on_content_description">Turn the light on</string>
     <string name="scanner_torch_off_content_description">Turn the light off</string>
 
+    <string name="scanner_barcode_not_found">No product matches that barcode.</string>
+    <string name="scanner_barcode_lookup_failed">Couldn\'t check that barcode. Please try again.</string>
+    <string name="scanner_searching_content_description">Looking up the scanned barcode</string>
+
     <string name="scanner_camera_unavailable_title">Camera unavailable</string>
     <string name="scanner_camera_unavailable_subtitle">This device\'s camera can\'t be used for scanning right now.</string>
 
