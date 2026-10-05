@@ -54,7 +54,7 @@ def _load(path):
         return json.load(f)
 
 
-def brand_token_file(manifest, collection, tokens_dir):
+def brand_token_file(manifest, collection, tokens_dir, mode=None):
     """Path to the file backing a brand-scoped `collection`, per manifest.json.
 
     The Figma export names these files after the brand mode — `.primitives.<mode>.tokens.json`,
@@ -62,17 +62,30 @@ def brand_token_file(manifest, collection, tokens_dir):
     (alfie-theme -> selfridges-theme). Reading the name out of the manifest keeps this script
     working across those renames instead of pinning one brand's name in four places.
 
-    Only single-mode collections go through here. `screen-size` and `system` are multi-mode and
-    are chosen deliberately elsewhere (Android / Small-screen), not by whatever the export lists.
+    With no `mode`, the collection must declare exactly one, and that one is the brand. `.primitives`
+    is resolved this way. The other brand-scoped collections are then asked for that same `mode`,
+    because a collection may carry extra modes the app does not emit (`theme` has also listed
+    `new-brand-theme` alongside `alfie-theme`).
+
+    `screen-size` and `system` do not go through here: they are multi-mode and are chosen
+    deliberately elsewhere (Android / Small-screen), not by whatever the export lists.
     """
     modes = manifest.get("collections", {}).get(collection, {}).get("modes", {})
-    if len(modes) != 1:
+    if mode is None:
+        if len(modes) != 1:
+            raise SystemExit(
+                f"✗ manifest.json: expected exactly one mode for collection '{collection}', "
+                f"found {sorted(modes) or 'none'}. A multi-brand export needs this script taught "
+                f"which brand to emit."
+            )
+        (mode, files), = modes.items()
+    elif mode in modes:
+        files = modes[mode]
+    else:
         raise SystemExit(
-            f"✗ manifest.json: expected exactly one mode for collection '{collection}', "
-            f"found {sorted(modes) or 'none'}. A multi-brand export needs this script taught "
-            f"which brand to emit."
+            f"✗ manifest.json: collection '{collection}' has no '{mode}' mode, "
+            f"found {sorted(modes) or 'none'}"
         )
-    (mode, files), = modes.items()
     if len(files) != 1:
         raise SystemExit(
             f"✗ manifest.json: expected exactly one file for '{collection}' mode '{mode}', "
@@ -1099,9 +1112,9 @@ def main():
 
     manifest = _load(tokens_dir / "manifest.json")
     primitives_path, brand = brand_token_file(manifest, ".primitives", tokens_dir)
-    theme_path, _ = brand_token_file(manifest, "theme", tokens_dir)
-    sizing_path, _ = brand_token_file(manifest, "sizing", tokens_dir)
-    typo_path, _ = brand_token_file(manifest, "typography", tokens_dir)
+    theme_path, _ = brand_token_file(manifest, "theme", tokens_dir, brand)
+    sizing_path, _ = brand_token_file(manifest, "sizing", tokens_dir, brand)
+    typo_path, _ = brand_token_file(manifest, "typography", tokens_dir, brand)
     print(f"  Brand mode: {brand}")
 
     primitives = _load_tokens(primitives_path)

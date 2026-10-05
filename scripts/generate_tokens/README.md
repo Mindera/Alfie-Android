@@ -76,8 +76,10 @@ Two consequences when a rename lands:
 - The glob in step 2 copies the new files, but the **previous brand's files stay behind**. Delete
   any file in `assets/design_tokens/` that `manifest.json` no longer references — they are dead
   weight and mislead the next reader.
-- The generator fails loudly if `manifest.json` lists more than one mode for those collections; a
-  genuinely multi-brand export needs it taught which brand to emit.
+- The brand is whichever single mode `.primitives` declares; `theme`, `sizing` and `typography`
+  are then read in that same mode, and any extra modes they carry (e.g. `new-brand-theme`) are
+  ignored. The generator fails loudly if `.primitives` lists more than one mode — a genuinely
+  multi-brand export needs it taught which brand to emit.
 
 ## Token resolution
 
