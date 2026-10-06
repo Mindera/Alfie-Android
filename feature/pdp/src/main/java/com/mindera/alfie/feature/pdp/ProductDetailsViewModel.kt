@@ -70,6 +70,9 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
     private val handle = args.handle
 
+    /** Set when the PDP was opened from a barcode scan; see [ProductDetailsNavArgs.variantId]. */
+    private val scannedVariantId = args.variantId
+
     init {
         collectWishlistIds()
         loadDetails()
@@ -98,7 +101,7 @@ internal class ProductDetailsViewModel @Inject constructor(
 
             getProductUseCase(handle = handle).doOnResult(
                 onSuccess = {
-                    val shopUI = uiFactory(it)
+                    val shopUI = uiFactory(product = it, scannedVariantId = scannedVariantId)
                     _state.value = Loaded(
                         details = shopUI.copy(
                             isWishlisted = _wishlistIds.value.contains(shopUI.slug)

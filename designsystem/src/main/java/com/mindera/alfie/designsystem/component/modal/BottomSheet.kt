@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -62,6 +66,12 @@ fun BottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
     isFullscreen: Boolean = true,
+    /**
+     * Hug the content instead of taking the [MIN_HEIGHT_PERCENTAGE] floor, and lift above the
+     * keyboard when it opens. For short input-led sheets, where the floor would otherwise leave a
+     * band of empty space under a single field. Off by default so existing sheets are unaffected.
+     */
+    wrapContentHeight: Boolean = false,
     @DrawableRes navigationIcon: Int = AlfieIcons.Close,
     onNavigationClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
@@ -103,10 +113,14 @@ fun BottomSheet(
     )
 
     ModalBottomSheet(
-        modifier = modifier.heightIn(
-            min = minModalHeight,
-            max = maxModalHeight
-        ),
+        modifier = if (wrapContentHeight) {
+            modifier
+        } else {
+            modifier.heightIn(
+                min = minModalHeight,
+                max = maxModalHeight
+            )
+        },
         sheetState = sheetState,
         shape = Theme.shape.medium.copy(
             bottomEnd = CornerSize(0.dp),
@@ -116,7 +130,14 @@ fun BottomSheet(
         onDismissRequest = { onDismiss() },
         dragHandle = { }
     ) {
-        Column(Modifier.navigationBarsPadding()) {
+        // union takes the larger inset per edge, so the sheet clears the navigation bar
+        // normally and rides the keyboard when it is up, without stacking both.
+        val insets = if (wrapContentHeight) {
+            Modifier.windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+        } else {
+            Modifier.navigationBarsPadding()
+        }
+        Column(insets) {
             SheetTopBar(
                 title = title,
                 navigationIcon = navigationIcon,

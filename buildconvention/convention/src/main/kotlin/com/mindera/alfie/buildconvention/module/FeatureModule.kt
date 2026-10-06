@@ -11,6 +11,7 @@ object FeatureModule {
         "home",
         "pdp",
         "plp",
+        "scanner",
         "search",
         "shop",
         "startup",

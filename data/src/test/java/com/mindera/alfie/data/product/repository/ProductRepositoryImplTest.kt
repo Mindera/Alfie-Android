@@ -3,9 +3,12 @@ package com.mindera.alfie.data.product.repository
 import com.mindera.alfie.data.product.service.ProductService
 import com.mindera.alfie.graphql.bff.GetProductDetailsQuery
 import com.mindera.alfie.graphql.bff.GetRelatedProductsQuery
+import com.mindera.alfie.graphql.bff.ProductByBarcodeQuery
 import com.mindera.alfie.network.exception.GraphNetworkException
+import com.mindera.alfie.repository.product.model.BarcodeMatch
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.productlist.model.ProductListEntry
+import com.mindera.alfie.repository.result.ErrorType
 import com.mindera.alfie.repository.result.RepositoryResult
 import io.mockk.coEvery
 import io.mockk.every
@@ -18,12 +21,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNotEquals
 
 @ExtendWith(MockKExtension::class)
 internal class ProductRepositoryImplTest {
 
     companion object {
         private const val HANDLE = "camilla-and-marc-patterson-mini-skirt"
+        private const val BARCODE = "5012345678900"
     }
 
     @RelaxedMockK
@@ -105,5 +110,65 @@ internal class ProductRepositoryImplTest {
         val result = subject.getProduct(handle = HANDLE)
 
         assertIs<RepositoryResult.Error>(result)
+    }
+
+    @Test
+    fun `getProductByBarcode - WHEN a product matches THEN returns it mapped`() = runTest {
+        val match = ProductByBarcodeQuery.ProductByBarcode(
+            id = "8",
+            name = "Levi 501",
+            slug = "levi-501-8",
+            variantId = "22"
+        )
+        coEvery { productService.getProductByBarcode(any()) } returns
+            Result.success(ProductByBarcodeQuery.Data(productByBarcode = match))
+
+        val result = subject.getProductByBarcode(barcode = BARCODE)
+
+        assertIs<RepositoryResult.Success<BarcodeMatch>>(result)
+        assertEquals(BarcodeMatch(id = "8", name = "Levi 501", slug = "levi-501-8", variantId = "22"), result.data)
+    }
+
+    // The BFF answers null both when no variant carries the code and when several do; the product
+    // is still the right place to land, so it must survive the missing variant.
+    @Test
+    fun `getProductByBarcode - WHEN no single variant carries the code THEN the product still maps`() = runTest {
+        val match = ProductByBarcodeQuery.ProductByBarcode(
+            id = "8",
+            name = "Levi 501",
+            slug = "levi-501-8",
+            variantId = null
+        )
+        coEvery { productService.getProductByBarcode(any()) } returns
+            Result.success(ProductByBarcodeQuery.Data(productByBarcode = match))
+
+        val result = subject.getProductByBarcode(barcode = BARCODE)
+
+        assertIs<RepositoryResult.Success<BarcodeMatch>>(result)
+        assertEquals(null, result.data.variantId)
+    }
+
+    // An unknown code is not a fault, and the caller needs to tell it apart from one.
+    @Test
+    fun `getProductByBarcode - WHEN nothing matches THEN returns a not-found error`() = runTest {
+        coEvery { productService.getProductByBarcode(any()) } returns
+            Result.success(ProductByBarcodeQuery.Data(productByBarcode = null))
+
+        val result = subject.getProductByBarcode(barcode = BARCODE)
+
+        assertIs<RepositoryResult.Error>(result)
+        assertEquals(ErrorType.RESOURCE_NOT_FOUND, result.errorResult.type)
+    }
+
+    @Test
+    fun `getProductByBarcode - WHEN the query fails THEN returns an error that is not not-found`() = runTest {
+        coEvery { productService.getProductByBarcode(any()) } returns Result.failure(
+            GraphNetworkException.UnexpectedException(message = "Error")
+        )
+
+        val result = subject.getProductByBarcode(barcode = BARCODE)
+
+        assertIs<RepositoryResult.Error>(result)
+        assertNotEquals(ErrorType.RESOURCE_NOT_FOUND, result.errorResult.type)
     }
 }

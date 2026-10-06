@@ -3,6 +3,7 @@ package com.mindera.alfie.data.product.service
 import com.apollographql.apollo.ApolloClient
 import com.mindera.alfie.graphql.bff.GetProductDetailsQuery
 import com.mindera.alfie.graphql.bff.GetRelatedProductsQuery
+import com.mindera.alfie.graphql.bff.ProductByBarcodeQuery
 import com.mindera.alfie.network.extension.unwrap
 import com.mindera.alfie.network.graphql.GraphService
 import javax.inject.Inject
@@ -15,6 +16,11 @@ internal class ProductServiceImpl @Inject constructor(
         handle: String
     ): Result<GetProductDetailsQuery.Data> =
         query(GetProductDetailsQuery(handle = handle)).unwrap()
+
+    override suspend fun getProductByBarcode(
+        barcode: String
+    ): Result<ProductByBarcodeQuery.Data> =
+        query(ProductByBarcodeQuery(barcode = barcode)).unwrap()
 
     override suspend fun getRelatedProducts(
         handle: String,

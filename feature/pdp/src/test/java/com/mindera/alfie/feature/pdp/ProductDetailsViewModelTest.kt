@@ -121,7 +121,7 @@ internal class ProductDetailsViewModelTest {
         every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns productDetailsNavArgs(handle = "test-handle")
 
         coEvery { getProductUseCase(any()) } returns UseCaseResult.Success(product)
-        coEvery { productDetailsUIFactory(any()) } returns productDetailsUI
+        coEvery { productDetailsUIFactory(any(), any()) } returns productDetailsUI
         every { productDetailsUI.copy(isWishlisted = any()) } returns productDetailsUI
 
         coEvery { getRelatedProductsUseCase(any(), any()) } returns UseCaseResult.Success(emptyList())
@@ -147,7 +147,7 @@ internal class ProductDetailsViewModelTest {
         val viewModel = buildViewModel()
         viewModel.uiEvent.test {
             viewModel.handleEvent(event)
-            coVerify { productDetailsUIFactory(product) }
+            coVerify { productDetailsUIFactory(product = product, scannedVariantId = null) }
             assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value)
             cancelAndConsumeRemainingEvents()
         }
@@ -256,7 +256,7 @@ internal class ProductDetailsViewModelTest {
         coEvery { relatedProductsUIFactory(any(), any(), any(), any()) } returns persistentListOf(relatedProduct)
         coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
         // A real instance, so a flip of the product's own flag would be visible in the state.
-        coEvery { productDetailsUIFactory(any()) } returns realProductDetailsUI
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
         val viewModel = buildViewModel()
 
         viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick(relatedProduct.slug))
@@ -292,6 +292,24 @@ internal class ProductDetailsViewModelTest {
 
         coVerify(exactly = 0) { addToWishlistUseCase(any()) }
         coVerify(exactly = 0) { removeWishlistUseCase(any()) }
+    }
+
+    // A PDP opened from a scan carries the scanned variant; the factory is what acts on it.
+    @Test
+    fun `init - GIVEN a scanned variant in the nav args THEN it is handed to the factory`() = runTest {
+        every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns
+            productDetailsNavArgs(handle = "test-handle", variantId = "v3")
+
+        buildViewModel()
+
+        coVerify { productDetailsUIFactory(product = product, scannedVariantId = "v3") }
+    }
+
+    @Test
+    fun `init - GIVEN no scanned variant THEN the factory picks the default`() = runTest {
+        buildViewModel()
+
+        coVerify { productDetailsUIFactory(product = product, scannedVariantId = null) }
     }
 
     private fun buildViewModel() = ProductDetailsViewModel(

@@ -11,6 +11,7 @@ object AlfieIcons {
     val Back = R.drawable.ic_back
     val Bag = R.drawable.ic_bag
     val BagFill = R.drawable.ic_bag__fill_
+    val Bolt = R.drawable.ic_bolt
     val Check = R.drawable.ic_check
     val ChevronDown = R.drawable.ic_chevron_down
     val ChevronLeft = R.drawable.ic_chevron_left
@@ -83,6 +84,7 @@ object AlfieIcons {
     val Refine = R.drawable.ic_refine
     val Refund = R.drawable.ic_refund
     val Return = R.drawable.ic_return
+    val Scan = R.drawable.ic_scan
     val Search = R.drawable.ic_search
     val Settings = R.drawable.ic_settings
     val Share = R.drawable.ic_share
