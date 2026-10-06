@@ -198,7 +198,7 @@ internal class ScannerViewModel @Inject constructor(
         if (isManual || searching == null) return
 
         showSnackbar(
-            SnackbarCustomVisuals(
+            SnackbarCustomVisuals.Snackbar(
                 type = SnackbarType.Error,
                 message = context.getString(lookupError.messageRes()),
                 singleLine = false

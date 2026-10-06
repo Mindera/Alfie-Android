@@ -7,6 +7,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.product.GetProductByBarcodeUseCase
@@ -138,7 +139,7 @@ internal class ScannerViewModelTest {
                 viewModel.handleEvent(ScannerEvent.OnBarcodeDetected(BARCODE))
 
                 val event = assertIs<UIEvent.Base.ShowSnackbar>(awaitItem())
-                assertEquals(SnackbarType.Error, event.visuals.type)
+                assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>(event.visuals).type)
                 assertEquals(NOT_FOUND_COPY, event.visuals.message)
             }
 
