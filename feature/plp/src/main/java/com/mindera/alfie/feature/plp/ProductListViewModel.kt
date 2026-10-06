@@ -289,7 +289,7 @@ internal class ProductListViewModel @Inject constructor(
                         oldState.copy(wishlistIds = revertedIds)
                     }
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
                             message = context.getString(
                                 if (wasWishlisted) DesignR.string.wishlist_error_remove_product else DesignR.string.wishlist_error_add_product

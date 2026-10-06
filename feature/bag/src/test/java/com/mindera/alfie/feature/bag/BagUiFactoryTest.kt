@@ -1,6 +1,7 @@
 package com.mindera.alfie.feature.bag
 
 import com.mindera.alfie.feature.bag.models.BagItemNotice
+import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.repository.bag.BagProduct
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
@@ -218,6 +219,40 @@ class BagUiFactoryTest {
         )
 
         assertEquals(2, content.items.size)
+    }
+
+    @Test
+    fun `invoke - WHEN the variant has no media THEN the line falls back to the product's images`() = runTest {
+        val variantsWithoutMedia = products.map { product ->
+            product.copy(variants = product.variants.map { it.copy(media = emptyList()) })
+        }
+
+        val content = uiFactory(
+            bagProducts = bagProducts,
+            products = variantsWithoutMedia,
+            onProductClick = { }
+        )
+
+        val withImages = variantsWithoutMedia.first { it.images.isNotEmpty() }
+        val line = content.items.first { it.bagProduct.productId == withImages.slug }
+        assertEquals(withImages.images.first().toImageUI(), line.productCardData.image)
+    }
+
+    @Test
+    fun `invoke - WHEN the variant no longer resolves THEN the product's images are not borrowed`() = runTest {
+        val renamedSku = products.map { product ->
+            product.copy(variants = product.variants.map { it.copy(sku = "some-other-sku") })
+        }
+
+        val content = uiFactory(
+            bagProducts = bagProducts,
+            products = renamedSku,
+            onProductClick = { }
+        )
+
+        val withImages = renamedSku.first { it.images.isNotEmpty() }
+        val line = content.items.first { it.bagProduct.productId == withImages.slug }
+        assertEquals(null.toImageUI(), line.productCardData.image)
     }
 
     @Test

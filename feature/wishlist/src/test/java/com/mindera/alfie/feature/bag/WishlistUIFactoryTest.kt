@@ -1,6 +1,7 @@
 package com.mindera.alfie.feature.bag
 
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
+import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.feature.wishlist.WishlistUIFactory
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.junit5.MockKExtension
@@ -85,7 +86,7 @@ class WishlistUIFactoryTest {
     }
 
     @Test
-    fun `WHEN onRemoveClick is provided THEN onRemoveClick on ProductCardType is pre-wired`() = runTest {
+    fun `WHEN onRemoveClick is provided THEN the card's heart is pre-wired to it`() = runTest {
         var invoked = false
 
         val result = uiFactory(
@@ -96,10 +97,30 @@ class WishlistUIFactoryTest {
         )
 
         val vertical = result.first().productCardData as ProductCardType.Vertical
-        assertNotNull(vertical.onRemoveClick)
-        vertical.onRemoveClick!!()
+        // VerticalProductCard draws its heart from onFavoriteClick and never reads onRemoveClick.
+        assertNotNull(vertical.onFavoriteClick)
+        vertical.onFavoriteClick!!()
 
-        assertTrue(invoked, "Expected onRemoveClick to be invoked via ProductCardType.Vertical.onRemoveClick")
+        assertTrue(invoked, "Expected onRemoveClick to be invoked via ProductCardType.Vertical.onFavoriteClick")
+    }
+
+    @Test
+    fun `WHEN the default variant has no media THEN the card falls back to the product's images`() = runTest {
+        val variantWithoutMedia = products.first().let { product ->
+            product.copy(variants = product.variants.map { it.copy(media = emptyList()) })
+        }
+
+        val result = uiFactory(
+            products = listOf(variantWithoutMedia),
+            onRemoveClick = { },
+            onAddToBagClick = { },
+            onProductClick = { }
+        )
+
+        assertEquals(
+            variantWithoutMedia.images.first().toImageUI(),
+            (result.single().productCardData as ProductCardType.Vertical).image
+        )
     }
 
     @Test

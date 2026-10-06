@@ -130,7 +130,7 @@ class UIEventHandlersTest {
 
     @Test
     fun `handle ShowSnackbar`() = runTest {
-        val visuals = SnackbarCustomVisuals(
+        val visuals = SnackbarCustomVisuals.Snackbar(
             type = SnackbarType.Info,
             message = "message",
             actionLabel = null,

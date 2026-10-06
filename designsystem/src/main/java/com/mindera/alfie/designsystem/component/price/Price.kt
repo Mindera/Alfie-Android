@@ -1,20 +1,15 @@
 package com.mindera.alfie.designsystem.component.price
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment.Companion.CenterEnd
-import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import com.mindera.alfie.designsystem.theme.Theme
@@ -28,6 +23,9 @@ private const val PRICE_RANGE_SEPARATOR = "-"
  *
  * Note the DS has **no size axis**; [PriceSize] is an Android-only extension kept because
  * `HorizontalProductCard` needs a denser row. `Medium` is the DS size.
+ *
+ * Nor does it have an orientation axis: ranges and sales always lay out on one row. The stacked
+ * vertical variants predated the modern design and had no Figma counterpart, so they were removed.
  */
 @Composable
 private fun PriceSize.valueStyle(): TextStyle = when (this) {
@@ -49,7 +47,6 @@ fun Price(
     item: PriceType,
     size: PriceSize,
     modifier: Modifier = Modifier,
-    orientation: PriceOrientation = PriceOrientation.Horizontal,
     overrideColor: Color? = null
 ) {
     when (item) {
@@ -62,14 +59,12 @@ fun Price(
         is PriceType.Range -> PriceRange(
             price = item,
             size = size,
-            orientation = orientation,
             overrideColor = overrideColor,
             modifier = modifier
         )
         is PriceType.Sale -> PriceSale(
             price = item,
             size = size,
-            orientation = orientation,
             overrideColor = overrideColor,
             modifier = modifier
         )
@@ -95,7 +90,6 @@ private fun PriceDefault(
 private fun PriceSale(
     price: PriceType.Sale,
     size: PriceSize,
-    orientation: PriceOrientation,
     modifier: Modifier = Modifier,
     overrideColor: Color? = null
 ) {
@@ -103,76 +97,6 @@ private fun PriceSale(
     val fullPriceStyle = size.wasPriceStyle().let { style -> overrideColor?.let { style.copy(color = it) } ?: style }
     val salePriceStyle = size.valueStyle()
         .copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
-    when (orientation) {
-        PriceOrientation.Horizontal -> SaleHorizontal(
-            modifier = modifier,
-            price = price,
-            salePriceStyle = salePriceStyle,
-            fullPriceStyle = fullPriceStyle
-        )
-        PriceOrientation.Vertical -> SaleVertical(
-            modifier = modifier,
-            price = price,
-            salePriceStyle = salePriceStyle,
-            fullPriceStyle = fullPriceStyle
-        )
-    }
-}
-
-@Composable
-private fun PriceRange(
-    price: PriceType.Range,
-    size: PriceSize,
-    orientation: PriceOrientation,
-    modifier: Modifier = Modifier,
-    overrideColor: Color? = null
-) {
-    val style = size.valueStyle().copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
-    when (orientation) {
-        PriceOrientation.Horizontal -> RangeHorizontal(
-            modifier = modifier,
-            price = price,
-            style = style,
-            separatorColor = overrideColor
-        )
-        PriceOrientation.Vertical -> RangeVertical(
-            modifier = modifier,
-            style = style,
-            price = price
-        )
-    }
-}
-
-@Composable
-private fun SaleVertical(
-    price: PriceType.Sale,
-    salePriceStyle: TextStyle,
-    fullPriceStyle: TextStyle,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = End
-    ) {
-        Text(
-            text = price.fullPrice,
-            style = fullPriceStyle
-        )
-        Spacer(modifier = Modifier.height(Theme.spacing.spacing8))
-        Text(
-            text = price.salePrice,
-            style = salePriceStyle
-        )
-    }
-}
-
-@Composable
-private fun SaleHorizontal(
-    price: PriceType.Sale,
-    salePriceStyle: TextStyle,
-    fullPriceStyle: TextStyle,
-    modifier: Modifier = Modifier
-) {
     Row(modifier = modifier) {
         Text(
             text = price.salePrice,
@@ -187,42 +111,13 @@ private fun SaleHorizontal(
 }
 
 @Composable
-private fun RangeVertical(
-    style: TextStyle,
+private fun PriceRange(
     price: PriceType.Range,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier,
-        contentAlignment = CenterEnd
-    ) {
-        Text(
-            text = PRICE_RANGE_SEPARATOR,
-            style = style
-        )
-        Column(horizontalAlignment = End) {
-            Text(
-                text = price.startPrice,
-                textAlign = TextAlign.End,
-                style = style
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing.spacing4))
-            Text(
-                text = price.endPrice,
-                textAlign = TextAlign.End,
-                style = style
-            )
-        }
-    }
-}
-
-@Composable
-private fun RangeHorizontal(
-    price: PriceType.Range,
-    style: TextStyle,
+    size: PriceSize,
     modifier: Modifier = Modifier,
-    separatorColor: Color? = null
+    overrideColor: Color? = null
 ) {
+    val style = size.valueStyle().copy(color = overrideColor ?: LocalTheme.current.color.content.contentPrimary)
     // The DS renders the bounds bold and the separator at regular weight, so this cannot collapse
     // into a single Text. Gap is spacing/spacing-xxs.
     Row(
@@ -233,7 +128,7 @@ private fun RangeHorizontal(
         Text(
             text = PRICE_RANGE_SEPARATOR,
             style = LocalTheme.current.typography.body.medium,
-            color = separatorColor ?: LocalTheme.current.color.content.contentPrimary
+            color = overrideColor ?: LocalTheme.current.color.content.contentPrimary
         )
         Text(text = price.endPrice, style = style)
     }
@@ -253,16 +148,14 @@ private fun PricePreview() {
                     startPrice = "$100",
                     endPrice = "$200"
                 ),
-                size = PriceSize.Medium,
-                orientation = PriceOrientation.Vertical
+                size = PriceSize.Medium
             )
             Price(
                 item = PriceType.Sale(
                     fullPrice = "$100",
                     salePrice = "$50"
                 ),
-                size = PriceSize.Medium,
-                orientation = PriceOrientation.Horizontal
+                size = PriceSize.Medium
             )
         }
     }

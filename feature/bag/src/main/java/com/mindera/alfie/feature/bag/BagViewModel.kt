@@ -133,7 +133,7 @@ internal class BagViewModel @Inject constructor(
             removeAllFromBagUseCase(bagProduct).doOnResult(
                 onSuccess = {
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Success,
                             message = context.getString(R.string.bag_item_removed),
                             actionLabel = context.getString(R.string.bag_item_removed_undo),
@@ -143,7 +143,7 @@ internal class BagViewModel @Inject constructor(
                 },
                 onError = {
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
                             message = context.getString(R.string.bag_item_remove_error)
                         )
@@ -162,7 +162,7 @@ internal class BagViewModel @Inject constructor(
                 onSuccess = { },
                 onError = {
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
                             message = context.getString(R.string.bag_item_restore_error)
                         )
@@ -181,7 +181,7 @@ internal class BagViewModel @Inject constructor(
             addToWishlistUseCase(bagProduct.productId).doOnResult(
                 onSuccess = {
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Success,
                             message = context.getString(R.string.bag_item_saved)
                         )
@@ -189,7 +189,7 @@ internal class BagViewModel @Inject constructor(
                 },
                 onError = {
                     showSnackbar(
-                        SnackbarCustomVisuals(
+                        SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
                             message = context.getString(DesignR.string.wishlist_error_add_product)
                         )
