@@ -52,7 +52,7 @@ fun SnackbarScreen(
     navigator: DestinationsNavigator
 ) {
     val coroutineScope = rememberCoroutineScope()
-    var visuals = SnackbarCustomVisuals(
+    var visuals = SnackbarCustomVisuals.Snackbar(
         type = SnackbarType.Info,
         message = "This is a Snackbar",
         withDismissAction = false,

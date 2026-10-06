@@ -30,7 +30,6 @@ import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.image.Image
 import com.mindera.alfie.designsystem.component.image.ratio.Ratio
 import com.mindera.alfie.designsystem.component.price.Price
-import com.mindera.alfie.designsystem.component.price.PriceOrientation
 import com.mindera.alfie.designsystem.component.price.PriceSize
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.PRICE_PLACEHOLDER_WIDTH
@@ -181,7 +180,6 @@ private fun ProductDescription(
         Price(
             item = productCard.price,
             size = PriceSize.Medium,
-            orientation = PriceOrientation.Vertical,
             modifier = Modifier
                 .shimmer(
                     isShimmering = isLoading,

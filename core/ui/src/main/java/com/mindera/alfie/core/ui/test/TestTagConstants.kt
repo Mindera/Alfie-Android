@@ -47,6 +47,7 @@ const val PRODUCT_QUANTITY = "product-quantity"
 const val BAG_TOTAL = "bag-total"
 const val BAG_CONTINUE_CTA = "bag-continue-cta"
 const val BAG_EMPTY_STATE = "bag-empty-state"
+const val WISHLIST_EMPTY_STATE = "wishlist-empty-state"
 
 // SEGMENTED CONTROLS
 const val SEGMENTED_CONTROL = "segmented-control"

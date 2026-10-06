@@ -41,8 +41,11 @@ class WishlistViewModelTest {
 
     private fun createViewModel() = WishlistViewModel(
         savedStateHandle = savedStateHandle,
-        getWishlistUseCase = mockk(),
+        getWishlistUseCase = mockk(relaxed = true),
         wishlistUiFactory = mockk(),
-        removeFromWishlist = mockk()
+        removeFromWishlist = mockk(),
+        addToWishlist = mockk(),
+        context = mockk(),
+        uiEventEmitterDelegate = mockk(relaxed = true)
     )
 }

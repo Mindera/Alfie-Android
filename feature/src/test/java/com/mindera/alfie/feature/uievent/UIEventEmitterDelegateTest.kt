@@ -126,7 +126,7 @@ class UIEventEmitterDelegateTest {
 
     @Test
     fun `showSnackbar - successfully emits ShowSnackbar event`() = runTest {
-        val visuals = SnackbarCustomVisuals(
+        val visuals = SnackbarCustomVisuals.Snackbar(
             type = SnackbarType.Info,
             message = "message"
         )
