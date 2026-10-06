@@ -73,8 +73,7 @@ internal class ScannerViewModel @Inject constructor(
             ScannerEvent.OnTorchToggle -> updateScanning { it.copy(isTorchOn = !it.isTorchOn) }
             ScannerEvent.OnEnterManuallyClick ->
                 updateScanning { it.copy(manualEntry = "", manualError = null) }
-            ScannerEvent.OnManualEntryDismiss ->
-                updateScanning { it.copy(manualEntry = null, manualError = null) }
+            ScannerEvent.OnManualEntryDismiss -> dismissManualEntry()
             is ScannerEvent.OnManualBarcodeChange ->
                 updateScanning { it.copy(manualEntry = event.value, manualError = null) }
             ScannerEvent.OnManualBarcodeSubmit -> onManualSubmit()
@@ -85,6 +84,22 @@ internal class ScannerViewModel @Inject constructor(
     private fun updateScanning(transform: (ScannerUIState.Scanning) -> ScannerUIState.Scanning) {
         _state.update { current ->
             if (current is ScannerUIState.Scanning) transform(current) else current
+        }
+    }
+
+    /**
+     * The sheet stays up while a typed lookup is in flight, so it can also be dismissed then. That
+     * has to land in the state the lookup will resume to, or the sheet would reopen on failure.
+     */
+    private fun dismissManualEntry() {
+        _state.update { current ->
+            when (current) {
+                is ScannerUIState.Scanning -> current.copy(manualEntry = null, manualError = null)
+                is ScannerUIState.Searching -> current.copy(
+                    resume = current.resume.copy(manualEntry = null, manualError = null)
+                )
+                is ScannerUIState.Error -> current
+            }
         }
     }
 
@@ -116,7 +131,7 @@ internal class ScannerViewModel @Inject constructor(
         viewModelScope.launch {
             getProductByBarcode(barcode = scanned).doOnResult(
                 onSuccess = { match -> openProduct(match) },
-                onError = { error -> onLookupFailed(barcode = scanned, error = error, resume = resume) }
+                onError = { error -> onLookupFailed(barcode = scanned, error = error) }
             )
         }
     }
@@ -156,9 +171,11 @@ internal class ScannerViewModel @Inject constructor(
      *
      * Where the message goes depends on where the code came from. A snackbar is right for a
      * camera scan, but the manual sheet and its keyboard cover the snackbar entirely, so a typed
-     * code is answered on the field itself instead.
+     * code is answered on the field itself instead — as long as the sheet is still open. The
+     * resume state is read at failure time, not at submit, because the sheet can be dismissed
+     * while the lookup is in flight; the answer then falls back to the snackbar.
      */
-    private fun onLookupFailed(barcode: String, error: ErrorResult, resume: ScannerUIState.Scanning) {
+    private fun onLookupFailed(barcode: String, error: ErrorResult) {
         Timber.w(error, "Lookup failed for barcode '%s' (%s)", barcode, error.type)
 
         val lookupError = if (error.type == ErrorType.RESOURCE_NOT_FOUND) {
@@ -166,18 +183,19 @@ internal class ScannerViewModel @Inject constructor(
         } else {
             ScannerLookupError.LookupFailed
         }
-        val isManual = resume.manualEntry != null
+        val searching = _state.value as? ScannerUIState.Searching
+        val isManual = searching?.resume?.manualEntry != null
 
         _state.update { current ->
             when {
                 current !is ScannerUIState.Searching -> current
-                isManual -> resume.copy(manualError = lookupError)
-                else -> resume
+                isManual -> current.resume.copy(manualError = lookupError)
+                else -> current.resume
             }
         }
         isResolving.set(false)
 
-        if (isManual) return
+        if (isManual || searching == null) return
 
         showSnackbar(
             SnackbarCustomVisuals(

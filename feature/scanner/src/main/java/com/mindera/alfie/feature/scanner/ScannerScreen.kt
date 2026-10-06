@@ -126,13 +126,16 @@ private fun ScannerScreenContent(
                 }
             }
 
-            scanning?.manualEntry?.let { typed ->
+            // Rendered from chrome, not scanning, so a typed lookup keeps the sheet — and its
+            // keyboard and focus — on screen while it is in flight, and a failure lands on the
+            // same field. A stale error is not shown while the retry is pending.
+            chrome.manualEntry?.let { typed ->
                 ManualBarcodeSheet(
                     value = typed,
                     onValueChange = { onEvent(ScannerEvent.OnManualBarcodeChange(it)) },
                     onSubmit = { onEvent(ScannerEvent.OnManualBarcodeSubmit) },
                     onDismiss = { onEvent(ScannerEvent.OnManualEntryDismiss) },
-                    errorMessage = scanning.manualError
+                    errorMessage = scanning?.manualError
                         ?.let { stringResource(id = it.messageRes()) }
                 )
             }

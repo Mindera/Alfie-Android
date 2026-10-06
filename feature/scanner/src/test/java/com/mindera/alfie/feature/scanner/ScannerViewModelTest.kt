@@ -26,6 +26,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -434,6 +435,47 @@ internal class ScannerViewModelTest {
                 ScannerUIState.Scanning(manualEntry = OTHER_BARCODE),
                 viewModel.state.value
             )
+        }
+
+    // The screen renders the sheet from the resume state, so this is what keeps it up meanwhile.
+    @Test
+    fun `handleEvent - WHEN a typed lookup is in flight THEN the entry is kept for the sheet`() =
+        runTest {
+            val lookup = CompletableDeferred<UseCaseResult<BarcodeMatch>>()
+            coEvery { getProductByBarcode(any()) } coAnswers { lookup.await() }
+            val viewModel = viewModel()
+
+            viewModel.handleEvent(ScannerEvent.OnEnterManuallyClick)
+            viewModel.handleEvent(ScannerEvent.OnManualBarcodeChange(BARCODE))
+            viewModel.handleEvent(ScannerEvent.OnManualBarcodeSubmit)
+
+            assertEquals(
+                ScannerUIState.Searching(resume = ScannerUIState.Scanning(manualEntry = BARCODE)),
+                viewModel.state.value
+            )
+            lookup.cancel()
+        }
+
+    @Test
+    fun `handleEvent - WHEN the sheet is dismissed mid-lookup and it fails THEN a snackbar says so`() =
+        runTest {
+            val lookup = CompletableDeferred<UseCaseResult<BarcodeMatch>>()
+            coEvery { getProductByBarcode(any()) } coAnswers { lookup.await() }
+            val viewModel = viewModel()
+
+            viewModel.uiEvent.test {
+                viewModel.handleEvent(ScannerEvent.OnEnterManuallyClick)
+                viewModel.handleEvent(ScannerEvent.OnManualBarcodeChange(BARCODE))
+                viewModel.handleEvent(ScannerEvent.OnManualBarcodeSubmit)
+                viewModel.handleEvent(ScannerEvent.OnManualEntryDismiss)
+                lookup.complete(UseCaseResult.Error(ErrorResult(type = ErrorType.RESOURCE_NOT_FOUND)))
+
+                val event = assertIs<UIEvent.Base.ShowSnackbar>(awaitItem())
+                assertEquals(NOT_FOUND_COPY, event.visuals.message)
+            }
+
+            // The sheet stays closed rather than reopening to carry the error.
+            assertEquals(ScannerUIState.Scanning(), viewModel.state.value)
         }
 
     @Test

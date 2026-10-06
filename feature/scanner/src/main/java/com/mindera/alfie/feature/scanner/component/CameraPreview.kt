@@ -10,9 +10,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.google.common.util.concurrent.ListenableFuture
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.suspendCancellableCoroutine
 import timber.log.Timber
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * CameraX preview with a frame analyzer, hosted in Compose.
@@ -67,11 +75,19 @@ internal fun CameraPreview(
     }
 
     LaunchedEffect(Unit) {
-        // Throws on a device with no usable camera, which is the CameraUnavailable path.
         runCatching {
             controller.bindToLifecycle(lifecycleOwner)
             previewView.controller = controller
+            // A fresh controller resolves its camera provider asynchronously, so the bind above
+            // only records the owner and cannot fail. A device with no usable camera surfaces
+            // here instead: the provider fails to initialise, or it has no camera to select.
+            controller.initializationFuture.await(ContextCompat.getMainExecutor(context))
+            check(controller.hasCamera(controller.cameraSelector)) {
+                "No camera matches ${controller.cameraSelector}"
+            }
         }.onFailure { throwable ->
+            // Leaving the screen mid-initialisation is not a camera failure.
+            if (throwable is CancellationException) throw throwable
             Timber.e(throwable, "Failed to bind the camera")
             onBindFailure(throwable)
         }
@@ -100,4 +116,23 @@ internal fun CameraPreview(
     }
 
     AndroidView(factory = { previewView }, modifier = modifier)
+}
+
+/** Suspends until the future completes, rethrowing its failure rather than the wrapping one. */
+private suspend fun ListenableFuture<*>.await(executor: Executor) {
+    suspendCancellableCoroutine { continuation ->
+        addListener(
+            {
+                try {
+                    get()
+                    continuation.resume(Unit)
+                } catch (failure: ExecutionException) {
+                    continuation.resumeWithException(failure.cause ?: failure)
+                } catch (cancelled: CancellationException) {
+                    continuation.cancel(cancelled)
+                }
+            },
+            executor
+        )
+    }
 }
