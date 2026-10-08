@@ -7,7 +7,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.navigate
+import androidx.navigation.navOptions as buildNavOptions
 
 @Composable
 fun UIEventEmitter.handleUIEvents(
@@ -81,7 +81,7 @@ fun UIEvent.Base.NavigateToDirection.handle(
 ) {
     navigator.navigate(
         direction = direction,
-        builder = navOptions
+        navOptions = buildNavOptions(navOptions)
     )
 }
 
@@ -89,8 +89,8 @@ fun UIEvent.Base.NavigateToDirection.handle(
     navController: NavController
 ) {
     navController.navigate(
-        direction = direction,
-        navOptionsBuilder = navOptions
+        route = direction.route,
+        builder = navOptions
     )
 }
 
@@ -101,7 +101,7 @@ fun UIEvent.Base.NavigateToScreen.handle(
     val direction = directionProvider.fromScreen(screen)
     navigator.navigate(
         direction = direction,
-        builder = navOptions
+        navOptions = buildNavOptions(navOptions)
     )
 }
 
@@ -111,8 +111,8 @@ fun UIEvent.Base.NavigateToScreen.handle(
 ) {
     val direction = directionProvider.fromScreen(screen)
     navController.navigate(
-        direction = direction,
-        navOptionsBuilder = navOptions
+        route = direction.route,
+        builder = navOptions
     )
 }
 
@@ -124,8 +124,8 @@ fun UIEvent.Base.NavigateToDirectionClearingStack.handle(
         inclusive = this.clearStartDestination
     )
     navController.navigate(
-        direction = this.direction,
-        navOptionsBuilder = {
+        route = this.direction.route,
+        builder = {
             launchSingleTop = this@handle.launchSingleTop
             restoreState = this@handle.restoreState
             popUpTo(navController.graph.findStartDestination().id) {
@@ -146,8 +146,8 @@ fun UIEvent.Base.NavigateToScreenClearingStack.handle(
         inclusive = this.clearStartDestination
     )
     navController.navigate(
-        direction = direction,
-        navOptionsBuilder = {
+        route = direction.route,
+        builder = {
             launchSingleTop = this@handle.launchSingleTop
             restoreState = this@handle.restoreState
             popUpTo(navController.graph.findStartDestination().id) {
