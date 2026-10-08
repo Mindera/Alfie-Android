@@ -10,7 +10,6 @@ import com.mindera.alfie.designsystem.component.snackbar.SnackbarPriority
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarTimeDuration
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.spec.Direction
 import io.mockk.coVerify
 import io.mockk.every
@@ -40,7 +39,7 @@ class UIEventHandlersTest {
     @Test
     fun `handle NavigateToDirection`() = runTest {
         val direction = mockk<Direction>()
-        val navOptions: NavOptionsBuilder.() -> Unit = {}
+        val navOptions: NavOptionsBuilder.() -> Unit = { launchSingleTop = true }
         val event = UIEvent.Base.NavigateToDirection(
             direction = direction,
             navOptions = navOptions
@@ -48,7 +47,7 @@ class UIEventHandlersTest {
 
         event.handle()
 
-        verify { navigator.navigate(direction, any(), navOptions) }
+        verify { navigator.navigate(direction, match { it.shouldLaunchSingleTop() }, any()) }
     }
 
     @Test
@@ -56,7 +55,7 @@ class UIEventHandlersTest {
         val screen = mockk<Screen>()
         val direction = mockk<Direction>()
         every { directionProvider.fromScreen(screen) } returns direction
-        val navOptions: NavOptionsBuilder.() -> Unit = {}
+        val navOptions: NavOptionsBuilder.() -> Unit = { launchSingleTop = true }
         val event = UIEvent.Base.NavigateToScreen(
             screen = screen,
             navOptions = navOptions
@@ -64,7 +63,7 @@ class UIEventHandlersTest {
 
         event.handle()
 
-        verify { navigator.navigate(direction, any(), navOptions) }
+        verify { navigator.navigate(direction, match { it.shouldLaunchSingleTop() }, any()) }
     }
 
     @Test
@@ -86,8 +85,8 @@ class UIEventHandlersTest {
                 inclusive = any()
             )
             navController.navigate(
-                direction = direction,
-                navOptionsBuilder = any()
+                route = direction.route,
+                builder = any()
             )
         }
     }
@@ -113,8 +112,8 @@ class UIEventHandlersTest {
                 inclusive = any()
             )
             navController.navigate(
-                direction = direction,
-                navOptionsBuilder = any()
+                route = direction.route,
+                builder = any()
             )
         }
     }

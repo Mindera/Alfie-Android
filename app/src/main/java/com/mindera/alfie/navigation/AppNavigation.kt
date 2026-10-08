@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material.navigation.ModalBottomSheetLayout
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,9 +25,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.plusAssign
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.mindera.alfie.core.deeplink.DeeplinkHandler
 import com.mindera.alfie.core.deeplink.DeeplinkResult
 import com.mindera.alfie.core.navigation.DirectionProvider
@@ -50,14 +49,10 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
-import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
 import kotlinx.coroutines.launch
 
-@OptIn(
-    ExperimentalMaterialNavigationApi::class,
-    ExperimentalComposeUiApi::class
-)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppNavigation(
     startDestination: Screen,
@@ -79,8 +74,8 @@ fun AppNavigation(
             when (result) {
                 is DeeplinkResult.NavigateTo -> {
                     navController.navigate(
-                        direction = result.direction,
-                        navOptionsBuilder = result.navOptions
+                        route = result.direction.route,
+                        builder = result.navOptions
                     )
                 }
 
@@ -90,8 +85,8 @@ fun AppNavigation(
                         inclusive = result.clearStartDestination
                     )
                     navController.navigate(
-                        direction = result.direction,
-                        navOptionsBuilder = {
+                        route = result.direction.route,
+                        builder = {
                             launchSingleTop = result.launchSingleTop
                             restoreState = result.restoreState
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -104,7 +99,7 @@ fun AppNavigation(
 
                 is DeeplinkResult.Unresolved -> {
                     navController.navigate(
-                        direction = WebViewScreenDestination(webViewNavArgs(url = result.url))
+                        route = WebViewScreenDestination(webViewNavArgs(url = result.url)).route
                     )
                 }
 
@@ -235,7 +230,7 @@ private fun BottomBarScaffold(
                 onItemClick = { _, item ->
                     (item as? BottomBarDestination)?.let {
                         val keepState = item.shouldRestore(currentDestination)
-                        navController.navigate(item.direction) {
+                        navController.navigate(item.direction.route) {
                             launchSingleTop = true
                             restoreState = keepState
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -264,7 +259,7 @@ private fun BottomBarScaffold(
     }
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun NavHostContent(
     paddingValues: PaddingValues,
