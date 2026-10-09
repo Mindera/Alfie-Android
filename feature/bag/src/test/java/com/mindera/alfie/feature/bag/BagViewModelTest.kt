@@ -184,7 +184,7 @@ internal class BagViewModelTest {
             viewModel.onRemoveClicked(bagProduct = bagProducts[0], quantity = 3)
 
             val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
-            assertEquals(SnackbarType.Success, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
+            assertIs<SnackbarCustomVisuals.Toast>(visuals)
             visuals.onActionClick()
             delay(300)
 

@@ -30,7 +30,6 @@ import com.mindera.alfie.designsystem.component.button.ButtonSize
 import com.mindera.alfie.designsystem.component.button.ButtonType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
-import com.mindera.alfie.designsystem.component.snackbar.SnackbarPriority.HIGH
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarTimeDuration.INDEFINITE
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarTimeDuration.SHORT
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
@@ -56,7 +55,6 @@ fun SnackbarScreen(
         type = SnackbarType.Info,
         message = "This is a Snackbar",
         withDismissAction = false,
-        priority = HIGH,
         timeDuration = SHORT
     )
 
