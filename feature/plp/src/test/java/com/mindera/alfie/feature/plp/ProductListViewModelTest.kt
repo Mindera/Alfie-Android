@@ -11,6 +11,7 @@ import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListType
 import com.mindera.alfie.core.test.CoroutineExtension
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.productlist.GetPaginatedProductListUseCase
 import com.mindera.alfie.domain.usecase.productlist.GetProductListLayoutModeUseCase
@@ -22,6 +23,7 @@ import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
 import com.mindera.alfie.feature.plp.factory.ProductListEntryUIFactory
 import com.mindera.alfie.feature.plp.factory.ProductListUIFactory
 import com.mindera.alfie.feature.plp.model.ProductListEvent
+import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
@@ -33,6 +35,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.invoke
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -40,6 +43,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -341,8 +345,27 @@ class ProductListViewModelTest {
         }
     }
 
+    @Test
+    fun `onFavoriteClick - WHEN adding succeeds THEN a toast links to the Wishlist`() = runTest {
+        val onFavoriteClick = slot<() -> Unit>()
+        coEvery { entryUiFactory(products[0], capture(onFavoriteClick), any()) } returns productsVerticalUI[0]
+        coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+        val viewModel = buildViewModel(emitter = UIEventEmitterDelegate())
+        viewModel.productPager.asSnapshot()
+
+        viewModel.uiEvent.test {
+            onFavoriteClick.captured()
+
+            val toast = assertIs<SnackbarCustomVisuals.Toast>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals)
+            toast.onActionClick()
+            assertIs<Screen.Wishlist>((awaitItem() as UIEvent.Base.NavigateToScreen).screen)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
     private fun buildViewModel(
-        type: ProductListType = ProductListType.Category.Slug("women")
+        type: ProductListType = ProductListType.Category.Slug("women"),
+        emitter: UIEventEmitterDelegate = uiEventEmitterDelegate
     ) = ProductListViewModel(
         savedStateHandle = SavedStateHandle(mapOf("type" to type)),
         getPaginatedProductList = getPaginatedProductListUseCase,
@@ -351,7 +374,7 @@ class ProductListViewModelTest {
         updateProductListLayoutMode = updateProductListLayoutModeUseCase,
         productListEntryUIFactory = entryUiFactory,
         productListUIFactory = productListUIFactory,
-        uiEventEmitterDelegate = uiEventEmitterDelegate,
+        uiEventEmitterDelegate = emitter,
         addToWishlistUseCase = addToWishlistUseCase,
         removeWishlistUseCase = removeFromWishlistUseCase,
         getWishlistIds = getWishlistIdsUseCase,
