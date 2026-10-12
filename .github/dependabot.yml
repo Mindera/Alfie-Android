@@ -22,7 +22,7 @@ updates:
       timezone: Europe/Lisbon
     open-pull-requests-limit: 10
     assignees:
-      - hoangnhatdrk
+      - nhathoang-mindera
     labels:
       - dependencies
       - gradle
@@ -69,7 +69,7 @@ updates:
       timezone: Europe/Lisbon
     open-pull-requests-limit: 5
     assignees:
-      - hoangnhatdrk
+      - nhathoang-mindera
     labels:
       - dependencies
       - github-actions
