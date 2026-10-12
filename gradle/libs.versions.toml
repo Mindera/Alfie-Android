@@ -6,7 +6,6 @@ androidx-splash = "1.0.1"
 androidx-test-ext-junit = "1.2.1"
 apollo = "4.4.3"
 appcompat = "1.7.0"
-# Highest CameraX line for compileSdk 35; 1.6.x declares minCompileSdk 36.
 camera = "1.5.3"
 browser = "1.8.0"
 chucker = "4.0.0"
