@@ -12,6 +12,7 @@ import androidx.paging.map
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productlist.ProductListNavArgs
+import com.mindera.alfie.core.navigation.arguments.wishlist.wishlistNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
@@ -29,6 +30,7 @@ import com.mindera.alfie.feature.plp.factory.ProductListUIFactory
 import com.mindera.alfie.feature.plp.model.ProductListEntryUI
 import com.mindera.alfie.feature.plp.model.ProductListEvent
 import com.mindera.alfie.feature.plp.model.ProductListUI
+import com.mindera.alfie.feature.snackbar.ActionToast
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.productlist.model.ProductListFilter
@@ -282,7 +284,15 @@ internal class ProductListViewModel @Inject constructor(
             val result = if (wasWishlisted) removeWishlistUseCase(productId) else addToWishlistUseCase(productId)
 
             result.doOnResult(
-                onSuccess = {},
+                onSuccess = {
+                    showSnackbar(
+                        ActionToast.wishlistUpdated(
+                            context = context,
+                            added = !wasWishlisted,
+                            onViewWishlist = { navigateTo(screen = Screen.Wishlist(args = wishlistNavArgs())) }
+                        )
+                    )
+                },
                 onError = {
                     _state.update { oldState ->
                         val revertedIds = if (wasWishlisted) oldState.wishlistIds + productId else oldState.wishlistIds - productId

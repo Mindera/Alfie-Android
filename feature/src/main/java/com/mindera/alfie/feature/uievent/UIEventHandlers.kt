@@ -2,12 +2,16 @@ package com.mindera.alfie.feature.uievent
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.navigate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 @Composable
 fun UIEventEmitter.handleUIEvents(
@@ -18,8 +22,9 @@ fun UIEventEmitter.handleUIEvents(
     onCustomEvent: (UIEvent.Custom) -> Unit = { },
     onBaseEventOverride: ((UIEvent.Base) -> Unit)? = null
 ) {
+    val snackbarScope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        uiEvent.collect { uiEvent ->
+        uiEvent.collectUIEvents(snackbarScope = snackbarScope) { uiEvent ->
             uiEvent.handleUIEvent(
                 navigator = navigator,
                 navController = navController,
@@ -28,6 +33,29 @@ fun UIEventEmitter.handleUIEvents(
                 onCustomEvent = onCustomEvent,
                 onBaseEventOverride = onBaseEventOverride
             )
+        }
+    }
+}
+
+/**
+ * Hands each event to [handle] in order, except snackbars, which are handled in [snackbarScope].
+ *
+ * Showing a snackbar suspends for as long as it is on screen — up to its full duration when the
+ * shopper leaves it alone. [UIEventEmitter.uiEvent] is an unbuffered SharedFlow, so an emit does
+ * not complete until this collector takes it; handling a snackbar inline would hold every event
+ * emitted meanwhile, including the navigation the snackbar's own action emits ("View Wishlist"
+ * left the shopper in place until the toast timed out). AppNavigation launches its deeplink-error
+ * snackbars separately for the same reason.
+ */
+internal suspend fun Flow<UIEvent>.collectUIEvents(
+    snackbarScope: CoroutineScope,
+    handle: suspend (UIEvent) -> Unit
+) {
+    collect { uiEvent ->
+        if (uiEvent is UIEvent.Base.ShowSnackbar) {
+            snackbarScope.launch { handle(uiEvent) }
+        } else {
+            handle(uiEvent)
         }
     }
 }

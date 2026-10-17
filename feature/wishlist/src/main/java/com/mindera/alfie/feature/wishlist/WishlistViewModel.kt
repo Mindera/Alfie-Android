@@ -14,6 +14,7 @@ import com.mindera.alfie.domain.doOnResult
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.GetWishlistUseCase
 import com.mindera.alfie.domain.usecase.wishlist.RemoveFromWishlistUseCase
+import com.mindera.alfie.feature.snackbar.ActionToast
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.feature.wishlist.WishlistUiState.Data.Loading
@@ -90,13 +91,7 @@ class WishlistViewModel @Inject constructor(
         viewModelScope.launch {
             removeFromWishlist(product.slug).doOnResult(
                 onSuccess = {
-                    showSnackbar(
-                        SnackbarCustomVisuals.Toast(
-                            message = context.getString(R.string.wishlist_item_removed),
-                            actionLabel = context.getString(R.string.wishlist_item_removed_undo),
-                            onActionClick = { undoRemove(product) }
-                        )
-                    )
+                    showSnackbar(ActionToast.removed(context = context, onUndo = { undoRemove(product) }))
                 },
                 onError = { showError(DesignR.string.wishlist_error_remove_product) }
             )
