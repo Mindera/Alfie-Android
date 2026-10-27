@@ -6,8 +6,9 @@ import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 /**
  * Maps each [ProductListType] to the BFF query source that backs the list.
  *
- * [ProductListType.Search] threads its term straight through to `searchProducts`. Every other
- * type uses its own slug/id directly as the collection handle for the `productList` query.
+ * [ProductListType.Search] threads its term straight through to `searchProducts`, and
+ * [ProductListType.Brand.Key] lists a suggested brand by its key. Every other type uses its own
+ * slug/id directly as the collection handle for the `productList` query.
  */
 internal fun ProductListType.toQuerySource(): ProductListQuerySource =
     when (this) {
@@ -16,6 +17,7 @@ internal fun ProductListType.toQuerySource(): ProductListQuerySource =
         is ProductListType.Category.Id -> ProductListQuerySource.Collection(handle = id)
         is ProductListType.Brand.Slug -> ProductListQuerySource.Collection(handle = slug)
         is ProductListType.Brand.Id -> ProductListQuerySource.Collection(handle = id)
+        is ProductListType.Brand.Key -> ProductListQuerySource.Brand(key = key, name = name)
     }
 
 /**
@@ -27,5 +29,6 @@ internal val ProductListType.displayTitle: String
         is ProductListType.Category.Id -> id
         is ProductListType.Brand.Slug -> slug
         is ProductListType.Brand.Id -> id
+        is ProductListType.Brand.Key -> name
         is ProductListType.Search -> query
     }

@@ -267,6 +267,11 @@ type OmniProduct {
 
   seo: Seo
 
+  """
+  Where the PDP "Size Guide" link points. Null means no size guide is configured for this product's category or brand — hide the link rather than falling back to a default. Only populated by productDetails: this is always null on search, listing and related-product responses, which do not fetch it.
+  """
+  sizeGuideUrl: String
+
   slug: String!
 
   tags: [String]
@@ -356,6 +361,9 @@ type ProductVariant {
 
   inventory: Inventory
 
+  """
+  The Variant image: a photo the platform ties to this one variant. At most one image, and usually empty; null and [] both mean no Variant image. This is not a gallery — use OmniProduct.images for the Gallery. Some platforms (Shopify) return the product's featured image when the variant has none, so its presence does not mean it is variant-specific.
+  """
   media: [Image]
 
   optionValues: [VariantOption!]!
@@ -395,6 +403,8 @@ type Query {
   relatedProducts(handle: String!, limit: Int! = 8): [OmniProduct!]!
 
   searchProducts(after: String, filters: ProductFilterInput, limit: Int! = 10, searchTerm: String!, sort: ProductSortEnum! = NEWEST): ProductListResponse!
+
+  suggestion("Maximum results per suggestion type: up to this many brands, keywords and products each. Clamped to 1..20; a platform may return fewer." limit: Int! = 6, query: String!): Suggestion!
 }
 
 type Seo {
@@ -409,6 +419,45 @@ type Seo {
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
 """
 scalar String
+
+type Suggestion {
+  brands: [SuggestionBrand!]!
+
+  keywords: [SuggestionKeyword!]!
+
+  products: [SuggestionProduct!]!
+}
+
+type SuggestionBrand {
+  """
+  Opaque brand key, resolved per platform: pass it to `filters.brandNames` to list the brand. Not URL-safe on every platform; URL-encode it for deeplinks.
+  """
+  key: String!
+
+  results: Int
+
+  value: String!
+}
+
+type SuggestionKeyword {
+  results: Int
+
+  value: String!
+}
+
+type SuggestionProduct {
+  brandName: String
+
+  id: ID!
+
+  images: [Image!]!
+
+  name: String!
+
+  price: Money
+
+  slug: String!
+}
 
 input UpdateCartInput {
   cartId: ID!

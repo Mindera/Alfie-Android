@@ -6,6 +6,9 @@ import com.mindera.alfie.data.search.listRecentSearch
 import com.mindera.alfie.data.search.listRecentSearchEntity
 import com.mindera.alfie.data.search.mapper.toDomain
 import com.mindera.alfie.data.search.mapper.toEntity
+import com.mindera.alfie.data.search.service.SearchService
+import com.mindera.alfie.graphql.bff.SearchSuggestionsQuery
+import com.mindera.alfie.repository.result.RepositoryResult
 import com.mindera.alfie.repository.search.model.RecentSearch
 import io.mockk.coEvery
 import io.mockk.coJustRun
@@ -19,12 +22,16 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 @ExtendWith(MockKExtension::class)
 internal class SearchRepositoryImplTest {
 
     @MockK
     private lateinit var recentSearchDao: RecentSearchDao
+
+    @MockK
+    private lateinit var searchService: SearchService
 
     @InjectMockKs
     private lateinit var subject: SearchRepositoryImpl
@@ -84,5 +91,31 @@ internal class SearchRepositoryImplTest {
         subject.clearRecentSearches()
 
         coVerify { recentSearchDao.clearRecentSearches() }
+    }
+
+    @Test
+    fun `WHEN getSearchSuggestions succeeds THEN map the suggestion to domain`() = runTest {
+        val data = SearchSuggestionsQuery.Data(
+            suggestion = SearchSuggestionsQuery.Suggestion(
+                brands = listOf(SearchSuggestionsQuery.Brand(key = "Kashmere", value = "Kashmere", results = null)),
+                keywords = emptyList(),
+                products = emptyList()
+            )
+        )
+        coEvery { searchService.getSearchSuggestions(query = "ka", limit = 6) } returns Result.success(data)
+
+        val result = subject.getSearchSuggestions(query = "ka", limit = 6)
+
+        assertIs<RepositoryResult.Success<*>>(result)
+        assertEquals(data.suggestion.toDomain(), result.data)
+    }
+
+    @Test
+    fun `WHEN getSearchSuggestions fails THEN return error`() = runTest {
+        coEvery { searchService.getSearchSuggestions(any(), any()) } returns Result.failure(RuntimeException())
+
+        val result = subject.getSearchSuggestions(query = "ka", limit = 6)
+
+        assertIs<RepositoryResult.Error>(result)
     }
 }

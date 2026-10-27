@@ -7,6 +7,7 @@ import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.graphql.bff.SearchProductsQuery
 import com.mindera.alfie.graphql.bff.fragment.ProductListResponseFragment
 import com.mindera.alfie.repository.productlist.model.ProductList
+import com.mindera.alfie.repository.productlist.model.ProductListFilter
 import com.mindera.alfie.repository.productlist.model.ProductListLayoutMode
 import com.mindera.alfie.repository.productlist.model.ProductListQuerySource
 import com.mindera.alfie.repository.productlist.model.ProductSortOption
@@ -94,6 +95,32 @@ class ProductListRepositoryImplTest {
         assertIs<RepositoryResult.Success<ProductList>>(result)
         assertEquals("next-cursor", result.data.pagination.endCursor)
         assertEquals(7, result.data.pagination.totalCount)
+    }
+
+    @Test
+    fun `getProductList - WHEN source is brand THEN searches the brand name pinned to its key`() = runTest {
+        coEvery { productListService.searchProducts(any(), any(), any(), any(), any()) } returns Result.success(mockk(relaxed = true))
+
+        repository.getProductList(
+            after = null,
+            source = ProductListQuerySource.Brand(key = "Kashmere", name = "Kashmere"),
+            filters = ProductListFilter(brandNames = listOf("Other"), minPrice = 10.0),
+            sort = ProductSortOption.RECOMMENDED,
+            limit = 15
+        )
+
+        coVerify {
+            productListService.searchProducts(
+                after = null,
+                searchTerm = "Kashmere",
+                filters = match { filter ->
+                    val input = filter.getOrNull()
+                    input?.brandNames?.getOrNull() == listOf("Kashmere") && input.minPrice.getOrNull() == 10.0
+                },
+                sort = any(),
+                limit = 15
+            )
+        }
     }
 
     @Test

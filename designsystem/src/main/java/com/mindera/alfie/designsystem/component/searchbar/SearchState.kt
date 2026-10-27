@@ -51,6 +51,8 @@ class SearchState internal constructor(
 
     private var onSearchActionListener: ClickEventOneArg<String>? = null
 
+    private var onSearchTermChangeListener: ClickEventOneArg<String>? = null
+
     fun invertSearchOpenState() {
         if (isSearchOpen.not()) updateSearchTerm("")
         isSearchOpen = !isSearchOpen
@@ -67,6 +69,7 @@ class SearchState internal constructor(
     fun updateSearchTerm(searchText: String) {
         searchTerm = searchText
         onSearchTermChange(searchText)
+        onSearchTermChangeListener?.invoke(searchText)
     }
 
     fun onSearchAction() {
@@ -78,5 +81,14 @@ class SearchState internal constructor(
 
     fun setOnSearchAction(listener: ClickEventOneArg<String>) {
         onSearchActionListener = listener
+    }
+
+    /**
+     * Registers a listener for every term change, alongside the `onSearchTermChange` given to
+     * [rememberSearchState]. Lets a consumer that does not own the state, such as the search
+     * overlay, follow what is typed.
+     */
+    fun setOnSearchTermChange(listener: ClickEventOneArg<String>) {
+        onSearchTermChangeListener = listener
     }
 }
