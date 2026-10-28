@@ -22,9 +22,8 @@ import com.mindera.alfie.designsystem.component.topbar.TopBarTitle
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.ramcosta.composedestinations.annotation.Destination
-import okhttp3.internal.immutableListOf
 
-private val prices: List<PriceType> = immutableListOf(
+private val prices: List<PriceType> = listOf(
     PriceType.Default(
         price = "$100"
     ),
