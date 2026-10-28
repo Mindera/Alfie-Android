@@ -49,6 +49,13 @@ updates:
         update-types:
           - version-update:semver-minor
           - version-update:semver-major
+      # Held at 1.10.x until ALFMOB-557. 1.11 removed the NavController navigate extensions and
+      # changed the nav-options builder type, which breaks the UIEvent navigation handlers. Left in
+      # the group, it fails the whole minor-and-patch PR. Remove this entry with the migration.
+      - dependency-name: "io.github.raamcosta.compose-destinations:*"
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: "/"
