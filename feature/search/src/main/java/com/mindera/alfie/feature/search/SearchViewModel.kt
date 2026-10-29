@@ -91,8 +91,8 @@ internal class SearchViewModel @Inject constructor(
     }
 
     /**
-     * Cancelling the previous job on every call is what keeps a slow response for an older term
-     * from overwriting the suggestions for what is typed now.
+     * Every new term replaces what is on screen with a spinner straight away, so suggestions
+     * for an older term are never left up to be tapped, and cancels the previous request.
      */
     private fun loadSuggestions(debounce: Boolean) {
         suggestionsJob?.cancel()
@@ -102,16 +102,13 @@ internal class SearchViewModel @Inject constructor(
             return
         }
 
+        _state.value = SearchUIState.Loading
         suggestionsJob = viewModelScope.launch {
-            // Keeps the current suggestions on screen while typing on, instead of flashing a loader.
-            if (state.value !is SearchUIState.Loaded) {
-                _state.value = SearchUIState.Loading
-            }
             if (debounce) delay(TYPING_DEBOUNCE_TIME)
 
             getSearchSuggestions(query = term, limit = SUGGESTION_LIMIT).doOnResult(
                 onSuccess = { suggestions ->
-                    _state.value = if (suggestions.isEmpty()) {
+                    val newState = if (suggestions.isEmpty()) {
                         SearchUIState.NoResults(searchTerm = term)
                     } else {
                         SearchUIState.Loaded(
@@ -122,12 +119,25 @@ internal class SearchViewModel @Inject constructor(
                             )
                         )
                     }
+                    showIfCurrent(term = term, state = newState)
                 },
                 onError = {
-                    _state.value = SearchUIState.Error(searchTerm = term)
+                    showIfCurrent(term = term, state = SearchUIState.Error(searchTerm = term))
                 }
             )
         }
+    }
+
+    /**
+     * Cancelling the job already stops a superseded request, but only because `unwrap` hops
+     * dispatchers and so can't resume a cancelled caller: it catches the CancellationException
+     * itself. This keeps a result for an older term, success or error, off the screen regardless.
+     */
+    private fun showIfCurrent(
+        term: String,
+        state: SearchUIState
+    ) {
+        if (term == searchTerm) _state.value = state
     }
 
     private fun handleOnSearchAction(searchTerm: String) {
@@ -154,9 +164,10 @@ internal class SearchViewModel @Inject constructor(
         )
     }
 
+    /** Searches what is typed now, not the term the shown suggestions were fetched for. */
     private fun handleMoreProductsClick() {
-        (state.value as? SearchUIState.Loaded)?.let { loadedState ->
-            navigateToQuery(searchTerm = loadedState.searchUI.searchTerm)
+        if (searchTerm.isNotEmpty()) {
+            navigateToQuery(searchTerm = searchTerm)
         }
     }
 

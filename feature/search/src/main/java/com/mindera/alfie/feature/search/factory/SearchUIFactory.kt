@@ -24,11 +24,22 @@ internal class SearchUIFactory @Inject constructor(
         searchSuggestions: SearchSuggestions,
         onProductClick: ClickEventOneArg<String>
     ): SearchUI = withContext(dispatcher.default()) {
+        // The overlay keys its list items on these values, and a repeated key crashes a
+        // LazyColumn. The BFF doesn't promise uniqueness, so duplicates are dropped here.
         SearchUI(
             searchTerm = searchTerm,
-            keywords = searchSuggestions.keywords.map { it.toUI() }.toImmutableList(),
-            brands = searchSuggestions.brands.map { it.toUI() }.toImmutableList(),
-            products = searchSuggestions.products.map { it.toUI(onProductClick) }.toImmutableList()
+            keywords = searchSuggestions.keywords
+                .distinctBy { it.value.lowercase() }
+                .map { it.toUI() }
+                .toImmutableList(),
+            brands = searchSuggestions.brands
+                .distinctBy { it.key }
+                .map { it.toUI() }
+                .toImmutableList(),
+            products = searchSuggestions.products
+                .distinctBy { it.id }
+                .map { it.toUI(onProductClick) }
+                .toImmutableList()
         )
     }
 
@@ -46,8 +57,8 @@ internal class SearchUIFactory @Inject constructor(
             image = images.firstOrNull().toImageUI(),
             brand = brandName.orEmpty(),
             name = name,
-            // The BFF marks price optional; an unpriced suggestion renders a blank price line.
-            price = PriceType.Default(price = price?.amountFormatted.orEmpty()),
+            // The BFF marks price optional; an unpriced suggestion leaves the price row out.
+            price = price?.let { PriceType.Default(price = it.amountFormatted) },
             onClick = { onProductClick(slug) }
         )
     )

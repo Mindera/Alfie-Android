@@ -296,16 +296,51 @@ internal class SearchViewModelTest {
     }
 
     @Test
-    fun `WHEN handleEvent GIVEN OnMoreProductsClick THEN navigates to search PLP for the loaded term`() = runTest {
+    fun `WHEN handleEvent GIVEN OnMoreProductsClick THEN navigates to search PLP for the typed term`() = runTest {
         coEvery { getSearchSuggestions(any(), any()) } returns UseCaseResult.Success(searchSuggestions)
-        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI(searchTerm = "shirt")
-        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "shirt"))
+        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI(searchTerm = "sh")
+        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "sh"))
         advanceUntilIdle()
 
+        // Typed on, but the debounce hasn't fired yet.
+        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "shoes"))
         viewModel.handleEvent(SearchEvent.OnMoreProductsClick)
 
         viewModel.run {
-            verify { navigateTo(screen = Screen.ProductList(productListNavArgs(ProductListType.Search("shirt")))) }
+            verify { navigateTo(screen = Screen.ProductList(productListNavArgs(ProductListType.Search("shoes")))) }
         }
+        coVerify { saveRecentSearch(RecentSearch.Query(searchTerm = "shoes")) }
+    }
+
+    @Test
+    fun `WHEN handleEvent GIVEN OnUpdateSearchTerm while suggestions are shown THEN replaces them with Loading at once`() = runTest {
+        coEvery { getSearchSuggestions(any(), any()) } returns UseCaseResult.Success(searchSuggestions)
+        coEvery { searchUIFactory(any(), any(), any()) } returns searchUI(searchTerm = "sh")
+        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "sh"))
+        advanceUntilIdle()
+        assertIs<SearchUIState.Loaded>(viewModel.state.value)
+
+        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "shi"))
+
+        assertEquals(SearchUIState.Loading, viewModel.state.value)
+    }
+
+    @Test
+    fun `WHEN a request for an older term fails after the term changed THEN its error is never shown`() = runTest {
+        // Changing the term from inside the call stands in for a superseded request that still
+        // completes with an error, e.g. a cancellation caught and returned as a failure.
+        coEvery { getSearchSuggestions(query = "shirt", limit = any()) } coAnswers {
+            viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "shirts"))
+            UseCaseResult.Error(mockk())
+        }
+        coEvery { getSearchSuggestions(query = "shirts", limit = any()) } returns UseCaseResult.Success(searchSuggestions)
+        coEvery { searchUIFactory(any(), any(), any()) } answers { searchUI(searchTerm = firstArg()) }
+
+        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(searchTerm = "shirt"))
+        advanceTimeBy(501)
+        assertEquals(SearchUIState.Loading, viewModel.state.value)
+
+        advanceUntilIdle()
+        assertEquals(SearchUIState.Loaded(searchUI(searchTerm = "shirts")), viewModel.state.value)
     }
 }

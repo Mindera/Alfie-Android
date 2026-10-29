@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @ExtendWith(MockKExtension::class)
@@ -73,7 +74,28 @@ internal class SearchUIFactoryTest {
     }
 
     @Test
-    fun `invoke - WHEN a product has no price or brand THEN renders them blank`() = runTest {
+    fun `invoke - WHEN the BFF repeats a keyword, brand or product THEN each appears once`() = runTest {
+        val keyword = searchSuggestions.keywords.single()
+        val brand = searchSuggestions.brands.single()
+        val product = searchSuggestions.products.single()
+
+        val result = uiFactory(
+            searchTerm = "sh",
+            searchSuggestions = searchSuggestions.copy(
+                keywords = listOf(keyword, keyword.copy(value = "SHIRT")),
+                brands = listOf(brand, brand.copy(name = "Kashmere again")),
+                products = listOf(product, product.copy(name = "Same id"))
+            ),
+            onProductClick = {}
+        )
+
+        assertEquals(listOf(KeywordSuggestionUI(value = "shirt")), result.keywords)
+        assertEquals(listOf(BrandSuggestionUI(key = "935", name = "Kashmere")), result.brands)
+        assertEquals(listOf("12345"), result.products.map { it.id })
+    }
+
+    @Test
+    fun `invoke - WHEN a product has no price or brand THEN omits the price and blanks the brand`() = runTest {
         val unpriced = SearchSuggestion.Product(
             id = "1",
             name = "Unpriced",
@@ -90,7 +112,7 @@ internal class SearchUIFactoryTest {
         )
 
         val card = result.products.single().productCardData
-        assertEquals(PriceType.Default(price = ""), card.price)
+        assertNull(card.price)
         assertTrue(card.brand.isEmpty())
     }
 }

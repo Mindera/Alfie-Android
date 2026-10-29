@@ -19,7 +19,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -88,8 +90,8 @@ private const val PRODUCTS_COLUMN_COUNT = 2
 @Composable
 fun SearchOverlay(
     isOpen: Boolean,
-    onSearchAction: ((String) -> Unit) -> Unit,
-    onSearchTermChange: ((String) -> Unit) -> Unit,
+    onSearchAction: (((String) -> Unit)?) -> Unit,
+    onSearchTermChange: (((String) -> Unit)?) -> Unit,
     navController: NavController,
     directionProvider: DirectionProvider,
     modifier: Modifier = Modifier,
@@ -100,11 +102,16 @@ fun SearchOverlay(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val recentSearches by viewModel.recentSearches.collectAsStateWithLifecycle()
 
-    onSearchAction { term ->
-        viewModel.handleEvent(SearchEvent.OnSearchAction(term))
-    }
-    onSearchTermChange { term ->
-        viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(term))
+    // Registered once per search bar rather than on every recomposition, and cleared on exit.
+    // The registrars change when the host swaps to another screen's search bar, which re-runs
+    // this and moves the listeners across.
+    DisposableEffect(viewModel, onSearchAction, onSearchTermChange) {
+        onSearchAction { term -> viewModel.handleEvent(SearchEvent.OnSearchAction(term)) }
+        onSearchTermChange { term -> viewModel.handleEvent(SearchEvent.OnUpdateSearchTerm(term)) }
+        onDispose {
+            onSearchAction(null)
+            onSearchTermChange(null)
+        }
     }
 
     viewModel.handleUIEvents { uiEvent ->
@@ -183,6 +190,7 @@ private fun SuggestionsPanel(
     onSearchEvent: ClickEventOneArg<SearchEvent>
 ) {
     val spacing = LocalTheme.current.spacing
+    val productRows = remember(searchUI.products) { searchUI.products.chunked(PRODUCTS_COLUMN_COUNT) }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = rememberLazyListState(),
@@ -213,9 +221,9 @@ private fun SuggestionsPanel(
                 )
             }
         }
-        if (searchUI.products.isNotEmpty()) {
+        if (productRows.isNotEmpty()) {
             productSuggestions(
-                products = searchUI.products,
+                productRows = productRows,
                 onSearchEvent = onSearchEvent
             )
         }
@@ -223,12 +231,12 @@ private fun SuggestionsPanel(
 }
 
 private fun LazyListScope.productSuggestions(
-    products: List<ProductSuggestionUI>,
+    productRows: List<List<ProductSuggestionUI>>,
     onSearchEvent: ClickEventOneArg<SearchEvent>
 ) {
     item { SuggestionsSectionTitle(title = stringResource(R.string.search_suggestions_product_title)) }
     items(
-        items = products.chunked(PRODUCTS_COLUMN_COUNT),
+        items = productRows,
         key = { row -> "products-${row.first().id}" }
     ) { row ->
         Row(

@@ -79,16 +79,17 @@ class SearchState internal constructor(
         onSearchActionListener?.invoke(searchTerm)
     }
 
-    fun setOnSearchAction(listener: ClickEventOneArg<String>) {
+    /** Null clears the listener, so a consumer leaving composition doesn't stay reachable. */
+    fun setOnSearchAction(listener: ClickEventOneArg<String>?) {
         onSearchActionListener = listener
     }
 
     /**
      * Registers a listener for every term change, alongside the `onSearchTermChange` given to
      * [rememberSearchState]. Lets a consumer that does not own the state, such as the search
-     * overlay, follow what is typed.
+     * overlay, follow what is typed. Null clears it.
      */
-    fun setOnSearchTermChange(listener: ClickEventOneArg<String>) {
+    fun setOnSearchTermChange(listener: ClickEventOneArg<String>?) {
         onSearchTermChangeListener = listener
     }
 }
