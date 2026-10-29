@@ -18,9 +18,11 @@ fun String.highlightTerm(
     highlightStyle: SpanStyle = SpanStyle(fontWeight = FontWeight.Bold)
 ): AnnotatedString = buildAnnotatedString {
     append(this@highlightTerm)
+    if (term.isEmpty()) return@buildAnnotatedString
 
-    term
-        .toRegex(RegexOption.IGNORE_CASE)
+    // The term is user input: escaped so "shirt(" or "+" match literally instead of
+    // throwing PatternSyntaxException, and "." highlights a dot rather than every character.
+    Regex(Regex.escape(term), RegexOption.IGNORE_CASE)
         .findAll(this@highlightTerm)
         .forEach {
             addStyle(highlightStyle, it.range.first, it.range.last + 1)

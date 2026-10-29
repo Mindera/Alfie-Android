@@ -31,7 +31,7 @@ internal class RecentSearchEntityMapperTest {
     fun `test - Brand RecentSearch toEntity`() = runTest {
         val recentSearch = RecentSearch.Brand(
             searchTerm = "mapper to entity test",
-            slug = "brand-slug"
+            key = "brand-slug"
         )
 
         val result = recentSearch.toEntity()
@@ -62,7 +62,7 @@ internal class RecentSearchEntityMapperTest {
             RecentSearch.Query("search #1"),
             RecentSearch.Brand(
                 searchTerm = "search #2",
-                slug = "brand-slug"
+                key = "brand-slug"
             )
         )
 

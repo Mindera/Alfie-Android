@@ -45,7 +45,23 @@ internal class ProductListRepositoryImpl @Inject constructor(
                     sort = sort.toGraphQL(),
                     limit = limit
                 ).mapCatching { data -> data.searchProducts.productListResponseFragment.toDomain() }
+
+            is ProductListQuerySource.Brand ->
+                productListService.searchProducts(
+                    after = after,
+                    searchTerm = source.name,
+                    filters = filters.withBrand(source.key).toGraphQL(),
+                    sort = sort.toGraphQL(),
+                    limit = limit
+                ).mapCatching { data -> data.searchProducts.productListResponseFragment.toDomain() }
         }.toRepositoryResult()
+
+    /**
+     * Pins the list to the brand [key]. `brandNames` matches any listed brand, so keeping the
+     * user's brand refinements alongside it would widen the list beyond the brand being browsed.
+     */
+    private fun ProductListFilter?.withBrand(key: String): ProductListFilter =
+        (this ?: ProductListFilter()).copy(brandNames = listOf(key))
 
     override suspend fun updateProductListLayoutMode(layoutMode: ProductListLayoutMode): RepositoryResult<Unit> = runCatching {
         userPreferencesDataSource.updateProductListLayoutMode(layoutMode.toProto())

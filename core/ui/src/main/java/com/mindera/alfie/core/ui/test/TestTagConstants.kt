@@ -16,6 +16,13 @@ const val SEARCH_RECENT_SEARCH_TITLE = "recent-search-title"
 const val SEARCH_CLEAR_RECENT_SEARCH = "clear-recent-searches"
 const val SEARCH_RECENT_SEARCH_ITEM = "recent-search-item"
 const val SEARCH_RECENT_SEARCH_REMOVE_ITEM = "remove-recent-search-item"
+const val SEARCH_SUGGESTIONS_LOADING = "search-suggestions-loading"
+const val SEARCH_SUGGESTIONS_KEYWORD_ITEM = "search-suggestions-keyword-item"
+const val SEARCH_SUGGESTIONS_BRAND_ITEM = "search-suggestions-brand-item"
+const val SEARCH_SUGGESTIONS_PRODUCT_ITEM = "search-suggestions-product-item"
+const val SEARCH_SUGGESTIONS_MORE_PRODUCTS = "search-suggestions-more-products"
+const val SEARCH_NO_RESULTS_SCREEN = "no-results-screen"
+const val SEARCH_SUGGESTIONS_ERROR = "search-suggestions-error"
 
 // BOTTOM NAVIGATION
 const val HOME_TAB = "home-tab"

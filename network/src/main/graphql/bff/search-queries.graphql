@@ -1,0 +1,31 @@
+query SearchSuggestionsQuery(
+    $query: String!,
+    $limit: Int! = 6
+) {
+    suggestion(
+        query: $query,
+        limit: $limit
+    ) {
+        brands {
+            key
+            value
+            results
+        }
+        keywords {
+            value
+            results
+        }
+        products {
+            id
+            name
+            brandName
+            slug
+            price {
+                ...MoneyFragment
+            }
+            images {
+                ...ImageFragment
+            }
+        }
+    }
+}

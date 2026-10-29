@@ -12,7 +12,7 @@ import com.mindera.alfie.data.database.wishlist.model.WishlistEntity
         RecentSearchEntity::class,
         WishlistEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true
 )
 internal abstract class PersistentDatabase : RoomDatabase() {

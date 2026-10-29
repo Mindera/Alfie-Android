@@ -18,7 +18,9 @@ sealed interface ProductCardType {
     val image: ImageUI
     val brand: String
     val name: String
-    val price: PriceType
+
+    /** Null when the product has no price to show; a card that supports it then omits the row. */
+    val price: PriceType?
     val cardTestTag: String
     val imageTestTag: String
     val brandTestTag: String
@@ -66,7 +68,7 @@ sealed interface ProductCardType {
         override val image: ImageUI,
         override val brand: String,
         override val name: String,
-        override val price: PriceType,
+        override val price: PriceType?,
         override val onClick: ClickEvent? = null,
         val onFavoriteClick: ClickEvent? = null,
         override val onRemoveClick: ClickEvent? = null,
