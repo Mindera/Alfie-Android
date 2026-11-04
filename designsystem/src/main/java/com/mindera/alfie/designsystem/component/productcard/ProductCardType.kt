@@ -18,8 +18,6 @@ sealed interface ProductCardType {
     val image: ImageUI
     val brand: String
     val name: String
-
-    /** Null when the product has no price to show; a card that supports it then omits the row. */
     val price: PriceType?
     val cardTestTag: String
     val imageTestTag: String

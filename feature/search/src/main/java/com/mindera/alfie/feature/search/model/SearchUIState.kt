@@ -5,7 +5,6 @@ import androidx.compose.runtime.Stable
 @Stable
 internal sealed interface SearchUIState {
 
-    /** Nothing typed: the overlay shows recent searches. */
     data object Empty : SearchUIState
 
     data object Loading : SearchUIState

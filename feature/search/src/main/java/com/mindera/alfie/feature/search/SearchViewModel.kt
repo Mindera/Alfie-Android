@@ -51,9 +51,7 @@ internal class SearchViewModel @Inject constructor(
 
     companion object {
         private const val TYPING_DEBOUNCE_TIME = 500L
-
-        // Per suggestion type: the BFF returns up to this many keywords, brands and products each.
-        private const val SUGGESTION_LIMIT = 6
+        private const val SUGGESTION_LIMIT_PER_TYPE = 6
     }
 
     private val _state: MutableStateFlow<SearchUIState> = MutableStateFlow(SearchUIState.Empty)
@@ -90,10 +88,7 @@ internal class SearchViewModel @Inject constructor(
         loadSuggestions(debounce = true)
     }
 
-    /**
-     * Every new term replaces what is on screen with a spinner straight away, so suggestions
-     * for an older term are never left up to be tapped, and cancels the previous request.
-     */
+    /** Shows the spinner at once so suggestions for an older term are never left up to be tapped. */
     private fun loadSuggestions(debounce: Boolean) {
         suggestionsJob?.cancel()
         val term = searchTerm
@@ -106,7 +101,7 @@ internal class SearchViewModel @Inject constructor(
         suggestionsJob = viewModelScope.launch {
             if (debounce) delay(TYPING_DEBOUNCE_TIME)
 
-            getSearchSuggestions(query = term, limit = SUGGESTION_LIMIT).doOnResult(
+            getSearchSuggestions(query = term, limit = SUGGESTION_LIMIT_PER_TYPE).doOnResult(
                 onSuccess = { suggestions ->
                     val newState = if (suggestions.isEmpty()) {
                         SearchUIState.NoResults(searchTerm = term)
@@ -119,21 +114,17 @@ internal class SearchViewModel @Inject constructor(
                             )
                         )
                     }
-                    showIfCurrent(term = term, state = newState)
+                    showIfStillCurrentTerm(term = term, state = newState)
                 },
                 onError = {
-                    showIfCurrent(term = term, state = SearchUIState.Error(searchTerm = term))
+                    showIfStillCurrentTerm(term = term, state = SearchUIState.Error(searchTerm = term))
                 }
             )
         }
     }
 
-    /**
-     * Cancelling the job already stops a superseded request, but only because `unwrap` hops
-     * dispatchers and so can't resume a cancelled caller: it catches the CancellationException
-     * itself. This keeps a result for an older term, success or error, off the screen regardless.
-     */
-    private fun showIfCurrent(
+    /** Keeps a late result for an older term, success or error, off the screen. */
+    private fun showIfStillCurrentTerm(
         term: String,
         state: SearchUIState
     ) {

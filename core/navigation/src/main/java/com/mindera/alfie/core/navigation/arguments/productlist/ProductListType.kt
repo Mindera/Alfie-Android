@@ -26,7 +26,6 @@ sealed interface ProductListType : Parcelable {
          * A brand from a BFF search suggestion.
          *
          * @param key opaque, platform-resolved brand key the BFF filters on via `brandNames`.
-         * @param name the brand's display name.
          */
         @Parcelize
         data class Key(

@@ -84,11 +84,7 @@ class SearchState internal constructor(
         onSearchActionListener = listener
     }
 
-    /**
-     * Registers a listener for every term change, alongside the `onSearchTermChange` given to
-     * [rememberSearchState]. Lets a consumer that does not own the state, such as the search
-     * overlay, follow what is typed. Null clears it.
-     */
+    /** Lets a consumer that doesn't own the state follow what is typed. Null clears it. */
     fun setOnSearchTermChange(listener: ClickEventOneArg<String>?) {
         onSearchTermChangeListener = listener
     }

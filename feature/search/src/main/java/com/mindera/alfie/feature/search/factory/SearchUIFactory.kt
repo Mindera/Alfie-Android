@@ -57,7 +57,6 @@ internal class SearchUIFactory @Inject constructor(
             image = images.firstOrNull().toImageUI(),
             brand = brandName.orEmpty(),
             name = name,
-            // The BFF marks price optional; an unpriced suggestion leaves the price row out.
             price = price?.let { PriceType.Default(price = it.amountFormatted) },
             onClick = { onProductClick(slug) }
         )
