@@ -177,16 +177,18 @@ private fun ProductDescription(
                 )
                 .testTag(productCard.nameTestTag)
         )
-        Price(
-            item = productCard.price,
-            size = PriceSize.Medium,
-            modifier = Modifier
-                .shimmer(
-                    isShimmering = isLoading,
-                    minWidth = PRICE_PLACEHOLDER_WIDTH
-                )
-                .testTag(productCard.priceTestTag)
-        )
+        productCard.price?.let { price ->
+            Price(
+                item = price,
+                size = PriceSize.Medium,
+                modifier = Modifier
+                    .shimmer(
+                        isShimmering = isLoading,
+                        minWidth = PRICE_PLACEHOLDER_WIDTH
+                    )
+                    .testTag(productCard.priceTestTag)
+            )
+        }
     }
 }
 

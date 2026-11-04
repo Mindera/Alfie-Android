@@ -51,6 +51,8 @@ class SearchState internal constructor(
 
     private var onSearchActionListener: ClickEventOneArg<String>? = null
 
+    private var onSearchTermChangeListener: ClickEventOneArg<String>? = null
+
     fun invertSearchOpenState() {
         if (isSearchOpen.not()) updateSearchTerm("")
         isSearchOpen = !isSearchOpen
@@ -67,6 +69,7 @@ class SearchState internal constructor(
     fun updateSearchTerm(searchText: String) {
         searchTerm = searchText
         onSearchTermChange(searchText)
+        onSearchTermChangeListener?.invoke(searchText)
     }
 
     fun onSearchAction() {
@@ -76,7 +79,13 @@ class SearchState internal constructor(
         onSearchActionListener?.invoke(searchTerm)
     }
 
-    fun setOnSearchAction(listener: ClickEventOneArg<String>) {
+    /** Null clears the listener, so a consumer leaving composition doesn't stay reachable. */
+    fun setOnSearchAction(listener: ClickEventOneArg<String>?) {
         onSearchActionListener = listener
+    }
+
+    /** Lets a consumer that doesn't own the state follow what is typed. Null clears it. */
+    fun setOnSearchTermChange(listener: ClickEventOneArg<String>?) {
+        onSearchTermChangeListener = listener
     }
 }

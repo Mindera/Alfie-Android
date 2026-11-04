@@ -21,6 +21,6 @@ internal val listRecentSearch = listOf(
     RecentSearch.Query("search #1"),
     RecentSearch.Brand(
         searchTerm = "search #2",
-        slug = "brand-slug"
+        key = "brand-slug"
     )
 )
