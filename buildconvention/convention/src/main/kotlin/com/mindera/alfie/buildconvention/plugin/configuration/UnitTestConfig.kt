@@ -28,7 +28,10 @@ import org.gradle.kotlin.dsl.dependencies
 internal fun Project.configureUnitTest(commonExtension: CommonExtension) {
     commonExtension.defaultConfig.apply {
         testInstrumentationRunner = AppConfig.testRunnerPath
-        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
+        // The android-junit5 plugin registers its RunnerBuilder itself. A second, hardcoded one
+        // makes the value comma-separated, and AGP 9.4 cuts runner-argument values at the first comma.
+        // Scan only our own classes, so JUnit doesn't try to load JVM-only library classes on device.
+        testInstrumentationRunnerArguments["package"] = AppConfig.applicationId
     }
 
     dependencies {
