@@ -30,8 +30,36 @@ How the build is wired:
   `kspAndroidTest` (`HiltConventionPlugin.kt:29-32`).
 - `:data:database` swaps in `HiltTestApplication` through `AppTestRunner` (`data/database/src/androidTest/.../AppTestRunner.kt:8-11`,
   `data/database/build.gradle.kts:15,26`). **No test in the repo uses `@HiltAndroidTest` or `HiltAndroidRule`**, so that runner is set up but nothing uses it yet.
-- The `:data:database` tests are **JUnit 4** (`org.junit.Test`) and run under the same runner with the JUnit5 builder
-  (`PersistentDatabaseMigrationsTest.kt:13`, `RecentSearchDaoTest.kt:15-18`). So the repo already mixes JUnit 4 and 5 on-device.
+- The `:data:database` tests are **JUnit 4** (`org.junit.Test`) and are configured to run under the same runner with the JUnit5 builder
+  (`PersistentDatabaseMigrationsTest.kt:13`, `RecentSearchDaoTest.kt:15-18`). So the source already mixes JUnit 4 and 5. Through Gradle, though,
+  **nothing runs today**; see the next section.
+
+## Through Gradle, instrumented tests run 0 tests today (added after first publication)
+
+Reported by the coordinator, evidence in [#81 comment](https://github.com/Mindera/Alfie-Android/issues/81#issuecomment-6757890457) (**Confirmed** there, not re-run here).
+With plugin 2.0.1, `./gradlew <module>:connectedDebugAndroidTest` runs **0 tests and reports success**. The plugin adds an empty
+`-e configurationParameters` argument, and `am instrument` then fails on the device ("Invalid userId -2" on API 36, "No instrumentation found" on API 33).
+Running the same APK directly with `adb shell am instrument -e runnerBuilder …AndroidJUnit5Builder` discovers and runs the JUnit5 tests.
+The fix is ticket #90 and is not covered here. Plugin 2.0.2's changelog lists a matching fix
+("Avoid adding empty configParams map to prevent invalid runnerArgs ('invalid userId -2') (#415)",
+[CHANGELOG](https://github.com/mannodermaus/android-junit-framework/blob/plugin-2.0.2/instrumentation/CHANGELOG.md)).
+
+What this means for the JUnit5-vs-JUnit4 comparison:
+
+- **The bug hits the whole module, not just JUnit5 tests (Confirmed from source).** Plugin 2.0.1 writes the `runnerBuilder` and
+  `configurationParameters` arguments into `defaultConfig` for the whole module whenever the plugin is applied and Jupiter is on
+  `androidTestImplementation` ([`configure.kt@plugin-2.0.1`](https://github.com/mannodermaus/android-junit-framework/blob/plugin-2.0.1/plugin/android-junit5/src/main/kotlin/de/mannodermaus/gradle/plugins/junit5/internal/configure.kt),
+  `prepareInstrumentationTests`). Alfie's convention puts Jupiter on every module's `androidTestImplementation` (`UnitTestConfig.kt:48`).
+  So JUnit4 journeys in `:app` are blocked exactly like JUnit5 ones (**Inferred**: the whole `am instrument` invocation fails).
+  Inside `:app` the bug therefore does not favour either framework. Either way #90 has to land first.
+- **No passing Gradle run backs either framework yet.** The claim that "the repo already runs JUnit4 next to JUnit5 on-device" holds only at the
+  source level. The direct-`adb` run proves the JUnit5 path. Whether the JUnit4 `:data:database` tests pass under the builder is not shown.
+- **It is another data point on how fragile the plugin is.** The JUnit5 route depends on the android-junit5 plugin's instrumentation wiring, and
+  this is the second plugin defect on our critical path (after #395 for `com.android.test`). A JUnit4-only journey setup can skip the plugin's
+  instrumentation wiring entirely. The plugin returns early when Jupiter is absent from `androidTestImplementation`, or the plugin
+  can simply not be applied. That makes the setup immune to this class of bug (**Inferred**).
+  For layout this slightly favours keeping journeys out of the plugin's reach. That is a point *for* a JUnit4 `com.android.test` module, or for
+  removing Jupiter from `:app`'s androidTest, and it partly offsets the §3 leaning.
   Side finding: `RecentSearchDaoTest` puts the Jupiter `@ExtendWith(CoroutineExtension::class)` on a JUnit 4 class (`RecentSearchDaoTest.kt:22`).
   JUnit 4 ignores Jupiter extensions, so that extension most likely never runs (**Inferred**).
 - `:integration-test` is a `com.android.library` with only an `androidTest` source set, so its test APK instruments itself
@@ -89,8 +117,9 @@ So the JUnit5 Compose path most likely forces a **Compose BOM bump to ≥ 1.10**
 JUnit4 `ui-test-junit4` from the existing BOM needs neither.
 
 **Leaning from the facts:** JUnit4 for UI journeys (Compose rule + `HiltAndroidRule`) is the path the Hilt and Compose docs describe, and
-the repo's runner already executes JUnit 4 classes next to JUnit 5 ones. JUnit5 for journeys would mean a homemade Hilt adapter, an
-experimental Compose wrapper, and a forced Compose upgrade.
+the repo's runner is configured to execute JUnit 4 classes next to JUnit 5 ones (not yet proven through Gradle, see above). JUnit5 for
+journeys would mean a homemade Hilt adapter, an experimental Compose wrapper, a forced Compose upgrade, and a hard dependency on the
+android-junit5 plugin's instrumentation wiring, which is currently broken (#90).
 
 ## 2. Does Android Test Orchestrator with `clearPackageData` work with the android-junit5 runner builder?
 
@@ -121,7 +150,7 @@ experimental Compose wrapper, and a forced Compose upgrade.
 | Concern | `app/src/androidTest` | Separate `com.android.test` module targeting `:app` |
 | --- | --- | --- |
 | android-junit5 plugin | Already applied to `:app` and wires the runner builder and deps (`AppConventionPlugin.kt:45`, `UnitTestConfig.kt:29-56`) | **The plugin breaks configuration on `com.android.test`**: "Configuration with name 'testImplementation' not found", open since plugin 1.13.2.0 and still reported on the latest version ([#395](https://github.com/mannodermaus/android-junit-framework/issues/395)). The maintainer's workaround is to not apply the plugin and wire the runner builder and `android-test-core/runner/compose` deps by hand. Support for `com.android.test` was removed in 2018 ([PR #134](https://github.com/mannodermaus/android-junit-framework/pull/134)). Alfie would need a new convention plugin that skips `android-junit5`. (**Confirmed**) |
-| JUnit4 instead | Works today under the same runner (`:data:database` already does it) | Works. A JUnit4-only module needs no android-junit5 at all (**Inferred**) |
+| JUnit4 instead | Configured under the same runner (`:data:database`), but blocked by the empty-`configurationParameters` bug like everything else in the module until #90 lands | Works. A JUnit4-only module needs no android-junit5 at all (**Inferred**) |
 | Hilt test app | Standard documented setup: a custom runner returning `HiltTestApplication`, plus `androidTestImplementation(hilt-android-testing)` + `kspAndroidTest(hilt-compiler)` ([docs](https://developer.android.com/training/dependency-injection/hilt-testing)). `MainActivity` is already `@AndroidEntryPoint` (`MainActivity.kt:27`), so no `HiltTestActivity` is needed for journeys | The Hilt Gradle plugin supports test modules: `TestAndroidComponentsExtension` maps to project type `TEST` and the aggregating task marks it as a test environment ([`HiltGradlePlugin.kt`](https://github.com/google/dagger/blob/master/java/dagger/hilt/android/plugin/main/src/main/kotlin/dagger/hilt/android/plugin/HiltGradlePlugin.kt), [`Variants.kt`](https://github.com/google/dagger/blob/master/java/dagger/hilt/android/plugin/main/src/main/kotlin/dagger/hilt/android/plugin/util/Variants.kt)). It has a regression history: [#3478](https://github.com/google/dagger/issues/3478) (aggregation failed with more than one test; fixed 2022). Tests and deps go in `src/main` with `implementation`/`ksp`. Neither Hilt doc page mentions this setup (**Confirmed**). Whether Hilt's aggregation sees every production `@InstallIn` module through a test module's classpath is unverified (**Inferred** risk; needs a spike) |
 | Build time | androidTest compiles as part of `:app`. Hilt generates test components over the whole app graph either way (**Inferred**) | Isolation is the reason AGP gives ("to isolate the rest of your code from your tests", [advanced-test-setup](https://developer.android.com/studio/test/advanced-test-setup#use-separate-test-modules-for-instrumented-tests)). The work is the same: the app APK, the test APK and Hilt test components all still build. Test-only edits don't invalidate `:app` tasks in either layout, because androidTest is its own compilation. No primary source quantifies a difference (**Inferred: small**) |
 | Variants | `testBuildType` (debug by default). Uses the app's `debug`/`beta`/`release` types directly | Only `debug` by default. Other build types need `matchingFallbacks`/variant filters (same AGP doc). `:integration-test` already does this dance (`integration-test/build.gradle.kts:12-25`) |
@@ -133,7 +162,8 @@ version above the app's: the classpath rule quoted in §1 applies to the `:app` 
 
 **Leaning from the facts:** `app/src/androidTest` is the lower-friction path. It reuses the plugin and Hilt wiring the repo already has,
 and it avoids android-junit5 #395 and the less-documented Hilt + `com.android.test` combination. A separate module is viable for
-JUnit4 journeys, but it needs its own convention plugin and a Hilt aggregation spike.
+JUnit4 journeys, but it needs its own convention plugin and a Hilt aggregation spike. Counterweight: a module outside the plugin's
+instrumentation wiring is immune to plugin bugs like the current 0-tests one (#90).
 
 ## Things this surfaces to decide (not decided here)
 
