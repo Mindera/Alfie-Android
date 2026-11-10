@@ -160,7 +160,7 @@ script should know that.
 | `:core:deeplink` | 2.0.2 | removed | `com.mindera.alfie` | `tests="31"`, 0 discovery issues |
 | `:data:database` (JUnit 4 tests, custom `AppTestRunner`) | 2.0.2 | removed | `com.mindera.alfie` | `tests="1"` + `tests="5"`, all pass |
 
-The `useUnifiedTestPlatform=true` probe also ran on a second connected emulator (`emulator-5556`): that flag
+The `builtin_test_platform=true` probe also ran on a second connected emulator (`emulator-5556`): that flag
 ignored `ANDROID_SERIAL`.
 
 ## What this changes for other tickets
