@@ -7,6 +7,9 @@ build commands; `GLOSSARY.md` fixes the domain vocabulary.
 
 ## Agent skills
 
+The `mattpocock-skills` plugin is pinned in `.claude/settings.json`; install it once per checkout
+(`README.md` §Setup → Agent skills).
+
 ### Issue tracker
 
 Jira (`ALFMOB`) owns what to build; specs and tickets are GitHub issues derived from it. See `docs/agents/issue-tracker.md`.

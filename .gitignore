@@ -238,6 +238,8 @@ docs/*
 !docs/agents/
 !Docs/adr/
 !docs/adr/
-.claude/
+# .claude/settings.json is shared: it pins the agent-skills plugin for the team.
+.claude/*
+!.claude/settings.json
 .codegraph/
 .mcp.json
