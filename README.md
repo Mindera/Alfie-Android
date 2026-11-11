@@ -17,6 +17,15 @@ network_security_config.xml:
 
 <img width="599" height="131" alt="Screenshot 2026-01-14 at 14 29 11" src="https://github.com/user-attachments/assets/7569c01f-36aa-42e9-a513-404a05bbf8b7" />
 
+### Agent skills
+
+The `mattpocock-skills` plugin is pinned in `.claude/settings.json`. Trust the folder in Claude Code,
+then install it once per checkout (a version bump is a change to its `"ref"`):
+
+```bash
+claude plugin install mattpocock-skills@mattpocock --scope project
+```
+
 ## Network / GraphQL Setup
 
 The app connects to two Apollo GraphQL services managed via Hilt-qualified `ApolloClient`s:
