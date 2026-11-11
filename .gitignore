@@ -230,7 +230,14 @@ fabric.properties
 # Local-only working directories — never committed.
 # Docs/ holds per-ticket handoff notes kept on the authoring machine; .claude/ and
 # .codegraph/ are tooling state. Un-ignore deliberately if docs should ever be shared.
-Docs/
+# docs/agents/ (agent-skill config) and docs/adr/ (decision records) are shared. Both
+# spellings are listed because macOS matches case-insensitively and Linux does not.
+Docs/*
+docs/*
+!Docs/agents/
+!docs/agents/
+!Docs/adr/
+!docs/adr/
 .claude/
 .codegraph/
 .mcp.json
