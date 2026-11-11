@@ -7,8 +7,8 @@ GitHub issues derived from a Jira ticket. Use the `gh` CLI for all GitHub operat
 
 1. A Jira ticket `ALFMOB-<id>` exists first.
 2. Grill it (`/grill-with-docs`), then publish the spec and tickets as GitHub issues.
-3. Branch: `feature/ALFMOB-<id>-<slug>`. Work with no Jira ticket: `feature/gh-<n>-<slug>`, where `<n>` is
-   the GitHub issue number.
+3. Branch and commit as `.github/copilot-instructions.md` §Branch Strategy and §Commit Convention
+   say, e.g. `feature/ALFMOB-<id>-<slug>`.
 
 ## Jira
 

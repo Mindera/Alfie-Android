@@ -228,18 +228,19 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,kotlin,firebase,macos
 # Local-only working directories — never committed.
-# Docs/ holds per-ticket handoff notes kept on the authoring machine; .claude/ and
-# .codegraph/ are tooling state. Un-ignore deliberately if docs should ever be shared.
-# docs/agents/ (agent-skill config) and docs/adr/ (decision records) are shared. Both
-# spellings are listed because macOS matches case-insensitively and Linux does not.
-Docs/*
-docs/*
-!Docs/agents/
-!docs/agents/
-!Docs/adr/
-!docs/adr/
-# .claude/settings.json is shared: it pins the agent-skills plugin for the team.
-.claude/*
-!.claude/settings.json
+# Docs/ holds per-ticket handoff notes kept on the authoring machine, at any depth.
+# Only the root docs/agents/ (agent-skill config) and docs/adr/ (decision records) are
+# shared. Both spellings are listed because macOS matches case-insensitively and Linux
+# does not.
+**/Docs/*
+**/docs/*
+!/Docs/agents/
+!/docs/agents/
+!/Docs/adr/
+!/docs/adr/
+# .claude/ and .codegraph/ are tooling state. Only the root .claude/settings.json is
+# shared: it pins the agent-skills plugin for the team.
+**/.claude/*
+!/.claude/settings.json
 .codegraph/
 .mcp.json
