@@ -3,4 +3,13 @@
     <string name="your_recent_searches">Your Recent Searches</string>
     <string name="clear">Clear</string>
     <string name="remove_recent_search">Remove %1$s from recent searches</string>
+    <string name="search_suggestions_keyword_title">Search Suggestions</string>
+    <string name="search_suggestions_brand_title">Brands</string>
+    <string name="search_suggestions_product_title">Product Suggestions</string>
+    <string name="search_suggestions_more_products_cta">More Products</string>
+    <string name="search_suggestions_no_results_title">No results found for \"%1$s\"</string>
+    <string name="search_suggestions_no_results_subtitle">Please check the spelling or try different words.</string>
+    <string name="search_suggestions_error_title">Something went wrong</string>
+    <string name="search_suggestions_error_subtitle">We couldn\'t load suggestions. You can still search for \"%1$s\".</string>
+    <string name="search_suggestions_error_cta">Try again</string>
 </resources>

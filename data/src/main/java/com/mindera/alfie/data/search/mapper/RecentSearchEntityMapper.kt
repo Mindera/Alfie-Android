@@ -16,7 +16,7 @@ internal fun RecentSearch.toEntity() = when (this) {
         searchTerm = searchTerm,
         searchTimestamp = currentTimeMillis(),
         type = BRAND,
-        slug = slug
+        slug = key
     )
 }
 
@@ -28,6 +28,6 @@ private fun RecentSearchEntity.toDomain() = when (type) {
     QUERY -> RecentSearch.Query(searchTerm = searchTerm)
     BRAND -> RecentSearch.Brand(
         searchTerm = searchTerm,
-        slug = slug.orEmpty()
+        key = slug.orEmpty()
     )
 }

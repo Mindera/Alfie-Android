@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.mindera.alfie.data.database.FeatureToggleDatabase
 import com.mindera.alfie.data.database.InMemoryDatabase
+import com.mindera.alfie.data.database.MIGRATION_4_5
 import com.mindera.alfie.data.database.PersistentDatabase
 import com.mindera.alfie.data.database.navigation.NavigationEntryDao
 import com.mindera.alfie.data.database.search.FeatureToggleDao
@@ -28,6 +29,7 @@ internal object DatabaseModule {
             klass = PersistentDatabase::class.java,
             name = "app-database"
         )
+            .addMigrations(MIGRATION_4_5)
             .fallbackToDestructiveMigration() // Todo remove this call before app goes to Production
             .build()
 

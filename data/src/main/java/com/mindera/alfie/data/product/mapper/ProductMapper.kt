@@ -51,13 +51,13 @@ private fun ProductVariantFragment.toDomain(): Variant = Variant(
     availableQuantity = inventory?.available ?: 0
 )
 
-private fun MoneyFragment.toDomain(): Money = Money(
+internal fun MoneyFragment.toDomain(): Money = Money(
     currencyCode = currencyCode,
     amount = amount,
     amountFormatted = formatMoney(amount = amount, currencyCode = currencyCode)
 )
 
-private fun ImageFragment.toDomain(): Media.Image = Media.Image(
+internal fun ImageFragment.toDomain(): Media.Image = Media.Image(
     url = url,
     alt = altText
 )

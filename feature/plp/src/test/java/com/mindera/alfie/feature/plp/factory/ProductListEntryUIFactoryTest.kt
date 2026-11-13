@@ -48,7 +48,7 @@ class ProductListEntryUIFactoryTest {
             assertEquals(expected.productCardData.name, result.productCardData.name)
             assertEquals(expected.productCardData.image, result.productCardData.image)
             // price formatting is locale-sensitive; just check the type
-            assertEquals(expected.productCardData.price::class, result.productCardData.price::class)
+            assertEquals(expected.productCardData.price?.let { it::class }, result.productCardData.price?.let { it::class })
         }
     }
 

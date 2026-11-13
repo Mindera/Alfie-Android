@@ -1,6 +1,8 @@
 package com.mindera.alfie.repository.search
 
+import com.mindera.alfie.repository.result.RepositoryResult
 import com.mindera.alfie.repository.search.model.RecentSearch
+import com.mindera.alfie.repository.search.model.SearchSuggestions
 import kotlinx.coroutines.flow.Flow
 
 interface SearchRepository {
@@ -12,4 +14,9 @@ interface SearchRepository {
     suspend fun deleteRecentSearch(recentSearch: RecentSearch)
 
     suspend fun clearRecentSearches()
+
+    suspend fun getSearchSuggestions(
+        query: String,
+        limit: Int
+    ): RepositoryResult<SearchSuggestions>
 }
