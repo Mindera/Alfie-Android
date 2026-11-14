@@ -7,4 +7,11 @@
     <string name="error_network">No internet connection</string>
     <string name="error_generic">Something went wrong</string>
     <string name="error_not_found">Content not found</string>
+
+    <!-- Action confirmation toasts, see ActionToast -->
+    <string name="action_toast_added">Added.</string>
+    <string name="action_toast_removed">Removed.</string>
+    <string name="action_toast_view_wishlist">View Wishlist</string>
+    <string name="action_toast_view_bag">View Bag</string>
+    <string name="action_toast_undo">Undo</string>
 </resources>

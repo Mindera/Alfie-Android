@@ -14,6 +14,7 @@ import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
@@ -265,6 +266,40 @@ internal class ProductDetailsViewModelTest {
         assertTrue(loaded.items.single().isWishlisted)
         coVerify { addToWishlistUseCase(relatedProduct.slug) }
         assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isWishlisted)
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnFavoriteClick WHEN it succeeds THEN a toast links to the Wishlist`() = runTest {
+        coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        val viewModel = buildViewModel()
+
+        viewModel.uiEvent.test {
+            viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick(realProductDetailsUI.slug))
+
+            val toast = assertIs<SnackbarCustomVisuals.Toast>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals)
+            toast.onActionClick()
+            assertIs<Screen.Wishlist>((awaitItem() as UIEvent.Base.NavigateToScreen).screen)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnAddToBagClick WHEN it succeeds THEN a toast links to the Bag`() = runTest {
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        coEvery { productDetailsUIFactory.getSelectedVariantSku(any()) } returns "sku"
+        coEvery { addToBagUseCase(any(), any()) } returns UseCaseResult.Success(true)
+        val viewModel = buildViewModel()
+
+        viewModel.uiEvent.test {
+            viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
+
+            val toast = assertIs<SnackbarCustomVisuals.Toast>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals)
+            toast.onActionClick()
+            assertEquals(Screen.Bag, (awaitItem() as UIEvent.Base.NavigateToScreen).screen)
+            cancelAndConsumeRemainingEvents()
+        }
+        coVerify { addToBagUseCase(realProductDetailsUI.slug, "sku") }
     }
 
     @Test
