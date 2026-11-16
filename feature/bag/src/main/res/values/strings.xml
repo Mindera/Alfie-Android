@@ -10,8 +10,6 @@
     <string name="bag_item_save">Save</string>
     <string name="bag_item_remove">Remove</string>
     <string name="bag_item_saved">Saved to your wishlist</string>
-    <string name="bag_item_removed">Removed from your bag</string>
-    <string name="bag_item_removed_undo">Undo</string>
     <string name="bag_item_remove_error">We couldn\'t remove that item.</string>
     <string name="bag_item_restore_error">We couldn\'t put that item back in your bag.</string>
     <string name="bag_item_save_a11y">Save %1$s to your wishlist</string>
