@@ -24,7 +24,9 @@ internal data class ProductDetailsUI(
     val gallery: GalleryUI,
     val sizeSectionUI: SizeSectionUI,
     val selectedColorUI: ColorUI? = null,
-    val isWishlisted: Boolean = false
+    val isWishlisted: Boolean = false,
+    /** True while an Add to Bag call is in flight: the button shows loading and ignores taps. */
+    val isAddingToBag: Boolean = false
 ) {
     /** Selected colour's name for the description metadata line; null for single-option products. */
     val selectedColourName: String?

@@ -1,289 +1,119 @@
 package com.mindera.alfie.feature.bag
 
+import com.mindera.alfie.designsystem.component.price.PriceType
+import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
 import com.mindera.alfie.feature.mappers.toImageUI
-import com.mindera.alfie.repository.bag.BagProduct
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.junit5.MockKExtension
+import com.mindera.alfie.repository.bag.Bag
+import com.mindera.alfie.repository.shared.model.Media
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.extension.ExtendWith
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@ExtendWith(MockKExtension::class)
 class BagUiFactoryTest {
 
-    @InjectMockKs
-    private lateinit var uiFactory: BagUiFactory
+    private val uiFactory = BagUiFactory()
 
     @Test
-    fun `invoke - map to expected Bag UI`() = runTest {
-        val result = uiFactory(
-            bagProducts = bagProducts,
-            products = products,
-            onProductClick = { }
-        )
+    fun `invoke - maps the Cart and its products to the Bag UI`() {
+        val result = uiFactory(bag = bag, productsBySlug = productsBySlug, onProductClick = { })
 
-        // onClick is a lambda and never equal across instances, so compare with it stripped.
-        val stripped = result.copy(
-            items = result.items
-                .map { item -> item.copy(productCardData = item.productCardData.copy(onClick = null)) }
-                .toImmutableList()
-        )
-        assertEquals(bagContentUi, stripped)
+        assertEquals(bagContentUi, result.withoutClicks())
     }
 
     @Test
-    fun `invoke - WHEN onProductClick provided THEN each product card onClick is wired to call it with product slug`() = runTest {
-        val clickedIds = mutableListOf<String>()
+    fun `invoke - WHEN a line is tapped THEN it opens the PDP by the line's slug`() {
+        val clicked = mutableListOf<String>()
 
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = products,
-            onProductClick = { id -> clickedIds.add(id) }
-        )
+        val content = uiFactory(bag = bag, productsBySlug = productsBySlug, onProductClick = { clicked += it })
+        content.items.forEach { it.productCardData.onClick?.invoke() }
 
-        content.items.forEachIndexed { index, bagProductUi ->
-            val onClick = bagProductUi.productCardData.onClick
-            assertNotNull(onClick, "Expected onClick to be set for item at index $index")
-            onClick()
-        }
-
-        val expectedSlugs = products.map { it.slug }
-        assertEquals(expectedSlugs, clickedIds)
+        assertEquals(listOf("123456-product", "654321-product"), clicked)
     }
 
     @Test
-    fun `invoke - WHEN the same variant is added twice THEN it collapses into one line with quantity 2`() = runTest {
-        val duplicated = listOf(bagProducts[0], bagProducts[0], bagProducts[1])
+    fun `invoke - quantity, price and total come from the Cart`() {
+        val line = bagLines[1].copy(quantity = 3, unitPrice = aud(90.0), lineTotal = aud(270.0))
 
         val content = uiFactory(
-            bagProducts = duplicated,
-            products = products,
+            bag = Bag(lines = listOf(line), subtotal = aud(270.0)),
+            productsBySlug = productsBySlug,
             onProductClick = { }
         )
 
-        assertEquals(2, content.items.size)
-        assertEquals(2, content.items[0].productCardData.quantity)
-        assertEquals(1, content.items[1].productCardData.quantity)
+        assertEquals(3, content.items.single().productCardData.quantity)
+        assertEquals(PriceType.Default(price = "$90"), content.items.single().productCardData.price)
+        assertEquals("$270", content.summary.totalFormatted)
     }
 
     @Test
-    fun `invoke - WHEN a line has quantity above one THEN the total multiplies the unit price`() = runTest {
-        val duplicated = listOf(bagProducts[0], bagProducts[0], bagProducts[1])
+    fun `invoke - WHEN the product's was-price is not above the Cart price THEN no sale is shown`() {
+        val line = bagLines[0].copy(unitPrice = aud(250.0))
 
-        val content = uiFactory(
-            bagProducts = duplicated,
-            products = products,
-            onProductClick = { }
-        )
+        val content = uiFactory(bag = Bag(listOf(line), aud(250.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        // 100.00 x 2 + 100.00 x 1
-        assertEquals("$300.00", content.summary.totalFormatted)
+        assertEquals(PriceType.Default(price = "$250"), content.items.single().productCardData.price)
     }
 
     @Test
-    fun `invoke - resolves the variant matching the bag entry sku`() = runTest {
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = products,
-            onProductClick = { }
-        )
+    fun `invoke - WHEN a product didn't load THEN its line falls back to the Cart's name, image and price`() {
+        val image = Media.Image(url = "https://cart/image.jpg", alt = "cart image")
+        val line = bagLines[0].copy(image = image)
 
-        assertEquals("variant1", content.items[0].productCardData.reference)
-        assertEquals("variant11", content.items[1].productCardData.reference)
+        val content = uiFactory(bag = Bag(listOf(line), aud(100.0)), productsBySlug = emptyMap(), onProductClick = { })
+
+        val item = content.items.single()
+        assertEquals("Cart name 1", item.productCardData.name)
+        assertEquals(image.toImageUI(), item.productCardData.image)
+        assertEquals("", item.productCardData.brand)
+        assertEquals(PriceType.Default(price = "$100"), item.productCardData.price)
+        assertTrue(item.productCardData.isAvailable)
+        assertNull(item.notice)
     }
 
     @Test
-    fun `invoke - WHEN stock is at or below the low stock threshold THEN the line carries a low stock notice`() = runTest {
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = products,
-            onProductClick = { }
-        )
+    fun `invoke - WHEN the line has no variant id THEN its SKU still resolves the variant`() {
+        val line = bagLines[1].copy(variantId = null)
 
-        assertEquals(BagItemNotice.LowStock(remaining = 1), content.items[0].notice)
-        assertTrue(content.items[0].productCardData.isAvailable)
-        assertNull(content.items[1].notice)
+        val content = uiFactory(bag = Bag(listOf(line), aud(100.0)), productsBySlug = productsBySlug, onProductClick = { })
+
+        assertEquals("M", content.items.single().productCardData.size)
     }
 
     @Test
-    fun `invoke - WHEN a variant is out of stock THEN the line is unavailable and carries the notice`() = runTest {
-        val soldOut = products.map { product ->
-            product.copy(variants = product.variants.map { it.copy(availableQuantity = 0) })
-        }
+    fun `invoke - WHEN the variant is gone from the product THEN the line is unavailable rather than another variant`() {
+        val line = bagLines[1].copy(variantId = "gone", sku = "gone")
 
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = soldOut,
-            onProductClick = { }
-        )
+        val content = uiFactory(bag = Bag(listOf(line), aud(100.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        assertEquals(BagItemNotice.Unavailable, content.items[0].notice)
-        assertFalse(content.items[0].productCardData.isAvailable)
+        val item = content.items.single()
+        assertFalse(item.productCardData.isAvailable)
+        assertEquals(BagItemNotice.Unavailable, item.notice)
+        assertEquals("", item.productCardData.color)
     }
 
     @Test
-    fun `invoke - WHEN a slug and sku split differently THEN the line keys stay distinct`() = runTest {
-        // Joined plainly, ("a-b", "c") and ("a", "b-c") both flatten to "a-b-c" — a duplicate key.
-        val entries = listOf(
-            BagProduct(productId = "a-b", variantSku = "c"),
-            BagProduct(productId = "a", variantSku = "b-c")
-        )
-        val catalogue = listOf(
-            products[0].copy(slug = "a-b", variants = products[0].variants.map { it.copy(sku = "c") }),
-            products[0].copy(slug = "a", variants = products[0].variants.map { it.copy(sku = "b-c") })
-        )
+    fun `invoke - WHEN the Bag holds more units than are in stock THEN the notice says so`() {
+        val line = bagLines[0].copy(quantity = 2)
 
-        val content = uiFactory(
-            bagProducts = entries,
-            products = catalogue,
-            onProductClick = { }
-        )
+        val content = uiFactory(bag = Bag(listOf(line), aud(200.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        assertEquals(2, content.items.size)
-        assertEquals(2, content.items.map { it.id }.toSet().size)
+        assertEquals(BagItemNotice.ExceedsStock(remaining = 1), content.items.single().notice)
     }
 
     @Test
-    fun `invoke - WHEN the saved sku is gone THEN the line is unavailable rather than another variant`() = runTest {
-        // The product still loads, but no longer offers the variant the bag holds.
-        val renamedSku = products.map { product ->
-            product.copy(variants = product.variants.map { it.copy(sku = "some-other-sku") })
-        }
-
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = renamedSku,
-            onProductClick = { }
-        )
-
-        val line = content.items[0].productCardData
-        assertFalse(line.isAvailable)
-        assertEquals(BagItemNotice.Unavailable, content.items[0].notice)
-        // Nothing from the substituted variant leaks into the line, and it adds nothing to the total.
-        assertEquals("", line.reference)
-        assertEquals("", line.color)
-        // The currency still resolves off the product, so the summary reads "$0.00" rather than
-        // leaving the total out.
-        assertEquals("${'$'}0.00", content.summary.totalFormatted)
-    }
-
-    @Test
-    fun `invoke - WHEN the bag holds more units than are in stock THEN the notice says so`() = runTest {
-        // Two units of a variant with one left: "Only 1 item left!" under "Quantity: 2" would read
-        // as if nothing were wrong.
-        val twoOfTheSame = listOf(bagProducts[0], bagProducts[0])
-
-        val content = uiFactory(
-            bagProducts = twoOfTheSame,
-            products = products,
-            onProductClick = { }
-        )
-
-        assertEquals(2, content.items[0].productCardData.quantity)
-        assertEquals(BagItemNotice.ExceedsStock(remaining = 1), content.items[0].notice)
-        // Still available and still charged in full — the total has to agree with the row's own
-        // arithmetic, and the notice carries the problem.
-        assertTrue(content.items[0].productCardData.isAvailable)
-        assertEquals("${'$'}200.00", content.summary.totalFormatted)
-    }
-
-    @Test
-    fun `invoke - WHEN a product has no variants THEN the line is unavailable and says so`() = runTest {
-        val variantless = products.map { it.copy(variants = emptyList()) }
-
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = variantless,
-            onProductClick = { }
-        )
-
-        assertFalse(content.items[0].productCardData.isAvailable)
-        assertEquals(BagItemNotice.Unavailable, content.items[0].notice)
-    }
-
-    @Test
-    fun `invoke - WHEN a product failed to load THEN its line is skipped instead of throwing`() = runTest {
-        val withUnknown = bagProducts + BagProduct(productId = "missing-product", variantSku = "missing")
-
-        val content = uiFactory(
-            bagProducts = withUnknown,
-            products = products,
-            onProductClick = { }
-        )
-
-        assertEquals(2, content.items.size)
-    }
-
-    @Test
-    fun `invoke - WHEN the variant has no media THEN the line falls back to the product's images`() = runTest {
-        val variantsWithoutMedia = products.map { product ->
-            product.copy(variants = product.variants.map { it.copy(media = emptyList()) })
-        }
-
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = variantsWithoutMedia,
-            onProductClick = { }
-        )
-
-        val withImages = variantsWithoutMedia.first { it.images.isNotEmpty() }
-        val line = content.items.first { it.bagProduct.productId == withImages.slug }
-        assertEquals(withImages.images.first().toImageUI(), line.productCardData.image)
-    }
-
-    @Test
-    fun `invoke - WHEN the variant no longer resolves THEN the product's images are not borrowed`() = runTest {
-        val renamedSku = products.map { product ->
-            product.copy(variants = product.variants.map { it.copy(sku = "some-other-sku") })
-        }
-
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = renamedSku,
-            onProductClick = { }
-        )
-
-        val withImages = renamedSku.first { it.images.isNotEmpty() }
-        val line = content.items.first { it.bagProduct.productId == withImages.slug }
-        assertEquals(null.toImageUI(), line.productCardData.image)
-    }
-
-    @Test
-    fun `invoke - WHEN the bag is empty THEN there are no items and no total`() = runTest {
-        val content = uiFactory(
-            bagProducts = emptyList(),
-            products = products,
-            onProductClick = { }
-        )
+    fun `invoke - WHEN the Bag is empty THEN there are no items and no total`() {
+        val content = uiFactory(bag = Bag.EMPTY, productsBySlug = productsBySlug, onProductClick = { })
 
         assertTrue(content.items.isEmpty())
         assertNull(content.summary.totalFormatted)
     }
 
-    @Test
-    fun `invoke - WHEN no line resolves a variant and no product has a price range THEN the total is null`() = runTest {
-        // Neither source offers a currency, so there is nothing to format — the summary leaves the
-        // total out rather than drawing the "Total" label against an empty string.
-        val unpriceable = products.map { product ->
-            product.copy(
-                variants = product.variants.map { it.copy(sku = "some-other-sku") },
-                priceRange = null
-            )
-        }
-
-        val content = uiFactory(
-            bagProducts = bagProducts,
-            products = unpriceable,
-            onProductClick = { }
-        )
-
-        assertNull(content.summary.totalFormatted)
-    }
+    // onClick is a lambda and never equal across instances, so compare with it stripped.
+    private fun BagContentUi.withoutClicks() = copy(
+        items = items.map { it.copy(productCardData = it.productCardData.copy(onClick = null)) }.toImmutableList()
+    )
 }

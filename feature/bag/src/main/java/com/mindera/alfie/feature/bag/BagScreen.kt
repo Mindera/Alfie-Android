@@ -44,7 +44,7 @@ import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
 import com.mindera.alfie.feature.bag.models.BagProductUi
 import com.mindera.alfie.feature.uievent.handleUIEvents
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.BagLine
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
@@ -86,7 +86,7 @@ internal fun BagScreen(
 
     BagScreenContent(
         state = state,
-        onRemoveClick = { line -> viewModel.onRemoveClicked(line.bagProduct, line.productCardData.quantity) },
+        onRemoveClick = { item -> viewModel.onRemoveClicked(item.line) },
         onSaveClick = viewModel::onSaveClicked,
         onRetryClick = viewModel::onRetry
     )
@@ -96,7 +96,7 @@ internal fun BagScreen(
 private fun BagScreenContent(
     state: BagUiState,
     onRemoveClick: ClickEventOneArg<BagProductUi>,
-    onSaveClick: ClickEventOneArg<BagProduct>,
+    onSaveClick: ClickEventOneArg<BagLine>,
     onRetryClick: ClickEvent
 ) {
     when (state) {
@@ -125,7 +125,7 @@ private fun BagScreenContent(
 private fun BagList(
     content: BagContentUi,
     onRemoveClick: ClickEventOneArg<BagProductUi>,
-    onSaveClick: ClickEventOneArg<BagProduct>
+    onSaveClick: ClickEventOneArg<BagLine>
 ) {
     val theme = LocalTheme.current
     Column(modifier = Modifier.fillMaxSize()) {
@@ -169,7 +169,7 @@ private fun BagList(
 private fun BagLineItem(
     item: BagProductUi,
     onRemoveClick: ClickEventOneArg<BagProductUi>,
-    onSaveClick: ClickEventOneArg<BagProduct>
+    onSaveClick: ClickEventOneArg<BagLine>
 ) {
     val theme = LocalTheme.current
     val swipeState = rememberSwipeActionsState()
@@ -188,7 +188,7 @@ private fun BagLineItem(
                 icon = AlfieIcons.Wishlist,
                 label = saveLabel,
                 contentDescription = saveDescription,
-                onClick = { onSaveClick(item.bagProduct) }
+                onClick = { onSaveClick(item.line) }
             ),
             SwipeAction(
                 icon = AlfieIcons.Close,

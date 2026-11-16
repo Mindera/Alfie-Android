@@ -361,6 +361,7 @@ private fun ProductDetailsCtaRow(
             modifier = Modifier.weight(1f),
             type = ButtonType.Primary,
             isShimmering = isLoading,
+            isLoading = state.details.isAddingToBag,
             buttonSize = ButtonSize.Medium,
             text = text,
             isEnabled = hasSelectedSize && isSelectionSoldOut.not(),

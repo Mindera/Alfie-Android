@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "com.mindera.alfie.data.datastore";
+option java_multiple_files = true;
+
+// The device's link to its BFF Cart. Kept apart from the user preferences so that dropping an
+// expired Cart id can't touch anything else.
+message CartSessionProto {
+
+    // Empty when the device has no Cart yet.
+    string cart_id = 1;
+}

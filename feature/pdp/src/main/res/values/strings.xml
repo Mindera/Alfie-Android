@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="product_details_add_to_bag">Add to bag</string>
+    <string name="product_details_added_to_bag">Added to bag</string>
+    <string name="product_details_add_to_bag_error">Couldn\'t add to bag. Please try again.</string>
     <string name="product_details_section_delivery_and_returns">Delivery &amp; Returns</string>
     <string name="product_details_section_payment_options">Payment Options</string>
     <string name="product_details_share_text">Brand: %1$s\nName: %2$s\nPrice: %3$s\nUrl: %4$s</string>

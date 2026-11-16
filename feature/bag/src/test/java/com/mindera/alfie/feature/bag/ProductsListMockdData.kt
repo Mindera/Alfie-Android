@@ -7,7 +7,8 @@ import com.mindera.alfie.feature.bag.models.BagItemNotice
 import com.mindera.alfie.feature.bag.models.BagProductUi
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
 import com.mindera.alfie.feature.mappers.toImageUI
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.Bag
+import com.mindera.alfie.repository.bag.BagLine
 import com.mindera.alfie.repository.product.model.Price
 import com.mindera.alfie.repository.product.model.PriceRange
 import com.mindera.alfie.repository.product.model.Product
@@ -24,6 +25,8 @@ private val image1 = Media.Image(
 
 private val variant1Image = Media.Image(url = "", alt = "Media")
 
+internal fun aud(amount: Double) = Money(amount = amount, amountFormatted = "$" + amount.toInt(), currencyCode = "AUS")
+
 internal val products = listOf(
     Product(
         id = "123456",
@@ -33,18 +36,12 @@ internal val products = listOf(
         descriptionHtml = "",
         defaultVariantId = "variant2",
         images = listOf(image1),
-        priceRange = PriceRange(
-            low = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
-            high = Money(amount = 200.0, amountFormatted = "$200", currencyCode = "AUS")
-        ),
+        priceRange = PriceRange(low = aud(100.0), high = aud(200.0)),
         variants = listOf(
             Variant(
                 id = "variant1Id",
                 sku = "variant1",
-                price = Price(
-                    amount = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
-                    was = Money(amount = 200.0, amountFormatted = "$200", currencyCode = "AUS")
-                ),
+                price = Price(amount = aud(100.0), was = aud(200.0)),
                 options = listOf(
                     VariantOption(name = "color", value = "blue"),
                     VariantOption(name = "size", value = "M")
@@ -62,18 +59,12 @@ internal val products = listOf(
         descriptionHtml = "",
         defaultVariantId = null,
         images = emptyList(),
-        priceRange = PriceRange(
-            low = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
-            high = null
-        ),
+        priceRange = PriceRange(low = aud(100.0), high = null),
         variants = listOf(
             Variant(
                 id = "variant11Id",
                 sku = "variant11",
-                price = Price(
-                    amount = Money(amount = 100.0, amountFormatted = "$100", currencyCode = "AUS"),
-                    was = null
-                ),
+                price = Price(amount = aud(100.0), was = null),
                 options = listOf(
                     VariantOption(name = "color", value = "blue"),
                     VariantOption(name = "size", value = "M")
@@ -85,15 +76,42 @@ internal val products = listOf(
     )
 )
 
-internal val bagProducts = listOf(
-    BagProduct(productId = "123456-product", variantSku = "variant1"),
-    BagProduct(productId = "654321-product", variantSku = "variant11")
+internal val productsBySlug = products.associateBy { it.slug }
+
+/** The Cart's view of the two products above: one unit of each. */
+internal val bagLines = listOf(
+    BagLine(
+        id = "line-1",
+        productId = "123456",
+        variantId = "variant1Id",
+        sku = "variant1",
+        slug = "123456-product",
+        name = "Cart name 1",
+        image = null,
+        quantity = 1,
+        unitPrice = aud(100.0),
+        lineTotal = aud(100.0)
+    ),
+    BagLine(
+        id = "line-2",
+        productId = "654321",
+        variantId = "variant11Id",
+        sku = "variant11",
+        slug = "654321-product",
+        name = "Cart name 2",
+        image = null,
+        quantity = 1,
+        unitPrice = aud(100.0),
+        lineTotal = aud(100.0)
+    )
 )
+
+internal val bag = Bag(lines = bagLines, subtotal = aud(200.0))
 
 internal val bagProductUi = persistentListOf(
     BagProductUi(
-        id = "14:123456-product:variant1",
-        bagProduct = bagProducts[0],
+        id = "line-1",
+        line = bagLines[0],
         notice = BagItemNotice.LowStock(remaining = 1),
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
@@ -108,8 +126,8 @@ internal val bagProductUi = persistentListOf(
         )
     ),
     BagProductUi(
-        id = "14:654321-product:variant11",
-        bagProduct = bagProducts[1],
+        id = "line-2",
+        line = bagLines[1],
         notice = null,
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
@@ -127,15 +145,5 @@ internal val bagProductUi = persistentListOf(
 
 internal val bagContentUi = BagContentUi(
     items = bagProductUi,
-    summary = BagSummaryUi(totalFormatted = "$200.00")
-)
-
-internal val emptyBagContentUi = BagContentUi(
-    items = persistentListOf(),
-    summary = BagSummaryUi(totalFormatted = null)
-)
-
-internal val singleLineBagContentUi = BagContentUi(
-    items = persistentListOf(bagProductUi[0]),
-    summary = BagSummaryUi(totalFormatted = "$100.00")
+    summary = BagSummaryUi(totalFormatted = "$200")
 )
