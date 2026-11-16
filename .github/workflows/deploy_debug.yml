@@ -12,6 +12,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Pin the JDK instead of using the runner default: ubuntu-latest moved to an image whose
+      # default JDK is 25, which detekt 1.23 rejects (--jvm-target accepts up to 22). 21 matches
+      # the JDK the dependency-submission workflow builds with.
+      - name: Set up JDK
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
