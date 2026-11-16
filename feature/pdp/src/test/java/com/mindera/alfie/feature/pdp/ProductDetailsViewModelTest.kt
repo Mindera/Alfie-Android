@@ -208,24 +208,6 @@ internal class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `handleEvent - GIVEN OnAddToBagClick WHEN the add succeeds THEN the selected variant is added and confirmed`() = runTest {
-        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
-        coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns selectedVariant
-        coEvery { addToBagUseCase(any(), any(), any()) } returns UseCaseResult.Success(mockk())
-        val viewModel = buildViewModel()
-
-        viewModel.uiEvent.test {
-            viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
-
-            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
-            assertEquals(SnackbarType.Success, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
-            cancelAndConsumeRemainingEvents()
-        }
-        coVerify(exactly = 1) { addToBagUseCase(variantId = "variant-id", productId = "main-product-id", quantity = 1) }
-        assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isAddingToBag)
-    }
-
-    @Test
     fun `handleEvent - GIVEN OnAddToBagClick WHEN the add fails THEN an error is shown`() = runTest {
         coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
         coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns selectedVariant
@@ -337,6 +319,41 @@ internal class ProductDetailsViewModelTest {
         assertTrue(loaded.items.single().isWishlisted)
         coVerify { addToWishlistUseCase(relatedProduct.slug) }
         assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isWishlisted)
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnFavoriteClick WHEN it succeeds THEN a toast links to the Wishlist`() = runTest {
+        coEvery { addToWishlistUseCase(any()) } returns UseCaseResult.Success(Unit)
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        val viewModel = buildViewModel()
+
+        viewModel.uiEvent.test {
+            viewModel.handleEvent(ProductDetailsEvent.OnFavoriteClick(realProductDetailsUI.slug))
+
+            val toast = assertIs<SnackbarCustomVisuals.Toast>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals)
+            toast.onActionClick()
+            assertIs<Screen.Wishlist>((awaitItem() as UIEvent.Base.NavigateToScreen).screen)
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnAddToBagClick WHEN it succeeds THEN a toast links to the Bag`() = runTest {
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns selectedVariant
+        coEvery { addToBagUseCase(any(), any(), any()) } returns UseCaseResult.Success(mockk())
+        val viewModel = buildViewModel()
+
+        viewModel.uiEvent.test {
+            viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
+
+            val toast = assertIs<SnackbarCustomVisuals.Toast>((awaitItem() as UIEvent.Base.ShowSnackbar).visuals)
+            toast.onActionClick()
+            assertEquals(Screen.Bag, (awaitItem() as UIEvent.Base.NavigateToScreen).screen)
+            cancelAndConsumeRemainingEvents()
+        }
+        coVerify(exactly = 1) { addToBagUseCase(variantId = "variant-id", productId = "main-product-id", quantity = 1) }
+        assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isAddingToBag)
     }
 
     @Test

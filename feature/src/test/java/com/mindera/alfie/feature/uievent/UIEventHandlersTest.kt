@@ -6,7 +6,6 @@ import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomHostState
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
-import com.mindera.alfie.designsystem.component.snackbar.SnackbarPriority
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarTimeDuration
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -18,9 +17,14 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import kotlin.test.assertEquals
 
 @ExtendWith(MockKExtension::class)
 class UIEventHandlersTest {
@@ -137,7 +141,6 @@ class UIEventHandlersTest {
             withDismissAction = true,
             singleLine = true,
             timeDuration = SnackbarTimeDuration.SHORT,
-            priority = SnackbarPriority.NORMAL,
             onActionClick = {}
         )
         val event = UIEvent.Base.ShowSnackbar(visuals = visuals)
@@ -145,6 +148,23 @@ class UIEventHandlersTest {
         event.handle()
 
         coVerify { snackbarHostState.showSnackbar(visuals) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `collectUIEvents - GIVEN a snackbar on screen THEN later events are handled without waiting for it`() = runTest {
+        val snackbar = UIEvent.Base.ShowSnackbar(SnackbarCustomVisuals.Toast(message = "Added."))
+        val handled = mutableListOf<UIEvent>()
+
+        // The snackbar never leaves the screen, so collection only finishes if it is not waited on.
+        flowOf(snackbar, UIEvent.Base.NavigateBack).collectUIEvents(snackbarScope = backgroundScope) { event ->
+            handled += event
+            if (event is UIEvent.Base.ShowSnackbar) awaitCancellation()
+        }
+        assertEquals(listOf<UIEvent>(UIEvent.Base.NavigateBack), handled)
+
+        runCurrent()
+        assertEquals(listOf<UIEvent>(UIEvent.Base.NavigateBack, snackbar), handled)
     }
 
     private suspend fun UIEvent.Base.handle() {

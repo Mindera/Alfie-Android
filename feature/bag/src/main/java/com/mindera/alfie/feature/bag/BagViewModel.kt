@@ -16,6 +16,7 @@ import com.mindera.alfie.domain.usecase.product.GetProductUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.feature.bag.BagUiState.Data.Loading
 import com.mindera.alfie.feature.bag.models.BagContentUi
+import com.mindera.alfie.feature.snackbar.ActionToast
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import com.mindera.alfie.repository.bag.Bag
@@ -140,11 +141,9 @@ internal class BagViewModel @Inject constructor(
             removeFromBagUseCase(line.id).doOnResult(
                 onSuccess = {
                     showSnackbar(
-                        SnackbarCustomVisuals.Snackbar(
-                            type = SnackbarType.Success,
-                            message = context.getString(R.string.bag_item_removed),
-                            actionLabel = line.variantId?.let { context.getString(R.string.bag_item_removed_undo) },
-                            onActionClick = { undoRemove(line) }
+                        ActionToast.removed(
+                            context = context,
+                            onUndo = { undoRemove(line) }
                         )
                     )
                 },

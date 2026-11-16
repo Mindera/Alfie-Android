@@ -3,7 +3,6 @@ package com.mindera.alfie.designsystem.component.snackbar
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarVisuals
-import com.mindera.alfie.designsystem.component.snackbar.SnackbarPriority.NORMAL
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarTimeDuration.SHORT
 
 /**
@@ -12,7 +11,6 @@ import com.mindera.alfie.designsystem.component.snackbar.SnackbarTimeDuration.SH
  */
 sealed interface SnackbarCustomVisuals : SnackbarVisuals {
     val timeDuration: SnackbarTimeDuration
-    val priority: SnackbarPriority
     val onActionClick: () -> Unit
 
     override val duration: SnackbarDuration
@@ -26,7 +24,6 @@ sealed interface SnackbarCustomVisuals : SnackbarVisuals {
         override val withDismissAction: Boolean = true,
         val singleLine: Boolean = true,
         override val timeDuration: SnackbarTimeDuration = SHORT,
-        override val priority: SnackbarPriority = NORMAL,
         @DrawableRes val icon: Int? = null,
         override val onActionClick: () -> Unit = {}
     ) : SnackbarCustomVisuals
@@ -36,7 +33,6 @@ sealed interface SnackbarCustomVisuals : SnackbarVisuals {
         override val message: String,
         override val actionLabel: String? = null,
         override val timeDuration: SnackbarTimeDuration = SHORT,
-        override val priority: SnackbarPriority = NORMAL,
         override val onActionClick: () -> Unit = {}
     ) : SnackbarCustomVisuals {
         override val withDismissAction: Boolean = false

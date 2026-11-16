@@ -10,6 +10,7 @@ import com.mindera.alfie.core.navigation.Screen
 import com.mindera.alfie.core.navigation.arguments.ProductDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.core.navigation.arguments.webview.webViewNavArgs
+import com.mindera.alfie.core.navigation.arguments.wishlist.wishlistNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
@@ -31,6 +32,7 @@ import com.mindera.alfie.feature.pdp.model.ProductDetailsUIState.Error
 import com.mindera.alfie.feature.pdp.model.RelatedProductsUIState
 import com.mindera.alfie.feature.pdp.model.ShareEvent
 import com.mindera.alfie.feature.pdp.model.SizeUI
+import com.mindera.alfie.feature.snackbar.ActionToast
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -181,12 +183,7 @@ internal class ProductDetailsViewModel @Inject constructor(
 
             addToBagUseCase(variantId = variant.id, productId = loaded.details.id).doOnResult(
                 onSuccess = {
-                    showSnackbar(
-                        SnackbarCustomVisuals.Snackbar(
-                            type = SnackbarType.Success,
-                            message = context.getString(R.string.product_details_added_to_bag)
-                        )
-                    )
+                    showSnackbar(ActionToast.addedToBag(context = context, onViewBag = { navigateTo(screen = Screen.Bag) }))
                 },
                 onError = {
                     showSnackbar(
@@ -266,7 +263,7 @@ internal class ProductDetailsViewModel @Inject constructor(
             val result = if (wasWishlisted) removeWishlistUseCase(slug) else addToWishlistUseCase(slug)
 
             result.doOnResult(
-                onSuccess = {},
+                onSuccess = { showWishlistUpdated(added = !wasWishlisted) },
                 onError = {
                     setWishlisted(slug, wasWishlisted)
                     showSnackbar(
@@ -280,6 +277,16 @@ internal class ProductDetailsViewModel @Inject constructor(
                 }
             )
         }
+    }
+
+    private fun showWishlistUpdated(added: Boolean) {
+        showSnackbar(
+            ActionToast.wishlistUpdated(
+                context = context,
+                added = added,
+                onViewWishlist = { navigateTo(screen = Screen.Wishlist(args = wishlistNavArgs())) }
+            )
+        )
     }
 
     /**
