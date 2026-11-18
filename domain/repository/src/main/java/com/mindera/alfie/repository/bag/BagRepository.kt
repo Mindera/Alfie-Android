@@ -24,7 +24,7 @@ interface BagRepository {
      *
      * [productId] is optional: BigCommerce needs it and Shopify ignores it.
      */
-    suspend fun addToBag(variantId: String, productId: String?, quantity: Int = 1): RepositoryResult<Bag>
+    suspend fun addToBag(variantId: String, productId: String?, quantity: Int): RepositoryResult<Bag>
 
     /** Removes the line with this Cart line id, whatever its quantity. */
     suspend fun removeFromBag(lineId: String): RepositoryResult<Bag>

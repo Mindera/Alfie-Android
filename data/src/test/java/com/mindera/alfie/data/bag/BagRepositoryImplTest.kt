@@ -66,7 +66,7 @@ internal class BagRepositoryImplTest {
         cartSession.cartId = "cart-1"
         cartService.cart = cart(id = "cart-1", line(id = "line-1", variantId = "v1"))
 
-        subject.addToBag(variantId = "v1", productId = null)
+        subject.addToBag(variantId = "v1", productId = null, quantity = 1)
 
         assertEquals(0, cartService.createCartCalls)
         assertEquals(listOf("cart-1"), cartService.addToCartIds)
@@ -78,8 +78,8 @@ internal class BagRepositoryImplTest {
         cartService.delayMillis = 100
 
         listOf(
-            async { subject.addToBag(variantId = "v1", productId = null) },
-            async { subject.addToBag(variantId = "v2", productId = null) }
+            async { subject.addToBag(variantId = "v1", productId = null, quantity = 1) },
+            async { subject.addToBag(variantId = "v2", productId = null, quantity = 1) }
         ).awaitAll()
 
         assertEquals(1, cartService.createCartCalls)
@@ -107,7 +107,7 @@ internal class BagRepositoryImplTest {
         subject.getBag().test {
             assertEquals(RepositoryResult.Success(Bag.EMPTY), awaitItem())
 
-            val result = subject.addToBag(variantId = "v1", productId = null)
+            val result = subject.addToBag(variantId = "v1", productId = null, quantity = 1)
 
             assertEquals(ErrorType.SERVER_ERROR, assertIs<RepositoryResult.Error>(result).errorResult.type)
             expectNoEvents()
@@ -183,10 +183,6 @@ internal class BagRepositoryImplTest {
 
         override suspend fun setCartId(cartId: String) {
             this.cartId = cartId
-        }
-
-        override suspend fun clearCartId() {
-            cartId = null
         }
     }
 

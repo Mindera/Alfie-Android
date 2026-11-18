@@ -6,7 +6,7 @@ import com.mindera.alfie.repository.bag.BagLine
 
 /** One Bag line as the Bag screen draws it. [id] is the Cart's line id. */
 @Stable
-data class BagProductUi(
+data class BagLineUi(
     val id: String,
     val line: BagLine,
     val productCardData: ProductCardType.Horizontal,

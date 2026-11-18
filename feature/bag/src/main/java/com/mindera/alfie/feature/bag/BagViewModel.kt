@@ -57,7 +57,7 @@ internal class BagViewModel @Inject constructor(
     private val productsBySlug = mutableMapOf<String, Product>()
 
     // The Bag as last built, before hiding the lines being removed.
-    private var content: BagContentUi? = null
+    private var lastBuiltBag: BagContentUi? = null
 
     // Line ids whose remove is in flight or just succeeded. They stay hidden until the Bag that no
     // longer holds them arrives, so the row never flickers back.
@@ -79,16 +79,16 @@ internal class BagViewModel @Inject constructor(
                 result.doOnResult(
                     onSuccess = { bag ->
                         fetchMissingProducts(bag)
-                        content = bagUiFactory(
+                        lastBuiltBag = bagUiFactory(
                             bag = bag,
                             productsBySlug = productsBySlug,
                             onProductClick = ::openProduct
                         )
                         removingLineIds.retainAll(bag.lines.map { it.id }.toSet())
-                        publish()
+                        showVisibleLines()
                     },
                     onError = {
-                        content = null
+                        lastBuiltBag = null
                         _state.value = BagUiState.Error
                     }
                 )
@@ -110,13 +110,14 @@ internal class BagViewModel @Inject constructor(
         }
     }
 
-    private fun publish() {
-        val built = content ?: return
-        val visible = built.items.filterNot { it.id in removingLineIds }
+    // Shows the last built Bag minus the lines being removed.
+    private fun showVisibleLines() {
+        val bag = lastBuiltBag ?: return
+        val visible = bag.items.filterNot { it.id in removingLineIds }
         _state.value = if (visible.isEmpty()) {
             BagUiState.Data.Empty
         } else {
-            BagUiState.Data.Loaded(built.copy(items = visible.toImmutableList()))
+            BagUiState.Data.Loaded(bag.copy(items = visible.toImmutableList()))
         }
     }
 
@@ -135,7 +136,7 @@ internal class BagViewModel @Inject constructor(
      */
     internal fun onRemoveClicked(line: BagLine) {
         removingLineIds += line.id
-        publish()
+        showVisibleLines()
 
         viewModelScope.launch {
             removeFromBagUseCase(line.id).doOnResult(
@@ -149,7 +150,7 @@ internal class BagViewModel @Inject constructor(
                 },
                 onError = {
                     removingLineIds -= line.id
-                    publish()
+                    showVisibleLines()
                     showSnackbar(
                         SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
@@ -162,20 +163,23 @@ internal class BagViewModel @Inject constructor(
     }
 
     private fun undoRemove(line: BagLine) {
-        val variantId = line.variantId ?: return
+        // The BFF's Cart line declares variantId nullable; without it there's nothing to add back.
+        val variantId = line.variantId ?: return showRestoreError()
         viewModelScope.launch {
             addToBagUseCase(variantId = variantId, productId = line.productId, quantity = line.quantity).doOnResult(
                 onSuccess = { },
-                onError = {
-                    showSnackbar(
-                        SnackbarCustomVisuals.Snackbar(
-                            type = SnackbarType.Error,
-                            message = context.getString(R.string.bag_item_restore_error)
-                        )
-                    )
-                }
+                onError = { showRestoreError() }
             )
         }
+    }
+
+    private fun showRestoreError() {
+        showSnackbar(
+            SnackbarCustomVisuals.Snackbar(
+                type = SnackbarType.Error,
+                message = context.getString(R.string.bag_item_restore_error)
+            )
+        )
     }
 
     /**

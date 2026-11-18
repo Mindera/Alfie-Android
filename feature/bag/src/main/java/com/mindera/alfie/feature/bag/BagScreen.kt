@@ -42,7 +42,7 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.bag.component.BagSummary
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.uievent.handleUIEvents
 import com.mindera.alfie.repository.bag.BagLine
 import com.ramcosta.composedestinations.annotation.Destination
@@ -95,7 +95,7 @@ internal fun BagScreen(
 @Composable
 private fun BagScreenContent(
     state: BagUiState,
-    onRemoveClick: ClickEventOneArg<BagProductUi>,
+    onRemoveClick: ClickEventOneArg<BagLineUi>,
     onSaveClick: ClickEventOneArg<BagLine>,
     onRetryClick: ClickEvent
 ) {
@@ -124,7 +124,7 @@ private fun BagScreenContent(
 @Composable
 private fun BagList(
     content: BagContentUi,
-    onRemoveClick: ClickEventOneArg<BagProductUi>,
+    onRemoveClick: ClickEventOneArg<BagLineUi>,
     onSaveClick: ClickEventOneArg<BagLine>
 ) {
     val theme = LocalTheme.current
@@ -167,8 +167,8 @@ private fun BagList(
 /** One bag row: the product card, its stock notice, and the actions revealed by swiping. */
 @Composable
 private fun BagLineItem(
-    item: BagProductUi,
-    onRemoveClick: ClickEventOneArg<BagProductUi>,
+    item: BagLineUi,
+    onRemoveClick: ClickEventOneArg<BagLineUi>,
     onSaveClick: ClickEventOneArg<BagLine>
 ) {
     val theme = LocalTheme.current

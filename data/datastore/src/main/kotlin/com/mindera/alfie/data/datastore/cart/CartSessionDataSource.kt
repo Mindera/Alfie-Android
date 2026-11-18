@@ -9,6 +9,4 @@ interface CartSessionDataSource {
     suspend fun getCartId(): String?
 
     suspend fun setCartId(cartId: String)
-
-    suspend fun clearCartId()
 }

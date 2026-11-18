@@ -4,7 +4,7 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
 import com.mindera.alfie.feature.mappers.cardImageFor
 import com.mindera.alfie.feature.mappers.toImageUI
@@ -41,7 +41,7 @@ internal class BagUiFactory @Inject constructor() {
     ): BagContentUi = BagContentUi(
         items = bag.lines.map { line ->
             val product = line.slug?.let(productsBySlug::get)
-            line.toBagProductUi(
+            line.toBagLineUi(
                 product = product,
                 variant = product?.variantFor(line),
                 onProductClick = onProductClick
@@ -57,11 +57,11 @@ internal class BagUiFactory @Inject constructor() {
         variants.firstOrNull { line.variantId != null && it.id == line.variantId }
             ?: variants.firstOrNull { line.sku != null && it.sku == line.sku }
 
-    private fun BagLine.toBagProductUi(
+    private fun BagLine.toBagLineUi(
         product: Product?,
         variant: Variant?,
         onProductClick: ClickEventOneArg<String>
-    ) = BagProductUi(
+    ) = BagLineUi(
         id = id,
         line = this,
         notice = toNotice(product = product, variant = variant),

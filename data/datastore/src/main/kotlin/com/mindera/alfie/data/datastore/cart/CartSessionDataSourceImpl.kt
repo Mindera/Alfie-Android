@@ -21,10 +21,4 @@ internal class CartSessionDataSourceImpl @Inject constructor(
             dataStore.updateData { it.toBuilder().setCartId(cartId).build() }
         }
     }
-
-    override suspend fun clearCartId() {
-        withContext(dispatcherProvider.io()) {
-            dataStore.updateData { it.toBuilder().clearCartId().build() }
-        }
-    }
 }

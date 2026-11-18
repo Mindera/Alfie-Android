@@ -27,7 +27,9 @@ Android follows it.
   The Mock BFF and SCAYLE return an empty Cart instead. On `NOT_FOUND` the app drops the id. A
   launch fetch then shows the empty Bag, and an add retries once as `createCart`. An empty Cart
   keeps its id, because adds to it still work. Cart calls read the GraphQL `extensions.code`,
-  because the app's generic error mapper doesn't.
+  because the app's generic error mapper doesn't. This lands with
+  [#108](https://github.com/Mindera/Alfie-Android/issues/108); until then a `NOT_FOUND` surfaces as
+  an ordinary error.
 - **The Bag line row takes its other fields from the product, fetched by slug.** `CartItem` has no
   brand, colour, size, was-price or stock. Android's Bag already fetches each product from the
   BFF, so it keeps doing that, now keyed by `CartItem.slug`. Quantity, prices and totals come from

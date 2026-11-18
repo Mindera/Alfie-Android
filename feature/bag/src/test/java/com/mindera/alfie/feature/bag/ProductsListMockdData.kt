@@ -4,7 +4,7 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
 import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.repository.bag.Bag
@@ -108,8 +108,8 @@ internal val bagLines = listOf(
 
 internal val bag = Bag(lines = bagLines, subtotal = aud(200.0))
 
-internal val bagProductUi = persistentListOf(
-    BagProductUi(
+internal val bagLineUi = persistentListOf(
+    BagLineUi(
         id = "line-1",
         line = bagLines[0],
         notice = BagItemNotice.LowStock(remaining = 1),
@@ -125,7 +125,7 @@ internal val bagProductUi = persistentListOf(
             isAvailable = true
         )
     ),
-    BagProductUi(
+    BagLineUi(
         id = "line-2",
         line = bagLines[1],
         notice = null,
@@ -144,6 +144,6 @@ internal val bagProductUi = persistentListOf(
 )
 
 internal val bagContentUi = BagContentUi(
-    items = bagProductUi,
+    items = bagLineUi,
     summary = BagSummaryUi(totalFormatted = "$200")
 )

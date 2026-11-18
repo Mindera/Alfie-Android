@@ -6,7 +6,7 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
 import com.mindera.alfie.repository.bag.BagLine
 import com.mindera.alfie.repository.shared.model.Money
@@ -48,7 +48,7 @@ private fun previewItem(
     productId: String,
     card: ProductCardType.Horizontal,
     notice: BagItemNotice? = null
-) = BagProductUi(
+) = BagLineUi(
     id = "$productId-${card.reference}",
     line = BagLine(
         id = "$productId-${card.reference}",

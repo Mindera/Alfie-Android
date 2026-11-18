@@ -217,6 +217,22 @@ internal class BagViewModelTest {
     }
 
     @Test
+    fun `onRemoveClicked - WHEN the line has no variant THEN undo says it couldn't restore`() = runTest {
+        coEvery { removeFromBagUseCase(any()) } returns UseCaseResult.Success(Bag.EMPTY)
+        val viewModel = buildViewModel(emitter = UIEventEmitterDelegate())
+
+        viewModel.uiEvent.test {
+            viewModel.onRemoveClicked(bagLines[0].copy(variantId = null))
+            (awaitItem() as UIEvent.Base.ShowSnackbar).visuals.onActionClick()
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
+            coVerify(exactly = 0) { addToBagUseCase(any(), any(), any()) }
+            cancelAndConsumeRemainingEvents()
+        }
+    }
+
+    @Test
     fun `onSaveClicked - adds the product to the wishlist by slug and leaves the Bag alone`() = runTest {
         val viewModel = buildViewModel()
 

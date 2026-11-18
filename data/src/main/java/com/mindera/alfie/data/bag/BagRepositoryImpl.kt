@@ -73,13 +73,13 @@ internal class BagRepositoryImpl @Inject constructor(
         } else {
             cartService.addToCart(cartId = cartId, lines = lines)
         }
-        cart.toBag().publish()
+        cart.toBag().replaceBagOnSuccess()
     }
 
     override suspend fun removeFromBag(lineId: String): RepositoryResult<Bag> = mutex.withLock {
         val cartId = cartSession.getCartId()
             ?: return@withLock RepositoryResult.Error(ErrorResult(type = ErrorType.RESOURCE_NOT_FOUND))
-        cartService.removeFromCart(cartId = cartId, lineId = lineId).toBag().publish()
+        cartService.removeFromCart(cartId = cartId, lineId = lineId).toBag().replaceBagOnSuccess()
     }
 
     // A Cart the device can't remember is still a valid Cart for this session, so a failed write
@@ -94,6 +94,6 @@ internal class BagRepositoryImpl @Inject constructor(
 
     // Writes are pessimistic: the Cart the BFF answered with replaces the Bag wholesale. A failed
     // write leaves the Bag as it was.
-    private fun RepositoryResult<Bag>.publish(): RepositoryResult<Bag> =
+    private fun RepositoryResult<Bag>.replaceBagOnSuccess(): RepositoryResult<Bag> =
         onSuccess { bag.value = RepositoryResult.Success(it) }
 }
