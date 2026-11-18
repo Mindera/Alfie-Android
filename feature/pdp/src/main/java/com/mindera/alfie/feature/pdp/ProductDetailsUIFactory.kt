@@ -66,18 +66,20 @@ internal class ProductDetailsUIFactory @Inject constructor(
     }
 
     /**
-     * [scannedVariantId] is the variant a barcode scan resolved to. When it matches one of
-     * [product]'s variants it stands in for the default variant throughout — colour, gallery,
-     * price and the preselected size chip all follow it, so the PDP opens on exactly the item
-     * whose tag was scanned. An unknown or null id falls back to [resolveDefaultVariant].
+     * [preselectedVariantId] is the variant the PDP was opened on — the one a barcode scan
+     * resolved to, or the `variantId` of a product deep link. When it matches one of [product]'s
+     * variants it stands in for the default variant throughout — colour, gallery, price and the
+     * preselected size chip all follow it, so the PDP opens on exactly the item the shopper was
+     * pointed at. An unknown or null id falls back to [resolveDefaultVariant] with no size
+     * preselected, as for any other PDP.
      */
     suspend operator fun invoke(
         product: Product,
-        scannedVariantId: String? = null
+        preselectedVariantId: String? = null
     ): ProductDetailsUI = withContext(dispatcher.default()) {
         val environment = environmentManager.current()
-        val scannedVariant = scannedVariantId?.let { id -> product.variants.firstOrNull { it.id == id } }
-        val defaultVariant = scannedVariant ?: product.resolveDefaultVariant()
+        val preselectedVariant = preselectedVariantId?.let { id -> product.variants.firstOrNull { it.id == id } }
+        val defaultVariant = preselectedVariant ?: product.resolveDefaultVariant()
         val colors = product.mapColors()
         val selectedColor = colors.findSelected(defaultVariant)
         val base = ProductDetailsUI(
@@ -101,7 +103,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
             gallery = product.galleryFor(selectedColor?.id, defaultVariant),
             sizeSectionUI = product.variants.toSizeSectionUI(
                 selectedColorUI = selectedColor,
-                preselected = scannedVariant
+                preselected = preselectedVariant
             )
         )
         base.copy(price = base.displayVariant().toPriceType())
@@ -265,7 +267,7 @@ internal class ProductDetailsUIFactory @Inject constructor(
     }
 
     /**
-     * [preselected] is the scanned variant, when there was one: its size chip starts selected, so
+     * [preselected] is the variant the PDP was opened on, when there was one: its size chip starts selected, so
      * the PDP opens with the CTA already enabled rather than asking for a size the shopper has
      * effectively already chosen. It is matched on size value rather than identity, because
      * [distinctBy] may have collapsed it into a sibling that carries the same size.

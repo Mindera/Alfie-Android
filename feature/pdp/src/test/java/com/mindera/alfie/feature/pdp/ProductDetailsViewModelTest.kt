@@ -148,7 +148,7 @@ internal class ProductDetailsViewModelTest {
         val viewModel = buildViewModel()
         viewModel.uiEvent.test {
             viewModel.handleEvent(event)
-            coVerify { productDetailsUIFactory(product = product, scannedVariantId = null) }
+            coVerify { productDetailsUIFactory(product = product, preselectedVariantId = null) }
             assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value)
             cancelAndConsumeRemainingEvents()
         }
@@ -329,22 +329,22 @@ internal class ProductDetailsViewModelTest {
         coVerify(exactly = 0) { removeWishlistUseCase(any()) }
     }
 
-    // A PDP opened from a scan carries the scanned variant; the factory is what acts on it.
+    // A PDP opened on a variant (by a scan or a deep link) carries it; the factory is what acts on it.
     @Test
-    fun `init - GIVEN a scanned variant in the nav args THEN it is handed to the factory`() = runTest {
+    fun `init - GIVEN a preselected variant in the nav args THEN it is handed to the factory`() = runTest {
         every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns
             productDetailsNavArgs(handle = "test-handle", variantId = "v3")
 
         buildViewModel()
 
-        coVerify { productDetailsUIFactory(product = product, scannedVariantId = "v3") }
+        coVerify { productDetailsUIFactory(product = product, preselectedVariantId = "v3") }
     }
 
     @Test
-    fun `init - GIVEN no scanned variant THEN the factory picks the default`() = runTest {
+    fun `init - GIVEN no preselected variant THEN the factory picks the default`() = runTest {
         buildViewModel()
 
-        coVerify { productDetailsUIFactory(product = product, scannedVariantId = null) }
+        coVerify { productDetailsUIFactory(product = product, preselectedVariantId = null) }
     }
 
     private fun buildViewModel() = ProductDetailsViewModel(
