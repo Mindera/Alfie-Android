@@ -28,7 +28,10 @@ import org.gradle.kotlin.dsl.dependencies
 internal fun Project.configureUnitTest(commonExtension: CommonExtension) {
     commonExtension.defaultConfig.apply {
         testInstrumentationRunner = AppConfig.testRunnerPath
-        testInstrumentationRunnerArguments["runnerBuilder"] = "de.mannodermaus.junit5.AndroidJUnit5Builder"
+        // Scan only our own classes. Without it, AndroidX hands every class in the test APK to the
+        // JUnit builder, and JUnit logs a DiscoveryIssueNotifier "critical issue" for each library
+        // class that can't load on Android. The android-junit5 plugin registers the runner builder.
+        testInstrumentationRunnerArguments["package"] = AppConfig.applicationId
     }
 
     dependencies {
