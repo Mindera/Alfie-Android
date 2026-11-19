@@ -329,7 +329,6 @@ internal class ProductDetailsViewModelTest {
         coVerify(exactly = 0) { removeWishlistUseCase(any()) }
     }
 
-    // A PDP opened on a variant (by a scan or a deep link) carries it; the factory is what acts on it.
     @Test
     fun `init - GIVEN a preselected variant in the nav args THEN it is handed to the factory`() = runTest {
         every { savedStateHandle.navArgs<ProductDetailsNavArgs>() } returns

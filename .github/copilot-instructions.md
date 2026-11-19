@@ -550,6 +550,7 @@ fun loadData() {
 - **Location**: `<module>/src/test/` for unit tests
 - **Location**: `<module>/src/androidTest/` for instrumentation tests
 - **Framework**: JUnit 5 with MockK
+- **Android framework classes** (`Uri`, `HtmlCompat`, …): use Robolectric — JUnit4 `@RunWith(RobolectricTestRunner::class)` with `@Config(manifest = Config.NONE, sdk = [34])`. The convention plugin adds `junit-vintage-engine`, so these run on the JUnit 5 Platform with the rest of `testDebugUnitTest` (see `StripHtmlTest`, `ProductDetailsDeeplinksTest`)
 - **Coroutines**: Use `runTest` from kotlinx-coroutines-test
 - **Coverage**: Kover for code coverage reports
 
@@ -642,6 +643,7 @@ internal class BrandRepositoryImplTest {
 
 - **JUnit 5**: Test framework
 - **MockK**: Mocking library for Kotlin
+- **Robolectric**: Android framework in unit tests (JUnit4, run via junit-vintage)
 - **Turbine**: Testing Flow emissions
 - **Fixture**: Generating test data
 - **Kover**: Code coverage

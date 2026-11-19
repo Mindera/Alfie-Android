@@ -72,7 +72,6 @@ internal class ProductDetailsViewModel @Inject constructor(
     private val args: ProductDetailsNavArgs = savedStateHandle.navArgs()
     private val handle = args.handle
 
-    /** Set when the PDP was opened on a specific variant; see [ProductDetailsNavArgs.variantId]. */
     private val preselectedVariantId = args.variantId
 
     init {
