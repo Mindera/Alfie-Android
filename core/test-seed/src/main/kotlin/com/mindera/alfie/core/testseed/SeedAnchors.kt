@@ -1,7 +1,6 @@
-// HAND-WRITTEN STAND-IN. Mindera/Alfie-BFF#155 publishes the anchors as JSON
-// (`src/mock/fixtures/seed-anchors.json` in Alfie-BFF). Until the generator in
-// Mindera/Alfie-Android#102 writes this file from that JSON, keep it a mirror of it, one entry per
-// anchor, and change it only when the BFF does.
+// GENERATED — do not edit. Produced by scripts/generate_seed/generate_seed_anchors.py
+// Source: src/mock/fixtures/seed-anchors.json in Mindera/Alfie-BFF @ ae14229525b0d4fa6afbeb4464426c55018bec5a
+// Regenerate when a test needs an anchor the BFF has added: see the README's "Seed anchors".
 // Leaf names are exactly the BFF's, as listed in its `docs/mock-platform.md`; groups are PascalCase.
 
 package com.mindera.alfie.core.testseed
