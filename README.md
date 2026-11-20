@@ -33,7 +33,7 @@ The app connects to two Apollo GraphQL services managed via Hilt-qualified `Apol
 | Qualifier | Service | Default emulator URL | Purpose |
 |---|---|---|---|
 | `@LegacyClient` | `legacy` | `http://10.0.2.2:4000/graphql` | Existing Mock Server — queries live here during migration |
-| `@NewClient` | `bff` | `http://10.0.2.2:3000/graphql` | New BFF ([Alfie-BFF](https://github.com/Mindera/Alfie-BFF)) — add migrated `.graphql` files under `network/src/main/graphql/bff/` |
+| `@NewClient` | `bff` | `http://10.0.2.2:4000/graphql` | New BFF ([Alfie-BFF](https://github.com/Mindera/Alfie-BFF)) — add migrated `.graphql` files under `network/src/main/graphql/bff/` |
 
 ### Local development (emulator)
 
@@ -43,7 +43,7 @@ The Android emulator routes `10.0.2.2` to your host machine's `localhost`, so no
 
 The legacy client points to the existing Mock Server, which is already documented in the [Setup](#setup) section above. Follow those instructions to run it locally.
 
-#### New BFF — Alfie-BFF (port 3000)
+#### New BFF — Alfie-BFF (port 4000)
 
 The new BFF client points to **[Alfie-BFF](https://github.com/Mindera/Alfie-BFF)**. Clone it and follow its README to start it locally:
 
@@ -103,15 +103,17 @@ never break a run without a backend.
 
 To run them locally:
 
-1. **Start the BFF** on port `3000` (see [New BFF — Alfie-BFF (port 3000)](#new-bff--alfie-bff-port-3000) above):
+1. **Start the Mock BFF** on port `4000` (see [New BFF — Alfie-BFF (port 4000)](#new-bff--alfie-bff-port-4000) above,
+   and the BFF's `docs/mock-platform.md`):
 
    ```bash
    cd ../Alfie-BFF
-   npm ci
-   npm run start   # NestJS, serves /graphql on http://localhost:3000
+   yarn install
+   PLATFORM=mock AUTH_DISABLED=true MOCK_ASSETS_BASE_URL=http://10.0.2.2:4000 \
+     BFF_JWT_SECRET=local-mock-placeholder-at-least-32-characters yarn start   # serves /graphql on http://localhost:4000
    ```
 
-2. **Start an emulator** (the tests reach the host BFF via `http://10.0.2.2:3000/graphql`). The `:integration-test` module's own androidTest manifest grants `INTERNET` and references `integration-test/src/androidTest/res/xml/network_security_config.xml` to allow cleartext to `10.0.2.2` — the app's network-security config is not packaged into this standalone library test APK.
+2. **Start an emulator** (the tests reach the host BFF via `http://10.0.2.2:4000/graphql`). The `:integration-test` module's own androidTest manifest grants `INTERNET` and references `integration-test/src/androidTest/res/xml/network_security_config.xml` to allow cleartext to `10.0.2.2` — the app's network-security config is not packaged into this standalone library test APK.
 
 3. **Run the suite:**
 
@@ -122,8 +124,9 @@ To run them locally:
    Reports: `integration-test/build/reports/androidTests/connected/`.
 
 Notes:
-- Tests are **data-driven** — they read a real product/handle/search term from `productList`
-  (collection handle `frontpage`) rather than hard-coding fixtures, so they tolerate changing BFF data.
+- Tests pin only to the Mock BFF's **seed anchors** (`SeedAnchors` in `:core:test-seed`, named exactly as
+  in the BFF's `docs/mock-platform.md`), or to "any item" where the assertion holds for any item. Only
+  instrumented test source sets depend on `:core:test-seed`.
 - Real device: point the tests at your machine's IP instead of `10.0.2.2` (override `BffIntegrationTest.BFF_URL`) and allow cleartext to that IP, per [Real device setup](#real-device-setup).
 - Automating the BFF boot/teardown + a CI job is tracked separately in **ALFMOB-409**.
 

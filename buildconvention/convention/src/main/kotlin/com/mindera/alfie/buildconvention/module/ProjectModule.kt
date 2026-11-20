@@ -10,6 +10,9 @@ object ProjectModule {
     const val coreNavigation = ":core:navigation"
     const val coreSync = ":core:sync"
     const val coreTest = ":core:test"
+
+    /** Seed anchors for tests against the Mock BFF. Instrumented tests only: never in [modules] or a unit-test set. */
+    const val coreTestSeed = ":core:test-seed"
     const val coreUi = ":core:ui"
     const val data = ":data"
     const val dataDatabase = ":data:database"

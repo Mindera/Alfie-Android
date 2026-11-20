@@ -1,34 +1,33 @@
 package com.mindera.alfie.integrationtest
 
-import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.mindera.alfie.graphql.bff.ProductListQuery
+import com.mindera.alfie.core.testseed.SeedAnchors
 import com.mindera.alfie.graphql.bff.SearchProductsQuery
 import com.mindera.alfie.graphql.bff.type.ProductSortEnum
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** `searchProducts` against the local BFF: happy path and cursor pagination. */
+/**
+ * `searchProducts` against the Mock BFF: happy path and cursor pagination.
+ *
+ * Pinned to [SeedAnchors.SearchTerms.many], which matches more than 10 products.
+ */
 internal class SearchProductsIntegrationTest : BffIntegrationTest() {
 
     @Test
     fun searchProducts_happyPath_returnsResults() = withBff { client ->
-        val term = deriveSearchTerm(client) ?: return@withBff
+        val response = client.executeOrFail(searchQuery(TERM, limit = 5)).searchProducts.productListResponseFragment
 
-        val response = client.executeOrFail(searchQuery(term, limit = 5)).searchProducts.productListResponseFragment
-
-        assertTrue(response.products.isNotEmpty(), "Expected search results for '$term'")
+        assertTrue(response.products.isNotEmpty(), "Expected search results for '$TERM'")
     }
 
     @Test
     fun searchProducts_cursorPagination_returnsDistinctNextPage() = withBff { client ->
-        val term = deriveSearchTerm(client) ?: return@withBff
-
-        val firstPage = client.executeOrFail(searchQuery(term, limit = 1)).searchProducts.productListResponseFragment
-        if (firstPage.pageInfo?.hasNextPage != true) return@withBff
+        val firstPage = client.executeOrFail(searchQuery(TERM, limit = 1)).searchProducts.productListResponseFragment
+        assertTrue(firstPage.pageInfo?.hasNextPage == true, "'$TERM' should match more than one page")
 
         val cursor = requireNotNull(firstPage.pageInfo?.endCursor) { "hasNextPage but no endCursor" }
-        val secondPage = client.executeOrFail(searchQuery(term, limit = 1, after = cursor))
+        val secondPage = client.executeOrFail(searchQuery(TERM, limit = 1, after = cursor))
             .searchProducts.productListResponseFragment
 
         assertTrue(secondPage.products.isNotEmpty(), "Second page should have results")
@@ -39,19 +38,14 @@ internal class SearchProductsIntegrationTest : BffIntegrationTest() {
         )
     }
 
-    /** Derives a query likely to match by reusing the first word of a real product name. */
-    private suspend fun deriveSearchTerm(client: ApolloClient): String? {
-        val list = client.executeOrFail(
-            ProductListQuery(collectionHandle = DEFAULT_COLLECTION_HANDLE, limit = Optional.present(1))
-        ).productList.productListResponseFragment
-        val name = list.products.firstOrNull()?.productListEntryFragment?.name ?: return null
-        return name.trim().substringBefore(' ').takeIf { it.isNotBlank() }
-    }
-
     private fun searchQuery(term: String, limit: Int, after: String? = null) = SearchProductsQuery(
         searchTerm = term,
         after = Optional.presentIfNotNull(after),
         sort = Optional.present(ProductSortEnum.RELEVANCE),
         limit = Optional.present(limit)
     )
+
+    private companion object {
+        const val TERM = SeedAnchors.SearchTerms.many
+    }
 }

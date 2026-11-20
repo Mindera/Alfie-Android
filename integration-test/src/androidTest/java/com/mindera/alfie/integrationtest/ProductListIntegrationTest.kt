@@ -1,6 +1,7 @@
 package com.mindera.alfie.integrationtest
 
 import com.apollographql.apollo.api.Optional
+import com.mindera.alfie.core.testseed.SeedAnchors
 import com.mindera.alfie.graphql.bff.ProductListQuery
 import com.mindera.alfie.graphql.bff.type.ProductFilterInput
 import com.mindera.alfie.graphql.bff.type.ProductSortEnum
@@ -8,14 +9,18 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
-/** `productList` against the local BFF: happy path, cursor pagination, sort, filter. */
+/**
+ * `productList` against the Mock BFF: happy path, cursor pagination, sort, filter.
+ *
+ * Pinned to [SeedAnchors.Collections.women], which holds more than one page at the default limit.
+ */
 internal class ProductListIntegrationTest : BffIntegrationTest() {
 
     @Test
     fun productList_happyPath_returnsProducts() = withBff { client ->
         val response = client.executeOrFail(productListQuery(limit = 5)).productList.productListResponseFragment
 
-        assertTrue(response.products.isNotEmpty(), "Expected products for '$DEFAULT_COLLECTION_HANDLE'")
+        assertTrue(response.products.isNotEmpty(), "Expected products for '$COLLECTION'")
         response.products.forEach { product ->
             val entry = product.productListEntryFragment
             assertTrue(entry.id.isNotBlank(), "Product id should not be blank")
@@ -27,8 +32,7 @@ internal class ProductListIntegrationTest : BffIntegrationTest() {
     @Test
     fun productList_cursorPagination_returnsDistinctNextPage() = withBff { client ->
         val firstPage = client.executeOrFail(productListQuery(limit = 2)).productList.productListResponseFragment
-        // Not enough data to paginate — nothing to assert.
-        if (firstPage.pageInfo?.hasNextPage != true) return@withBff
+        assertTrue(firstPage.pageInfo?.hasNextPage == true, "'$COLLECTION' should have more than one page")
 
         val cursor = requireNotNull(firstPage.pageInfo?.endCursor) { "hasNextPage but no endCursor" }
         val secondPage = client.executeOrFail(productListQuery(limit = 2, after = cursor))
@@ -50,24 +54,22 @@ internal class ProductListIntegrationTest : BffIntegrationTest() {
         val prices = response.products.map {
             it.productListEntryFragment.priceRange.minVariantPrice.moneyFragment.amount.toBigDecimal()
         }
+        assertTrue(prices.size > 1, "Expected several products to compare prices")
         assertEquals(prices.sorted(), prices, "PRICE_ASC should return non-decreasing min prices")
     }
 
     @Test
-    fun productList_filterByBrand_returnsOnlyThatBrand() = withBff { client ->
-        val all = client.executeOrFail(productListQuery(limit = 10)).productList.productListResponseFragment
-        val brand = all.products.firstNotNullOfOrNull { it.productListEntryFragment.brandName }
-        // No brand to filter on — nothing to assert.
-            ?: return@withBff
+    fun productList_filterByBrandKey_returnsOnlyThatBrand() = withBff { client ->
+        val brandKey = SeedAnchors.BrandKeys.alfie
 
         val filtered = client.executeOrFail(
-            productListQuery(limit = 10, filters = ProductFilterInput(brandNames = Optional.present(listOf(brand))))
+            productListQuery(limit = 10, filters = ProductFilterInput(brandNames = Optional.present(listOf(brandKey))))
         ).productList.productListResponseFragment
 
-        assertTrue(filtered.products.isNotEmpty(), "Expected results for brand '$brand'")
-        filtered.products.forEach {
-            assertEquals(brand, it.productListEntryFragment.brandName, "Filtered result should match brand")
-        }
+        val brandNames = filtered.products.map { it.productListEntryFragment.brandName }
+        assertTrue(brandNames.isNotEmpty(), "Expected results for brand key '$brandKey'")
+        assertTrue(brandNames.all { it != null }, "Every result should have a brand: $brandNames")
+        assertEquals(1, brandNames.toSet().size, "Every result should be the same brand: $brandNames")
     }
 
     private fun productListQuery(
@@ -76,10 +78,14 @@ internal class ProductListIntegrationTest : BffIntegrationTest() {
         sort: ProductSortEnum = ProductSortEnum.NEWEST,
         filters: ProductFilterInput? = null
     ) = ProductListQuery(
-        collectionHandle = DEFAULT_COLLECTION_HANDLE,
+        collectionHandle = COLLECTION,
         after = Optional.presentIfNotNull(after),
         filters = Optional.presentIfNotNull(filters),
         sort = Optional.present(sort),
         limit = Optional.present(limit)
     )
+
+    private companion object {
+        const val COLLECTION = SeedAnchors.Collections.women
+    }
 }

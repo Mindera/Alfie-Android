@@ -12,7 +12,8 @@ import org.junit.jupiter.api.BeforeEach
 import java.util.concurrent.TimeUnit
 
 /**
- * Base for integration tests that hit a **locally-running BFF** with a real [ApolloClient].
+ * Base for integration tests that hit a **locally-running Mock BFF** with a real [ApolloClient].
+ * Tests pin only to its seed anchors (`SeedAnchors` in `:core:test-seed`), never to Live catalogue values.
  *
  * These are instrumented tests ([connectedDebugAndroidTest]); from an emulator the host's
  * `localhost` is reached via [BFF_URL] (`10.0.2.2`). This module's own androidTest manifest
@@ -63,9 +64,6 @@ internal abstract class BffIntegrationTest {
     companion object {
         /** Emulator → host alias for the local BFF (NestJS, port 4000, `/graphql`). */
         const val BFF_URL = "http://10.0.2.2:4000/graphql"
-
-        /** A Shopify catch-all collection handle, used as the default Store collection. */
-        const val DEFAULT_COLLECTION_HANDLE = "frontpage"
 
         private const val READINESS_TIMEOUT_SECONDS = 3L
         private const val JSON_MEDIA_TYPE = "application/json"
