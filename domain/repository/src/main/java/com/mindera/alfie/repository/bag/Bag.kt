@@ -11,9 +11,6 @@ data class Bag(
     val lines: List<BagLine>,
     val subtotal: Money?
 ) {
-    /** Units across every line: what the Bag tab badge counts. */
-    val totalQuantity: Int get() = lines.sumOf { it.quantity }
-
     companion object {
         val EMPTY = Bag(lines = emptyList(), subtotal = null)
     }

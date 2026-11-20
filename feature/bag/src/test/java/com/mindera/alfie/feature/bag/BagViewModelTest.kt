@@ -73,7 +73,7 @@ internal class BagViewModelTest {
         delay(300)
 
         val loaded = assertIs<BagUiState.Data.Loaded>(viewModel.state.value)
-        assertEquals(listOf("line-1", "line-2"), loaded.content.items.map { it.id })
+        assertEquals(listOf("line-1", "line-2"), loaded.content.lines.map { it.id })
         assertEquals("$200", loaded.content.summary.totalFormatted)
     }
 
@@ -104,8 +104,8 @@ internal class BagViewModelTest {
         val viewModel = buildViewModel()
         delay(300)
 
-        val items = assertIs<BagUiState.Data.Loaded>(viewModel.state.value).content.items
-        assertEquals(listOf("Cart name 1", "Product 2"), items.map { it.productCardData.name })
+        val lines = assertIs<BagUiState.Data.Loaded>(viewModel.state.value).content.lines
+        assertEquals(listOf("Cart name 1", "Product 2"), lines.map { it.productCardData.name })
     }
 
     @Test
@@ -142,8 +142,8 @@ internal class BagViewModelTest {
         viewModel.onRemoveClicked(bagLines[0])
         delay(100)
 
-        val items = assertIs<BagUiState.Data.Loaded>(viewModel.state.value).content.items
-        assertEquals(listOf("line-2"), items.map { it.id })
+        val lines = assertIs<BagUiState.Data.Loaded>(viewModel.state.value).content.lines
+        assertEquals(listOf("line-2"), lines.map { it.id })
     }
 
     @Test
@@ -159,8 +159,8 @@ internal class BagViewModelTest {
             assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
             cancelAndConsumeRemainingEvents()
         }
-        val items = assertIs<BagUiState.Data.Loaded>(viewModel.state.value).content.items
-        assertEquals(listOf("line-1", "line-2"), items.map { it.id })
+        val lines = assertIs<BagUiState.Data.Loaded>(viewModel.state.value).content.lines
+        assertEquals(listOf("line-1", "line-2"), lines.map { it.id })
     }
 
     @Test

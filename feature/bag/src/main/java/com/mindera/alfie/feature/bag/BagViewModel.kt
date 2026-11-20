@@ -113,11 +113,11 @@ internal class BagViewModel @Inject constructor(
     // Shows the last built Bag minus the lines being removed.
     private fun showVisibleLines() {
         val bag = lastBuiltBag ?: return
-        val visible = bag.items.filterNot { it.id in removingLineIds }
+        val visible = bag.lines.filterNot { it.id in removingLineIds }
         _state.value = if (visible.isEmpty()) {
             BagUiState.Data.Empty
         } else {
-            BagUiState.Data.Loaded(bag.copy(items = visible.toImmutableList()))
+            BagUiState.Data.Loaded(bag.copy(lines = visible.toImmutableList()))
         }
     }
 

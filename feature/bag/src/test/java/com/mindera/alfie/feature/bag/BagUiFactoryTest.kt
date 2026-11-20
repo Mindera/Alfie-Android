@@ -29,7 +29,7 @@ class BagUiFactoryTest {
         val clicked = mutableListOf<String>()
 
         val content = uiFactory(bag = bag, productsBySlug = productsBySlug, onProductClick = { clicked += it })
-        content.items.forEach { it.productCardData.onClick?.invoke() }
+        content.lines.forEach { it.productCardData.onClick?.invoke() }
 
         assertEquals(listOf("123456-product", "654321-product"), clicked)
     }
@@ -44,8 +44,8 @@ class BagUiFactoryTest {
             onProductClick = { }
         )
 
-        assertEquals(3, content.items.single().productCardData.quantity)
-        assertEquals(PriceType.Default(price = "$90"), content.items.single().productCardData.price)
+        assertEquals(3, content.lines.single().productCardData.quantity)
+        assertEquals(PriceType.Default(price = "$90"), content.lines.single().productCardData.price)
         assertEquals("$270", content.summary.totalFormatted)
     }
 
@@ -55,7 +55,7 @@ class BagUiFactoryTest {
 
         val content = uiFactory(bag = Bag(listOf(line), aud(250.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        assertEquals(PriceType.Default(price = "$250"), content.items.single().productCardData.price)
+        assertEquals(PriceType.Default(price = "$250"), content.lines.single().productCardData.price)
     }
 
     @Test
@@ -65,13 +65,13 @@ class BagUiFactoryTest {
 
         val content = uiFactory(bag = Bag(listOf(line), aud(100.0)), productsBySlug = emptyMap(), onProductClick = { })
 
-        val item = content.items.single()
-        assertEquals("Cart name 1", item.productCardData.name)
-        assertEquals(image.toImageUI(), item.productCardData.image)
-        assertEquals("", item.productCardData.brand)
-        assertEquals(PriceType.Default(price = "$100"), item.productCardData.price)
-        assertTrue(item.productCardData.isAvailable)
-        assertNull(item.notice)
+        val shown = content.lines.single()
+        assertEquals("Cart name 1", shown.productCardData.name)
+        assertEquals(image.toImageUI(), shown.productCardData.image)
+        assertEquals("", shown.productCardData.brand)
+        assertEquals(PriceType.Default(price = "$100"), shown.productCardData.price)
+        assertTrue(shown.productCardData.isAvailable)
+        assertNull(shown.notice)
     }
 
     @Test
@@ -80,7 +80,7 @@ class BagUiFactoryTest {
 
         val content = uiFactory(bag = Bag(listOf(line), aud(100.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        assertEquals("M", content.items.single().productCardData.size)
+        assertEquals("M", content.lines.single().productCardData.size)
     }
 
     @Test
@@ -89,10 +89,10 @@ class BagUiFactoryTest {
 
         val content = uiFactory(bag = Bag(listOf(line), aud(100.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        val item = content.items.single()
-        assertFalse(item.productCardData.isAvailable)
-        assertEquals(BagItemNotice.Unavailable, item.notice)
-        assertEquals("", item.productCardData.color)
+        val shown = content.lines.single()
+        assertFalse(shown.productCardData.isAvailable)
+        assertEquals(BagItemNotice.Unavailable, shown.notice)
+        assertEquals("", shown.productCardData.color)
     }
 
     @Test
@@ -101,19 +101,19 @@ class BagUiFactoryTest {
 
         val content = uiFactory(bag = Bag(listOf(line), aud(200.0)), productsBySlug = productsBySlug, onProductClick = { })
 
-        assertEquals(BagItemNotice.ExceedsStock(remaining = 1), content.items.single().notice)
+        assertEquals(BagItemNotice.ExceedsStock(remaining = 1), content.lines.single().notice)
     }
 
     @Test
-    fun `invoke - WHEN the Bag is empty THEN there are no items and no total`() {
+    fun `invoke - WHEN the Bag is empty THEN there are no lines and no total`() {
         val content = uiFactory(bag = Bag.EMPTY, productsBySlug = productsBySlug, onProductClick = { })
 
-        assertTrue(content.items.isEmpty())
+        assertTrue(content.lines.isEmpty())
         assertNull(content.summary.totalFormatted)
     }
 
     // onClick is a lambda and never equal across instances, so compare with it stripped.
     private fun BagContentUi.withoutClicks() = copy(
-        items = items.map { it.copy(productCardData = it.productCardData.copy(onClick = null)) }.toImmutableList()
+        lines = lines.map { it.copy(productCardData = it.productCardData.copy(onClick = null)) }.toImmutableList()
     )
 }

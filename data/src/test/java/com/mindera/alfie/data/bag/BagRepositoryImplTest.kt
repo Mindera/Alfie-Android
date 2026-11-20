@@ -41,7 +41,7 @@ internal class BagRepositoryImplTest {
         subject.getBag().test {
             val bag = assertIs<RepositoryResult.Success<Bag>>(awaitItem()).data
             assertEquals(listOf("line-1"), bag.lines.map { it.id })
-            assertEquals(2, bag.totalQuantity)
+            assertEquals(2, bag.lines.single().quantity)
         }
     }
 
@@ -96,7 +96,7 @@ internal class BagRepositoryImplTest {
             subject.addToBag(variantId = "v1", productId = null, quantity = 3)
 
             val bag = assertIs<RepositoryResult.Success<Bag>>(awaitItem()).data
-            assertEquals(3, bag.totalQuantity)
+            assertEquals(3, bag.lines.single().quantity)
         }
     }
 

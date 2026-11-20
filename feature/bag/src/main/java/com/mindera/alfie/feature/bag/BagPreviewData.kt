@@ -44,13 +44,12 @@ private fun previewCard(
     onOverflowClick = {}
 )
 
-private fun previewItem(
+private fun previewLine(
     productId: String,
     card: ProductCardType.Horizontal,
     notice: BagItemNotice? = null
 ) = BagLineUi(
-    id = "$productId-${card.reference}",
-    line = BagLine(
+    bagLine = BagLine(
         id = "$productId-${card.reference}",
         productId = productId,
         variantId = card.reference,
@@ -67,8 +66,8 @@ private fun previewItem(
 )
 
 internal val previewBagContent = BagContentUi(
-    items = persistentListOf(
-        previewItem(
+    lines = persistentListOf(
+        previewLine(
             productId = "linen-shirt",
             card = previewCard(
                 name = "100% Linen Fluid Shirt",
@@ -80,7 +79,7 @@ internal val previewBagContent = BagContentUi(
             // it contradicts.
             notice = BagItemNotice.ExceedsStock(remaining = 1)
         ),
-        previewItem(
+        previewLine(
             productId = "wide-leg-jeans",
             card = previewCard(
                 name = "Mid-Rise Wide Leg Jeans",
@@ -90,7 +89,7 @@ internal val previewBagContent = BagContentUi(
             ),
             notice = BagItemNotice.LowStock(remaining = 2)
         ),
-        previewItem(
+        previewLine(
             productId = "cotton-tshirt",
             card = previewCard(
                 name = "100% Cotton T-shirt",
@@ -105,8 +104,8 @@ internal val previewBagContent = BagContentUi(
 )
 
 internal val previewSingleItemBagContent = BagContentUi(
-    items = persistentListOf(
-        previewItem(
+    lines = persistentListOf(
+        previewLine(
             productId = "linen-shirt",
             card = previewCard(
                 name = "100% Linen Fluid Shirt",

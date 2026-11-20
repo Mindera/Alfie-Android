@@ -39,7 +39,7 @@ internal class BagUiFactory @Inject constructor() {
         productsBySlug: Map<String, Product>,
         onProductClick: ClickEventOneArg<String>
     ): BagContentUi = BagContentUi(
-        items = bag.lines.map { line ->
+        lines = bag.lines.map { line ->
             val product = line.slug?.let(productsBySlug::get)
             line.toBagLineUi(
                 product = product,
@@ -62,8 +62,7 @@ internal class BagUiFactory @Inject constructor() {
         variant: Variant?,
         onProductClick: ClickEventOneArg<String>
     ) = BagLineUi(
-        id = id,
-        line = this,
+        bagLine = this,
         notice = toNotice(product = product, variant = variant),
         productCardData = ProductCardType.Horizontal(
             image = when {

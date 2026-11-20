@@ -110,8 +110,7 @@ internal val bag = Bag(lines = bagLines, subtotal = aud(200.0))
 
 internal val bagLineUi = persistentListOf(
     BagLineUi(
-        id = "line-1",
-        line = bagLines[0],
+        bagLine = bagLines[0],
         notice = BagItemNotice.LowStock(remaining = 1),
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
@@ -126,8 +125,7 @@ internal val bagLineUi = persistentListOf(
         )
     ),
     BagLineUi(
-        id = "line-2",
-        line = bagLines[1],
+        bagLine = bagLines[1],
         notice = null,
         productCardData = ProductCardType.Horizontal(
             brand = "Brand",
@@ -144,6 +142,6 @@ internal val bagLineUi = persistentListOf(
 )
 
 internal val bagContentUi = BagContentUi(
-    items = bagLineUi,
+    lines = bagLineUi,
     summary = BagSummaryUi(totalFormatted = "$200")
 )
