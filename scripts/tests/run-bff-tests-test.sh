@@ -5,7 +5,7 @@
 # curl and lsof are stubs that record their calls. git, ps, openssl and process groups are real.
 # Nothing touches a real emulator, device, BFF or port.
 #
-# Usage: scripts/tests/run-bff-tests_test.sh [scenario-name ...]
+# Usage: scripts/tests/run-bff-tests-test.sh [scenario-name ...]
 
 set -u
 
@@ -115,7 +115,7 @@ pid="$(cat "$STATE/port_holder.pid")"
 case " $* " in *" -t "*) echo "$pid" ;; *) echo "COMMAND PID USER"; echo "fake $pid me TCP *:4000 (LISTEN)" ;; esac'
 
     write_stub "$PROJ/gradlew" "$s"'
-echo "gradlew $* ANDROID_SERIAL=${ANDROID_SERIAL:-}" >> "$STATE/calls.log"
+echo "gradlew $* ANDROID_SERIAL=${ANDROID_SERIAL:-} JWT_SEEN=${BFF_JWT_SECRET:+yes}" >> "$STATE/calls.log"
 mode="$(cat "$STATE/gradle_mode" 2>/dev/null || echo pass)"
 # One <testcase> per outcome, written the way AGP writes on-device results: a JUnit 5 assumption
 # failure is a <failure> holding a TestAbortedException, not a <skipped/>.
@@ -160,11 +160,16 @@ case "$mode" in
 esac'
 }
 
-# Runs the sandboxed script; sets OUT and RC. Extra env goes in RUN_ENV (e.g. "FOO=1").
+# Runs the sandboxed script with the stubs first on PATH.
+sandboxed_script() {
+    cd "$PROJ" && env -u ANDROID_SERIAL -u ANDROID_SDK_ROOT -u BFF_JWT_SECRET \
+        PATH="$SANDBOX/bin:$PATH" ANDROID_HOME="$SDK" ALFIE_BFF_PATH="$BFF" \
+        bash ${TRACE:+-x} scripts/run-bff-tests.sh "$@"
+}
+
+# Runs the sandboxed script; sets OUT and RC.
 run_script() {
-    OUT="$(cd "$PROJ" && env -u ANDROID_SERIAL -u ANDROID_SDK_ROOT \
-        PATH="$SANDBOX/bin:$PATH" ANDROID_HOME="$SDK" ALFIE_BFF_PATH="$BFF" ${RUN_ENV:-} \
-        bash ${TRACE:+-x} scripts/run-bff-tests.sh "$@" 2>&1)"
+    OUT="$(sandboxed_script "$@" 2>&1)"
     RC=$?
 }
 
@@ -181,20 +186,20 @@ bff_processes_alive() {
 
 CURRENT=""
 CURRENT_OK=true
-fail() {
+flunk() {
     CURRENT_OK=false
     echo "    ✗ $1"
 }
-assert_rc() { [ "$RC" -eq "$1" ] || fail "expected exit $1, got $RC"; }
-assert_rc_nonzero() { [ "$RC" -ne 0 ] || fail "expected a non-zero exit, got 0"; }
-assert_out() { printf '%s' "$OUT" | grep -q -- "$1" || fail "output lacks: $1"; }
-assert_called() { called "$1" || fail "never called: $1"; }
-assert_not_called() { ! called "$1" || fail "unexpectedly called: $1 ($(grep -- "$1" "$STATE/calls.log" | head -1))"; }
+assert_rc() { [ "$RC" -eq "$1" ] || flunk "expected exit $1, got $RC"; }
+assert_rc_nonzero() { [ "$RC" -ne 0 ] || flunk "expected a non-zero exit, got 0"; }
+assert_out() { printf '%s' "$OUT" | grep -q -- "$1" || flunk "output lacks: $1"; }
+assert_called() { called "$1" || flunk "never called: $1"; }
+assert_not_called() { ! called "$1" || flunk "unexpectedly called: $1 ($(grep -- "$1" "$STATE/calls.log" | head -1))"; }
 # Other devices may only be asked which AVD they are.
 assert_other_devices_untouched() {
     local touched
     touched="$(grep -e "adb -s emulator-5554" -e "adb -s R58M12345" "$STATE/calls.log" | grep -v " emu avd name$")"
-    [ -z "$touched" ] || fail "touched another device: $touched"
+    [ -z "$touched" ] || flunk "touched another device: $touched"
     assert_not_called "adb -s R58M12345"
     assert_not_called "adb emu"
     assert_not_called "adb shell"
@@ -210,7 +215,7 @@ run_scenario() {
     CURRENT_OK=true
     echo "• $1"
     setup_sandbox "$1"
-    OUT=""; RC=0; RUN_ENV=""
+    OUT=""; RC=0
     "$1"
     [ -n "${TRACE:-}" ] && dump
     if [ "$CURRENT_OK" = true ]; then
@@ -265,9 +270,9 @@ cold_run_installs_creates_boots_runs_and_shuts_down_its_own_avd() {
     assert_out "integration: 7 executed, 0 skipped"
     # Clean-up: the AVD it booted goes down, the BFF is gone, the log stays.
     assert_called "adb -s emulator-5556 emu kill"
-    bff_processes_alive && fail "BFF processes are still running"
-    [ -s "$PROJ/build/bff-tests/bff.log" ] || fail "no BFF log at build/bff-tests/bff.log"
-    grep -q "fake BFF starting" "$PROJ/build/bff-tests/bff.log" || fail "BFF log lacks the BFF's output"
+    bff_processes_alive && flunk "BFF processes are still running"
+    [ -s "$PROJ/build/bff-tests/bff.log" ] || flunk "no BFF log at build/bff-tests/bff.log"
+    grep -q "fake BFF starting" "$PROJ/build/bff-tests/bff.log" || flunk "BFF log lacks the BFF's output"
     assert_other_devices_untouched
 }
 
@@ -334,7 +339,7 @@ a_gradle_failure_fails_the_run() {
 
     assert_rc_nonzero
     assert_out "Gradle failed"
-    bff_processes_alive && fail "BFF processes are still running"
+    bff_processes_alive && flunk "BFF processes are still running"
 }
 
 ctrl_c_mid_run_leaves_no_bff_behind() {
@@ -342,13 +347,11 @@ ctrl_c_mid_run_leaves_no_bff_behind() {
     local log="$SANDBOX/ctrl-c.out" pid waited=0
     # Job control gives the script its own process group, as a terminal would; Ctrl-C signals it all.
     set -m
-    (cd "$PROJ" && env -u ANDROID_SERIAL -u ANDROID_SDK_ROOT \
-        PATH="$SANDBOX/bin:$PATH" ANDROID_HOME="$SDK" ALFIE_BFF_PATH="$BFF" \
-        bash scripts/run-bff-tests.sh > "$log" 2>&1) &
+    sandboxed_script > "$log" 2>&1 &
     pid=$!
     set +m
     while [ ! -f "$STATE/gradle_started" ] && [ "$waited" -lt 30 ]; do sleep 1; waited=$((waited + 1)); done
-    bff_processes_alive || fail "the BFF wasn't running mid-run"
+    bff_processes_alive || flunk "the BFF wasn't running mid-run"
 
     kill -INT -- -"$pid"
     wait "$pid"
@@ -356,9 +359,9 @@ ctrl_c_mid_run_leaves_no_bff_behind() {
     OUT="$(cat "$log")"
 
     assert_rc_nonzero
-    bff_processes_alive && fail "BFF processes survived Ctrl-C"
+    bff_processes_alive && flunk "BFF processes survived Ctrl-C"
     assert_called "adb -s emulator-5556 emu kill"
-    [ -s "$PROJ/build/bff-tests/bff.log" ] || fail "no BFF log after Ctrl-C"
+    [ -s "$PROJ/build/bff-tests/bff.log" ] || flunk "no BFF log after Ctrl-C"
 }
 
 a_bff_that_dies_before_ready_fails_with_its_log() {
@@ -388,15 +391,15 @@ warns_about_a_bff_checkout_off_main_or_behind_without_touching_it() {
     assert_rc 0
     assert_out "on feature, not main"
     assert_out "behind origin/main"
-    [ "$(git -C "$BFF" rev-parse HEAD)" = "$head_before" ] || fail "the BFF checkout's HEAD moved"
-    [ "$(git -C "$BFF" symbolic-ref --short HEAD)" = "feature" ] || fail "the BFF checkout's branch changed"
+    [ "$(git -C "$BFF" rev-parse HEAD)" = "$head_before" ] || flunk "the BFF checkout's HEAD moved"
+    [ "$(git -C "$BFF" symbolic-ref --short HEAD)" = "feature" ] || flunk "the BFF checkout's branch changed"
 }
 
 no_warnings_for_a_bff_checkout_level_with_main() {
     run_script
 
     assert_rc 0
-    printf '%s' "$OUT" | grep -q "⚠️" && fail "unexpected warning: $(printf '%s' "$OUT" | grep "⚠️")"
+    printf '%s' "$OUT" | grep -q "⚠️" && flunk "unexpected warning: $(printf '%s' "$OUT" | grep "⚠️")"
 }
 
 only_integration_runs_the_integration_suite() {
@@ -413,6 +416,26 @@ an_unknown_suite_is_refused_before_anything_starts() {
     assert_out "Unknown suite 'nope'"
     assert_not_called "emulator -avd"
     assert_not_called "node"
+}
+
+the_jwt_secret_reaches_only_the_bff() {
+    run_script
+
+    assert_rc 0
+    assert_called "JWT_LEN=64"
+    assert_not_called "JWT_SEEN=yes"
+    printf '%s' "$OUT" | grep -q "BFF_JWT_SECRET=" && flunk "the secret is printed"
+}
+
+an_unreachable_origin_on_main_s_commit_raises_no_branch_warning() {
+    git -C "$BFF" checkout -q --detach  # how CI checks out main
+    git -C "$BFF" remote set-url origin "$SANDBOX/no-such-origin.git"
+
+    run_script
+
+    assert_rc 0
+    printf '%s' "$OUT" | grep -q "not main" && flunk "warned about the branch: $(printf '%s' "$OUT" | grep "not main")"
+    assert_out "Couldn't read origin/main"
 }
 
 # --- Main ----------------------------------------------------------------------------------------
@@ -434,6 +457,8 @@ warns_about_a_bff_checkout_off_main_or_behind_without_touching_it
 no_warnings_for_a_bff_checkout_level_with_main
 only_integration_runs_the_integration_suite
 an_unknown_suite_is_refused_before_anything_starts
+the_jwt_secret_reaches_only_the_bff
+an_unreachable_origin_on_main_s_commit_raises_no_branch_warning
 "
 
 for scenario in ${*:-$ALL_SCENARIOS}; do

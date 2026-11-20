@@ -108,7 +108,7 @@ Android SDK (`ANDROID_HOME`) with the emulator and the Command-line Tools. Then 
 
 1. **Checks port 4000.** If anything is listening there, it fails straight away and names the PID and
    command.
-2. **Gets the `alfie-bff-tests` AVD**, the same one CI uses: `system-images;android-34;aosp_atd`,
+2. **Gets the `alfie-bff-tests` AVD**, built to the same spec as CI's: `system-images;android-34;aosp_atd`,
    arm64-v8a on Apple Silicon and x86_64 elsewhere. If it's running, the script reuses it and leaves it
    running. If not, the script installs the image (about 590 MB, once), creates the AVD, boots it
    headless without snapshots, and shuts it down at the end. Either way it turns the animation scales
@@ -127,7 +127,10 @@ Android SDK (`ANDROID_HOME`) with the emulator and the Command-line Tools. Then 
 - reports in `integration-test/build/reports/androidTests/connected/`;
 - result XMLs in `integration-test/build/outputs/androidTest-results/connected/debug/`.
 
-`scripts/tests/run-bff-tests_test.sh` tests the script itself against a stubbed SDK, BFF and Gradle.
+`ALFIE_BFF_START_CMD` replaces the BFF start command (run in the BFF checkout), for example to try a
+Live BFF. The suites are written for the Mock BFF only.
+
+`scripts/tests/run-bff-tests-test.sh` tests the script itself against a stubbed SDK, BFF and Gradle.
 
 **One test class, or a real device:** start the Mock BFF yourself (see
 [New BFF — Alfie-BFF (port 4000)](#new-bff--alfie-bff-port-4000) and the BFF's `docs/mock-platform.md`),

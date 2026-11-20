@@ -40,20 +40,30 @@ BFF_PATH="${ALFIE_BFF_PATH:-$PROJECT_DIR/../Alfie-BFF}"
 BFF_PORT=4000  # the app's DEV environment and BffIntegrationTest.BFF_URL both hard-code it
 
 # --- Suites ----------------------------------------------------------------------------------------
-# A suite is a name, the Gradle task that runs it, and the folder its result XMLs land in.
+# A suite is a name, the module that holds its instrumented tests, and the build variant they run on.
 
 ALL_SUITES="integration"
 
-suite_task() {
+suite_module_and_variant() {
     case "$1" in
-        integration) echo ":integration-test:connectedDebugAndroidTest" ;;
+        integration) echo "integration-test debug" ;;
     esac
 }
 
+suite_task() {
+    local module variant
+    read -r module variant <<EOF
+$(suite_module_and_variant "$1")
+EOF
+    echo ":$module:connected$(printf '%s' "$variant" | cut -c1 | tr '[:lower:]' '[:upper:]')$(printf '%s' "$variant" | cut -c2-)AndroidTest"
+}
+
 suite_results_dir() {
-    case "$1" in
-        integration) echo "$PROJECT_DIR/integration-test/build/outputs/androidTest-results/connected/debug" ;;
-    esac
+    local module variant
+    read -r module variant <<EOF
+$(suite_module_and_variant "$1")
+EOF
+    echo "$PROJECT_DIR/$module/build/outputs/androidTest-results/connected/$variant"
 }
 
 # --- Helpers ---------------------------------------------------------------------------------------
@@ -152,12 +162,13 @@ ensure_avd_exists() {
     fi
 }
 
-# Boots the AVD in its own process group, so Ctrl-C reaches it only through clean-up.
+# Boots the AVD in its own process group, so Ctrl-C reaches it only through clean-up. Job control stops
+# redirecting a background job's stdin, so it's redirected by hand.
 start_avd() {
     info "🚀 Booting $AVD_NAME headless (log: $OUT_DIR/emulator.log)..."
     set -m
     "$EMULATOR" -avd "$AVD_NAME" -no-window -no-snapshot -no-audio -no-boot-anim -gpu swiftshader_indirect \
-        > "$OUT_DIR/emulator.log" 2>&1 &
+        < /dev/null > "$OUT_DIR/emulator.log" 2>&1 &
     EMULATOR_PID=$!
     set +m
 }
@@ -196,8 +207,11 @@ warn_if_bff_checkout_differs_from_main() {
     branch="$(git -C "$BFF_PATH" symbolic-ref --short -q HEAD || echo "a detached HEAD")"
     remote_main="$(GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=5" \
         git -C "$BFF_PATH" ls-remote origin refs/heads/main 2>/dev/null | cut -f1)"
+    if [ -z "$remote_main" ]; then
+        warn "Couldn't read origin/main for the BFF checkout at $BFF_PATH, so it isn't checked against main."
+    fi
     # CI checks out main's commit as a detached HEAD; that is main.
-    if [ "$branch" != "main" ] && [ "$head" != "$remote_main" ]; then
+    if [ "$branch" != "main" ] && { [ "$branch" != "a detached HEAD" ] || { [ -n "$remote_main" ] && [ "$head" != "$remote_main" ]; }; }; then
         warn "The BFF checkout at $BFF_PATH is on $branch, not main. CI tests against main."
     fi
     if [ -n "$remote_main" ] && ! git -C "$BFF_PATH" merge-base --is-ancestor "$remote_main" HEAD 2>/dev/null; then
@@ -215,21 +229,24 @@ build_bff() {
     ( cd "$BFF_PATH" && yarn install --frozen-lockfile && yarn build ) || fail "The BFF build failed in $BFF_PATH."
 }
 
-# Starts the BFF in its own process group, so clean-up can kill it and every child it spawns.
+# Starts the BFF in its own process group, so clean-up can kill it and every child it spawns. Job
+# control stops redirecting a background job's stdin, so it's redirected by hand.
 start_bff() {
-    local start_cmd
+    local start_cmd jwt_secret=""
     if [ -n "${ALFIE_BFF_START_CMD:-}" ]; then
         start_cmd="$ALFIE_BFF_START_CMD"
         warn "Starting the BFF with ALFIE_BFF_START_CMD; the suites are written for the Mock BFF."
     else
         # Auth is off and the JWT secret is thrown away with the run. Explicit env beats the BFF's .env.
-        BFF_JWT_SECRET="$(openssl rand -hex 32)" || fail "openssl couldn't generate a JWT secret."
-        export BFF_JWT_SECRET
+        jwt_secret="$(openssl rand -hex 32)" || fail "openssl couldn't generate a JWT secret."
         start_cmd="PLATFORM=mock AUTH_DISABLED=true PORT=$BFF_PORT MOCK_ASSETS_BASE_URL=http://10.0.2.2:$BFF_PORT node dist/main"
     fi
     info "🚀 Starting the BFF: $start_cmd (log: $BFF_LOG)"
     set -m
-    ( cd "$BFF_PATH" && exec bash -c "$start_cmd" ) > "$BFF_LOG" 2>&1 &
+    (
+        [ -n "$jwt_secret" ] && export BFF_JWT_SECRET="$jwt_secret"  # the BFF's environment only
+        cd "$BFF_PATH" && exec bash -c "$start_cmd"
+    ) < /dev/null > "$BFF_LOG" 2>&1 &
     BFF_PGID=$!
     set +m
 }
@@ -261,11 +278,12 @@ fail_with_bff_log() {
 
 # Prints "<executed> <skipped>" for the test cases in a suite's result XMLs. A case is skipped when it
 # has <skipped/> or fails on an assumption: on a device, AGP writes a JUnit 5 TestAbortedException
-# as a <failure> and still passes the task, so a suite whose BFF died looks green.
+# as a <failure> and still passes the task, so a suite whose BFF died looks green. A real failure that
+# merely mentions an assumption still fails the run, through Gradle's exit code.
 count_tests() {
     cat "$1"/*.xml 2>/dev/null | awk '
         /<testcase[ >]/ { total++; in_case = 1; marked = 0 }
-        in_case && !marked && (/<skipped/ || /<failure[^>]*>(org\.opentest4j\.TestAbortedException|org\.junit\.(internal\.)?AssumptionViolatedException)/) {
+        in_case && !marked && (/<skipped/ || /TestAbortedException|AssumptionViolatedException/) {
             skipped++; marked = 1
         }
         in_case && (/<\/testcase>/ || /<testcase[^>]*\/>/) { in_case = 0 }
