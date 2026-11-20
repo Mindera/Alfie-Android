@@ -3,28 +3,29 @@ package com.mindera.alfie.repository.bag
 import com.mindera.alfie.repository.result.RepositoryResult
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * The Bag, backed by the BFF Cart. Every write is pessimistic: it returns the Cart the BFF answered
+ * with, which replaces the Bag wholesale. See `docs/adr/0001-the-bag-lives-on-the-bff-cart.md`.
+ */
 interface BagRepository {
 
-    fun getBag(): Flow<RepositoryResult<List<BagProduct>>>
+    /**
+     * The current Bag. The first collection fetches the Cart when the device has one; a device with
+     * no Cart has the empty Bag. Every successful write emits the Bag it produced.
+     */
+    fun getBag(): Flow<RepositoryResult<Bag>>
 
-    fun addToBag(bagProduct: BagProduct): RepositoryResult<Boolean>
-
-    /** Drops a single unit of [bagProduct] — quantity is modelled as repeated entries. */
-    fun removeFromBag(bagProduct: BagProduct): RepositoryResult<Boolean>
+    /** Fetches the Cart again, e.g. to retry after a failed load. */
+    suspend fun refreshBag(): RepositoryResult<Bag>
 
     /**
-     * Drops every unit of [bagProduct] in one write. The Bag screen groups repeated entries into a
-     * single line, so removing that line must clear the whole quantity; doing it with N
-     * [removeFromBag] calls would emit N times and re-trigger the screen's per-product fetch fan-out
-     * on each one.
+     * Adds [quantity] units of the variant. Creates the Cart, with this line, when the device has
+     * none. Adding a variant already in the Bag raises its line's quantity.
+     *
+     * [productId] is optional: BigCommerce needs it and Shopify ignores it.
      */
-    fun removeAllFromBag(bagProduct: BagProduct): RepositoryResult<Boolean>
+    suspend fun addToBag(variantId: String, productId: String?, quantity: Int): RepositoryResult<Bag>
 
-    /**
-     * Inserts [quantity] units of [bagProduct] at [index] in one write — the inverse of
-     * [removeAllFromBag], backing the Bag screen's undo. The screen orders lines by their first
-     * entry, so inserting where the line's first unit sat puts it back in place, where appending
-     * would move it to the bottom. [index] is clamped to the bag's bounds.
-     */
-    fun addAllToBag(bagProduct: BagProduct, quantity: Int, index: Int): RepositoryResult<Boolean>
+    /** Removes the line with this Cart line id, whatever its quantity. */
+    suspend fun removeFromBag(lineId: String): RepositoryResult<Bag>
 }

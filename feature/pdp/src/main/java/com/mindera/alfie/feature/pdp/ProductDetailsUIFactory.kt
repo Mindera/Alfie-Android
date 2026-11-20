@@ -148,9 +148,10 @@ internal class ProductDetailsUIFactory @Inject constructor(
         updated.copy(price = updated.displayVariant().toPriceType())
     }
 
-    suspend fun getSelectedVariantSku(
+    /** The variant Add to Bag adds, or null while a size grid has no size picked. */
+    suspend fun getSelectedVariant(
         details: ProductDetailsUI
-    ): String? = withContext(dispatcher.default()) {
+    ): Variant? = withContext(dispatcher.default()) {
         val selectedSize = (details.sizeSectionUI as? SizeSectionUI.SizeSelector)?.selectedSize
 
         // A product with a size grid must have a size picked before anything can be added —
@@ -166,13 +167,13 @@ internal class ProductDetailsUIFactory @Inject constructor(
             val matches = details.variants.filter {
                 it.colorOptionValue == selectedColorId && it.sizeOptionValue == selectedSize.id
             }
-            (matches.firstOrNull { it.available } ?: matches.firstOrNull())?.sku
+            (matches.firstOrNull { it.available } ?: matches.firstOrNull())
                 ?.let { return@withContext it }
         }
 
         // No size choice applies (SingleSize / SizeOnly) or the product carries no colour
         // option — the display variant is the selection.
-        details.displayVariant()?.sku
+        details.displayVariant()
     }
 
     private fun List<ColorUI>.findSelected(defaultVariant: Variant?): ColorUI? {

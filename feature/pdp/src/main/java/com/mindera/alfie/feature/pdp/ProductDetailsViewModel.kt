@@ -164,18 +164,42 @@ internal class ProductDetailsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Pessimistic: the button shows loading until the BFF answers, then a snackbar says whether the
+     * add worked. Taps while an add is in flight are ignored.
+     */
     private fun onAddToBag() {
+        val loaded = (_state.value as? Loaded) ?: return
+        if (loaded.details.isAddingToBag) return
+        setAddingToBag(true)
+
         viewModelScope.launch {
-            val value = (_state.value as? Loaded) ?: return@launch
-            val selectedVariantSku = uiFactory.getSelectedVariantSku(value.details)
-            selectedVariantSku?.let { sku ->
-                addToBagUseCase(value.details.slug, sku).doOnResult(
-                    onSuccess = {
-                        showSnackbar(ActionToast.addedToBag(context = context, onViewBag = { navigateTo(screen = Screen.Bag) }))
-                    },
-                    onError = { }
-                )
+            val variant = uiFactory.getSelectedVariant(loaded.details)
+            if (variant == null) {
+                setAddingToBag(false)
+                return@launch
             }
+
+            addToBagUseCase(variantId = variant.id, productId = loaded.details.id).doOnResult(
+                onSuccess = {
+                    showSnackbar(ActionToast.addedToBag(context = context, onViewBag = { navigateTo(screen = Screen.Bag) }))
+                },
+                onError = {
+                    showSnackbar(
+                        SnackbarCustomVisuals.Snackbar(
+                            type = SnackbarType.Error,
+                            message = context.getString(R.string.product_details_add_to_bag_error)
+                        )
+                    )
+                }
+            )
+            setAddingToBag(false)
+        }
+    }
+
+    private fun setAddingToBag(isAddingToBag: Boolean) {
+        _state.update { state ->
+            (state as? Loaded)?.copy(details = state.details.copy(isAddingToBag = isAddingToBag)) ?: state
         }
     }
 

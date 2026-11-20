@@ -6,8 +6,12 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
+import com.mindera.alfie.data.datastore.CartSessionProto
 import com.mindera.alfie.data.datastore.DebugPreferencesProto
 import com.mindera.alfie.data.datastore.UserPreferencesProto
+import com.mindera.alfie.data.datastore.cart.CartSessionDataSource
+import com.mindera.alfie.data.datastore.cart.CartSessionDataSourceImpl
+import com.mindera.alfie.data.datastore.cart.CartSessionProtoSerializer
 import com.mindera.alfie.data.datastore.debug.DebugPreferencesDataSource
 import com.mindera.alfie.data.datastore.debug.DebugPreferencesDataSourceImpl
 import com.mindera.alfie.data.datastore.debug.DebugPreferencesProtoSerializer
@@ -29,6 +33,7 @@ internal interface DataStoreModule {
     companion object {
         private const val DEBUG_SETTINGS_FILE_NAME = "debug_settings.pb"
         private const val USER_SETTINGS_FILE_NAME = "app_session_settings.pb"
+        private const val CART_SESSION_FILE_NAME = "cart_session.pb"
 
         @Provides
         @Singleton
@@ -63,6 +68,24 @@ internal interface DataStoreModule {
                 context.dataStoreFile(USER_SETTINGS_FILE_NAME)
             }
         }
+
+        @Provides
+        @Singleton
+        fun providesCartSessionDataStore(
+            @ApplicationContext context: Context
+        ): DataStore<CartSessionProto> {
+            // A corrupt file loses only the Cart id: the Cart itself lives on the BFF.
+            val corruptionHandler: (CorruptionException) -> CartSessionProto = {
+                CartSessionProto.getDefaultInstance()
+            }
+
+            return DataStoreFactory.create(
+                serializer = CartSessionProtoSerializer(),
+                corruptionHandler = ReplaceFileCorruptionHandler(corruptionHandler)
+            ) {
+                context.dataStoreFile(CART_SESSION_FILE_NAME)
+            }
+        }
     }
 
     @Binds
@@ -74,4 +97,9 @@ internal interface DataStoreModule {
     fun bindUserPreferencesDataSource(
         userPreferencesDataSourceImpl: UserPreferencesDataSourceImpl
     ): UserPreferencesDataSource
+
+    @Binds
+    fun bindCartSessionDataSource(
+        cartSessionDataSourceImpl: CartSessionDataSourceImpl
+    ): CartSessionDataSource
 }
