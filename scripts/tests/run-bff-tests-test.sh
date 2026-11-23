@@ -58,7 +58,17 @@ if [ "$1" = "-s" ]; then serial="$2"; shift 2; fi
 case "$1" in
     devices)
         echo "List of devices attached"
-        while read -r s _; do [ -n "$s" ] && printf "%s\tdevice\n" "$s"; done < "$STATE/devices"
+        # A booting emulator is offline for offline_polls.<serial> listings, as time passes.
+        while read -r s _; do
+            [ -n "$s" ] || continue
+            left="$(cat "$STATE/offline_polls.$s" 2>/dev/null || echo 0)"
+            if [ "$left" -gt 0 ]; then
+                echo $((left - 1)) > "$STATE/offline_polls.$s"
+                printf "%s\toffline\n" "$s"
+            else
+                printf "%s\tdevice\n" "$s"
+            fi
+        done < "$STATE/devices"
         echo ;;
     emu)
         case "$2" in
@@ -70,7 +80,11 @@ case "$1" in
         esac ;;
     wait-for-device) ;;
     shell)
-        case "$*" in *"getprop sys.boot_completed"*) echo 1 ;; esac ;;
+        case "$*" in
+            *"getprop sys.boot_completed"*)
+                left="$(cat "$STATE/boot_polls.$serial" 2>/dev/null || echo 0)"
+                if [ "$left" -gt 0 ]; then echo $((left - 1)) > "$STATE/boot_polls.$serial"; else echo 1; fi ;;
+        esac ;;
 esac'
 
     write_stub "$SDK/emulator/emulator" "$s"'
@@ -153,7 +167,10 @@ case "$mode" in
     pass) write_results pass pass pass pass pass pass pass ;;
     aborted) write_results abort abort abort abort abort abort abort ;;
     skipped) write_results skip skip skip skip skip skip skip ;;
-    partly) write_results pass pass pass abort abort skip skip ;;
+    partly) write_results pass pass pass abort abort abort abort ;;
+    skips) write_results pass pass pass skip skip ;;
+    bff_dies) write_results pass pass pass pass pass pass pass
+              for pid in $(cat "$STATE/bff_pids"); do kill "$pid" 2>/dev/null; done ;;
     fail) write_results pass pass pass pass pass pass fail; exit 1 ;;
     noresults) ;;
     hang) touch "$STATE/gradle_started"; exec sleep 300 ;;
@@ -267,7 +284,7 @@ cold_run_installs_creates_boots_runs_and_shuts_down_its_own_avd() {
     assert_out "$(git -C "$BFF" rev-parse HEAD)"
     # One Gradle call, pinned to the AVD.
     assert_called "gradlew :integration-test:connectedDebugAndroidTest --continue ANDROID_SERIAL=emulator-5556"
-    assert_out "integration: 7 executed, 0 skipped"
+    assert_out "integration: 7 executed, 0 skipped, 0 aborted"
     # Clean-up: the AVD it booted goes down, the BFF is gone, the log stays.
     assert_called "adb -s emulator-5556 emu kill"
     bff_processes_alive && flunk "BFF processes are still running"
@@ -311,13 +328,56 @@ skipped_tests_do_not_count_as_executed() {
     assert_out "integration: 0 tests executed"
 }
 
-a_partly_skipped_suite_passes_and_reports_its_counts() {
+# Under this script an assumption abort can only mean the BFF went away, even when other tests ran.
+any_assumption_abort_fails_the_run() {
     echo partly > "$STATE/gradle_mode"
 
     run_script
 
+    assert_rc_nonzero
+    assert_out "integration: 3 executed, 0 skipped, 4 aborted"
+    assert_out "aborted on an assumption"
+}
+
+plain_skips_alongside_executed_tests_pass() {
+    echo skips > "$STATE/gradle_mode"
+
+    run_script
+
     assert_rc 0
-    assert_out "integration: 3 executed, 4 skipped"
+    assert_out "integration: 3 executed, 2 skipped, 0 aborted"
+}
+
+a_bff_that_dies_during_the_run_fails_it_even_when_every_test_passed() {
+    echo bff_dies > "$STATE/gradle_mode"
+
+    run_script
+
+    assert_rc_nonzero
+    assert_out "integration: 7 executed"
+    assert_out "The BFF exited during the run"
+}
+
+reuses_an_avd_that_is_still_booting_once_it_has_booted() {
+    echo "alfie-bff-tests" >> "$STATE/avds"
+    echo "emulator-5558 alfie-bff-tests" >> "$STATE/devices"
+    echo 4 > "$STATE/offline_polls.emulator-5558"  # offline for a while,
+    echo 3 > "$STATE/boot_polls.emulator-5558"     # then online but not yet booted
+
+    run_script
+
+    assert_rc 0
+    assert_out "Reusing the running alfie-bff-tests (emulator-5558)"
+    assert_not_called "emulator -avd"
+    assert_not_called "emu kill"
+    local last_poll first_setting
+    last_poll="$(grep -n "adb -s emulator-5558 shell getprop sys.boot_completed" "$STATE/calls.log" | tail -1 | cut -d: -f1)"
+    first_setting="$(grep -n "adb -s emulator-5558 shell settings put" "$STATE/calls.log" | head -1 | cut -d: -f1)"
+    [ "$(grep -c "adb -s emulator-5558 shell getprop sys.boot_completed" "$STATE/calls.log")" -ge 4 ] \
+        || flunk "didn't poll sys.boot_completed until the AVD booted"
+    [ -n "$first_setting" ] && [ "$first_setting" -gt "${last_poll:-0}" ] \
+        || flunk "changed settings before the AVD finished booting"
+    assert_called "gradlew .* ANDROID_SERIAL=emulator-5558"
 }
 
 results_from_an_earlier_run_never_count() {
@@ -448,7 +508,10 @@ cold_run_installs_creates_boots_runs_and_shuts_down_its_own_avd
 reuses_a_running_avd_and_leaves_it_running
 aborted_tests_do_not_count_as_executed
 skipped_tests_do_not_count_as_executed
-a_partly_skipped_suite_passes_and_reports_its_counts
+any_assumption_abort_fails_the_run
+plain_skips_alongside_executed_tests_pass
+a_bff_that_dies_during_the_run_fails_it_even_when_every_test_passed
+reuses_an_avd_that_is_still_booting_once_it_has_booted
 results_from_an_earlier_run_never_count
 a_gradle_failure_fails_the_run
 ctrl_c_mid_run_leaves_no_bff_behind

@@ -137,10 +137,11 @@ sdk_tool() {
     echo "$path"
 }
 
-# Serials of every running emulator whose AVD is alfie-bff-tests.
+# Serials of every running emulator whose AVD is alfie-bff-tests. An emulator that is still booting
+# shows as offline; it counts as running, so the script waits for it instead of booting a second copy.
 serials_of_avd() {
     local serial name
-    for serial in $("$ADB" devices | awk 'NR > 1 && $1 ~ /^emulator-/ {print $1}'); do
+    for serial in $("$ADB" devices | awk 'NR > 1 && $1 ~ /^emulator-/ && ($2 == "device" || $2 == "offline") {print $1}'); do
         name="$("$ADB" -s "$serial" emu avd name 2>/dev/null | head -1 | tr -d '\r')"
         [ "$name" = "$AVD_NAME" ] && echo "$serial"
     done
@@ -173,13 +174,19 @@ start_avd() {
     set +m
 }
 
-wait_for_started_avd() {
+# Waits until the AVD is an online adb device that has finished booting: one this run booted, or a
+# reused one that may still be booting.
+wait_for_avd_boot() {
     local waited=0
     info "⏳ Waiting for $AVD_NAME to boot (timeout ${AVD_BOOT_TIMEOUT}s)..."
     while [ "$waited" -lt "$AVD_BOOT_TIMEOUT" ]; do
-        kill -0 "$EMULATOR_PID" 2>/dev/null || fail "The emulator exited while booting. See $OUT_DIR/emulator.log."
+        if [ -n "$EMULATOR_PID" ]; then
+            kill -0 "$EMULATOR_PID" 2>/dev/null || fail "The emulator exited while booting. See $OUT_DIR/emulator.log."
+        fi
         [ -n "$SERIAL" ] || SERIAL="$(serials_of_avd | head -1)"
-        if [ -n "$SERIAL" ] && [ "$("$ADB" -s "$SERIAL" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; then
+        if [ -n "$SERIAL" ] \
+            && "$ADB" devices | awk -v s="$SERIAL" '$1 == s && $2 == "device" {found = 1} END {exit !found}' \
+            && [ "$("$ADB" -s "$SERIAL" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; then
             return 0
         fi
         sleep 1
@@ -276,22 +283,22 @@ fail_with_bff_log() {
 
 # --- Tests -----------------------------------------------------------------------------------------
 
-# Prints "<executed> <skipped>" for the test cases in a suite's result XMLs. A case is skipped when it
-# has <skipped/> or fails on an assumption: on a device, AGP writes a JUnit 5 TestAbortedException
-# as a <failure> and still passes the task, so a suite whose BFF died looks green. A real failure that
-# merely mentions an assumption still fails the run, through Gradle's exit code.
+# Prints "<executed> <skipped> <aborted>" for the test cases in a suite's result XMLs. Aborted cases
+# failed on an assumption. On a device, AGP writes a JUnit 5 TestAbortedException as a <failure> and
+# still passes the task. The suites' only assumption is that the BFF is reachable, so under this
+# script an abort means the BFF went away. A real failure that merely mentions an assumption still
+# fails the run, through Gradle's exit code.
 count_tests() {
     cat "$1"/*.xml 2>/dev/null | awk '
         /<testcase[ >]/ { total++; in_case = 1; marked = 0 }
-        in_case && !marked && (/<skipped/ || /TestAbortedException|AssumptionViolatedException/) {
-            skipped++; marked = 1
-        }
+        in_case && !marked && /TestAbortedException|AssumptionViolatedException/ { aborted++; marked = 1 }
+        in_case && !marked && /<skipped/ { skipped++; marked = 1 }
         in_case && (/<\/testcase>/ || /<testcase[^>]*\/>/) { in_case = 0 }
-        END { print total - skipped, skipped + 0 }'
+        END { print total - skipped - aborted, skipped + 0, aborted + 0 }'
 }
 
 run_suites() {
-    local suite tasks="" gradle_rc guard_rc=0 executed skipped
+    local suite tasks="" gradle_rc guard_rc=0 executed skipped aborted
     for suite in $SUITES; do
         rm -rf "$(suite_results_dir "$suite")"  # stale results must never count
         tasks="$tasks $(suite_task "$suite")"
@@ -302,18 +309,26 @@ run_suites() {
     ( cd "$PROJECT_DIR" && ANDROID_SERIAL="$SERIAL" ./gradlew $tasks --continue )
     gradle_rc=$?
 
-    # Gradle reports a run of 0 tests as green, so every suite must show executed tests.
+    # Gradle reports green for a run whose tests all skipped or aborted, so the results decide.
     for suite in $SUITES; do
-        read -r executed skipped <<EOF
+        read -r executed skipped aborted <<EOF
 $(count_tests "$(suite_results_dir "$suite")")
 EOF
-        if [ "$executed" -gt 0 ]; then
-            info "📊 $suite: $executed executed, $skipped skipped"
-        else
-            echo "❌ $suite: 0 tests executed ($skipped skipped). Every test was skipped or none ran; see $(suite_results_dir "$suite")." >&2
+        info "📊 $suite: $executed executed, $skipped skipped, $aborted aborted"
+        if [ "$aborted" -gt 0 ]; then
+            echo "❌ $suite: $aborted tests aborted on an assumption, which here means the BFF went away mid-run; see $BFF_LOG." >&2
+            guard_rc=1
+        fi
+        if [ "$executed" -eq 0 ]; then
+            echo "❌ $suite: 0 tests executed. Every test was skipped or none ran; see $(suite_results_dir "$suite")." >&2
             guard_rc=1
         fi
     done
+
+    if ! kill -0 -- -"$BFF_PGID" 2>/dev/null; then
+        echo "❌ The BFF exited during the run, so its results can't be trusted; see $BFF_LOG." >&2
+        guard_rc=1
+    fi
 
     if [ "$gradle_rc" -ne 0 ]; then
         echo "❌ Gradle failed (exit $gradle_rc). Reports: */build/reports/androidTests/connected/" >&2
@@ -382,7 +397,7 @@ build_bff
 start_bff
 wait_for_bff
 
-[ -n "$EMULATOR_PID" ] && wait_for_started_avd
+wait_for_avd_boot
 info "📱 Device: $SERIAL ($AVD_NAME)"
 disable_animations
 

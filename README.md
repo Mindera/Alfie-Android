@@ -111,15 +111,16 @@ Android SDK (`ANDROID_HOME`) with the emulator and the Command-line Tools. Then 
 2. **Gets the `alfie-bff-tests` AVD**, built to the same spec as CI's: `system-images;android-34;aosp_atd`,
    arm64-v8a on Apple Silicon and x86_64 elsewhere. If it's running, the script reuses it and leaves it
    running. If not, the script installs the image (about 590 MB, once), creates the AVD, boots it
-   headless without snapshots, and shuts it down at the end. Either way it turns the animation scales
-   off. It ignores every other emulator and device.
+   headless without snapshots, and shuts it down at the end. Either way it waits for the boot to
+   finish and turns the animation scales off. It ignores every other emulator and device.
 3. **Boots the Mock BFF.** It runs `yarn install --frozen-lockfile` and `yarn build`, starts
    `node dist/main` on port 4000 with a throwaway JWT secret, waits for GraphQL, and prints the BFF
    SHA. It warns when the checkout is behind `origin/main` or on another branch, and never changes
    the checkout's git state.
 4. **Runs the suite** on that AVD: `./gradlew :integration-test:connectedDebugAndroidTest --continue`.
-5. **Fails if the suite executed 0 tests**, even when Gradle passed. Tests skip themselves when no BFF
-   is reachable, so a BFF that died mid-run would otherwise look green.
+5. **Fails when the BFF went away mid-run**, even when Gradle passed. Tests skip themselves when no BFF
+   is reachable, and AGP counts those aborts as a green run. So the script fails if any test aborted on
+   that assumption, if the suite executed 0 tests, or if the BFF process is gone after Gradle.
 6. **Cleans up on exit**, Ctrl-C included: it stops the BFF, and shuts the AVD down if it booted it.
 
 `--only integration` runs one suite. Each run leaves behind:
