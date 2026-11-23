@@ -93,42 +93,72 @@ Apollo Kotlin generates Kotlin code automatically on build. Generated classes la
 
 > ⚠️ Never commit hard-coded local IPs or cleartext exceptions targeting non-localhost addresses.
 
-## Integration tests (local BFF)
+## Integration tests (Mock BFF)
 
-The `:integration-test` module runs **instrumented** tests with a real `ApolloClient` against a
-**locally-running BFF**, covering `productList`, `productDetails`, and `searchProducts`. They are
-not part of `testDebugUnitTest` — they run only via `connectedDebugAndroidTest` on an
-emulator/device, and **skip themselves** (JUnit5 `assumeTrue`) when no BFF is reachable, so they
-never break a run without a backend.
+The `:integration-test` module runs **instrumented** tests with a real `ApolloClient` against the
+**Mock BFF**, covering `productList`, `productDetails` and `searchProducts`. They aren't part of
+`testDebugUnitTest`. One command runs them:
 
-To run them locally:
+```bash
+scripts/run-bff-tests.sh
+```
 
-1. **Start the Mock BFF** on port `4000` (see [New BFF — Alfie-BFF (port 4000)](#new-bff--alfie-bff-port-4000) above,
-   and the BFF's `docs/mock-platform.md`):
+It needs an Alfie-BFF checkout at `../Alfie-BFF` (or set `ALFIE_BFF_PATH`), Node with yarn, and the
+Android SDK (`ANDROID_HOME`) with the emulator and the Command-line Tools. Then it:
 
-   ```bash
-   cd ../Alfie-BFF
-   yarn install
-   PLATFORM=mock AUTH_DISABLED=true MOCK_ASSETS_BASE_URL=http://10.0.2.2:4000 \
-     BFF_JWT_SECRET=local-mock-placeholder-at-least-32-characters yarn start   # serves /graphql on http://localhost:4000
-   ```
+1. **Checks port 4000.** If anything is listening there, it fails straight away and names the PID and
+   command.
+2. **Gets the `alfie-bff-tests` AVD**, built to the same spec as CI's: `system-images;android-34;aosp_atd`,
+   arm64-v8a on Apple Silicon and x86_64 elsewhere. If it's running, the script reuses it and leaves it
+   running. If not, the script installs the image (about 590 MB, once), creates the AVD, boots it
+   headless without snapshots, and shuts it down at the end. Either way it waits for the boot to
+   finish and turns the animation scales off. It ignores every other emulator and device.
+3. **Boots the Mock BFF.** It runs `yarn install --frozen-lockfile` and `yarn build`, starts
+   `node dist/main` on port 4000 with a throwaway JWT secret, waits for GraphQL, and prints the BFF
+   SHA. It warns when the checkout is behind `origin/main` or on another branch, and never changes
+   the checkout's git state.
+4. **Runs the suite** on that AVD: `./gradlew :integration-test:connectedDebugAndroidTest --continue`.
+5. **Fails when the BFF went away mid-run**, even when Gradle passed. Tests skip themselves when no BFF
+   is reachable, and AGP counts those aborts as a green run. So the script fails if any test aborted on
+   that assumption, if the suite executed 0 tests, or if the BFF process is gone after Gradle.
+6. **Cleans up on exit**, Ctrl-C included: it stops the BFF, and shuts the AVD down if it booted it.
 
-2. **Start an emulator** (the tests reach the host BFF via `http://10.0.2.2:4000/graphql`). The `:integration-test` module's own androidTest manifest grants `INTERNET` and references `integration-test/src/androidTest/res/xml/network_security_config.xml` to allow cleartext to `10.0.2.2` — the app's network-security config is not packaged into this standalone library test APK.
+`--only integration` runs one suite. Each run leaves behind:
+- `build/bff-tests/bff.log`, and `build/bff-tests/emulator.log` if it booted the AVD;
+- reports in `integration-test/build/reports/androidTests/connected/`;
+- result XMLs in `integration-test/build/outputs/androidTest-results/connected/debug/`.
 
-3. **Run the suite:**
+`ALFIE_BFF_START_CMD` replaces the BFF start command (run in the BFF checkout), for example to try a
+Live BFF. The suites are written for the Mock BFF only.
 
-   ```bash
-   ./gradlew :integration-test:connectedDebugAndroidTest
-   ```
+`scripts/tests/run-bff-tests-test.sh` tests the script itself against a stubbed SDK, BFF and Gradle.
 
-   Reports: `integration-test/build/reports/androidTests/connected/`.
+**One test class, or a real device:** start the Mock BFF yourself (see
+[New BFF — Alfie-BFF (port 4000)](#new-bff--alfie-bff-port-4000) and the BFF's `docs/mock-platform.md`),
+then call Gradle directly. Pass a single `class=`: AGP cuts runner arguments at the first comma.
+
+```bash
+cd ../Alfie-BFF && yarn install && yarn build
+PLATFORM=mock AUTH_DISABLED=true MOCK_ASSETS_BASE_URL=http://10.0.2.2:4000 \
+  BFF_JWT_SECRET=local-mock-placeholder-at-least-32-characters node dist/main   # http://localhost:4000/graphql
+```
+
+```bash
+./gradlew :integration-test:connectedDebugAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=com.mindera.alfie.integrationtest.ProductListIntegrationTest
+```
+
+Run this way, the tests skip themselves (JUnit5 `assumeTrue`) when no BFF is reachable.
 
 Notes:
 - Tests pin only to the Mock BFF's **seed anchors** (`SeedAnchors` in `:core:test-seed`, named exactly as
   in the BFF's `docs/mock-platform.md`), or to "any item" where the assertion holds for any item. Only
   instrumented test source sets depend on `:core:test-seed`.
+- The tests reach the host BFF at `http://10.0.2.2:4000/graphql`. The module's own androidTest manifest
+  grants `INTERNET` and allows cleartext to `10.0.2.2` through
+  `integration-test/src/androidTest/res/xml/network_security_config.xml`, because the app's config isn't
+  packaged into this standalone library test APK.
 - Real device: point the tests at your machine's IP instead of `10.0.2.2` (override `BffIntegrationTest.BFF_URL`) and allow cleartext to that IP, per [Real device setup](#real-device-setup).
-- Automating the BFF boot/teardown + a CI job is tracked separately in **ALFMOB-409**.
 
 ## Features
 
