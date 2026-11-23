@@ -65,6 +65,12 @@ generator with the anchor's path.
 
 If the JSON has uncommitted changes, the header says so next to the commit.
 
+The header records only a commit, so the generator also warns on stderr, without changing its exit
+code, when the BFF checkout isn't on `origin/main`: on another branch, on a detached HEAD off main,
+or behind `origin/main`. A file generated from a BFF branch can hold anchors that main, which CI
+tests against, doesn't have yet. The check mirrors `scripts/run-bff-tests.sh` and reads `origin`'s
+main live with `git ls-remote`; if that fails it says so and skips the check.
+
 ## Tests
 
 ```bash

@@ -47,6 +47,7 @@ class RenderTest(unittest.TestCase):
             "non-string item": ({"ids": ["a", 1]}, "ids"),
             "not an identifier": ({"collections": {"new-in": "new-in"}}, "collections.new-in"),
             "hard keyword": ({"collections": {"object": "x"}}, "collections.object"),
+            "trailing newline": ({"collections": {"women\n": "women"}}, "collections.women\n"),
         }
         for case, (anchors, path) in cases.items():
             with self.subTest(case), self.assertRaisesRegex(gen.AnchorError, f"'{path}'"):
@@ -63,10 +64,17 @@ class CliTest(unittest.TestCase):
         self.anchors_json = self.bff / "src" / "mock" / "fixtures" / "seed-anchors.json"
         self.anchors_json.parent.mkdir(parents=True)
         shutil.copy(BFF_MAIN_ANCHORS, self.anchors_json)
-        self._git("init", "--quiet")
+        self._git("init", "--quiet", "--initial-branch=main")
         self._git("add", ".")
         self._git("commit", "--quiet", "-m", "seed anchors")
+        self.origin = Path(tmp.name) / "origin.git"
         self.output = Path(tmp.name) / "SeedAnchors.kt"
+
+    def _publish_main(self):
+        """Gives the BFF checkout an `origin` whose main is the checkout's HEAD."""
+        subprocess.run(["git", "init", "--quiet", "--bare", str(self.origin)], check=True)
+        self._git("remote", "add", "origin", str(self.origin))
+        self._git("push", "--quiet", "origin", "HEAD:refs/heads/main")
 
     def _git(self, *args):
         return subprocess.run(
@@ -163,6 +171,50 @@ class CliTest(unittest.TestCase):
 
         self.assertEqual(2, result.returncode, result.stderr)
         self.assertIn("top level", result.stderr)
+
+
+    def _check_warnings(self):
+        """stderr of a `--check` that must still pass: the warnings are advisory."""
+        self._run()
+        result = self._run("--check")
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn("up to date", result.stdout)
+        return result.stderr
+
+    def test_no_warning_when_the_bff_is_on_origin_main(self):
+        self._publish_main()
+
+        self.assertEqual("", self._check_warnings())
+
+    def test_a_detached_head_on_origin_main_counts_as_main(self):
+        self._publish_main()
+        self._git("checkout", "--quiet", "--detach")
+
+        self.assertEqual("", self._check_warnings())
+
+    def test_warns_when_the_bff_is_on_another_branch(self):
+        self._publish_main()
+        self._git("checkout", "--quiet", "-b", "feature/new-anchor")
+
+        self.assertIn("is on feature/new-anchor, not main", self._check_warnings())
+
+    def test_warns_when_the_bff_is_on_a_detached_head_off_main(self):
+        self._publish_main()
+        self._git("commit", "--quiet", "--allow-empty", "-m", "unmerged")
+        self._git("checkout", "--quiet", "--detach")
+
+        self.assertIn("is on a detached HEAD, not main", self._check_warnings())
+
+    def test_warns_when_the_bff_is_behind_origin_main(self):
+        self._publish_main()
+        self._git("commit", "--quiet", "--allow-empty", "-m", "merged upstream")
+        self._git("push", "--quiet", "origin", "HEAD:refs/heads/main")
+        self._git("reset", "--quiet", "--hard", "HEAD~1")
+
+        self.assertIn("is behind origin/main", self._check_warnings())
+
+    def test_warns_when_origin_main_cant_be_read(self):
+        self.assertIn("Couldn't read origin/main", self._check_warnings())
 
 
 if __name__ == "__main__":

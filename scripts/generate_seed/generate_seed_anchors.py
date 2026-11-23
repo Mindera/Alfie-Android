@@ -71,7 +71,7 @@ class AnchorError(ValueError):
     """The anchor JSON holds something SeedAnchors has no Kotlin shape for."""
 
 
-_IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 # Kotlin's hard keywords: not usable as names without backticks. Soft keywords (`default`) are fine.
 _HARD_KEYWORDS = {
     "as", "break", "class", "continue", "do", "else", "false", "for", "fun", "if", "in",
@@ -84,7 +84,7 @@ def _entry(path, value, indent):
     """The Kotlin lines declaring the anchor (or group of anchors) at `path`, at `indent`."""
     name = path[-1]
     where = ".".join(path)
-    if not _IDENTIFIER_RE.match(name) or name in _HARD_KEYWORDS:
+    if not _IDENTIFIER_RE.fullmatch(name) or name in _HARD_KEYWORDS:
         raise AnchorError(f"'{where}' is not a plain Kotlin identifier")
     pad = INDENT * indent
     if isinstance(value, str):
@@ -144,6 +144,58 @@ def _bff_source(bff_dir):
     if _git(bff_dir, "status", "--porcelain", "--", str(ANCHORS_IN_BFF)):
         return f"{commit} with uncommitted changes to {ANCHORS_IN_BFF.name}"
     return commit
+
+
+def _warn(message):
+    print(f"⚠ {message}", file=sys.stderr)
+
+
+def _remote_main(bff_dir):
+    """origin's main, read live like scripts/run-bff-tests.sh does, or None if it can't be read."""
+    env = {
+        **os.environ,
+        "GIT_TERMINAL_PROMPT": "0",
+        "GIT_SSH_COMMAND": "ssh -o BatchMode=yes -o ConnectTimeout=5",
+    }
+    try:
+        refs = subprocess.run(
+            ["git", "-C", str(bff_dir), "ls-remote", "origin", "refs/heads/main"],
+            capture_output=True, text=True, env=env, timeout=30,
+        ).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return refs.split("\t", 1)[0] or None
+
+
+def _warn_if_bff_differs_from_main(bff_dir):
+    """Warns, never fails, when the anchors come from somewhere other than the BFF's main.
+
+    Mirrors `warn_if_bff_checkout_differs_from_main` in scripts/run-bff-tests.sh. A file generated
+    from a BFF branch can hold anchors main doesn't have yet, and the header names only a commit.
+    """
+    head = _git(bff_dir, "rev-parse", "HEAD")
+    branch = subprocess.run(
+        ["git", "-C", str(bff_dir), "symbolic-ref", "--short", "-q", "HEAD"],
+        capture_output=True, text=True,
+    ).stdout.strip() or "a detached HEAD"
+    remote_main = _remote_main(bff_dir)
+    if remote_main is None:
+        _warn(
+            f"Couldn't read origin/main for the BFF checkout at {bff_dir}, "
+            "so it isn't checked against main."
+        )
+    # CI checks out main's commit as a detached HEAD; that is main.
+    on_main = branch == "main" or (branch == "a detached HEAD" and remote_main in (None, head))
+    if not on_main:
+        _warn(f"The BFF checkout at {bff_dir} is on {branch}, not main. CI tests against main.")
+    if remote_main is not None and subprocess.run(
+        ["git", "-C", str(bff_dir), "merge-base", "--is-ancestor", remote_main, "HEAD"],
+        capture_output=True,
+    ).returncode != 0:
+        _warn(
+            f"The BFF checkout at {bff_dir} is behind origin/main ({remote_main}). "
+            "CI tests against main."
+        )
 
 
 def _without_header(kotlin):
@@ -209,6 +261,7 @@ def main(argv=None):
         return _fail(f"Can't read the commit of {bff_dir} (ALFIE_BFF_PATH): {e.stderr.strip()}")
     except OSError as e:  # e.g. no git on PATH; must not exit 1, which means stale
         return _fail(str(e))
+    _warn_if_bff_differs_from_main(bff_dir)
     if args.check:
         return _check(args.output, kotlin, bff_dir)
     args.output.write_text(kotlin, encoding="utf-8")
