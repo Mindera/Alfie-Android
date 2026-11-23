@@ -1,0 +1,26 @@
+fragment CartFragment on Cart {
+    id
+    lineItems {
+        id
+        productId
+        variantId
+        sku
+        slug
+        name
+        quantity
+        image {
+            ...ImageFragment
+        }
+        price {
+            ...MoneyFragment
+        }
+        lineTotal {
+            ...MoneyFragment
+        }
+    }
+    totals {
+        subtotal {
+            ...MoneyFragment
+        }
+    }
+}

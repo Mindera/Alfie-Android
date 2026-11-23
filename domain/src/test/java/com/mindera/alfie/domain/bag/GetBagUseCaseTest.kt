@@ -2,11 +2,11 @@ package com.mindera.alfie.domain.bag
 
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.Bag
 import com.mindera.alfie.repository.bag.BagRepository
 import com.mindera.alfie.repository.result.ErrorResult
 import com.mindera.alfie.repository.result.RepositoryResult
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -27,9 +27,9 @@ class GetBagUseCaseTest {
     lateinit var subject: GetBagUseCase
 
     @Test
-    fun `get list of products in the bag`() = runTest {
-        val mockBag = mockk<List<BagProduct>>()
-        coEvery { bagRepository.getBag() } returns flowOf(RepositoryResult.Success(mockBag))
+    fun `invoke - WHEN the repository emits a Bag THEN it is returned`() = runTest {
+        val mockBag = mockk<Bag>()
+        every { bagRepository.getBag() } returns flowOf(RepositoryResult.Success(mockBag))
 
         val expected = UseCaseResult.Success(mockBag)
         val result = subject().first()
@@ -38,9 +38,9 @@ class GetBagUseCaseTest {
     }
 
     @Test
-    fun `get list of products in the bag, and returns an error`() = runTest {
+    fun `invoke - WHEN the repository emits an error THEN it is returned`() = runTest {
         val errorResult = mockk<ErrorResult>()
-        coEvery { bagRepository.getBag() } returns flowOf(RepositoryResult.Error(errorResult))
+        every { bagRepository.getBag() } returns flowOf(RepositoryResult.Error(errorResult))
 
         val expected = UseCaseResult.Error(errorResult)
         val result = subject().first()

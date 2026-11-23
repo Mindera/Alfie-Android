@@ -1,17 +1,17 @@
 package com.mindera.alfie.feature.bag
 
-import com.mindera.alfie.core.commons.string.formatMoney
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
-import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
 import com.mindera.alfie.feature.mappers.cardImageFor
 import com.mindera.alfie.feature.mappers.toImageUI
 import com.mindera.alfie.feature.mappers.toPriceType
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.Bag
+import com.mindera.alfie.repository.bag.BagLine
+import com.mindera.alfie.repository.product.model.Price
 import com.mindera.alfie.repository.product.model.Product
 import com.mindera.alfie.repository.product.model.Variant
 import com.mindera.alfie.repository.product.model.colorOptionValue
@@ -25,105 +25,79 @@ import javax.inject.Inject
  */
 internal const val LOW_STOCK_THRESHOLD = 5
 
+/**
+ * Builds the Bag screen from the Cart and the products behind its lines.
+ *
+ * The Cart owns quantity, prices and the total. It has no brand, colour, size, was-price or stock,
+ * so those come from the product fetched by the line's slug (ADR 0001). A line whose product
+ * didn't load still shows, with the Cart's own name, image and price.
+ */
 internal class BagUiFactory @Inject constructor() {
 
     operator fun invoke(
-        bagProducts: List<BagProduct>,
-        products: List<Product>,
+        bag: Bag,
+        productsBySlug: Map<String, Product>,
         onProductClick: ClickEventOneArg<String>
-    ): BagContentUi {
-        // The bag stores one entry per unit, so entries for the same variant collapse into a single
-        // line whose quantity is the number of entries. groupBy keeps first-added order.
-        val lines = bagProducts
-            .groupBy { it }
-            .mapNotNull { (bagProduct, entries) ->
-                // A product whose fetch failed is simply skipped: the previous `first { }` threw and
-                // took the whole screen down with it.
-                val product = products.firstOrNull { it.slug == bagProduct.productId }
-                    ?: return@mapNotNull null
-                BagLine(
-                    bagProduct = bagProduct,
-                    product = product,
-                    variant = product.variantFor(bagProduct.variantSku),
-                    quantity = entries.size
-                )
-            }
+    ): BagContentUi = BagContentUi(
+        lines = bag.lines.map { line ->
+            val product = line.slug?.let(productsBySlug::get)
+            line.toBagLineUi(
+                product = product,
+                variant = product?.variantFor(line),
+                onProductClick = onProductClick
+            )
+        }.toImmutableList(),
+        summary = BagSummaryUi(totalFormatted = bag.subtotal?.amountFormatted)
+    )
 
-        return BagContentUi(
-            items = lines.map { line -> line.toBagProductUi(onProductClick) }.toImmutableList(),
-            summary = lines.toSummary()
-        )
-    }
+    // Matched by variant id, which is what the Cart line carries; SKU is the fallback for a
+    // platform that leaves the id out. No fallback to another variant: it would show the wrong
+    // colour, size and stock under this line.
+    private fun Product.variantFor(line: BagLine): Variant? =
+        variants.firstOrNull { line.variantId != null && it.id == line.variantId }
+            ?: variants.firstOrNull { line.sku != null && it.sku == line.sku }
 
-    // No fallback to the default variant: the bag line is identified by (productId, variantSku), so
-    // substituting another variant would show its image, options and price under the saved line's
-    // SKU — and feed the wrong number into the total. An unknown SKU resolves to null, which renders
-    // the line as unavailable.
-    private fun Product.variantFor(variantSku: String): Variant? =
-        variants.firstOrNull { it.sku == variantSku }
-
-    private fun BagLine.toBagProductUi(
+    private fun BagLine.toBagLineUi(
+        product: Product?,
+        variant: Variant?,
         onProductClick: ClickEventOneArg<String>
-    ) = BagProductUi(
-        // Quantity is grouped per variant, so the SKU has to be part of the list key. Length-prefixed
-        // because both halves may contain the separator: joining them plainly lets ("a-b", "c") and
-        // ("a", "b-c") collapse to the same key, which the list rejects as a duplicate.
-        id = "${bagProduct.productId.length}:${bagProduct.productId}:${bagProduct.variantSku}",
-        bagProduct = bagProduct,
-        notice = toNotice(),
+    ) = BagLineUi(
+        bagLine = this,
+        notice = toNotice(product = product, variant = variant),
         productCardData = ProductCardType.Horizontal(
-            // An unresolved line keeps the empty image rather than the product's fallback: the
-            // product's photo may show a colour the shopper did not pick.
-            image = variant?.let(product::cardImageFor) ?: null.toImageUI(),
-            brand = product.brandName.orEmpty(),
-            name = product.name,
-            // The variant's own price, not the product's range: a bag line is one specific variant,
-            // and the summary total has to agree with what each line shows.
-            price = variant?.price?.toPriceType() ?: PriceType.Default(price = ""),
+            image = when {
+                product != null && variant != null -> product.cardImageFor(variant)
+                else -> image.toImageUI()
+            },
+            brand = product?.brandName.orEmpty(),
+            name = product?.name ?: name.orEmpty(),
+            price = toPrice(variant).toPriceType(),
             color = variant?.colorOptionValue.orEmpty(),
             size = variant?.sizeOptionValue.orEmpty(),
-            reference = variant?.sku.orEmpty(),
+            reference = sku ?: variant?.sku.orEmpty(),
             quantity = quantity,
-            isAvailable = variant?.available == true,
-            onClick = { onProductClick(product.slug) }
+            // Without the product, stock is unknown: the line stays buyable rather than dimmed.
+            isAvailable = product == null || variant?.available == true,
+            onClick = { slug?.let(onProductClick) }
         )
     )
 
-    // Stock is read against the quantity the bag actually holds, not against the threshold alone:
-    // three units of a variant with two left is a different problem from a shelf running low, and
-    // saying "Only 2 items left!" under "Quantity: 3" reads as if nothing is wrong.
-    private fun BagLine.toNotice(): BagItemNotice? = when {
-        // A line with no resolvable variant is rendered unavailable by `isAvailable`, so it needs
-        // the notice too — otherwise the row is dimmed with nothing explaining why.
+    // The Cart's unit price is what the shopper pays. The product's was-price only strikes through
+    // when it is still above that price, so an ended sale never shows a "saving".
+    private fun BagLine.toPrice(variant: Variant?): Price = Price(
+        amount = unitPrice,
+        was = variant?.price?.was?.takeIf { was ->
+            was.currencyCode == unitPrice.currencyCode && was.amount > unitPrice.amount
+        }
+    )
+
+    // Stock is read against the quantity the Bag actually holds, not against the threshold alone:
+    // three units of a variant with two left is a different problem from a shelf running low.
+    private fun BagLine.toNotice(product: Product?, variant: Variant?): BagItemNotice? = when {
+        product == null -> null
         variant == null || variant.availableQuantity <= 0 -> BagItemNotice.Unavailable
         quantity > variant.availableQuantity -> BagItemNotice.ExceedsStock(remaining = variant.availableQuantity)
         variant.availableQuantity <= LOW_STOCK_THRESHOLD -> BagItemNotice.LowStock(remaining = variant.availableQuantity)
         else -> null
     }
-
-    // Assumes one currency across the bag: the amounts are summed raw and formatted with the first
-    // code the bag can offer. The catalogue is single-currency today; revisit if that ever stops
-    // being true.
-    //
-    // An unresolvable line contributes nothing, because there is no price to contribute — it is
-    // rendered unavailable and cannot be bought. An over-subscribed line is still charged in full:
-    // the total has to agree with the arithmetic each row shows, and its notice carries the stock
-    // problem.
-    private fun List<BagLine>.toSummary(): BagSummaryUi {
-        val total = sumOf { line -> (line.variant?.price?.amount?.amount ?: .0) * line.quantity }
-        // Currency comes from the product's range when no variant resolved, so a bag of gone SKUs
-        // still formats a zero total. With neither, there is nothing to format and the total is null.
-        val currencyCode = firstNotNullOfOrNull { line -> line.variant?.price?.amount?.currencyCode }
-            ?: firstNotNullOfOrNull { line -> line.product.priceRange?.low?.currencyCode }
-        return BagSummaryUi(
-            totalFormatted = currencyCode?.let { code -> formatMoney(amount = total, currencyCode = code) }
-        )
-    }
-
-    private data class BagLine(
-        val bagProduct: BagProduct,
-        val product: Product,
-        val variant: Variant?,
-        val quantity: Int
-    )
 }

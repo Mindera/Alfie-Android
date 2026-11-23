@@ -8,20 +8,23 @@ import com.mindera.alfie.core.navigation.arguments.productDetailsNavArgs
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.doOnResult
-import com.mindera.alfie.domain.usecase.bag.AddAllToBagUseCase
+import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.bag.GetBagUseCase
-import com.mindera.alfie.domain.usecase.bag.RemoveAllFromBagUseCase
+import com.mindera.alfie.domain.usecase.bag.RefreshBagUseCase
+import com.mindera.alfie.domain.usecase.bag.RemoveFromBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
 import com.mindera.alfie.domain.usecase.wishlist.AddToWishlistUseCase
 import com.mindera.alfie.feature.bag.BagUiState.Data.Loading
+import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.snackbar.ActionToast
 import com.mindera.alfie.feature.uievent.UIEventEmitter
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.Bag
+import com.mindera.alfie.repository.bag.BagLine
 import com.mindera.alfie.repository.product.model.Product
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Job
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -35,8 +38,9 @@ import com.mindera.alfie.designsystem.R as DesignR
 @HiltViewModel
 internal class BagViewModel @Inject constructor(
     private val getBagUseCase: GetBagUseCase,
-    private val removeAllFromBagUseCase: RemoveAllFromBagUseCase,
-    private val addAllToBagUseCase: AddAllToBagUseCase,
+    private val refreshBagUseCase: RefreshBagUseCase,
+    private val removeFromBagUseCase: RemoveFromBagUseCase,
+    private val addToBagUseCase: AddToBagUseCase,
     private val addToWishlistUseCase: AddToWishlistUseCase,
     private val getProductUseCase: GetProductUseCase,
     private val bagUiFactory: BagUiFactory,
@@ -48,45 +52,43 @@ internal class BagViewModel @Inject constructor(
     private val _state = MutableStateFlow<BagUiState>(Loading)
     internal val state = _state.asStateFlow()
 
-    private var bagJob: Job? = null
+    // Products fetched for Bag lines, by slug, so a Bag change only fetches what's new. A failed
+    // fetch isn't cached and is tried again on the next Bag.
+    private val productsBySlug = mutableMapOf<String, Product>()
 
-    // The last bag the repository emitted, so a removed line's position is known for its undo.
-    private var latestBag: List<BagProduct> = emptyList()
+    // The Bag as last built, before hiding the lines being removed.
+    private var lastBuiltBag: BagContentUi? = null
+
+    // Line ids whose remove is in flight or just succeeded. They stay hidden until the Bag that no
+    // longer holds them arrives, so the row never flickers back.
+    private val removingLineIds = mutableSetOf<String>()
 
     init {
-        getBagList()
+        collectBag()
     }
 
-    /** Re-runs the bag load after an error. */
+    /** Fetches the Cart again after an error; the result arrives through the Bag collection. */
     internal fun onRetry() {
         _state.value = Loading
-        getBagList()
+        viewModelScope.launch { refreshBagUseCase() }
     }
 
-    private fun getBagList() {
-        bagJob?.cancel()
-        bagJob = viewModelScope.launch {
+    private fun collectBag() {
+        viewModelScope.launch {
             getBagUseCase().collectLatest { result ->
                 result.doOnResult(
-                    onSuccess = { bagProducts ->
-                        latestBag = bagProducts
-                        val content = bagUiFactory(
-                            bagProducts = bagProducts,
-                            products = getBagProductDetails(bagProducts),
-                            onProductClick = { handle -> openProduct(handle) }
+                    onSuccess = { bag ->
+                        fetchMissingProducts(bag)
+                        lastBuiltBag = bagUiFactory(
+                            bag = bag,
+                            productsBySlug = productsBySlug,
+                            onProductClick = ::openProduct
                         )
-                        // One line per distinct variant; anything missing means a product fetch
-                        // failed. Publishing what did load would show a short bag under a total
-                        // that silently undercounts what the user owes, so surface the retry
-                        // instead — including the case where nothing loaded at all.
-                        val expectedLines = bagProducts.distinct().size
-                        _state.value = when {
-                            bagProducts.isEmpty() -> BagUiState.Data.Empty
-                            content.items.size < expectedLines -> BagUiState.Error
-                            else -> BagUiState.Data.Loaded(content)
-                        }
+                        removingLineIds.retainAll(bag.lines.map { it.id }.toSet())
+                        showVisibleLines()
                     },
                     onError = {
+                        lastBuiltBag = null
                         _state.value = BagUiState.Error
                     }
                 )
@@ -94,21 +96,28 @@ internal class BagViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getBagProductDetails(bagProducts: List<BagProduct>): List<Product> {
-        // Repeated entries are the same product, so fetch each product once rather than once per unit.
-        val productIds = bagProducts.map { it.productId }.distinct()
-        return coroutineScope {
-            productIds.map { productId ->
-                async { getProductUseCase(productId) }
-            }.awaitAll()
-                .mapNotNull { result ->
-                    var product: Product? = null
+    private suspend fun fetchMissingProducts(bag: Bag) {
+        val missingSlugs = bag.lines.mapNotNull { it.slug }.distinct().filterNot(productsBySlug::containsKey)
+        coroutineScope {
+            missingSlugs.map { slug -> async { getProductUseCase(slug) } }
+                .awaitAll()
+                .forEach { result ->
                     result.doOnResult(
-                        onSuccess = { product = it },
+                        onSuccess = { product -> productsBySlug[product.slug] = product },
                         onError = { }
                     )
-                    product
                 }
+        }
+    }
+
+    // Shows the last built Bag minus the lines being removed.
+    private fun showVisibleLines() {
+        val bag = lastBuiltBag ?: return
+        val visible = bag.lines.filterNot { it.id in removingLineIds }
+        _state.value = if (visible.isEmpty()) {
+            BagUiState.Data.Empty
+        } else {
+            BagUiState.Data.Loaded(bag.copy(lines = visible.toImmutableList()))
         }
     }
 
@@ -121,26 +130,27 @@ internal class BagViewModel @Inject constructor(
     }
 
     /**
-     * Clears the whole line: a bag row stands for every unit of that variant.
-     *
-     * A horizontal swipe reaches this in one gesture, so the result is not discarded the way the
-     * Wishlist's remove discards it — a failure would otherwise be silent after the row has already
-     * animated shut, and a success would be indistinguishable from a mis-aimed drag. [quantity] is
-     * what the undo puts back, at the position the line's first unit held.
+     * Removes the whole line from the Cart. The line hides while the call is in flight and comes
+     * back, with an error, if it fails. Undo adds the same variant and quantity back, and the line
+     * returns at the end of the Bag.
      */
-    internal fun onRemoveClicked(bagProduct: BagProduct, quantity: Int) {
-        val index = latestBag.indexOf(bagProduct).takeIf { it >= 0 } ?: latestBag.size
+    internal fun onRemoveClicked(line: BagLine) {
+        removingLineIds += line.id
+        showVisibleLines()
+
         viewModelScope.launch {
-            removeAllFromBagUseCase(bagProduct).doOnResult(
+            removeFromBagUseCase(line.id).doOnResult(
                 onSuccess = {
                     showSnackbar(
                         ActionToast.removed(
                             context = context,
-                            onUndo = { undoRemove(bagProduct = bagProduct, quantity = quantity, index = index) }
+                            onUndo = { undoRemove(line) }
                         )
                     )
                 },
                 onError = {
+                    removingLineIds -= line.id
+                    showVisibleLines()
                     showSnackbar(
                         SnackbarCustomVisuals.Snackbar(
                             type = SnackbarType.Error,
@@ -152,32 +162,38 @@ internal class BagViewModel @Inject constructor(
         }
     }
 
-    // Restores the whole line in one write and in its old place, so the row reappears where it was
-    // and the bag reloads once. A failure is surfaced for the same reason the remove's is: the row
-    // would otherwise just not come back.
-    private fun undoRemove(bagProduct: BagProduct, quantity: Int, index: Int) {
+    private fun undoRemove(line: BagLine) {
+        // The BFF's Cart line declares variantId nullable; without it there's nothing to add back.
+        val variantId = line.variantId ?: return showRestoreError()
         viewModelScope.launch {
-            addAllToBagUseCase(bagProduct = bagProduct, quantity = quantity, index = index).doOnResult(
+            addToBagUseCase(variantId = variantId, productId = line.productId, quantity = line.quantity).doOnResult(
                 onSuccess = { },
-                onError = {
-                    showSnackbar(
-                        SnackbarCustomVisuals.Snackbar(
-                            type = SnackbarType.Error,
-                            message = context.getString(R.string.bag_item_restore_error)
-                        )
-                    )
-                }
+                onError = { showRestoreError() }
             )
         }
     }
 
+    private fun showRestoreError() {
+        showSnackbar(
+            SnackbarCustomVisuals.Snackbar(
+                type = SnackbarType.Error,
+                message = context.getString(R.string.bag_item_restore_error)
+            )
+        )
+    }
+
     /**
-     * Adds the product to the wishlist and leaves the bag untouched: Save and Remove are separate
+     * Adds the product to the wishlist and leaves the Bag untouched: Save and Remove are separate
      * actions, so saving is not a move.
      */
-    internal fun onSaveClicked(bagProduct: BagProduct) {
+    internal fun onSaveClicked(line: BagLine) {
         viewModelScope.launch {
-            addToWishlistUseCase(bagProduct.productId).doOnResult(
+            val slug = line.slug
+            if (slug == null) {
+                showSaveError()
+                return@launch
+            }
+            addToWishlistUseCase(slug).doOnResult(
                 onSuccess = {
                     showSnackbar(
                         SnackbarCustomVisuals.Snackbar(
@@ -186,15 +202,17 @@ internal class BagViewModel @Inject constructor(
                         )
                     )
                 },
-                onError = {
-                    showSnackbar(
-                        SnackbarCustomVisuals.Snackbar(
-                            type = SnackbarType.Error,
-                            message = context.getString(DesignR.string.wishlist_error_add_product)
-                        )
-                    )
-                }
+                onError = { showSaveError() }
             )
         }
+    }
+
+    private fun showSaveError() {
+        showSnackbar(
+            SnackbarCustomVisuals.Snackbar(
+                type = SnackbarType.Error,
+                message = context.getString(DesignR.string.wishlist_error_add_product)
+            )
+        )
     }
 }

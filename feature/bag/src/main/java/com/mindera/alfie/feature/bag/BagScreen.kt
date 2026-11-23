@@ -42,9 +42,9 @@ import com.mindera.alfie.designsystem.tokens.LocalTheme
 import com.mindera.alfie.feature.bag.component.BagSummary
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.uievent.handleUIEvents
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.BagLine
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.persistentListOf
@@ -86,7 +86,7 @@ internal fun BagScreen(
 
     BagScreenContent(
         state = state,
-        onRemoveClick = { line -> viewModel.onRemoveClicked(line.bagProduct, line.productCardData.quantity) },
+        onRemoveClick = { line -> viewModel.onRemoveClicked(line.bagLine) },
         onSaveClick = viewModel::onSaveClicked,
         onRetryClick = viewModel::onRetry
     )
@@ -95,8 +95,8 @@ internal fun BagScreen(
 @Composable
 private fun BagScreenContent(
     state: BagUiState,
-    onRemoveClick: ClickEventOneArg<BagProductUi>,
-    onSaveClick: ClickEventOneArg<BagProduct>,
+    onRemoveClick: ClickEventOneArg<BagLineUi>,
+    onSaveClick: ClickEventOneArg<BagLine>,
     onRetryClick: ClickEvent
 ) {
     when (state) {
@@ -124,8 +124,8 @@ private fun BagScreenContent(
 @Composable
 private fun BagList(
     content: BagContentUi,
-    onRemoveClick: ClickEventOneArg<BagProductUi>,
-    onSaveClick: ClickEventOneArg<BagProduct>
+    onRemoveClick: ClickEventOneArg<BagLineUi>,
+    onSaveClick: ClickEventOneArg<BagLine>
 ) {
     val theme = LocalTheme.current
     Column(modifier = Modifier.fillMaxSize()) {
@@ -135,16 +135,16 @@ private fun BagList(
             verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing8),
             modifier = Modifier.weight(1f)
         ) {
-            content.items.forEachIndexed { index, item ->
-                item(key = item.id) {
-                    BagLineItem(
-                        item = item,
+            content.lines.forEachIndexed { index, line ->
+                item(key = line.id) {
+                    BagLineRow(
+                        line = line,
                         onRemoveClick = onRemoveClick,
                         onSaveClick = onSaveClick
                     )
                 }
-                if (index < content.items.lastIndex) {
-                    item(key = "divider-${item.id}") {
+                if (index < content.lines.lastIndex) {
+                    item(key = "divider-${line.id}") {
                         HorizontalDivider(
                             dividerType = DividerType.Solid1Mono200,
                             modifier = Modifier.padding(horizontal = theme.spacing.spacing16)
@@ -166,14 +166,14 @@ private fun BagList(
 
 /** One bag row: the product card, its stock notice, and the actions revealed by swiping. */
 @Composable
-private fun BagLineItem(
-    item: BagProductUi,
-    onRemoveClick: ClickEventOneArg<BagProductUi>,
-    onSaveClick: ClickEventOneArg<BagProduct>
+private fun BagLineRow(
+    line: BagLineUi,
+    onRemoveClick: ClickEventOneArg<BagLineUi>,
+    onSaveClick: ClickEventOneArg<BagLine>
 ) {
     val theme = LocalTheme.current
     val swipeState = rememberSwipeActionsState()
-    val productName = item.productCardData.name
+    val productName = line.productCardData.name
 
     val saveLabel = stringResource(R.string.bag_item_save)
     val removeLabel = stringResource(R.string.bag_item_remove)
@@ -182,28 +182,28 @@ private fun BagLineItem(
 
     // onRemoveClick/onSaveClick are deliberately not keys: bound method references are new
     // objects on every recomposition, which would defeat the memoisation for no behaviour gain.
-    val actions = remember(item, saveLabel, removeLabel, saveDescription, removeDescription) {
+    val actions = remember(line, saveLabel, removeLabel, saveDescription, removeDescription) {
         persistentListOf(
             SwipeAction(
                 icon = AlfieIcons.Wishlist,
                 label = saveLabel,
                 contentDescription = saveDescription,
-                onClick = { onSaveClick(item.bagProduct) }
+                onClick = { onSaveClick(line.bagLine) }
             ),
             SwipeAction(
                 icon = AlfieIcons.Close,
                 label = removeLabel,
                 contentDescription = removeDescription,
                 type = SwipeActionType.Destructive,
-                onClick = { onRemoveClick(item) }
+                onClick = { onRemoveClick(line) }
             )
         )
     }
     // The overflow button gives the same two actions a tap path — swipe-only actions are out of
     // reach for switch-access and keyboard users. It toggles so that path can also dismiss the row
     // without committing to Save or Remove.
-    val card = remember(item.productCardData, swipeState) {
-        item.productCardData.copy(onOverflowClick = swipeState::toggle)
+    val card = remember(line.productCardData, swipeState) {
+        line.productCardData.copy(onOverflowClick = swipeState::toggle)
     }
 
     SwipeActions(
@@ -218,7 +218,7 @@ private fun BagLineItem(
                 .padding(horizontal = theme.spacing.spacing16)
         ) {
             ProductCard(productCardType = card)
-            item.notice?.let { notice ->
+            line.notice?.let { notice ->
                 InlineMessage(message = notice.message())
             }
         }

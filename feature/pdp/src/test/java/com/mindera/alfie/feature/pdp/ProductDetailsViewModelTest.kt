@@ -15,6 +15,7 @@ import com.mindera.alfie.core.ui.media.image.ImageUI
 import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
+import com.mindera.alfie.designsystem.component.snackbar.SnackbarType
 import com.mindera.alfie.domain.UseCaseResult
 import com.mindera.alfie.domain.usecase.bag.AddToBagUseCase
 import com.mindera.alfie.domain.usecase.product.GetProductUseCase
@@ -34,7 +35,10 @@ import com.mindera.alfie.feature.pdp.model.ShareEvent
 import com.mindera.alfie.feature.pdp.model.SizeSectionUI
 import com.mindera.alfie.feature.uievent.UIEvent
 import com.mindera.alfie.feature.uievent.UIEventEmitterDelegate
+import com.mindera.alfie.repository.product.model.Price
+import com.mindera.alfie.repository.product.model.Variant
 import com.mindera.alfie.repository.result.ErrorResult
+import com.mindera.alfie.repository.shared.model.Money
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -43,6 +47,8 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -98,6 +104,15 @@ internal class ProductDetailsViewModelTest {
             name = "Related product",
             price = PriceType.Default(price = "£10")
         )
+    )
+
+    private val selectedVariant = Variant(
+        id = "variant-id",
+        sku = "variant-sku",
+        price = Price(amount = Money(amount = 10.0, amountFormatted = "£10.00", currencyCode = "GBP"), was = null),
+        options = emptyList(),
+        media = emptyList(),
+        availableQuantity = 5
     )
 
     private val realProductDetailsUI = ProductDetailsUI(
@@ -193,13 +208,51 @@ internal class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `handleEvent - GIVEN OnAddToBagClick THEN share action is created`() = runTest {
-        val event = ProductDetailsEvent.OnAddToBagClick
+    fun `handleEvent - GIVEN OnAddToBagClick WHEN the add fails THEN an error is shown`() = runTest {
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns selectedVariant
+        coEvery { addToBagUseCase(any(), any(), any()) } returns UseCaseResult.Error(mockk(relaxed = true))
         val viewModel = buildViewModel()
+
         viewModel.uiEvent.test {
-            viewModel.handleEvent(event)
+            viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
+
+            val visuals = (awaitItem() as UIEvent.Base.ShowSnackbar).visuals
+            assertEquals(SnackbarType.Error, assertIs<SnackbarCustomVisuals.Snackbar>(visuals).type)
             cancelAndConsumeRemainingEvents()
         }
+        assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isAddingToBag)
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnAddToBagClick WHEN an add is in flight THEN further taps are ignored`() = runTest {
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns selectedVariant
+        coEvery { addToBagUseCase(any(), any(), any()) } coAnswers {
+            delay(1_000)
+            UseCaseResult.Success(mockk())
+        }
+        val viewModel = buildViewModel()
+
+        viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
+        viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
+
+        assertTrue(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isAddingToBag)
+        advanceUntilIdle()
+        coVerify(exactly = 1) { addToBagUseCase(any(), any(), any()) }
+    }
+
+    @Test
+    fun `handleEvent - GIVEN OnAddToBagClick WHEN no variant is selected THEN nothing is added`() = runTest {
+        coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
+        coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns null
+        val viewModel = buildViewModel()
+
+        viewModel.handleEvent(ProductDetailsEvent.OnAddToBagClick)
+        advanceUntilIdle()
+
+        coVerify(exactly = 0) { addToBagUseCase(any(), any(), any()) }
+        assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isAddingToBag)
     }
 
     @Test
@@ -287,8 +340,8 @@ internal class ProductDetailsViewModelTest {
     @Test
     fun `handleEvent - GIVEN OnAddToBagClick WHEN it succeeds THEN a toast links to the Bag`() = runTest {
         coEvery { productDetailsUIFactory(any(), any()) } returns realProductDetailsUI
-        coEvery { productDetailsUIFactory.getSelectedVariantSku(any()) } returns "sku"
-        coEvery { addToBagUseCase(any(), any()) } returns UseCaseResult.Success(true)
+        coEvery { productDetailsUIFactory.getSelectedVariant(any()) } returns selectedVariant
+        coEvery { addToBagUseCase(any(), any(), any()) } returns UseCaseResult.Success(mockk())
         val viewModel = buildViewModel()
 
         viewModel.uiEvent.test {
@@ -299,7 +352,8 @@ internal class ProductDetailsViewModelTest {
             assertEquals(Screen.Bag, (awaitItem() as UIEvent.Base.NavigateToScreen).screen)
             cancelAndConsumeRemainingEvents()
         }
-        coVerify { addToBagUseCase(realProductDetailsUI.slug, "sku") }
+        coVerify(exactly = 1) { addToBagUseCase(variantId = "variant-id", productId = "main-product-id", quantity = 1) }
+        assertFalse(assertIs<ProductDetailsUIState.Data.Loaded>(viewModel.state.value).details.isAddingToBag)
     }
 
     @Test

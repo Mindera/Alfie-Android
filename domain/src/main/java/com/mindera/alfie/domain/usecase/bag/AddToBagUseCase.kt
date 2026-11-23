@@ -1,7 +1,8 @@
 package com.mindera.alfie.domain.usecase.bag
 
 import com.mindera.alfie.domain.UseCaseInteractor
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.domain.UseCaseResult
+import com.mindera.alfie.repository.bag.Bag
 import com.mindera.alfie.repository.bag.BagRepository
 import javax.inject.Inject
 
@@ -10,14 +11,9 @@ class AddToBagUseCase @Inject constructor(
 ) : UseCaseInteractor {
 
     suspend operator fun invoke(
-        productId: String,
-        variantSku: String
-    ) = run(
-        bagRepository.addToBag(
-            BagProduct(
-                productId = productId,
-                variantSku = variantSku
-            )
-        )
-    )
+        variantId: String,
+        productId: String?,
+        quantity: Int = 1
+    ): UseCaseResult<Bag> =
+        run(bagRepository.addToBag(variantId = variantId, productId = productId, quantity = quantity))
 }

@@ -6,15 +6,18 @@ import com.mindera.alfie.designsystem.component.price.PriceType
 import com.mindera.alfie.designsystem.component.productcard.ProductCardType
 import com.mindera.alfie.feature.bag.models.BagContentUi
 import com.mindera.alfie.feature.bag.models.BagItemNotice
-import com.mindera.alfie.feature.bag.models.BagProductUi
+import com.mindera.alfie.feature.bag.models.BagLineUi
 import com.mindera.alfie.feature.bag.models.BagSummaryUi
-import com.mindera.alfie.repository.bag.BagProduct
+import com.mindera.alfie.repository.bag.BagLine
+import com.mindera.alfie.repository.shared.model.Money
 import kotlinx.collections.immutable.persistentListOf
 
 /*
  * Fixtures for this module's @Preview functions. They live in `main` because previews cannot see the
  * test source set, and they take no DI so a preview never needs a factory or a ViewModel.
  */
+
+private val previewMoney = Money(amount = 0.0, amountFormatted = "", currencyCode = "GBP")
 
 internal val loadingPlaceholderCard = ProductCardType.Horizontal(
     image = ImageUI(images = persistentListOf(), alt = null),
@@ -41,20 +44,30 @@ private fun previewCard(
     onOverflowClick = {}
 )
 
-private fun previewItem(
+private fun previewLine(
     productId: String,
     card: ProductCardType.Horizontal,
     notice: BagItemNotice? = null
-) = BagProductUi(
-    id = "$productId-${card.reference}",
-    bagProduct = BagProduct(productId = productId, variantSku = card.reference),
+) = BagLineUi(
+    bagLine = BagLine(
+        id = "$productId-${card.reference}",
+        productId = productId,
+        variantId = card.reference,
+        sku = card.reference,
+        slug = productId,
+        name = card.name,
+        image = null,
+        quantity = card.quantity,
+        unitPrice = previewMoney,
+        lineTotal = previewMoney
+    ),
     notice = notice,
     productCardData = card
 )
 
 internal val previewBagContent = BagContentUi(
-    items = persistentListOf(
-        previewItem(
+    lines = persistentListOf(
+        previewLine(
             productId = "linen-shirt",
             card = previewCard(
                 name = "100% Linen Fluid Shirt",
@@ -66,7 +79,7 @@ internal val previewBagContent = BagContentUi(
             // it contradicts.
             notice = BagItemNotice.ExceedsStock(remaining = 1)
         ),
-        previewItem(
+        previewLine(
             productId = "wide-leg-jeans",
             card = previewCard(
                 name = "Mid-Rise Wide Leg Jeans",
@@ -76,7 +89,7 @@ internal val previewBagContent = BagContentUi(
             ),
             notice = BagItemNotice.LowStock(remaining = 2)
         ),
-        previewItem(
+        previewLine(
             productId = "cotton-tshirt",
             card = previewCard(
                 name = "100% Cotton T-shirt",
@@ -91,8 +104,8 @@ internal val previewBagContent = BagContentUi(
 )
 
 internal val previewSingleItemBagContent = BagContentUi(
-    items = persistentListOf(
-        previewItem(
+    lines = persistentListOf(
+        previewLine(
             productId = "linen-shirt",
             card = previewCard(
                 name = "100% Linen Fluid Shirt",
