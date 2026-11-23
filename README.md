@@ -524,3 +524,30 @@ Theme.typography.heading1
 ```
 
 See `scripts/generate_tokens/README.md` for full documentation.
+
+## Seed anchors
+
+`SeedAnchors` in `:core:test-seed`
+(`core/test-seed/src/main/kotlin/com/mindera/alfie/core/testseed/SeedAnchors.kt`) is generated from
+the Mock BFF's published anchors, `src/mock/fixtures/seed-anchors.json` in the sibling Alfie-BFF
+checkout. Its header records the BFF commit it was generated from.
+
+**Do not edit it by hand.** It is excluded from detekt. Regenerate it when a test needs an anchor the
+BFF has added; the BFF only ever adds anchors, so an older file stays correct and CI doesn't diff it.
+
+```bash
+# 1. Bring the BFF checkout up to date (default ../Alfie-BFF; set ALFIE_BFF_PATH to point elsewhere)
+git -C "${ALFIE_BFF_PATH:-../Alfie-BFF}" checkout main && git -C "${ALFIE_BFF_PATH:-../Alfie-BFF}" pull --ff-only
+
+# 2. Re-generate Kotlin
+python3 scripts/generate_seed/generate_seed_anchors.py
+
+# 3. Verify compilation
+./gradlew :core:test-seed:compileDebugKotlin
+```
+
+To see whether the committed file is stale without writing it, run the generator with `--check`:
+it exits `0` when up to date, `1` when stale (printing the diff), and `2` on an error such as a
+missing BFF checkout.
+
+See `scripts/generate_seed/README.md` for full documentation.

@@ -1,0 +1,60 @@
+{
+  "menuHandle": "main-menu",
+  "menuHandleAliases": ["product-category"],
+  "collections": {
+    "women": "women",
+    "men": "men",
+    "shirts": "shirts",
+    "dresses": "dresses",
+    "sale": "sale"
+  },
+  "brandKeys": {
+    "alfie": "alfie",
+    "northwind": "northwind",
+    "harbour": "harbour",
+    "ember": "ember"
+  },
+  "products": {
+    "default": "alfie-oxford-shirt",
+    "allAccordionMetafields": "alfie-oxford-shirt",
+    "outOfStock": "harbour-cashmere-crew-jumper",
+    "singleVariant": "ember-silk-square-scarf",
+    "onSale": "northwind-linen-wrap-dress",
+    "longName": "alfie-relaxed-organic-cotton-twill-utility-overshirt",
+    "noBrand": "essential-crew-neck-tee",
+    "oneImage": "harbour-pleated-midi-skirt",
+    "noMetafieldsNoSizeGuide": "ember-waxed-field-jacket"
+  },
+  "searchTerms": {
+    "many": "shirt",
+    "few": "dress",
+    "none": "zzz-no-results"
+  },
+  "barcode": {
+    "value": "2000001000007",
+    "productSlug": "alfie-oxford-shirt",
+    "variantId": "mock-variant-alfie-oxford-shirt-white-xs"
+  },
+  "inStockVariants": {
+    "productSlug": "alfie-oxford-shirt",
+    "variantIds": [
+      "mock-variant-alfie-oxford-shirt-white-xs",
+      "mock-variant-alfie-oxford-shirt-white-s"
+    ]
+  },
+  "unknownBarcode": "0000000000000",
+  "relatedProductSlugs": [
+    "alfie-poplin-shirt",
+    "alfie-linen-camp-shirt",
+    "alfie-satin-slip-dress",
+    "northwind-wide-leg-trousers",
+    "ember-cropped-cardigan",
+    "alfie-oxford-button-down-shirt",
+    "alfie-slim-chinos",
+    "alfie-harrington-jacket"
+  ],
+  "timestamps": {
+    "defaultProductCreatedAt": "2025-03-03T09:30:00Z",
+    "defaultProductUpdatedAt": "2026-02-10T10:30:00Z"
+  }
+}
