@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalDebugComposeRunner provides debugComposeRunner
                 ) {
-                    StartUp { startDestination ->
+                    StartUp(skipStartUpScreen = BuildConfig.SKIP_STARTUP_SCREEN) { startDestination ->
                         AppNavigation(
                             startDestination = startDestination,
                             navGraphs = navGraphs,

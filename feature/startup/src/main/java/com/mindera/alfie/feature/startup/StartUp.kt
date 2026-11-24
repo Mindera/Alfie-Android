@@ -21,10 +21,22 @@ import com.mindera.alfie.designsystem.component.loading.LoadingSpinnerSize
 import com.mindera.alfie.designsystem.theme.Theme
 import com.mindera.alfie.designsystem.tokens.LocalTheme
 
+/**
+ * Shows the startup screen while the [StartUpViewModel]'s loaders run, then the app.
+ *
+ * [skipStartUpScreen] goes straight to the app at [Screen.Home], with no startup screen and no
+ * loaders. Only the UI test build sets it.
+ */
 @Composable
 fun StartUp(
+    skipStartUpScreen: Boolean,
     appContent: @Composable (startDestination: Screen) -> Unit
 ) {
+    if (skipStartUpScreen) {
+        appContent(Screen.Home)
+        return
+    }
+
     val viewModel: StartUpViewModel = hiltViewModel()
     val startDestination by viewModel.startDestination.collectAsStateWithLifecycle()
     val theme = LocalTheme.current

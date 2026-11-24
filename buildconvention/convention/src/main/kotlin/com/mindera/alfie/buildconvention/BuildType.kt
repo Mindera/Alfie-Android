@@ -15,5 +15,11 @@ enum class BuildType(
     RELEASE(
         buildName = "release",
         applicationIdSuffix = ""
+    ),
+
+    // The UI test build: debug-derived and never distributed. :app's instrumented tests run on it.
+    UI_TEST(
+        buildName = "uiTest",
+        applicationIdSuffix = ""
     )
 }

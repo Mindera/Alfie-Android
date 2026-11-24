@@ -116,3 +116,7 @@ fun DependencyHandler.betaImplementation(dependency: ProjectDependency) {
 fun DependencyHandler.betaImplementation(dependency: Provider<MinimalExternalModuleDependency>) {
     add("betaImplementation", dependency)
 }
+
+fun DependencyHandler.uiTestImplementation(dependency: ProjectDependency) {
+    add("uiTestImplementation", dependency)
+}

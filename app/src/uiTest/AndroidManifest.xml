@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The UI test build. FirebaseInitProvider runs before the test runner, so only a manifest flag keeps
+    Analytics and Crashlytics from collecting (and sending) anything from the very first launch.
+    src/debug is left alone: the debug builds testers install still report.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+    </application>
+</manifest>
