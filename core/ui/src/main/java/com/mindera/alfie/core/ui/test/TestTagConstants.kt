@@ -56,6 +56,9 @@ const val BAG_CONTINUE_CTA = "bag-continue-cta"
 const val BAG_EMPTY_STATE = "bag-empty-state"
 const val WISHLIST_EMPTY_STATE = "wishlist-empty-state"
 
+// PRODUCT DETAILS
+const val PDP_PRODUCT_NAME = "pdp-product-name"
+
 // SEGMENTED CONTROLS
 const val SEGMENTED_CONTROL = "segmented-control"
 const val SEGMENTED_OPTION = "segmented-option"
