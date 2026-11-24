@@ -95,9 +95,13 @@ Apollo Kotlin generates Kotlin code automatically on build. Generated classes la
 
 ## Integration tests (Mock BFF)
 
-The `:integration-test` module runs **instrumented** tests with a real `ApolloClient` against the
-**Mock BFF**, covering `productList`, `productDetails` and `searchProducts`. They aren't part of
-`testDebugUnitTest`. One command runs them:
+Two **instrumented** suites run against the **Mock BFF**. Neither is part of `testDebugUnitTest`.
+
+- **`integration`**: the `:integration-test` module, a real `ApolloClient` covering `productList`,
+  `productDetails` and `searchProducts`.
+- **`ui`**: the UI journeys in `app/src/androidTest`, run on the **UI test build** (below).
+
+One command runs both:
 
 ```bash
 scripts/run-bff-tests.sh
@@ -117,16 +121,21 @@ Android SDK (`ANDROID_HOME`) with the emulator and the Command-line Tools. Then 
    `node dist/main` on port 4000 with a throwaway JWT secret, waits for GraphQL, and prints the BFF
    SHA. It warns when the checkout is behind `origin/main` or on another branch, and never changes
    the checkout's git state.
-4. **Runs the suite** on that AVD: `./gradlew :integration-test:connectedDebugAndroidTest --continue`.
-5. **Fails when the BFF went away mid-run**, even when Gradle passed. Tests skip themselves when no BFF
-   is reachable, and AGP counts those aborts as a green run. So the script fails if any test aborted on
-   that assumption, if the suite executed 0 tests, or if the BFF process is gone after Gradle.
+4. **Runs the suites** on that AVD in one Gradle call, integration first:
+   `./gradlew :integration-test:connectedDebugAndroidTest :app:connectedUiTestAndroidTest --continue`.
+   With `--continue`, a failing integration test doesn't stop the UI journeys from running.
+5. **Fails when a suite ran nothing, or the BFF went away mid-run**, even when Gradle passed. Integration
+   tests skip themselves when no BFF is reachable, and AGP counts those aborts as a green run. So the
+   script fails if any test aborted on an assumption, if either suite executed 0 tests, or if the BFF
+   process is gone after Gradle.
 6. **Cleans up on exit**, Ctrl-C included: it stops the BFF, and shuts the AVD down if it booted it.
 
-`--only integration` runs one suite. Each run leaves behind:
+`--only integration` or `--only ui` runs one suite. Each run leaves behind:
 - `build/bff-tests/bff.log`, and `build/bff-tests/emulator.log` if it booted the AVD;
-- reports in `integration-test/build/reports/androidTests/connected/`;
-- result XMLs in `integration-test/build/outputs/androidTest-results/connected/debug/`.
+- reports in `integration-test/build/reports/androidTests/connected/` and
+  `app/build/reports/androidTests/connected/`;
+- result XMLs in `integration-test/build/outputs/androidTest-results/connected/debug/` and
+  `app/build/outputs/androidTest-results/connected/uiTest/`.
 
 `ALFIE_BFF_START_CMD` replaces the BFF start command (run in the BFF checkout), for example to try a
 Live BFF. The suites are written for the Mock BFF only.
@@ -148,7 +157,32 @@ PLATFORM=mock AUTH_DISABLED=true MOCK_ASSETS_BASE_URL=http://10.0.2.2:4000 \
   -Pandroid.testInstrumentationRunnerArguments.class=com.mindera.alfie.integrationtest.ProductListIntegrationTest
 ```
 
-Run this way, the tests skip themselves (JUnit5 `assumeTrue`) when no BFF is reachable.
+```bash
+./gradlew :app:connectedUiTestAndroidTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=com.mindera.alfie.journey.BrowseJourneyTest
+```
+
+Run this way, the integration tests skip themselves (JUnit5 `assumeTrue`) when no BFF is reachable. The
+UI journeys don't: they fail.
+
+### The UI test build and the journeys
+
+`:app`'s instrumented tests target the `uiTest` build type (`testBuildType = "uiTest"`). It's
+debug-derived and never distributed:
+- `app/src/uiTest/AndroidManifest.xml` switches Firebase Analytics and Crashlytics collection off from
+  the first launch. Debug builds still report.
+- It uses `:debug:operational`, like debug, so the environment defaults to DEV (`10.0.2.2:4000`).
+- `BuildConfig.SKIP_STARTUP_SCREEN` is true only here: the app opens straight on Home, with no startup
+  screen and no startup loaders.
+
+Every journey starts clean. Android Test Orchestrator runs each test in its own instrumentation with
+`clearPackageData`, so no Room, DataStore, Glide or Firebase state carries over. A journey:
+- uses `createEmptyComposeRule()` and starts the app with `launchMainActivity()`, optionally with a
+  deep-link URL, which runs the app's real deep-link path;
+- applies `EnUsLocaleRule`, which pins `en_US` before the activity starts;
+- runs the real `AlfieApplication` and Hilt graph, with no Hilt test setup;
+- never grants `POST_NOTIFICATIONS`;
+- finds nodes by `TestTagConstants` and waits for them with `waitForNode`; it never sleeps.
 
 Notes:
 - Tests pin only to the Mock BFF's **seed anchors** (`SeedAnchors` in `:core:test-seed`, named exactly as
