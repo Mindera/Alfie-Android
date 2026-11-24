@@ -69,7 +69,12 @@ The header records only a commit, so the generator also warns on stderr, without
 code, when the BFF checkout isn't on `origin/main`: on another branch, on a detached HEAD off main,
 or behind `origin/main`. A file generated from a BFF branch can hold anchors that main, which CI
 tests against, doesn't have yet. The check mirrors `scripts/run-bff-tests.sh` and reads `origin`'s
-main live with `git ls-remote`; if that fails it says so and skips the check.
+main live with `git ls-remote`; if that fails it says so and skips the check. `--no-branch-warning`
+skips this warning for callers that make the same check themselves.
+
+`scripts/run-bff-tests.sh` runs `--check --no-branch-warning` against its BFF checkout before every
+run. It warns when the file is stale (exit `1`) or the check couldn't run (exit `2`, or no `python3`),
+and never fails the run over it.
 
 ## Tests
 

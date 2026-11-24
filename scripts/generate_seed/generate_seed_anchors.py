@@ -243,6 +243,11 @@ def main(argv=None):
         "--check", action="store_true",
         help="report whether the file is stale against the BFF checkout, without writing it",
     )
+    parser.add_argument(
+        "--no-branch-warning", action="store_true",
+        help="don't warn when the BFF checkout isn't origin's main "
+             "(for callers that already do, like scripts/run-bff-tests.sh)",
+    )
     args = parser.parse_args(argv)
 
     bff_dir = _bff_dir()
@@ -261,7 +266,8 @@ def main(argv=None):
         return _fail(f"Can't read the commit of {bff_dir} (ALFIE_BFF_PATH): {e.stderr.strip()}")
     except OSError as e:  # e.g. no git on PATH; must not exit 1, which means stale
         return _fail(str(e))
-    _warn_if_bff_differs_from_main(bff_dir)
+    if not args.no_branch_warning:
+        _warn_if_bff_differs_from_main(bff_dir)
     if args.check:
         return _check(args.output, kotlin, bff_dir)
     args.output.write_text(kotlin, encoding="utf-8")
