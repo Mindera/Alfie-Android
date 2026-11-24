@@ -69,7 +69,11 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        getIntentUrl()
+        // A recreated activity (a configuration change, or a restore after process death) has already
+        // handled the link it was launched with.
+        if (savedInstanceState == null) {
+            handleLaunchDeeplink()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -80,14 +84,11 @@ class MainActivity : ComponentActivity() {
         handleDeeplink(intent.dataString)
     }
 
-    private fun getIntentUrl() {
+    // The launch intent is left as it is: ActivityScenario only tracks an activity whose intent still
+    // matches the one it started, so clearing it here would break every UI journey.
+    private fun handleLaunchDeeplink() {
         postOnMain {
             handleDeeplink(intent.dataString)
-
-            // We need to manually clear the intent action and data so it isn't reused on follow up
-            // app startups or configuration changes
-            intent.action = ""
-            intent.data = null
         }
     }
 
