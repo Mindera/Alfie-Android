@@ -1,7 +1,6 @@
 package com.mindera.alfie.uitest
 
 import android.app.LocaleManager
-import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
 import androidx.annotation.RequiresApi
@@ -15,6 +14,9 @@ import java.util.Locale
  *
  * It sets both before the test body runs, so it must apply before the activity starts; launch the
  * app from the test body with [launchMainActivity]. Both are restored afterwards.
+ *
+ * It needs API 33+, for the per-app locale every activity of the app starts with. Below that it fails
+ * the test rather than skipping it: `scripts/run-bff-tests.sh` reads a skipped test as a lost BFF.
  */
 class EnUsLocaleRule : ExternalResource() {
 
@@ -22,36 +24,23 @@ class EnUsLocaleRule : ExternalResource() {
     private var previousAppLocales: LocaleList? = null
 
     override fun before() {
+        check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            "EnUsLocaleRule needs API 33+ (per-app locales), and this device runs API ${Build.VERSION.SDK_INT}. " +
+                "Run on the alfie-bff-tests AVD (API 34)."
+        }
         previousDefault = Locale.getDefault()
         Locale.setDefault(Locale.US)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // The per-app locale is the configuration every activity of the app starts with.
-            previousAppLocales = localeManager().applicationLocales
-            localeManager().applicationLocales = LocaleList(Locale.US)
-        } else {
-            updateAppConfiguration(Locale.US)
-        }
+        previousAppLocales = localeManager().applicationLocales
+        localeManager().applicationLocales = LocaleList(Locale.US)
     }
 
     override fun after() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            previousAppLocales?.let { localeManager().applicationLocales = it }
-        } else {
-            updateAppConfiguration(previousDefault)
-        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        previousAppLocales?.let { localeManager().applicationLocales = it }
         Locale.setDefault(previousDefault)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun localeManager(): LocaleManager =
-        targetContext().getSystemService(LocaleManager::class.java)
-
-    @Suppress("DEPRECATION") // Before API 33 there's no per-app locale to set instead.
-    private fun updateAppConfiguration(locale: Locale) {
-        val resources = targetContext().resources
-        val configuration = Configuration(resources.configuration).apply { setLocale(locale) }
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-    }
-
-    private fun targetContext() = InstrumentationRegistry.getInstrumentation().targetContext
+        InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(LocaleManager::class.java)
 }
