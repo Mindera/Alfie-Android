@@ -145,6 +145,15 @@ class CliTest(unittest.TestCase):
         self.assertIn("python3 scripts/generate_seed/generate_seed_anchors.py", result.stdout)
 
 
+    def test_a_crash_during_check_is_an_error_not_staleness(self):
+        self.output.write_bytes(b"\xff\xfe not utf-8")  # e.g. a corrupted committed file
+
+        result = self._run("--check")
+
+        self.assertEqual(2, result.returncode, result.stdout)
+        self.assertIn("UnicodeDecodeError", result.stderr)
+        self.assertNotIn("is stale", result.stdout)
+
     def test_check_passes_when_the_bff_moved_on_without_touching_the_anchors(self):
         self._run()
         self._git("commit", "--quiet", "--allow-empty", "-m", "unrelated BFF change")
@@ -173,10 +182,10 @@ class CliTest(unittest.TestCase):
         self.assertIn("top level", result.stderr)
 
 
-    def _check_warnings(self):
+    def _check_warnings(self, *args):
         """stderr of a `--check` that must still pass: the warnings are advisory."""
         self._run()
-        result = self._run("--check")
+        result = self._run("--check", *args)
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("up to date", result.stdout)
         return result.stderr
@@ -215,6 +224,11 @@ class CliTest(unittest.TestCase):
 
     def test_warns_when_origin_main_cant_be_read(self):
         self.assertIn("Couldn't read origin/main", self._check_warnings())
+
+    def test_no_branch_warning_skips_the_branch_check_for_callers_that_make_it(self):
+        self._git("checkout", "--quiet", "-b", "feature/new-anchor")  # and no origin to read
+
+        self.assertEqual("", self._check_warnings("--no-branch-warning"))
 
 
 if __name__ == "__main__":
