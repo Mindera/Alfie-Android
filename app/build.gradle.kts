@@ -100,6 +100,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
 
     // UI journeys: JUnit4 + Compose's v1 test API, on the real AlfieApplication and Hilt graph.
+    androidTestImplementation(project(ProjectModule.coreTestSeed))
     androidTestImplementation(platform(libs.compose))
     androidTestImplementation(libs.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
