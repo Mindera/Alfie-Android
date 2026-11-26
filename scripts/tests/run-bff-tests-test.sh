@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
-# Scenario tests for scripts/run-bff-tests.sh. Each scenario copies the script into a throwaway
-# sandbox whose Android SDK (adb, emulator, sdkmanager, avdmanager), Gradle wrapper, yarn, node,
-# curl and lsof are stubs that record their calls. git, ps, openssl and process groups are real.
+# Scenario tests for scripts/run-bff-tests.sh. Each scenario copies the script, and the seed-anchor
+# generator it calls, into a throwaway sandbox whose Android SDK (adb, emulator, sdkmanager,
+# avdmanager), Gradle wrapper, yarn, node, curl and lsof are stubs that record their calls. git, ps,
+# openssl, python3 (recorded) and process groups are real.
 # Nothing touches a real emulator, device, BFF or port.
 #
 # Usage: scripts/tests/run-bff-tests-test.sh [scenario-name ...]
@@ -11,6 +12,8 @@ set -u
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_UNDER_TEST="$HERE/../run-bff-tests.sh"
+SEED_GENERATOR_DIR="$HERE/../generate_seed"
+REAL_PYTHON3="$(command -v python3)" || { echo "python3 is needed to run these scenarios" >&2; exit 1; }
 ROOT_TMP="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/run-bff-tests-test.XXXXXX")" && pwd -P)"
 trap 'rm -rf "$ROOT_TMP"' EXIT
 
@@ -19,6 +22,8 @@ FAILED=0
 FAILURES=""
 
 # --- Sandbox -------------------------------------------------------------------------------------
+
+bff_commit() { git -C "$BFF" -c user.name=t -c user.email=t@t commit -q -m "$1"; }
 
 write_stub() { # path, body
     mkdir -p "$(dirname "$1")"
@@ -42,14 +47,28 @@ setup_sandbox() {
     echo "R58M12345 -" >> "$STATE/devices"
     echo "Pixel_9_Pro_36_Ggl_API" >> "$STATE/avds"
 
-    # A BFF checkout on main, level with its origin.
+    # A BFF checkout on main, level with its origin, publishing BFF main's seed anchors.
     git init -q --bare "$SANDBOX/bff-origin.git"
     git -C "$BFF" init -q -b main
-    git -C "$BFF" -c user.name=t -c user.email=t@t commit -q --allow-empty -m "bff initial"
+    mkdir -p "$BFF/src/mock/fixtures"
+    cp "$SEED_GENERATOR_DIR/testdata/seed-anchors.json" "$BFF/src/mock/fixtures/seed-anchors.json"
+    git -C "$BFF" add -A
+    bff_commit "bff initial"
     git -C "$BFF" remote add origin "$SANDBOX/bff-origin.git"
     git -C "$BFF" push -q origin main
 
+    # The real seed-anchor generator, and a SeedAnchors.kt generated from that BFF.
+    mkdir -p "$PROJ/scripts/generate_seed"
+    cp "$SEED_GENERATOR_DIR/generate_seed_anchors.py" "$PROJ/scripts/generate_seed/"
+    mkdir -p "$PROJ/core/test-seed/src/main/kotlin/com/mindera/alfie/core/testseed"
+    ALFIE_BFF_PATH="$BFF" python3 "$PROJ/scripts/generate_seed/generate_seed_anchors.py" >/dev/null
+
     local s="STATE='$STATE'"
+
+    # Real python3, with its calls recorded.
+    write_stub "$SANDBOX/bin/python3" "$s"'
+echo "python3 $* ALFIE_BFF_PATH=$ALFIE_BFF_PATH" >> "$STATE/calls.log"
+exec "'"$REAL_PYTHON3"'" "$@"'
 
     write_stub "$SDK/platform-tools/adb" "$s"'
 echo "adb $*" >> "$STATE/calls.log"
@@ -225,6 +244,14 @@ flunk() {
 assert_rc() { [ "$RC" -eq "$1" ] || flunk "expected exit $1, got $RC"; }
 assert_rc_nonzero() { [ "$RC" -ne 0 ] || flunk "expected a non-zero exit, got 0"; }
 assert_out() { printf '%s' "$OUT" | grep -q -- "$1" || flunk "output lacks: $1"; }
+assert_out_once() {
+    local n
+    n="$(printf '%s' "$OUT" | grep -c -- "$1")"
+    [ "$n" -eq 1 ] || flunk "expected one line with: $1, got $n"
+}
+assert_no_warning() {
+    printf '%s' "$OUT" | grep -q "⚠️" && flunk "unexpected warning: $(printf '%s' "$OUT" | grep "⚠️")"
+}
 assert_called() { called "$1" || flunk "never called: $1"; }
 assert_not_called() { ! called "$1" || flunk "unexpectedly called: $1 ($(grep -- "$1" "$STATE/calls.log" | head -1))"; }
 # Other devices may only be asked which AVD they are.
@@ -465,8 +492,9 @@ warns_about_a_bff_checkout_off_main_or_behind_without_touching_it() {
     run_script
 
     assert_rc 0
-    assert_out "on feature, not main"
-    assert_out "behind origin/main"
+    # Once each: the seed-anchor check leaves the branch warnings to the runner.
+    assert_out_once "on feature, not main"
+    assert_out_once "behind origin/main"
     [ "$(git -C "$BFF" rev-parse HEAD)" = "$head_before" ] || flunk "the BFF checkout's HEAD moved"
     [ "$(git -C "$BFF" symbolic-ref --short HEAD)" = "feature" ] || flunk "the BFF checkout's branch changed"
 }
@@ -475,7 +503,52 @@ no_warnings_for_a_bff_checkout_level_with_main() {
     run_script
 
     assert_rc 0
-    printf '%s' "$OUT" | grep -q "⚠️" && flunk "unexpected warning: $(printf '%s' "$OUT" | grep "⚠️")"
+    assert_no_warning
+}
+
+up_to_date_seed_anchors_raise_no_warning() {
+    run_script
+
+    assert_rc 0
+    assert_called "python3 $PROJ/scripts/generate_seed/generate_seed_anchors.py --check --no-branch-warning ALFIE_BFF_PATH=$BFF"
+    assert_no_warning
+}
+
+stale_seed_anchors_warn_with_the_regenerate_command_and_the_run_goes_on() {
+    local anchors="$BFF/src/mock/fixtures/seed-anchors.json" kotlin_before
+    "$REAL_PYTHON3" - "$anchors" <<'EOF'
+import json, sys
+path = sys.argv[1]
+anchors = json.load(open(path))
+anchors["products"]["lowStock"] = "harbour-wool-scarf"
+json.dump(anchors, open(path, "w"), indent=2)
+EOF
+    git -C "$BFF" add -A
+    bff_commit "add an anchor"
+    git -C "$BFF" push -q origin main
+    kotlin_before="$(cat "$PROJ/core/test-seed/src/main/kotlin/com/mindera/alfie/core/testseed/SeedAnchors.kt")"
+
+    run_script
+
+    assert_rc 0
+    assert_out "⚠️  SeedAnchors.kt is stale against the BFF checkout at $BFF"
+    assert_out "ALFIE_BFF_PATH=$BFF python3 scripts/generate_seed/generate_seed_anchors.py"
+    assert_called "gradlew :integration-test:connectedDebugAndroidTest"
+    [ "$(cat "$PROJ/core/test-seed/src/main/kotlin/com/mindera/alfie/core/testseed/SeedAnchors.kt")" = "$kotlin_before" ] \
+        || flunk "the check rewrote SeedAnchors.kt"
+}
+
+a_seed_anchor_check_that_errors_warns_with_the_reason_and_the_run_goes_on() {
+    git -C "$BFF" rm -q src/mock/fixtures/seed-anchors.json
+    bff_commit "drop the anchors"
+    git -C "$BFF" push -q origin main
+
+    run_script
+
+    assert_rc 0
+    assert_out "⚠️  Couldn't check SeedAnchors.kt against the BFF checkout at $BFF: No seed anchors at"
+    printf '%s' "$OUT" | grep -q "is stale" && flunk "reported an error as staleness"
+    assert_called "gradlew :integration-test:connectedDebugAndroidTest"
 }
 
 only_integration_runs_the_integration_suite() {
@@ -574,7 +647,7 @@ an_unreachable_origin_on_main_s_commit_raises_no_branch_warning() {
 
     assert_rc 0
     printf '%s' "$OUT" | grep -q "not main" && flunk "warned about the branch: $(printf '%s' "$OUT" | grep "not main")"
-    assert_out "Couldn't read origin/main"
+    assert_out_once "Couldn't read origin/main"
 }
 
 # --- Main ----------------------------------------------------------------------------------------
@@ -597,6 +670,9 @@ ctrl_c_mid_run_leaves_no_bff_behind
 a_bff_that_dies_before_ready_fails_with_its_log
 warns_about_a_bff_checkout_off_main_or_behind_without_touching_it
 no_warnings_for_a_bff_checkout_level_with_main
+up_to_date_seed_anchors_raise_no_warning
+stale_seed_anchors_warn_with_the_regenerate_command_and_the_run_goes_on
+a_seed_anchor_check_that_errors_warns_with_the_reason_and_the_run_goes_on
 only_integration_runs_the_integration_suite
 only_ui_runs_the_ui_suite
 a_ui_suite_that_ran_nothing_fails_the_run

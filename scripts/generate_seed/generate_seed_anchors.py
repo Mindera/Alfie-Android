@@ -231,6 +231,14 @@ def _fail(message):
 
 
 def main(argv=None):
+    """Runs the CLI. Any crash exits 2, an error, never 1: callers read 1 as "stale"."""
+    try:
+        return _main(argv)
+    except Exception as e:  # noqa: BLE001 - an uncaught exception would exit 1, which means stale
+        return _fail(f"Unexpected {type(e).__name__}: {e}")
+
+
+def _main(argv):
     parser = argparse.ArgumentParser(
         description="Generate SeedAnchors.kt from the Mock BFF's seed-anchors.json.",
         epilog="Exit codes: 0 written or up to date; 1 stale (--check only); 2 error.",
@@ -242,6 +250,11 @@ def main(argv=None):
     parser.add_argument(
         "--check", action="store_true",
         help="report whether the file is stale against the BFF checkout, without writing it",
+    )
+    parser.add_argument(
+        "--no-branch-warning", action="store_true",
+        help="don't warn when the BFF checkout isn't origin's main "
+             "(for callers that already do, like scripts/run-bff-tests.sh)",
     )
     args = parser.parse_args(argv)
 
@@ -261,7 +274,8 @@ def main(argv=None):
         return _fail(f"Can't read the commit of {bff_dir} (ALFIE_BFF_PATH): {e.stderr.strip()}")
     except OSError as e:  # e.g. no git on PATH; must not exit 1, which means stale
         return _fail(str(e))
-    _warn_if_bff_differs_from_main(bff_dir)
+    if not args.no_branch_warning:
+        _warn_if_bff_differs_from_main(bff_dir)
     if args.check:
         return _check(args.output, kotlin, bff_dir)
     args.output.write_text(kotlin, encoding="utf-8")

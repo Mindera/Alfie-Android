@@ -229,9 +229,32 @@ warn_if_bff_checkout_differs_from_main() {
     fi
 }
 
+SEED_ANCHORS_GENERATOR="scripts/generate_seed/generate_seed_anchors.py"
+
+# The suites pin to SeedAnchors.kt. When it doesn't match this BFF checkout's seed-anchors.json, a
+# test may need an anchor the file doesn't have yet. The branch warnings above are this script's, so
+# the generator skips its own.
+warn_if_seed_anchors_stale() {
+    if ! command -v python3 >/dev/null 2>&1; then
+        warn "Couldn't check SeedAnchors.kt against the BFF checkout at $BFF_PATH: python3 not found."
+        return 0
+    fi
+    local out rc
+    out="$(ALFIE_BFF_PATH="$BFF_PATH" python3 "$PROJECT_DIR/$SEED_ANCHORS_GENERATOR" \
+        --check --no-branch-warning 2>&1)"
+    rc=$?
+    case "$rc" in
+        0) ;;
+        1) warn "SeedAnchors.kt is stale against the BFF checkout at $BFF_PATH. If a test needs the new anchors, regenerate it:
+   ALFIE_BFF_PATH=$(printf '%q' "$BFF_PATH") python3 $SEED_ANCHORS_GENERATOR" ;;
+        *) warn "Couldn't check SeedAnchors.kt against the BFF checkout at $BFF_PATH: ${out#✗ }" ;;
+    esac
+}
+
 # Advisory checks: each prints a warning and never fails the run.
 pre_run_warnings() {
     warn_if_bff_checkout_differs_from_main
+    warn_if_seed_anchors_stale
 }
 
 build_bff() {

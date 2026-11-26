@@ -119,8 +119,9 @@ Android SDK (`ANDROID_HOME`) with the emulator and the Command-line Tools. Then 
    finish and turns the animation scales off. It ignores every other emulator and device.
 3. **Boots the Mock BFF.** It runs `yarn install --frozen-lockfile` and `yarn build`, starts
    `node dist/main` on port 4000 with a throwaway JWT secret, waits for GraphQL, and prints the BFF
-   SHA. It warns when the checkout is behind `origin/main` or on another branch, and never changes
-   the checkout's git state.
+   SHA. It warns when the checkout is behind `origin/main` or on another branch, and when
+   `SeedAnchors.kt` is stale against the checkout's seed anchors (see [Seed anchors](#seed-anchors)).
+   Neither warning stops the run, and it never changes the checkout's git state.
 4. **Runs the suites** on that AVD in one Gradle call, integration first:
    `./gradlew :integration-test:connectedDebugAndroidTest :app:connectedUiTestAndroidTest --continue`.
    With `--continue`, a failing integration test doesn't stop the UI journeys from running.
@@ -586,6 +587,7 @@ python3 scripts/generate_seed/generate_seed_anchors.py
 
 To see whether the committed file is stale without writing it, run the generator with `--check`:
 it exits `0` when up to date, `1` when stale (printing the diff), and `2` on an error such as a
-missing BFF checkout.
+missing BFF checkout. `scripts/run-bff-tests.sh` runs this check against its BFF checkout before
+every run and warns, without failing, when the file is stale or the check couldn't run.
 
 See `scripts/generate_seed/README.md` for full documentation.
