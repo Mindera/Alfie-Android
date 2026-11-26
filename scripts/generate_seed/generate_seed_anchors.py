@@ -231,6 +231,14 @@ def _fail(message):
 
 
 def main(argv=None):
+    """Runs the CLI. Any crash exits 2, an error, never 1: callers read 1 as "stale"."""
+    try:
+        return _main(argv)
+    except Exception as e:  # noqa: BLE001 - an uncaught exception would exit 1, which means stale
+        return _fail(f"Unexpected {type(e).__name__}: {e}")
+
+
+def _main(argv):
     parser = argparse.ArgumentParser(
         description="Generate SeedAnchors.kt from the Mock BFF's seed-anchors.json.",
         epilog="Exit codes: 0 written or up to date; 1 stale (--check only); 2 error.",

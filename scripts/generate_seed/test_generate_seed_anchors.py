@@ -145,6 +145,15 @@ class CliTest(unittest.TestCase):
         self.assertIn("python3 scripts/generate_seed/generate_seed_anchors.py", result.stdout)
 
 
+    def test_a_crash_during_check_is_an_error_not_staleness(self):
+        self.output.write_bytes(b"\xff\xfe not utf-8")  # e.g. a corrupted committed file
+
+        result = self._run("--check")
+
+        self.assertEqual(2, result.returncode, result.stdout)
+        self.assertIn("UnicodeDecodeError", result.stderr)
+        self.assertNotIn("is stale", result.stdout)
+
     def test_check_passes_when_the_bff_moved_on_without_touching_the_anchors(self):
         self._run()
         self._git("commit", "--quiet", "--allow-empty", "-m", "unrelated BFF change")
