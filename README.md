@@ -158,9 +158,12 @@ PLATFORM=mock AUTH_DISABLED=true MOCK_ASSETS_BASE_URL=http://10.0.2.2:4000 \
 ```
 
 ```bash
-./gradlew :app:connectedUiTestAndroidTest \
+ANDROID_SERIAL=<the test AVD's serial> ./gradlew :app:connectedUiTestAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.class=com.mindera.alfie.journey.BrowseJourneyTest
 ```
+
+⚠️ Every build type installs as `com.mindera.alfie`: without `ANDROID_SERIAL`, this runs on every
+connected device, and `clearPackageData` replaces the installed app there and wipes its data.
 
 Run this way, the integration tests skip themselves (JUnit5 `assumeTrue`) when no BFF is reachable. The
 UI journeys don't: they fail.
@@ -179,7 +182,8 @@ Every journey starts clean. Android Test Orchestrator runs each test in its own 
 `clearPackageData`, so no Room, DataStore, Glide or Firebase state carries over. A journey:
 - uses `createEmptyComposeRule()` and starts the app with `launchMainActivity()`, optionally with a
   deep-link URL, which runs the app's real deep-link path;
-- applies `EnUsLocaleRule`, which pins `en_US` before the activity starts;
+- applies `EnUsLocaleRule`, which pins `en_US` before the activity starts. It needs API 33+ (per-app
+  locales) and fails the test below that;
 - runs the real `AlfieApplication` and Hilt graph, with no Hilt test setup;
 - never grants `POST_NOTIFICATIONS`;
 - finds nodes by `TestTagConstants` and waits for them with `waitForNode`; it never sleeps.
