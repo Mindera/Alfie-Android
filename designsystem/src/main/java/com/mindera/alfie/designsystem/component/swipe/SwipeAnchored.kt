@@ -67,8 +67,11 @@ fun SwipeAnchored(
         SwipeAnchoredScopeInstance(anchoredDraggableState)
     }
 
-    LaunchedEffect(anchoredDraggableState.currentValue) {
-        scope.onAnchorChange(anchoredDraggableState.currentValue)
+    // settledValue, not currentValue: currentValue follows the nearest anchor mid-drag, so a callback
+    // that animates (the gallery's End -> Start dismiss) started during the gesture, was cancelled by
+    // it, and never ran again once the fling settled.
+    LaunchedEffect(anchoredDraggableState.settledValue) {
+        scope.onAnchorChange(anchoredDraggableState.settledValue)
     }
 
     val nestedScroll = remember {
