@@ -149,11 +149,14 @@ case " $* " in *" -t "*) echo "$pid" ;; *) echo "COMMAND PID USER"; echo "fake $
 
     write_stub "$PROJ/gradlew" "$s"'
 echo "gradlew $* ANDROID_SERIAL=${ANDROID_SERIAL:-} JWT_SEEN=${BFF_JWT_SECRET:+yes}" >> "$STATE/calls.log"
-mode="$(cat "$STATE/gradle_mode" 2>/dev/null || echo pass)"
+# Each suite task named on the command line writes results per its mode: gradle_mode.<suite>, else
+# gradle_mode, else pass.
+mode_of() { cat "$STATE/gradle_mode.$1" 2>/dev/null || cat "$STATE/gradle_mode" 2>/dev/null || echo pass; }
 # One <testcase> per outcome, written the way AGP writes on-device results: a JUnit 5 assumption
 # failure is a <failure> holding a TestAbortedException, not a <skipped/>.
-write_results() { # outcome... (pass | abort | skip | fail)
-    local dir="$PWD/integration-test/build/outputs/androidTest-results/connected/debug" n=0 outcome
+write_results() { # results dir, outcome... (pass | abort | skip | fail)
+    local dir="$PWD/$1" n=0 outcome
+    shift
     mkdir -p "$dir"
     {
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
@@ -182,18 +185,30 @@ write_results() { # outcome... (pass | abort | skip | fail)
         echo "</testsuites>"
     } > "$dir/TEST-alfie-bff-tests(AVD) - 14.xml"
 }
-case "$mode" in
-    pass) write_results pass pass pass pass pass pass pass ;;
-    aborted) write_results abort abort abort abort abort abort abort ;;
-    skipped) write_results skip skip skip skip skip skip skip ;;
-    partly) write_results pass pass pass abort abort abort abort ;;
-    skips) write_results pass pass pass skip skip ;;
-    bff_dies) write_results pass pass pass pass pass pass pass
-              for pid in $(cat "$STATE/bff_pids"); do kill "$pid" 2>/dev/null; done ;;
-    fail) write_results pass pass pass pass pass pass fail; exit 1 ;;
-    noresults) ;;
-    hang) touch "$STATE/gradle_started"; exec sleep 300 ;;
-esac'
+rc=0
+for task in "$@"; do
+    case "$task" in
+        :integration-test:connectedDebugAndroidTest)
+            suite=integration; dir=integration-test/build/outputs/androidTest-results/connected/debug ;;
+        :app:connectedUiTestAndroidTest)
+            suite=ui; dir=app/build/outputs/androidTest-results/connected/uiTest ;;
+        *) continue ;;
+    esac
+    # --continue: a failing suite does not stop the next one.
+    case "$(mode_of "$suite")" in
+        pass) write_results "$dir" pass pass pass pass pass pass pass ;;
+        aborted) write_results "$dir" abort abort abort abort abort abort abort ;;
+        skipped) write_results "$dir" skip skip skip skip skip skip skip ;;
+        partly) write_results "$dir" pass pass pass abort abort abort abort ;;
+        skips) write_results "$dir" pass pass pass skip skip ;;
+        bff_dies) write_results "$dir" pass pass pass pass pass pass pass
+                  for pid in $(cat "$STATE/bff_pids"); do kill "$pid" 2>/dev/null; done ;;
+        fail) write_results "$dir" pass pass pass pass pass pass fail; rc=1 ;;
+        noresults) ;;
+        hang) touch "$STATE/gradle_started"; exec sleep 300 ;;
+    esac
+done
+exit "$rc"'
 }
 
 # Runs the sandboxed script with the stubs first on PATH.
@@ -309,9 +324,10 @@ cold_run_installs_creates_boots_runs_and_shuts_down_its_own_avd() {
     assert_called "yarn build (in $BFF)"
     assert_called "node dist/main PLATFORM=mock AUTH_DISABLED=true PORT=4000 MOCK_ASSETS_BASE_URL=http://10.0.2.2:4000 JWT_LEN=64"
     assert_out "$(git -C "$BFF" rev-parse HEAD)"
-    # One Gradle call, pinned to the AVD.
-    assert_called "gradlew :integration-test:connectedDebugAndroidTest --continue ANDROID_SERIAL=emulator-5556"
+    # One Gradle call for both suites, integration first, pinned to the AVD.
+    assert_called "gradlew :integration-test:connectedDebugAndroidTest :app:connectedUiTestAndroidTest --continue ANDROID_SERIAL=emulator-5556"
     assert_out "integration: 7 executed, 0 skipped, 0 aborted"
+    assert_out "ui: 7 executed, 0 skipped, 0 aborted"
     # Clean-up: the AVD it booted goes down, the BFF is gone, the log stays.
     assert_called "adb -s emulator-5556 emu kill"
     bff_processes_alive && flunk "BFF processes are still running"
@@ -540,6 +556,69 @@ only_integration_runs_the_integration_suite() {
 
     assert_rc 0
     assert_called "gradlew :integration-test:connectedDebugAndroidTest --continue"
+    assert_not_called ":app:connectedUiTestAndroidTest"
+    printf '%s' "$OUT" | grep -q "ui:" && flunk "reported the UI suite: $(printf '%s' "$OUT" | grep "ui:")"
+}
+
+only_ui_runs_the_ui_suite() {
+    run_script --only ui
+
+    assert_rc 0
+    assert_called "gradlew :app:connectedUiTestAndroidTest --continue"
+    assert_not_called ":integration-test:connectedDebugAndroidTest"
+    assert_out "ui: 7 executed, 0 skipped, 0 aborted"
+    printf '%s' "$OUT" | grep -q "integration:" && flunk "reported the integration suite: $(printf '%s' "$OUT" | grep "integration:")"
+}
+
+# Each suite is guarded on its own: a green integration suite can't cover for a UI suite that ran nothing.
+a_ui_suite_that_ran_nothing_fails_the_run() {
+    echo noresults > "$STATE/gradle_mode.ui"
+
+    run_script
+
+    assert_rc_nonzero
+    assert_out "integration: 7 executed, 0 skipped, 0 aborted"
+    assert_out "ui: 0 tests executed"
+}
+
+skipped_ui_tests_do_not_count_as_executed() {
+    echo skipped > "$STATE/gradle_mode.ui"
+
+    run_script
+
+    assert_rc_nonzero
+    assert_out "ui: 0 tests executed"
+}
+
+an_assumption_abort_in_the_ui_suite_fails_the_run() {
+    echo partly > "$STATE/gradle_mode.ui"
+
+    run_script
+
+    assert_rc_nonzero
+    assert_out "ui: 3 executed, 0 skipped, 4 aborted"
+}
+
+# --continue: a failing integration suite still lets the UI suite run and report.
+a_failing_integration_suite_still_reports_the_ui_suite() {
+    echo fail > "$STATE/gradle_mode.integration"
+
+    run_script
+
+    assert_rc_nonzero
+    assert_out "Gradle failed"
+    assert_out "ui: 7 executed, 0 skipped, 0 aborted"
+}
+
+ui_results_from_an_earlier_run_never_count() {
+    run_script --only ui
+    assert_rc 0
+    echo noresults > "$STATE/gradle_mode.ui"
+
+    run_script --only ui
+
+    assert_rc_nonzero
+    assert_out "ui: 0 tests executed"
 }
 
 an_unknown_suite_is_refused_before_anything_starts() {
@@ -595,6 +674,12 @@ up_to_date_seed_anchors_raise_no_warning
 stale_seed_anchors_warn_with_the_regenerate_command_and_the_run_goes_on
 a_seed_anchor_check_that_errors_warns_with_the_reason_and_the_run_goes_on
 only_integration_runs_the_integration_suite
+only_ui_runs_the_ui_suite
+a_ui_suite_that_ran_nothing_fails_the_run
+skipped_ui_tests_do_not_count_as_executed
+an_assumption_abort_in_the_ui_suite_fails_the_run
+a_failing_integration_suite_still_reports_the_ui_suite
+ui_results_from_an_earlier_run_never_count
 an_unknown_suite_is_refused_before_anything_starts
 the_jwt_secret_reaches_only_the_bff
 an_unreachable_origin_on_main_s_commit_raises_no_branch_warning

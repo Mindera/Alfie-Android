@@ -5,6 +5,7 @@ import com.mindera.alfie.core.deeplink.model.DeeplinkPathSegment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,8 +19,14 @@ class DeeplinkHandler @Inject constructor(deeplinks: Set<@JvmSuppressWildcards D
 
     private val interpreters: List<DeeplinkInterpreter> = deeplinks.map { it.interpreters }.flatten()
 
+    /**
+     * Resolves [url] and emits the result to [deeplinkResult]. It waits for a collector first: the flow
+     * keeps nothing, and a link that arrives at launch can resolve before the app's navigation is
+     * composed and collecting, which would drop it.
+     */
     suspend fun handle(url: String) {
         val result = resolve(url)
+        _deeplinkResult.subscriptionCount.first { it > 0 }
         _deeplinkResult.emit(result)
     }
 

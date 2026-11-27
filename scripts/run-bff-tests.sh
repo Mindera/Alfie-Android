@@ -5,7 +5,8 @@
 #   1. refuses to start if anything already listens on the BFF port;
 #   2. finds the alfie-bff-tests AVD, or installs, creates and boots it (headless, no snapshots);
 #   3. builds the BFF (yarn) from ${ALFIE_BFF_PATH:-../Alfie-BFF} and boots the Mock BFF;
-#   4. runs the suites in one Gradle call, then fails any suite that executed 0 tests;
+#   4. runs the suites in one Gradle call (integration, then the UI journeys), then fails any suite
+#      that executed 0 tests;
 #   5. on exit, Ctrl-C included, kills the BFF and shuts the AVD down if this script booted it.
 #
 # Every other emulator and device is ignored. The BFF checkout's node_modules and dist are written;
@@ -41,12 +42,14 @@ BFF_PORT=4000  # the app's DEV environment and BffIntegrationTest.BFF_URL both h
 
 # --- Suites ----------------------------------------------------------------------------------------
 # A suite is a name, the module that holds its instrumented tests, and the build variant they run on.
+# They run in this order. The UI journeys run on the UI test build (see GLOSSARY.md).
 
-ALL_SUITES="integration"
+ALL_SUITES="integration ui"
 
 suite_module_and_variant() {
     case "$1" in
         integration) echo "integration-test debug" ;;
+        ui) echo "app uiTest" ;;
     esac
 }
 
@@ -308,9 +311,9 @@ fail_with_bff_log() {
 
 # Prints "<executed> <skipped> <aborted>" for the test cases in a suite's result XMLs. Aborted cases
 # failed on an assumption. On a device, AGP writes a JUnit 5 TestAbortedException as a <failure> and
-# still passes the task. The suites' only assumption is that the BFF is reachable, so under this
-# script an abort means the BFF went away. A real failure that merely mentions an assumption still
-# fails the run, through Gradle's exit code.
+# still passes the task. The integration suite's only assumption is that the BFF is reachable, and the
+# UI journeys make none, so under this script an abort means the BFF went away. A real failure that
+# merely mentions an assumption still fails the run, through Gradle's exit code.
 count_tests() {
     cat "$1"/*.xml 2>/dev/null | awk '
         /<testcase[ >]/ { total++; in_case = 1; marked = 0 }
@@ -328,6 +331,7 @@ run_suites() {
     done
 
     info "🧪 Running:$tasks on $SERIAL"
+    # One call for every suite: --continue still runs the UI journeys when an integration test fails.
     # shellcheck disable=SC2086 # one word per task
     ( cd "$PROJECT_DIR" && ANDROID_SERIAL="$SERIAL" ./gradlew $tasks --continue )
     gradle_rc=$?

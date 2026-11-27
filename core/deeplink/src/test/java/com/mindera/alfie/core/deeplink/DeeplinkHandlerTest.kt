@@ -8,7 +8,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -320,6 +324,29 @@ class DeeplinkHandlerTest {
         }
     }
 
+    @Test
+    fun `handle - keeps a link handled before anything collects until a collector arrives`() = runTest {
+        val validResult = mockk<DeeplinkResult.NavigateTo>()
+        val interpreters = listOf(
+            object : DeeplinkInterpreter {
+                override val specs: List<DeeplinkSpec> = listOf(matchingSpec)
+                override suspend fun handle(instance: DeeplinkInstance): DeeplinkResult = validResult
+            }
+        )
+        val handler = buildDeeplinkHandler(interpreters)
+
+        // A launch link can resolve before the app's navigation collects. resolve() runs on
+        // Dispatchers.Default, so give it real time to finish: without the wait, handle() would emit
+        // into nothing and complete.
+        val handling = launch { handler.handle("https://www.alfie.com") }
+        withContext(Dispatchers.Default) { withTimeoutOrNull(RESOLVE_WAIT_MILLIS) { handling.join() } }
+
+        handler.deeplinkResult.test {
+            assertEquals(validResult, awaitItem())
+        }
+        handling.join()
+    }
+
     private fun buildDeeplinkHandler(interpreters: List<DeeplinkInterpreter>) = DeeplinkHandler(
         setOf(
             object : DeeplinkGroup {
@@ -327,4 +354,8 @@ class DeeplinkHandlerTest {
             }
         )
     )
+
+    private companion object {
+        const val RESOLVE_WAIT_MILLIS = 1_000L
+    }
 }

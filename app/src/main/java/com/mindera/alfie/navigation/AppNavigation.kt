@@ -52,6 +52,7 @@ import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.dependency
 import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.utils.currentDestinationAsState
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @OptIn(
@@ -75,6 +76,10 @@ fun AppNavigation(
     val snackbarScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
+        // The NavHost sets its graph from inside the Scaffold's content, a subcomposition that can come
+        // after this effect starts. DeeplinkHandler holds a result until something collects, so only
+        // collect once the graph is set and there is a destination to navigate from.
+        navController.currentBackStackEntryFlow.first()
         deeplinkHandler.deeplinkResult.collect { result ->
             when (result) {
                 is DeeplinkResult.NavigateTo -> {

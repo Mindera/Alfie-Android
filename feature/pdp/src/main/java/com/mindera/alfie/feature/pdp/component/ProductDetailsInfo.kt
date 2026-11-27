@@ -14,9 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import com.mindera.alfie.core.ui.test.PDP_PRODUCT_NAME
 import com.mindera.alfie.designsystem.component.price.Price
 import com.mindera.alfie.designsystem.component.price.PriceSize
 import com.mindera.alfie.designsystem.component.shimmer.shimmer
@@ -60,7 +62,8 @@ internal fun ProductDetailsInfo(
                     .shimmer(
                         isShimmering = isLoading,
                         xScale = Theme.scale.scale80
-                    ),
+                    )
+                    .testTag(PDP_PRODUCT_NAME),
                 text = details.name,
                 style = LocalTheme.current.typography.body.medium,
                 color = c.neutrals800
