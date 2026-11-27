@@ -1,6 +1,8 @@
 package com.mindera.alfie.feature.snackbar
 
 import android.content.Context
+import com.mindera.alfie.core.ui.test.ADD_TO_BAG_CONFIRMATION
+import com.mindera.alfie.core.ui.test.REMOVE_CONFIRMATION
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.feature.R
 
@@ -28,7 +30,8 @@ object ActionToast {
     ): SnackbarCustomVisuals.Toast = SnackbarCustomVisuals.Toast(
         message = context.getString(R.string.action_toast_added),
         actionLabel = context.getString(R.string.action_toast_view_bag),
-        onActionClick = onViewBag
+        onActionClick = onViewBag,
+        testTag = ADD_TO_BAG_CONFIRMATION
     )
 
     /** Confirms a removal from a list screen, offering to put the item back. */
@@ -38,6 +41,7 @@ object ActionToast {
     ): SnackbarCustomVisuals.Toast = SnackbarCustomVisuals.Toast(
         message = context.getString(R.string.action_toast_removed),
         actionLabel = context.getString(R.string.action_toast_undo),
-        onActionClick = onUndo
+        onActionClick = onUndo,
+        testTag = REMOVE_CONFIRMATION
     )
 }

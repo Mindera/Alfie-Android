@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import com.mindera.alfie.designsystem.theme.Theme
 
 @Composable
@@ -19,7 +20,8 @@ fun SnackbarCustomHost(snackbarCustomHostState: SnackbarCustomHostState) {
                     message = visuals.message,
                     actionLabel = visuals.actionLabel,
                     onActionClick = visuals.onActionClick,
-                    onDismiss = { snackbarData.dismiss() }
+                    onDismiss = { snackbarData.dismiss() },
+                    modifier = Modifier.testTag(visuals.testTag)
                 )
                 is SnackbarCustomVisuals.Snackbar -> Box(
                     modifier = Modifier

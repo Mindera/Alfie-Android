@@ -28,12 +28,16 @@ sealed interface SnackbarCustomVisuals : SnackbarVisuals {
         override val onActionClick: () -> Unit = {}
     ) : SnackbarCustomVisuals
 
-    /** The DS [Toast]: full width on the bottom navigation, no icon and no dismiss button. */
+    /**
+     * The DS [Toast]: full width on the bottom navigation, no icon and no dismiss button.
+     * [testTag] identifies the confirmation it carries, so a UI test can wait for it.
+     */
     data class Toast(
         override val message: String,
         override val actionLabel: String? = null,
         override val timeDuration: SnackbarTimeDuration = SHORT,
-        override val onActionClick: () -> Unit = {}
+        override val onActionClick: () -> Unit = {},
+        val testTag: String = ""
     ) : SnackbarCustomVisuals {
         override val withDismissAction: Boolean = false
     }
