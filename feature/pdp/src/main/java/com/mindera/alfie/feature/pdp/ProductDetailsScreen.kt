@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -49,6 +50,7 @@ import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.media.GalleryUI
 import com.mindera.alfie.core.ui.media.image.ImageSizeUI
 import com.mindera.alfie.core.ui.media.image.ImageUI
+import com.mindera.alfie.core.ui.test.PDP_WISHLIST_BUTTON
 import com.mindera.alfie.core.ui.util.stringResource
 import com.mindera.alfie.designsystem.component.accordion.AccordionGroup
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
@@ -377,7 +379,8 @@ private fun ProductDetailsCtaRow(
                     shape = Theme.shape.none
                 )
                 .clickable { onEvent(ProductDetailsEvent.OnFavoriteClick(state.details.slug)) }
-                .semantics { contentDescription = wishlistContentDescription },
+                .semantics { contentDescription = wishlistContentDescription }
+                .testTag(PDP_WISHLIST_BUTTON),
             contentAlignment = Alignment.Center
         ) {
             val iconRes = if (state.details.isWishlisted) AlfieIcons.WishlistFill else AlfieIcons.Wishlist

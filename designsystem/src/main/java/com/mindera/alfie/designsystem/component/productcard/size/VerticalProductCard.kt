@@ -122,7 +122,8 @@ private fun ProductImage(
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .size(theme.sizing.icon.xlarge),
+                        .size(theme.sizing.icon.xlarge)
+                        .testTag(productCard.wishlistTestTag),
                     onClick = productCard.onFavoriteClick
                 ) {
                     val iconRes =
