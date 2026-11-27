@@ -46,6 +46,7 @@ const val PRODUCT_CARD = "product-card"
 const val PRODUCT_IMAGE = "product-image"
 const val PRODUCT_DESIGNER = "product-designer"
 const val PRODUCT_NAME = "product-name"
+const val PRODUCT_WISHLIST_BUTTON = "product-wishlist-btn"
 const val PRODUCT_COLOR = "product-color"
 const val PRODUCT_SIZE = "product-size"
 const val PRODUCT_PRICE_COMPONENT = "product-price-component"
@@ -61,10 +62,12 @@ const val WISHLIST_EMPTY_STATE = "wishlist-empty-state"
 // PRODUCT DETAILS
 const val PDP_PRODUCT_NAME = "pdp-product-name"
 const val PDP_ADD_TO_BAG_BUTTON = "pdp-add-to-bag-btn"
+const val PDP_WISHLIST_BUTTON = "pdp-wishlist-btn"
 
 // ACTION TOASTS
 const val ADD_TO_BAG_CONFIRMATION = "add-to-bag-confirmation"
 const val REMOVE_CONFIRMATION = "remove-confirmation"
+const val WISHLIST_CONFIRMATION = "wishlist-confirmation"
 
 // SEGMENTED CONTROLS
 const val SEGMENTED_CONTROL = "segmented-control"

@@ -11,6 +11,7 @@ import com.mindera.alfie.core.ui.test.PRODUCT_PRICE_COMPONENT
 import com.mindera.alfie.core.ui.test.PRODUCT_QUANTITY
 import com.mindera.alfie.core.ui.test.PRODUCT_REFERENCE
 import com.mindera.alfie.core.ui.test.PRODUCT_SIZE
+import com.mindera.alfie.core.ui.test.PRODUCT_WISHLIST_BUTTON
 import com.mindera.alfie.designsystem.component.price.PriceType
 
 sealed interface ProductCardType {
@@ -76,6 +77,7 @@ sealed interface ProductCardType {
         override val brandTestTag: String = PRODUCT_DESIGNER,
         override val nameTestTag: String = PRODUCT_NAME,
         override val priceTestTag: String = PRODUCT_PRICE_COMPONENT,
+        val wishlistTestTag: String = PRODUCT_WISHLIST_BUTTON,
         val addToBagClick: ClickEvent? = null
     ) : ProductCardType
 }

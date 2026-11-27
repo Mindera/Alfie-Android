@@ -3,6 +3,7 @@ package com.mindera.alfie.feature.snackbar
 import android.content.Context
 import com.mindera.alfie.core.ui.test.ADD_TO_BAG_CONFIRMATION
 import com.mindera.alfie.core.ui.test.REMOVE_CONFIRMATION
+import com.mindera.alfie.core.ui.test.WISHLIST_CONFIRMATION
 import com.mindera.alfie.designsystem.component.snackbar.SnackbarCustomVisuals
 import com.mindera.alfie.feature.R
 
@@ -20,7 +21,8 @@ object ActionToast {
     ): SnackbarCustomVisuals.Toast = SnackbarCustomVisuals.Toast(
         message = context.getString(if (added) R.string.action_toast_added else R.string.action_toast_removed),
         actionLabel = context.getString(R.string.action_toast_view_wishlist),
-        onActionClick = onViewWishlist
+        onActionClick = onViewWishlist,
+        testTag = WISHLIST_CONFIRMATION
     )
 
     /** Confirms an add to bag, linking to the Bag. */
