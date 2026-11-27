@@ -11,9 +11,7 @@ browser = "1.10.0"
 chucker = "4.4.0"
 compose = "2025.01.01"
 composeActivity = "1.10.0"
-# The app already resolves Compose foundation/animation 1.10 at runtime (pulled up by ui-tooling 1.11).
-# Declaring 1.10 here makes every module compile against it too, so no call site binds to a 1.7 signature.
-composeAnimation = "1.10.0"
+composeAnimation = "1.7.7"
 composeTracing = "1.7.7"
 composeFoundation = "1.7.7"
 core-ktx = "1.15.0"
