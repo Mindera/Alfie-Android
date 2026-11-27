@@ -35,7 +35,7 @@ internal val AnchoredDraggableState<SwipeAnchor>.SwipeAnchoredNestedScrollConnec
         override suspend fun onPreFling(available: Velocity): Velocity {
             val toFling = available.y
             val currentOffset = requireOffset()
-            val minAnchor = anchors.minAnchor()
+            val minAnchor = anchors.minPosition()
             return if (toFling < 0 && currentOffset > minAnchor) {
                 settle(toFling)
                 available

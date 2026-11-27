@@ -130,7 +130,7 @@ private fun Modifier.updateAnchors(
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun AnchoredDraggableState<SwipeAnchor>.isInBetween(yOffset: Int) =
-    yOffset > anchors.minAnchor() && yOffset < anchors.maxAnchor()
+    yOffset > anchors.minPosition() && yOffset < anchors.maxPosition()
 
 @Preview(showBackground = true)
 @Composable
