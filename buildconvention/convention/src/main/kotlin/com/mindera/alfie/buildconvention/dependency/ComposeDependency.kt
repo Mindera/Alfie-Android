@@ -8,6 +8,7 @@ internal object ComposeDependency {
     const val COMPOSE_RUNTIME = "compose.runtime"
     const val COMPOSE_TRACING = "compose.tracing"
     const val COMPOSE_ANIMATION = "compose.animation"
+    const val COMPOSE_FOUNDATION = "compose.foundation"
     const val COMPOSE_ACTIVITY = "compose.activity"
     const val MATERIAL = "material"
     const val MATERIAL3 = "material3"

@@ -2,6 +2,7 @@ package com.mindera.alfie.buildconvention.plugin.configuration
 
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_ANIMATION
+import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_FOUNDATION
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_RUNTIME
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_TOOLING
 import com.mindera.alfie.buildconvention.dependency.ComposeDependency.COMPOSE_TOOLING_PREVIEW
@@ -40,6 +41,10 @@ internal fun Project.configureCompose(commonExtension: CommonExtension) {
         implementation(libs.lib(COMPOSE_RUNTIME))
         implementation(libs.lib(COMPOSE_TRACING))
         implementation(libs.lib(COMPOSE_ANIMATION))
+        // Pinned to the foundation the app actually ships, which its other dependencies pull above
+        // what material brings. Compiled against an older one, a call into an API foundation has
+        // since changed (FlowRow's overflow) is a NoSuchMethodError at runtime.
+        implementation(libs.lib(COMPOSE_FOUNDATION))
         implementation(libs.lib(MATERIAL))
         implementation(libs.lib(MATERIAL3))
     }
