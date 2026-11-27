@@ -54,10 +54,17 @@ const val PRODUCT_QUANTITY = "product-quantity"
 const val BAG_TOTAL = "bag-total"
 const val BAG_CONTINUE_CTA = "bag-continue-cta"
 const val BAG_EMPTY_STATE = "bag-empty-state"
+const val BAG_LINE = "bag-line"
+const val BAG_LINE_REMOVE_ACTION = "bag-line-remove-action"
 const val WISHLIST_EMPTY_STATE = "wishlist-empty-state"
 
 // PRODUCT DETAILS
 const val PDP_PRODUCT_NAME = "pdp-product-name"
+const val PDP_ADD_TO_BAG_BUTTON = "pdp-add-to-bag-btn"
+
+// ACTION TOASTS
+const val ADD_TO_BAG_CONFIRMATION = "add-to-bag-confirmation"
+const val REMOVE_CONFIRMATION = "remove-confirmation"
 
 // SEGMENTED CONTROLS
 const val SEGMENTED_CONTROL = "segmented-control"

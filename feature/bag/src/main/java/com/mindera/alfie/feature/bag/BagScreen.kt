@@ -22,6 +22,8 @@ import com.mindera.alfie.core.navigation.DirectionProvider
 import com.mindera.alfie.core.ui.event.ClickEvent
 import com.mindera.alfie.core.ui.event.ClickEventOneArg
 import com.mindera.alfie.core.ui.test.BAG_EMPTY_STATE
+import com.mindera.alfie.core.ui.test.BAG_LINE
+import com.mindera.alfie.core.ui.test.BAG_LINE_REMOVE_ACTION
 import com.mindera.alfie.designsystem.component.bottombar.BottomBarState
 import com.mindera.alfie.designsystem.component.divider.DividerType
 import com.mindera.alfie.designsystem.component.divider.HorizontalDivider
@@ -195,7 +197,8 @@ private fun BagLineRow(
                 label = removeLabel,
                 contentDescription = removeDescription,
                 type = SwipeActionType.Destructive,
-                onClick = { onRemoveClick(line) }
+                onClick = { onRemoveClick(line) },
+                testTag = BAG_LINE_REMOVE_ACTION
             )
         )
     }
@@ -208,7 +211,8 @@ private fun BagLineRow(
 
     SwipeActions(
         actions = actions,
-        state = swipeState
+        state = swipeState,
+        modifier = Modifier.testTag(BAG_LINE)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(theme.spacing.spacing4),
