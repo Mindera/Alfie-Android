@@ -11,12 +11,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.mindera.alfie.core.testseed.SeedAnchors
 import com.mindera.alfie.core.ui.test.PDP_PRODUCT_NAME
 import com.mindera.alfie.core.ui.test.PRODUCT_CARD
-import com.mindera.alfie.core.ui.test.SEARCH_BACK_BUTTON
 import com.mindera.alfie.core.ui.test.SEARCH_INPUT
 import com.mindera.alfie.core.ui.test.SEARCH_NO_RESULTS_SCREEN
 import com.mindera.alfie.uitest.EnUsLocaleRule
-import com.mindera.alfie.uitest.UI_TIMEOUT_MILLIS
-import com.mindera.alfie.uitest.exists
 import com.mindera.alfie.uitest.hasNonBlankText
 import com.mindera.alfie.uitest.launchMainActivity
 import com.mindera.alfie.uitest.waitForNode
@@ -52,11 +49,8 @@ class SearchJourneyTest {
                 performImeAction()
             }
 
-            // The overlay's product suggestions are cards too: wait for it to close, so the card
-            // tapped is the results listing's.
-            composeRule.waitUntil("the search overlay to close", UI_TIMEOUT_MILLIS) {
-                !composeRule.exists(hasTestTag(SEARCH_BACK_BUTTON))
-            }
+            // Only the results listing has product cards: Home shows none, and the overlay tags its
+            // product suggestions SEARCH_SUGGESTIONS_PRODUCT_ITEM, which replaces their PRODUCT_CARD.
             composeRule.waitForNode(loadedProductCard).performClick()
 
             // Its loading placeholder is blank, so a non-blank name means the product loaded.
